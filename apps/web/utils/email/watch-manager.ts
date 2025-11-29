@@ -28,24 +28,18 @@ export async function ensureEmailAccountsWatched({
   return await watchEmailAccounts(emailAccounts);
 }
 
-import { env } from "@/env";
-
 async function getEmailAccountsToWatch(userIds: string[] | null) {
-  const premiumFilter = env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS
-    ? {}
-    : {
+  return prisma.emailAccount.findMany({
+    where: {
+      ...(userIds ? { userId: { in: userIds } } : {}),
+      user: {
         premium: {
           OR: [
             { lemonSqueezyRenewsAt: { gt: new Date() } },
             { stripeSubscriptionStatus: { in: ["active", "trialing"] } },
           ],
         },
-      };
-
-  return prisma.emailAccount.findMany({
-    where: {
-      ...(userIds ? { userId: { in: userIds } } : {}),
-      user: premiumFilter,
+      },
     },
     select: {
       id: true,

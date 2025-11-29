@@ -27,18 +27,15 @@ async function unsubscribeAndArchive({
   mutate,
   refetchPremium,
   emailAccountId,
-  unsubscribeLink,
 }: {
   newsletterEmail: string;
   mutate: () => Promise<void>;
   refetchPremium: () => Promise<UserResponse | null | undefined>;
   emailAccountId: string;
-  unsubscribeLink?: string;
 }) {
   await setNewsletterStatusAction(emailAccountId, {
     newsletterEmail,
     status: NewsletterStatus.UNSUBSCRIBED,
-    unsubscribeLink,
   });
   await mutate();
   await decrementUnsubscribeCreditAction();
@@ -86,7 +83,6 @@ export function useUnsubscribe<T extends Row>({
           mutate,
           refetchPremium,
           emailAccountId,
-          unsubscribeLink: item.unsubscribeLink,
         });
       }
     } catch (error) {
@@ -98,7 +94,6 @@ export function useUnsubscribe<T extends Row>({
     hasUnsubscribeAccess,
     item.name,
     item.status,
-    item.unsubscribeLink,
     mutate,
     refetchPremium,
     posthog,
@@ -146,7 +141,6 @@ export function useBulkUnsubscribe<T extends Row>({
               mutate,
               refetchPremium,
               emailAccountId,
-              unsubscribeLink: item.unsubscribeLink,
             });
           } catch (error) {
             captureException(error);
@@ -166,24 +160,6 @@ export function useBulkUnsubscribe<T extends Row>({
     onBulkUnsubscribe,
   };
 }
-
-// ... (skipping unchanged parts)
-
-      if (e.key === "u") {
-        // unsubscribe
-        e.preventDefault();
-        if (item.unsubscribeLink) {
-          window.open(cleanUnsubscribeLink(item.unsubscribeLink), "_blank");
-        }
-        await unsubscribeAndArchive({
-          newsletterEmail: item.name,
-          mutate,
-          refetchPremium,
-          emailAccountId,
-          unsubscribeLink: item.unsubscribeLink,
-        });
-        return;
-      }
 
 async function autoArchive({
   name,
@@ -597,6 +573,7 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
 }) {
   // perform actions using keyboard shortcuts
   // TODO make this available to command-K dialog too
+  // TODO limit the copy-paste. same logic appears twice in this file
   useEffect(() => {
     const down = async (e: KeyboardEvent) => {
       const item = selectedRow;
@@ -627,28 +604,31 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
       if (e.key === "e") {
         // auto archive
         e.preventDefault();
-        await autoArchive({
-          name: item.name,
-          labelId: undefined,
-          labelName: undefined,
-          mutate,
-          refetchPremium,
+        onAutoArchive({
           emailAccountId,
+          from: item.name,
         });
+        await setNewsletterStatusAction(emailAccountId, {
+          newsletterEmail: item.name,
+          status: NewsletterStatus.AUTO_ARCHIVED,
+        });
+        await mutate();
+        await decrementUnsubscribeCreditAction();
+        await refetchPremium();
         return;
       }
       if (e.key === "u") {
         // unsubscribe
         e.preventDefault();
-        if (item.unsubscribeLink) {
-          window.open(cleanUnsubscribeLink(item.unsubscribeLink), "_blank");
-        }
-        await unsubscribeAndArchive({
+        if (!item.unsubscribeLink) return;
+        window.open(cleanUnsubscribeLink(item.unsubscribeLink), "_blank");
+        await setNewsletterStatusAction(emailAccountId, {
           newsletterEmail: item.name,
-          mutate,
-          refetchPremium,
-          emailAccountId,
+          status: NewsletterStatus.UNSUBSCRIBED,
         });
+        await mutate();
+        await decrementUnsubscribeCreditAction();
+        await refetchPremium();
         return;
       }
       if (e.key === "a") {

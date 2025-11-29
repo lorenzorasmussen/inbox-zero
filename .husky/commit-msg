@@ -1,0 +1,89 @@
+#!/usr/bin/env sh
+set -e
+
+# Commit Message Hook
+# Ensures commit messages follow conventional format and OpenCode standards
+
+echo "📝 Commit Message Validation"
+
+# Get the commit message
+COMMIT_MSG_FILE=".git/COMMIT_EDITMSG"
+if [ ! -f "$COMMIT_MSG_FILE" ]; then
+    echo "⚠️  No commit message file found"
+    exit 0
+fi
+
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Check for conventional commit format
+if ! echo "$COMMIT_MSG" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+"; then
+    echo "❌ Commit message doesn't follow conventional format"
+    echo "💡 Expected format: type(scope): description"
+    echo "📋 Current message: $COMMIT_MSG"
+    echo ""
+    echo "🔧 Suggested format:"
+    echo "  feat: add new feature"
+    echo "  fix: bug fix"
+    echo "  docs: documentation changes"
+    echo "  style: code formatting"
+    echo "  refactor: code refactoring"
+    echo "  test: adding or updating tests"
+    echo "  chore: maintenance tasks"
+    echo ""
+    echo "❌ Please edit commit message to follow conventional format"
+    exit 1
+fi
+
+# Check for OpenCode agent operations in commit message
+if echo "$COMMIT_MSG" | grep -q "\.opencode/"; then
+    echo "🤖 OpenCode Agent Operation Detected"
+    
+    # Extract operation type
+    if echo "$COMMIT_MSG" | grep -q "git-agent"; then
+        echo "🔍 Git Agent Operation: $(echo "$COMMIT_MSG" | sed 's/.*git-agent.*\[\(.*\)\].*/\1/' | head -1)"
+        
+        # Validate agent operation is allowed
+        AGENT_OPERATION=$(echo "$COMMIT_MSG" | sed 's/.*git-agent.*\[\(.*\)\].*/\1/' | head -1)
+        case "$AGENT_OPERATION" in
+            "repository_init"|"branch_operations"|"commit_workflow"|"merge_management")
+                echo "✅ Valid Git agent operation"
+                ;;
+            "checkpoint_management"|"documentation_generation"|"audit_trail")
+                echo "✅ Valid OpenCode support operation"
+                ;;
+            *)
+                echo "⚠️  Unknown Git agent operation: $AGENT_OPERATION"
+                echo "💡 Only use git-agent for repository management tasks"
+                ;;
+        esac
+    fi
+    
+    # Check for constitutional compliance mentions
+    if echo "$COMMIT_MSG" | grep -q "constitutional\|compliance"; then
+        echo "📋 Constitutional Compliance: $(echo "$COMMIT_MSG" | grep -o "constitutional\|compliance" | sed 's/.*\(constitutional\|compliance.*\): \(.*\)/\1/')"
+    fi
+fi
+
+# Check commit message length
+MSG_LENGTH=$(echo "$COMMIT_MSG" | wc -c)
+if [ "$MSG_LENGTH" -gt 72 ]; then
+    echo "⚠️  Commit message too long (${MSG_LENGTH} chars)"
+    echo "💡 Keep commit messages under 72 characters for better readability"
+    echo ""
+    echo "🔧 Consider breaking into multiple smaller commits"
+fi
+
+# Check for proper issue references
+if echo "$COMMIT_MSG" | grep -qE "#[0-9]+"; then
+    echo "🔗 Issue References: $(echo "$COMMIT_MSG" | grep -oE "#[0-9]+" | tr '\n' ' ')"
+    
+    # Validate issue references exist
+    for issue in $(echo "$COMMIT_MSG" | grep -oE "#[0-9]+" | tr '\n' ' '); do
+        if ! echo "$COMMIT_MSG" | grep -q "#$issue"; then
+            echo "⚠️  Issue #$issue referenced but not found in commit message"
+        fi
+    done
+fi
+
+echo "✅ Commit message validation passed"
+exit 0
