@@ -6,7 +6,7 @@ import { createGroq } from '@ai-sdk/groq';
 import { createOpenAI } from '@ai-sdk/openai';
 import type { LanguageModelV2 } from '@ai-sdk/provider';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-// import { createOllama } from "ollama-ai-provider";
+import { createOllama } from 'ollama-ai-provider';
 import { env } from '@/env';
 import { Provider } from '@/utils/llms/config';
 import type { UserAIFields } from '@/utils/llms/types';
@@ -128,16 +128,14 @@ function selectModel(
       };
     }
     case Provider.OLLAMA: {
-      throw new Error(
-        'Ollama is not supported. Revert to version v1.7.28 or older to use it.'
-      );
-      // const modelName = aiModel || env.NEXT_PUBLIC_OLLAMA_MODEL;
-      // if (!modelName) throw new Error("Ollama model is not set");
-      // return {
-      //   provider: Provider.OLLAMA!,
-      //   modelName,
-      //   model: createOllama({ baseURL: env.OLLAMA_BASE_URL })(model),
-      // };
+      const modelName = aiModel || env.NEXT_PUBLIC_OLLAMA_MODEL;
+      if (!modelName) throw new Error('Ollama model is not set');
+      return {
+        provider: Provider.OLLAMA!,
+        modelName,
+        model: createOllama({ baseURL: env.OLLAMA_BASE_URL })(modelName),
+        backupModel: null, // Ollama is local, no backup needed
+      };
     }
 
     case Provider.BEDROCK: {
