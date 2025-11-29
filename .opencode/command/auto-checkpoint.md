@@ -1,6 +1,6 @@
 ---
 description: "Auto-checkpoint scheduler and monitoring service"
-agent: "build"
+agent: build
 subtask: true
 ---
 

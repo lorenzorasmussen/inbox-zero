@@ -1,0 +1,27 @@
+#!/bin/bash
+
+echo "📊 Auto-Checkpoint Status"
+echo "========================"
+
+# Git status
+echo "📁 Repository Status:"
+git status --porcelain | wc -l | xargs echo "  Changed files:"
+
+# Recent auto-checkpoints
+echo ""
+echo "🏷️  Recent Auto-Checkpoints:"
+git tag -l 'auto-checkpoint-*' --sort=-creatordate | head -5 | while read tag; do
+    echo "  $tag"
+done
+
+# Configuration
+echo ""
+echo "⚙️  Configuration:"
+if [ -f .checkpoint-config ]; then
+    source .checkpoint-config
+    echo "  Interval: $CHECKPOINT_INTERVAL minutes"
+    echo "  Min changes: $MIN_CHANGES"
+    echo "  Work hours: $WORK_HOURS"
+else
+    echo "  ❌ Configuration file not found"
+fi

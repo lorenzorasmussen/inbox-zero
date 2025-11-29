@@ -1,6 +1,6 @@
 ---
 description: "Setup development environment with dependencies, configuration, and tools"
-agent: "build"
+agent: build
 subtask: true
 ---
 

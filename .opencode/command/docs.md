@@ -1,6 +1,6 @@
 ---
 description: "Generate comprehensive project documentation with structure, API, and guides"
-agent: "build"
+agent: build
 subtask: true
 ---
 

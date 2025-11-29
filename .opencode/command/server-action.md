@@ -1,6 +1,6 @@
 ---
 description: "Create server actions with validation, security, and best practices"
-agent: "build"
+agent: build
 subtask: true
 ---
 

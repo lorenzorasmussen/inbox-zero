@@ -1,6 +1,6 @@
 ---
 description: "Execute comprehensive security audit following Inbox Zero security guidelines"
-agent: "build"
+agent: build
 subtask: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: "Advanced Git checkpoint with auto-detection, validation, categorization & rollback"
-agent: "build"
+agent: build
 subtask: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: "Create new API routes with proper security, validation, and patterns"
-agent: "build"
+agent: build
 subtask: true
 ---
 

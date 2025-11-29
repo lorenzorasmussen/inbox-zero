@@ -1,6 +1,6 @@
 ---
 description: "Create comprehensive tests with Vitest, mocking, and best practices"
-agent: "build"
+agent: build
 subtask: true
 ---
 

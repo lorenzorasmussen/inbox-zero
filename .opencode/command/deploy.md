@@ -1,6 +1,6 @@
 ---
 description: "Execute comprehensive deployment with Docker, CI/CD, and production setup"
-agent: "build"
+agent: build
 subtask: true
 ---
 

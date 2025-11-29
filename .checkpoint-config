@@ -1,0 +1,8 @@
+# Auto-Checkpoint Configuration
+CHECKPOINT_INTERVAL=30  # minutes
+MIN_CHANGES=5          # minimum files to trigger auto-checkpoint
+WORK_HOURS="09:00-18:00" # only auto-checkpoint during work hours
+EXCLUDE_PATTERNS=".git,node_modules,*.log,*.tmp"
+AUTO_PUSH=false         # auto-push to remote after checkpoint
+CREATE_TAGS=true       # create auto-checkpoint tags
+MAX_AUTO_CHECKPOINTS=50 # cleanup old auto-checkpoints

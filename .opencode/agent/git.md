@@ -8,7 +8,7 @@
    edit: true
    bash: true
    grep: true
-   glob: true
+   glob: false
    list: true
    todoread: true
    todowrite: true
@@ -408,4 +408,4 @@ copilot --continue --allow-all-tools
 
 ---
 
-*Last updated with GitHub Copilot CLI integration and Context7 MCP server support*
+*Last updated with GitHub Copilot CLI integration and Context7 MCP server support*run th

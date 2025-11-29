@@ -1,6 +1,6 @@
 ---
 description: "Execute performance optimization and monitoring setup"
-agent: "build"
+agent: build
 subtask: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: "Create UI components with Shadcn UI, Tailwind CSS, and responsive design"
-agent: "build"
+agent: build
 subtask: true
 ---
 

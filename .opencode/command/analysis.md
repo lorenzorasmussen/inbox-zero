@@ -1,6 +1,6 @@
 ---
 description: "Execute comprehensive project analysis and reporting"
-agent: "build"
+agent: build
 subtask: true
 ---
 
