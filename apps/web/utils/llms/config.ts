@@ -2,7 +2,7 @@ import { env } from '@/env';
 
 export const supportsOllama = !!env.NEXT_PUBLIC_OLLAMA_MODEL;
 
-export const DEFAULT_PROVIDER = 'DEFAULT';
+export const DEFAULT_PROVIDER = 'ollama';
 
 export const Provider = {
   OPEN_AI: 'openai',
@@ -17,13 +17,11 @@ export const Provider = {
 
 export const providerOptions: { label: string; value: string }[] = [
   { label: 'Default', value: DEFAULT_PROVIDER },
+  { label: 'Ollama', value: Provider.OLLAMA },
   { label: 'Anthropic', value: Provider.ANTHROPIC },
   { label: 'OpenAI', value: Provider.OPEN_AI },
   { label: 'Google', value: Provider.GOOGLE },
   { label: 'Groq', value: Provider.GROQ },
   { label: 'OpenRouter', value: Provider.OPENROUTER },
   { label: 'AI Gateway', value: Provider.AI_GATEWAY },
-  ...(supportsOllama && Provider.OLLAMA
-    ? [{ label: 'Ollama', value: Provider.OLLAMA }]
-    : []),
 ];

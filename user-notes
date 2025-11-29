@@ -1,0 +1,567 @@
+How the **Web** app pulls e‑mail messages and stores them locally
+
+Below is a concise walk‑through of the code that is responsible for **fetch‑ing** messages from the user’s mailbox (Gmail or Outlook) and persisting them in the local SQLite/PostgreSQL database via Prisma.
+
+All the relevant pieces live under `apps/web/`.
+
+---
+
+### 1. Entry‑point – the server action
+
+**File**: `apps/web/utils/actions/stats.ts`
+
+```path/to/apps/web/utils/actions/stats.ts#L1-70
+'use server';
+
+import { z } from 'zod';
+import { actionClient } from '@/utils/actions/safe-action';
+import { internalDateToDate } from '@/utils/date';
+import {
+  extractDomainFromEmail,
+  extractEmailAddress,
+  extractNameFromEmail,
+} from '@/utils/email';
+import { createEmailProvider } from '@/utils/email/provider';
+import type { EmailProvider } from '@/utils/email/types';
+import { SafeError } from '@/utils/error';
+import type { Logger } from '@/utils/logger';
+import { findUnsubscribeLink } from '@/utils/parse/parseHtml.server';
+import prisma from '@/utils/prisma';
+import { isDefined } from '@/utils/types';
+
+const PAGE_SIZE = 20;      // max per API call (keeps us under rate limits)
+const MAX_PAGES = 50;      // safety‑guard so we don’t loop forever
+
+export const loadEmailStatsAction = actionClient
+  .metadata({ name: 'loadEmailStats' })
+  .inputSchema(z.object({ loadBefore: z.boolean() }))
+  .action(
+    async ({
+      parsedInput: { loadBefore },
+      ctx: { emailAccountId, logger },
+    }) => {
+      // 1️⃣  Load the provider (gmail / outlook) for this account
+      const emailAccount = await prisma.emailAccount.findUnique({
+        where: { id: emailAccountId },
+        select: { account: { select: { provider: true } } },
+      });
+
+      if (!emailAccount?.account?.provider) {
+        throw new SafeError('Email account or provider not found');
+      }
+
+      const emailProvider = await createEmailProvider({
+        emailAccountId,
+        provider: emailAccount.account.provider,
+        logger,
+      });
+
+      // 2️⃣  Kick‑off the loading routine
+      await loadEmails(
+        { emailAccountId, emailProvider, logger },
+        { loadBefore }
+      );
+    }
+  );
+```
+
+* **What it does** – validates the request, resolves the provider (`gmail` or `outlook`) via `createEmailProvider`, then calls `loadEmails` (the heavy‑lifting function).
+
+---
+
+### 2. Paginated loading – forward **and** backward
+
+**File**: same (`utils/actions/stats.ts`) – function `loadEmails`
+
+```path/to/apps/web/utils/actions/stats.ts#L71-131
+async function loadEmails(
+  { emailAccountId, emailProvider, logger },
+  { loadBefore }: { loadBefore: boolean }
+) {
+  // Determine the newest locally‑saved message
+  const newestEmailSaved = await prisma.emailMessage.findFirst({
+    where: { emailAccountId },
+    orderBy: { date: 'desc' },
+  });
+  const after = newestEmailSaved?.date;   // start point for “newer” fetches
+
+  // -----  FETCH MESSAGES AFTER the newest saved one  -----
+  let pages = 0;
+  let nextPageToken: string | undefined;
+  while (pages < MAX_PAGES) {
+    const res = await saveBatch({
+      emailAccountId,
+      emailProvider,
+      logger,
+      nextPageToken,
+      after,
+      before: undefined,
+    });
+    nextPageToken = res.data.nextPageToken ?? undefined;
+    if (!res.data.messages?.length || res.data.messages.length < PAGE_SIZE) break;
+    pages++;
+    if (!nextPageToken) break;
+  }
+
+  // -----  OPTIONAL: FETCH MESSAGES BEFORE the oldest saved one  -----
+  if (!loadBefore || !newestEmailSaved) return { pages };
+
+  const oldestEmailSaved = await prisma.emailMessage.findFirst({
+    where: { emailAccountId },
+    orderBy: { date: 'asc' },
+  });
+  const before = oldestEmailSaved?.date;
+  nextPageToken = undefined;
+  while (pages < MAX_PAGES) {
+    const res = await saveBatch({
+      emailAccountId,
+      emailProvider,
+      logger,
+      nextPageToken,
+      before,
+      after: undefined,
+    });
+    nextPageToken = res.data.nextPageToken ?? undefined;
+    if (!res.data.messages?.length || res.data.messages.length < PAGE_SIZE) break;
+    pages++;
+    if (!nextPageToken) break;
+  }
+
+  return { pages };
+}
+```
+
+* The **first loop** pulls newer messages (`after` = latest locally stored date).
+* If the caller asked for `loadBefore: true`, a **second loop** pulls older messages (`before` = oldest locally stored date).
+* Pagination is driven by the provider’s `pageToken`.
+
+---
+
+### 3. Fetch a page & persist it
+
+**File**: same (`utils/actions/stats.ts`) – function `saveBatch`
+
+```path/to/apps/web/utils/actions/stats.ts#L132-215
+async function saveBatch({
+  emailAccountId,
+  emailProvider,
+  logger,
+  nextPageToken,
+  before,
+  after,
+}) {
+  // 1️⃣  Ask the provider for a page of message metadata
+  const res = await emailProvider.getMessagesWithPagination({
+    maxResults: PAGE_SIZE,
+    pageToken: nextPageToken,
+    before,
+    after,
+  });
+
+  // 2️⃣  Resolve the full message bodies in a batch (Gmail only currently)
+  const messages = await emailProvider.getMessagesBatch(
+    res.messages?.map((m) => m.id).filter(isDefined) || []
+  );
+
+  // 3️⃣  Transform each ParsedMessage → EmailMessage DB row
+  const emailsToSave = messages.map((m) => {
+    const unsubscribeLink =
+      findUnsubscribeLink(m.textHtml) || m.headers['list-unsubscribe'];
+
+    const date = internalDateToDate(m.internalDate);
+    if (!date) {
+      logger.error('No date for email', { messageId: m.id, date: m.internalDate });
+      return;
+    }
+
+    return {
+      threadId: m.threadId,
+      messageId: m.id,
+      from: extractEmailAddress(m.headers.from),
+      fromName: extractNameFromEmail(m.headers.from),
+      fromDomain: extractDomainFromEmail(m.headers.from),
+      to: m.headers.to ? extractEmailAddress(m.headers.to) : 'Missing',
+      date,
+      unsubscribeLink,
+      read: !m.labelIds?.includes('UNREAD'),
+      sent: !!m.labelIds?.includes('SENT'),
+      draft: !!m.labelIds?.includes('DRAFT'),
+      inbox: !!m.labelIds?.includes('INBOX'),
+      emailAccountId,
+    };
+  }).filter(isDefined);
+
+  // 4️⃣  Bulk‑insert, skipping duplicates (unique: emailAccountId+threadId+messageId)
+  await prisma.emailMessage.createMany({
+    data: emailsToSave,
+    skipDuplicates: true,
+  });
+
+  return { data: { messages: res.messages, nextPageToken: res.nextPageToken } };
+}
+```
+
+* **`emailProvider.getMessagesWithPagination`** returns a page of *metadata* (`id`, `threadId`, `labelIds`, …).
+* **`emailProvider.getMessagesBatch`** fetches the full RFC822 payload for each ID in one API call (Gmail uses `batchGet`; Outlook’s implementation varies).
+* The code extracts: sender address, sender name, domain, recipient, date, unsubscribe link, and flag booleans (`read`, `sent`, `draft`, `inbox`).
+* Finally, it persists the rows with **Prisma’s** `createMany`, using the unique constraint `(emailAccountId, threadId, messageId)` to avoid duplicates.
+
+---
+
+### 4. Provider‑specific pagination logic
+
+#### 4.1 Gmail (`utils/email/google.ts`)
+
+```path/to/apps/web/utils/email/google.ts#L812-836
+async getMessagesWithPagination(options: {
+  query?: string;
+  maxResults?: number;
+  pageToken?: string;
+  before?: Date;
+  after?: Date;
+}): Promise<{ messages: ParsedMessage[]; nextPageToken?: string }> {
+  // Build Gmail search string – date filters are added as Unix timestamps
+  let query = options.query || '';
+  if (options.before) query += ` before:${Math.floor(options.before.getTime() / 1000) + 1}`;
+  if (options.after)  query += ` after:${Math.floor(options.after.getTime() / 1000) - 1}`;
+  query += ` -label:${GmailLabel.DRAFT}`;               // never return drafts
+
+  const response = await getMessages(this.client, {
+    query: query.trim() || undefined,
+    maxResults: options.maxResults || 20,
+    pageToken: options.pageToken,
+  });
+
+  const messagePromises = (response.messages || []).map((msg) => this.getMessage(msg.id!));
+  return { messages: await Promise.all(messagePromises), nextPageToken: response.nextPageToken };
+}
+```
+
+* Gmail’s **search syntax** (`before:`, `after:`) uses Unix‑epoch seconds.
+* Drafts are filtered out explicitly (`-label:DRAFT`).
+
+#### 4.2 Outlook (`utils/email/microsoft.ts`)
+
+```path/to/apps/web/utils/email/microsoft.ts#L713-740
+async getMessagesWithPagination(options: {
+  query?: string;
+  maxResults?: number;
+  pageToken?: string;
+  before?: Date;
+  after?: Date;
+}): Promise<{ messages: ParsedMessage[]; nextPageToken?: string }> {
+  // Outlook splits search text from date filters (OData)
+  const dateFilters: string[] = [];
+  if (options.before) dateFilters.push(`receivedDateTime lt ${options.before.toISOString()}`);
+  if (options.after)  dateFilters.push(`receivedDateTime gt ${options.after.toISOString()}`);
+
+  const response = await queryBatchMessages(this.client, {
+    searchQuery: options.query?.trim(),
+    dateFilters,
+    maxResults: options.maxResults || 20,
+    pageToken: options.pageToken,
+  });
+
+  return { messages: response.messages || [], nextPageToken: response.nextPageToken };
+}
+```
+
+* Outlook uses **OData** filters (`receivedDateTime lt/gt`).
+* The function forwards `searchQuery` (free‑text) *and* the separate `dateFilters`.
+
+---
+
+### 5. Database schema – where the emails land
+
+**File**: `apps/web/prisma/schema.prisma`
+
+```path/to/apps/web/prisma/schema.prisma#L679-701
+model EmailMessage {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  threadId        String
+  messageId       String
+  date            DateTime   // actual e‑mail sent/received time
+  from            String
+  fromName        String?
+  fromDomain      String
+  to              String
+  unsubscribeLink String?
+  read            Boolean
+  sent            Boolean
+  draft           Boolean
+  inbox           Boolean
+
+  emailAccountId  String
+  emailAccount    EmailAccount @relation(fields: [emailAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([emailAccountId, threadId, messageId])
+  @@index([emailAccountId, threadId])
+  @@index([emailAccountId, date])
+  @@index([emailAccountId, from])
+}
+```
+
+* The **unique composite index** guarantees idempotent inserts (`skipDuplicates` in `createMany`).
+* Various indexes (`date`, `from`, `threadId`) make the analytics queries fast.
+
+---
+
+## TL;DR – Summary of the flow
+
+| Step | What happens | Key code |
+|------|--------------|----------|
+| **1. Action invoked** | `loadEmailStatsAction` receives a request (e.g. from UI) | `utils/actions/stats.ts` |
+| **2. Resolve provider** | `createEmailProvider` builds a `GmailProvider` or `OutlookProvider` | `utils/email/provider.ts` |
+| **3. Determine pagination start** | Find newest and/or oldest `EmailMessage` rows in DB | `loadEmails` |
+| **4. Call provider** | `provider.getMessagesWithPagination` returns a page of IDs + `nextPageToken` | `google.ts` / `microsoft.ts` |
+| **5. Fetch full payload** | `provider.getMessagesBatch` (batch request) | `GmailProvider.getMessagesBatch` (wraps Gmail batch endpoint) |
+| **6. Transform** | Extract addresses, dates, flags, unsubscribe link | `saveBatch` mapping logic |
+| **7. Persist** | `prisma.emailMessage.createMany({ skipDuplicates })` | `saveBatch` |
+| **8. Loop** | Repeat until page limit or no more messages | while‑loops in `loadEmails` |
+
+The design cleanly separates **provider‑specific API quirks** (search syntax, pagination token) from the **generic loading + persistence** logic.
+
+If you need to adjust the **local storage** (e.g. add a new column, change a flag), modify the `EmailMessage` model in `schema.prisma` and adapt the mapping in `saveBatch`.
+
+Feel free to ask if you’d like a deeper dive into any particular piece (e.g., the batch retrieval for Outlook, handling of rate‑limit back‑off, or the analytics queries that read from `EmailMessage`).
+
+---
+
+Below is a quick‑run‑through of what would happen if you triggered the **“load email stats”** workflow from the UI (the `StatLoaderProvider` you just saw).
+
+| Step | Action | Code that does it |
+|------|--------|-------------------|
+| **1️⃣  UI call** | A component (e.g. `<LoadStats loadBefore={true} …/>`) mounts and runs `onLoad`. | `StatLoaderProvider.tsx → onLoad → statLoader.loadStats()` |
+| **2️⃣  Server‑action invoke** | `loadEmailStatsAction(emailAccountId, { loadBefore })` is called. | `StatLoaderProvider.tsx → loadEmailStatsAction` |
+| **3️⃣  Resolve provider** | Looks up the `EmailAccount` row, reads the stored provider (`google` or `microsoft`) and creates the concrete provider (`GmailProvider` or `OutlookProvider`). | `utils/actions/stats.ts → createEmailProvider` |
+| **4️⃣  Determine pagination anchors** | Queries the DB for the newest (and optionally the oldest) stored `EmailMessage` rows to know where to start. | `loadEmails → prisma.emailMessage.findFirst` |
+| **5️⃣  Fetch a page of metadata** | Calls `provider.getMessagesWithPagination({ after, before, maxResults, pageToken })`. <br> – **Gmail** builds a search string with `before:` / `after:` timestamps. <br> – **Outlook** builds OData date filters (`receivedDateTime lt/gt`). | `utils/email/google.ts` & `utils/email/microsoft.ts` |
+| **6️⃣  Pull full payloads** | Once a page of IDs is received, the code asks the provider for the full RFC822 bodies in one batch request (`provider.getMessagesBatch`). | `saveBatch → emailProvider.getMessagesBatch` |
+| **7️⃣  Transform → DB rows** | For each `ParsedMessage` the code extracts: <br> • `threadId`, `messageId` <br> • `from`, `fromName`, `fromDomain` <br> • `to` <br> • `date` (converted from Gmail’s `internalDate`) <br> • Unsubscribe link (HTML parsing) <br> • Flags: `read`, `sent`, `draft`, `inbox` | `saveBatch → mapping logic` |
+| **8️⃣  Bulk insert** | Inserts the rows with `prisma.emailMessage.createMany({ skipDuplicates:true })`. The unique composite index `(emailAccountId, threadId, messageId)` prevents duplicate entries. | `saveBatch → prisma.emailMessage.createMany` |
+| **9️⃣  Loop** | The function repeats steps 5‑8 until: <br> – No more pages (`nextPageToken` absent) **or** <br> – The page returned fewer than `PAGE_SIZE` messages **or** <br> – The hard‑coded `MAX_PAGES` (50) limit is hit. | `loadEmails` while‑loops (forward & backward) |
+| **🔔  UI feedback** | When `loadStats` finishes, the provider shows a toast: “Stats loaded!” (or an error toast). | `StatLoaderProvider.tsx → toastSuccess / toastError` |
+
+---
+
+### Why we can’t actually *run* it here
+
+* **Authentication** – Both `GmailProvider` and `OutlookProvider` need a valid OAuth access token (fetched via `getGmailClientForEmail` / `getOutlookClientForEmail`). Those tokens live in your secret environment (`.env`) and are tied to a real user’s mailbox.
+* **Database** – The workflow writes to the Prisma‑managed DB (`EmailMessage` table). Running it would require a local DB instance with the proper schema and migrations applied.
+* **External APIs** – The code reaches out to Google‑Mail / Microsoft‑Graph endpoints. Without valid credentials the calls will immediately fail with “401 Unauthorized”.
+
+Because those secrets are not available in the execution sandbox, invoking the action would just raise authentication errors.
+
+---
+
+### What you can do to test it locally
+
+1. **Set up the env** – Copy `.env.example` to `.env` and fill in the Google / Microsoft OAuth client IDs, secrets, and a test user’s refresh token.
+2. **Run DB migrations**
+
+   ```sh
+   cd /Users/lorenzo/Projects/inbox-zero-google-migration/apps/web
+   npx prisma migrate dev --name init
+   ```
+
+3. **Start the dev server**
+
+   ```sh
+   pnpm dev   # or npm/yarn according to your lockfile
+   ```
+
+4. **Open the UI** – Navigate to any account page; the “Load Stats” button (or the `<LoadStats …/>` component) will invoke the workflow you just inspected.
+5. **Check the DB** – After it finishes, you can verify rows:
+
+   ```sh
+   npx prisma studio   # browse EmailMessage table
+   ```
+
+If you only want to trigger it programmatically, you could write a tiny Node script (e.g. `scripts/load-stats.ts`) that imports `loadEmailStatsAction`, supplies a known `emailAccountId`, and calls it. Remember to `await` the Promise and handle any thrown errors.
+
+---
+
+**Bottom line:** The workflow is fully wired – provider → pagination → batch fetch → transform → bulk insert – but to run it you’ll need valid email‑provider credentials and a running Prisma DB. Once those are in place, hitting the “Load Stats” UI (or calling `loadEmailStatsAction` directly) will pull the user’s mailbox into the local `EmailMessage` table.
+
+
+---
+
+✅ What you need to run the **core email‑fetch‑and‑store** workflow on a self‑hosted instance
+
+Below is a concise checklist that tells you which parts of the codebase are **essential** for pulling messages from Gmail/Outlook and persisting them locally, and which parts are **optional / external‑service‑specific** that you can safely remove or replace if you don’t want to depend on them.
+
+---
+
+### 1️⃣ Core pieces (must stay)
+
+| Piece | Where it lives | What it does |
+|------|----------------|--------------|
+| **`loadEmailStatsAction`** | `apps/web/utils/actions/stats.ts` | Server‑action that drives the whole “load‑emails” flow. Calls `createEmailProvider` → `loadEmails`. |
+| **Email provider factory** | `apps/web/utils/email/provider.ts` | Picks `GmailProvider` or `OutlookProvider` based on the account’s `provider` field. |
+| **`GmailProvider.getMessagesWithPagination`** | `apps/web/utils/email/google.ts` (lines ≈ 812‑836) | Builds Gmail search string (including `before:`/`after:` timestamps), calls `utils/gmail/message#getMessages`, then resolves each ID to a full `ParsedMessage`. |
+| **`OutlookProvider.getMessagesWithPagination`** | `apps/web/utils/email/microsoft.ts` (lines ≈ 713‑740) | Splits free‑text query from OData date filters, calls `utils/outlook/message#queryBatchMessages`. |
+| **`loadEmails` / `saveBatch`** | Same file as the action | ‑ Paginate forward (newer) and optionally backward (older) relative to the newest/oldest row stored in the DB. <br>‑ Transform each `ParsedMessage` into an `EmailMessage` payload (extract sender, date, unsubscribe link, label flags). <br>‑ Bulk‑insert via `prisma.emailMessage.createMany({ skipDuplicates:true })`. |
+| **Prisma schema for `EmailMessage`** | `apps/web/prisma/schema.prisma` (lines ≈ 679‑703) | Stores message‑level data locally (threadId, messageId, from, to, date, flags, unsubscribe link). The unique constraint `(emailAccountId, threadId, messageId)` guarantees idempotency. |
+| **OAuth token refresh helpers** | `utils/account.ts` (`getGmailClientForEmail`, `getOutlookClientForEmail`) | Refreshes the user’s access token and returns a ready‑to‑use API client. |
+| **Database migrations** | `prisma` folder | Run `npx prisma migrate dev` after cloning – creates `EmailMessage` table and all other required tables. |
+
+> **Bottom line** – if you keep the files above, the “fetch‑and‑store” workflow works unchanged, regardless of any UI, analytics, or paid‑tier code.
+
+---
+
+### 2️⃣ External services that are **optional** (you can strip them out)
+
+| Service | Where it’s used | What you can do |
+|--------|----------------|-----------------|
+| **Upstash /QStash** – background queue for heavy jobs (clean‑up, bulk archive, digest, scheduled actions). | Many `api/*/watch/*`, `api/clean/*`, `api/resend/*`, `utils/upstash.ts`. There are *fallback* routes that simply reject the request when `env.QSTASH_TOKEN` is missing. | • Set `QSTASH_TOKEN` = empty → the fallback routes (`/api/*/batch/simple`) will automatically return a 400/401 and **won’t crash**. <br>• If you prefer a different queue (BullMQ, Sidekiq, cron), replace the helper `publishToQstash` / `publishToQstashQueue` with your own implementation. |
+| **PostHog** – analytics tracking (`posthog.capture(...)`). | UI hooks (`hooks/useAnalytics.ts`, `bulk‑unsubscribe/hooks.ts`, feature‑flag hooks). | • Remove the `posthog` import and all `posthog.capture` calls – the app will still function. <br>• If you still want analytics, just provide a dummy `PostHog` object that implements `.capture()`. |
+| **Stripe** – premium subscription management (billing, tier gating). | `app/api/stripe/*`, `app/api/premium/*`, several queries that filter on `stripeSubscriptionStatus`. | • Delete the `stripe` folder (`apps/web/ee` or `apps/web/app/api/stripe/*`). <br>• Remove the `stripe`‑related fields from `User.premium` in the Prisma schema if you don’t need them, then run `prisma migrate dev`. <br>• If you want to keep the DB columns for future use, just leave them – the code will simply never hit those routes. |
+| **Resend** – transactional email service for digest / summary emails. | `app/api/resend/*`, `utils/resend` imports, env var `RESEND_FROM_EMAIL`. | • Disable the digest/summary CRON jobs (`/api/resend/digest/all`, `/api/resend/summary/all`) by removing the corresponding `cron` entries or setting `hasCronSecret` to `false`. <br>• If you still want email sending, swap `@inboxzero/resend` with any SMTP / Nodemailer wrapper. |
+| **LemonSqueezy** – alternative subscription provider (rarely used). | Checks in `watch/*` queries (`lemonSqueezyRenewsAt`). | Same approach as Stripe – either keep the column or drop it. |
+| **OpenAI / Claude** – AI‑assisted features (drafts, summarization, persona generation). | `utils/ai/*`, calls to `processHistoryForUser`, `aiSummarizeEmailForDigest`, etc. | These are **purely optional** for the email‑store workflow; you can comment out the import of the AI client and any `ai*` functions that you don’t need. The rest of the system (fetch, store, stats) remains unaffected. |
+
+> **Why it works:** All background‑job endpoints are wrapped with `verifySignatureAppRouter` (Upstash QStash). The code explicitly checks `if (env.QSTASH_TOKEN) … else …` and provides a **fallback** that returns an error, so simply omitting the token disables the queue without breaking the API.
+
+---
+
+### 3️⃣ Environment variables you must set for a **pure self‑hosted core**
+
+| Variable | Required? | What it does |
+|----------|-----------|--------------|
+| `DATABASE_URL` | ✅ | Prisma DB connection (PostgreSQL, SQLite, MySQL – whatever you prefer). |
+| `NEXT_PUBLIC_BASE_URL` | ✅ | Base URL used when the server builds URLs for digests, QStash callbacks, etc. |
+| `GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET` | ✅ (if you’ll use Gmail) | OAuth client for Google. |
+| `OUTLOOK_CLIENT_ID / OUTLOOK_CLIENT_SECRET` | ✅ (if you’ll use Outlook) | OAuth client for Microsoft Graph. |
+| `NEXTAUTH_SECRET` (or whichever auth lib you use) | ✅ | Session signing. |
+| `RESEND_FROM_EMAIL` | **optional** (only if you keep Resend) | “From” address for digests. |
+| `POSTHOG_API_KEY` | **optional** | If you keep analytics. |
+| `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | **optional** | If you keep Stripe. |
+| `QSTASH_TOKEN`, `QSTASH_URL` | **optional** | If you keep QStash. |
+| `OPENAI_API_KEY` / `CLAUDE_API_KEY` | **optional** | If you keep AI features. |
+
+> **Tip:** For a *minimal* installation you can set the optional vars to empty strings or omit them entirely. The code paths that depend on them will simply short‑circuit (e.g., UI buttons disabled, premium‑only routes return a “not available” error).
+
+---
+
+### 4️⃣ Steps to spin up a self‑hosted instance (core workflow only)
+
+1. **Clone & install**
+   ```bash
+   git clone https://github.com/your‑fork/inbox-zero-google-migration.git
+   cd inbox-zero-google-migration/apps/web
+   pnpm install   # or npm/yarn
+   ```
+
+2. **Create a `.env`** (copy from `.env.example`)
+   ```bash
+   cp .env.example .env
+   # Fill in at least:
+   DATABASE_URL=postgresql://user:pass@localhost:5432/inboxzero
+   NEXT_PUBLIC_BASE_URL=http://localhost:3000
+   GOOGLE_CLIENT_ID=…
+   GOOGLE_CLIENT_SECRET=…
+   OUTLOOK_CLIENT_ID=…
+   OUTLOOK_CLIENT_SECRET=…
+   # Leave the rest blank if you don’t need them.
+   ```
+
+3. **Run Prisma migrations**
+   ```bash
+   npx prisma migrate dev --name init
+   ```
+
+4. **Start the dev server**
+   ```bash
+   pnpm dev   # or npm run dev
+   ```
+
+5. **Link an email account** (OAuth flow via `/api/google/linking/*` or `/api/outlook/linking/*`). The OAuth flow will store the refreshed access‑token tied to an `EmailAccount` row.
+
+6. **Trigger the load‑stats action** – you have three options:
+   - From UI: click the “Load Stats” button on the dashboard (it calls `StatLoaderProvider`).
+   - Programmatically (e.g. via `curl`):
+
+     ```bash
+     curl -X POST http://localhost:3000/api/user/stats \
+       -H "Authorization: Bearer <your‑session‑cookie>" \
+       -d '{"loadBefore":false}'
+     ```
+
+   - Directly call the function in a Node script:
+
+     ```ts
+     import { loadEmailStatsAction } from '@/utils/actions/stats';
+     await loadEmailStatsAction('<emailAccountId>', { loadBefore: false });
+     ```
+
+   The script will:
+   - Determine the newest stored email (`prisma.emailMessage.findFirst … orderBy date desc`).
+   - Call `emailProvider.getMessagesWithPagination` (Gmail/Outlook) for the next page.
+   - Resolve each message, map fields, bulk‑insert into `EmailMessage`.
+   - Repeat until no more pages or the `MAX_PAGES` limit (50) is hit.
+
+7. **Verify** – open Prisma Studio or query the DB:
+
+   ```bash
+   npx prisma studio
+   ```
+
+   You should see rows in the `EmailMessage` table populated with `threadId`, `messageId`, `from`, `date`, etc.
+
+---
+
+### 5️⃣ What you can safely **remove** if you only care about fetch + store
+
+| File / folder | Reason for removal |
+|---------------|-------------------|
+| `apps/web/app/api/ai/**` | All AI‑draft / summarisation endpoints. |
+| `apps/web/app/api/resend/**` | Digest/summary email sending (depends on Resend). |
+| `apps/web/app/api/stripe/**` and `apps/web/ee/billing/**` | Stripe billing & premium‑tier gating. |
+| `apps/web/app/api/clean/**` (optional) | Bulk‑archive/clean‑up background jobs; keep only if you want the “archive‑sender” feature. |
+| `apps/web/utils/upstash.ts` | Helper that publishes to QStash – can be replaced with a no‑op or your own queue. |
+| `apps/web/hooks/useAnalytics.ts`, `apps/web/hooks/useFeatureFlags.ts` | PostHog analytics. |
+| `apps/web/components/Analytics*` (if any) | UI analytics widgets. |
+| `apps/web/providers/PostHogProvider.tsx` | Provides the PostHog context – not needed. |
+| `apps/web/ee/**` (any “Enterprise‑only” code) | License‑check, premium‑only features. |
+
+> **Caution:** Some UI pages import these modules, so after removal you may need to delete the corresponding imports or guard them with `process.env.NODE_ENV !== 'production'` checks to avoid build errors.
+
+---
+
+### 6️⃣ Things you **must NOT** delete if you still want the core workflow
+
+| Must‑keep |
+|----------|
+| `utils/email/provider.ts` (factory) |
+| `utils/email/google.ts` & `utils/email/microsoft.ts` (providers) |
+| `utils/actions/stats.ts` (the `loadEmailStatsAction` and helper functions) |
+| Prisma `EmailMessage` model & migration files |
+| OAuth helpers in `utils/account.ts` (they refresh tokens) |
+| `utils/email/bulk-action-tracking.ts` – only used for logging; you can keep it or stub it out. |
+
+---
+
+## 📦 TL;DR – Minimal self‑hosted stack
+
+| Layer | Implementation |
+|------|----------------|
+| **Database** | PostgreSQL / SQLite (any Prisma‑compatible). |
+| **Email provider** | Google OAuth **or** Microsoft OAuth (or both). |
+| **Queue** | *Optional* – you can run without QStash; background jobs become no‑ops. |
+| **Analytics / Billing** | *Optional* – strip PostHog / Stripe / Resend. |
+| **Env** | Only `DATABASE_URL`, `NEXT_PUBLIC_BASE_URL`, Google/Outlook OAuth vars are required. |
+| **Run** | `pnpm dev` → UI → “Load Stats” → messages appear in `EmailMessage` table. |
+
+If you later decide you want any of the removed features (e.g., premium subscription gating or digest emails), just re‑introduce the corresponding env vars and the code will work out‑of‑the‑box.
+
+---
+
+### 🙋‍♀️ Need more help?
+
+* **“I want to keep QStash but run it locally.”** – You can spin up a local Upstash emulator (Docker image `upstash/qstash`) and point `QSTASH_URL` to it. The existing `publishToQstash*` helpers will work unchanged.
+* **“I don’t want any background queue at all.”** – Replace `publishToQstash` with a tiny wrapper that just does `await fn()`; the rest of the code path stays the same.
+* **“Can I replace Resend with plain SMTP?”** – Swap `@inboxzero/resend` import for a small wrapper around `nodemailer.sendMail`. The function signatures (`sendDigestEmail`, `sendSummaryEmail`) are simple – just copy the call‑sites and feed the same `from`, `to`, and `emailProps`.
+
+Feel free to ask if you’d like a concrete code snippet for any of those substitutions!
