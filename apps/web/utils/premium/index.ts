@@ -1,10 +1,10 @@
-import type { PremiumTier } from "@/generated/prisma/enums";
-import type { Premium } from "@/generated/prisma/client";
-import { env } from "@/env";
+import { env } from '@/env';
+import type { Premium } from '@/generated/prisma/client';
+import type { PremiumTier } from '@/generated/prisma/enums';
 
 function isPremiumStripe(stripeSubscriptionStatus: string | null): boolean {
   if (!stripeSubscriptionStatus) return false;
-  const activeStatuses = ["active", "trialing"];
+  const activeStatuses = ['active', 'trialing'];
   return activeStatuses.includes(stripeSubscriptionStatus);
 }
 
@@ -15,7 +15,7 @@ function isPremiumLemonSqueezy(lemonSqueezyRenewsAt: Date | null): boolean {
 
 export const isPremium = (
   lemonSqueezyRenewsAt: Date | null,
-  stripeSubscriptionStatus: string | null,
+  stripeSubscriptionStatus: string | null
 ): boolean => {
   if (env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS) return true;
 
@@ -28,15 +28,15 @@ export const isPremium = (
 export const isActivePremium = (
   premium: Pick<
     Premium,
-    "lemonSqueezyRenewsAt" | "stripeSubscriptionStatus"
-  > | null,
+    'lemonSqueezyRenewsAt' | 'stripeSubscriptionStatus'
+  > | null
 ): boolean => {
   if (env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS) return true;
 
   if (!premium) return false;
 
   return (
-    premium.stripeSubscriptionStatus === "active" ||
+    premium.stripeSubscriptionStatus === 'active' ||
     isPremiumLemonSqueezy(premium.lemonSqueezyRenewsAt)
   );
 };
@@ -44,18 +44,18 @@ export const isActivePremium = (
 export const getUserTier = (
   premium?: Pick<
     Premium,
-    "tier" | "lemonSqueezyRenewsAt" | "stripeSubscriptionStatus"
-  > | null,
+    'tier' | 'lemonSqueezyRenewsAt' | 'stripeSubscriptionStatus'
+  > | null
 ) => {
   if (env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS) {
-    return "BUSINESS_PLUS_ANNUALLY" as const;
+    return 'BUSINESS_PLUS_ANNUALLY' as const;
   }
 
   if (!premium) return null;
 
   const isActive = isPremium(
     premium.lemonSqueezyRenewsAt || null,
-    premium.stripeSubscriptionStatus || null,
+    premium.stripeSubscriptionStatus || null
   );
 
   if (!isActive) return null;
@@ -65,7 +65,7 @@ export const getUserTier = (
 
 export const isAdminForPremium = (
   premiumAdmins: { id: string }[],
-  userId: string,
+  userId: string
 ) => {
   // if no admins are set, then we skip the check
   if (!premiumAdmins.length) return true;
@@ -87,7 +87,7 @@ const tierRanking = {
 
 export const hasUnsubscribeAccess = (
   tier: PremiumTier | null,
-  unsubscribeCredits?: number | null,
+  unsubscribeCredits?: number | null
 ): boolean => {
   if (env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS) return true;
 
@@ -98,7 +98,7 @@ export const hasUnsubscribeAccess = (
 
 export const hasAiAccess = (
   tier: PremiumTier | null,
-  aiApiKey?: string | null,
+  aiApiKey?: string | null
 ) => {
   if (env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS) return true;
 
@@ -134,7 +134,7 @@ export const hasTierAccess = ({
 
 export function isOnHigherTier(
   tier1?: PremiumTier | null,
-  tier2?: PremiumTier | null,
+  tier2?: PremiumTier | null
 ) {
   const tier1Rank = tier1 ? tierRanking[tier1] : 0;
   const tier2Rank = tier2 ? tierRanking[tier2] : 0;

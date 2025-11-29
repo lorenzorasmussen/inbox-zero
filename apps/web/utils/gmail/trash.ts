@@ -1,9 +1,9 @@
-import type { gmail_v1 } from "@googleapis/gmail";
-import { publishDelete, type TinybirdEmailAction } from "@inboxzero/tinybird";
-import { createScopedLogger } from "@/utils/logger";
-import { withGmailRetry } from "@/utils/gmail/retry";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { publishDelete, type TinybirdEmailAction } from '@inboxzero/tinybird';
+import { withGmailRetry } from '@/utils/gmail/retry';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("gmail/trash");
+const logger = createScopedLogger('gmail/trash');
 
 // trash moves the thread/message to the trash folder
 // delete immediately deletes the thread/message
@@ -13,15 +13,15 @@ export async function trashThread(options: {
   gmail: gmail_v1.Gmail;
   threadId: string;
   ownerEmail: string;
-  actionSource: TinybirdEmailAction["actionSource"];
+  actionSource: TinybirdEmailAction['actionSource'];
 }) {
   const { gmail, threadId, ownerEmail, actionSource } = options;
 
   const trashPromise = withGmailRetry(() =>
     gmail.users.threads.trash({
-      userId: "me",
+      userId: 'me',
       id: threadId,
-    }),
+    })
   );
 
   const publishPromise = publishDelete({
@@ -36,29 +36,28 @@ export async function trashThread(options: {
     publishPromise,
   ]);
 
-  if (trashResult.status === "rejected") {
+  if (trashResult.status === 'rejected') {
     const error = trashResult.reason;
 
-    if (error.message === "Requested entity was not found.") {
+    if (error.message === 'Requested entity was not found.') {
       // thread doesn't exist, so it's already been deleted
-      logger.warn("Failed to trash non-existant thread", {
+      logger.warn('Failed to trash non-existant thread', {
         email: ownerEmail,
         threadId,
         error,
       });
       return { status: 200 };
-    } else {
-      logger.error("Failed to trash thread", {
-        email: ownerEmail,
-        threadId,
-        error,
-      });
-      throw error;
     }
+    logger.error('Failed to trash thread', {
+      email: ownerEmail,
+      threadId,
+      error,
+    });
+    throw error;
   }
 
-  if (publishResult.status === "rejected") {
-    logger.error("Failed to publish delete action", {
+  if (publishResult.status === 'rejected') {
+    logger.error('Failed to publish delete action', {
       email: ownerEmail,
       threadId,
       error: publishResult.reason,
@@ -76,8 +75,8 @@ export async function trashMessage(options: {
 
   return withGmailRetry(() =>
     gmail.users.messages.trash({
-      userId: "me",
+      userId: 'me',
       id: messageId,
-    }),
+    })
   );
 }

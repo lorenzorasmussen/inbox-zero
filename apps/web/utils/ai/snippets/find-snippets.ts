@@ -1,9 +1,9 @@
-import { z } from "zod";
-import type { EmailForLLM } from "@/utils/types";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
-import { getEmailListPrompt } from "@/utils/ai/helpers";
+import { z } from 'zod';
+import { getEmailListPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { EmailForLLM } from '@/utils/types';
 
 export async function aiFindSnippets({
   emailAccount,
@@ -48,11 +48,11 @@ Return the snippets in the following JSON format:
 
 ${getEmailListPrompt({ messages: sentEmails, messageMaxLength: 2000 })}`;
 
-  const modelOptions = getModel(emailAccount.user, "chat");
+  const modelOptions = getModel(emailAccount.user, 'chat');
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "ai-find-snippets",
+    label: 'ai-find-snippets',
     modelOptions,
   });
 
@@ -65,7 +65,7 @@ ${getEmailListPrompt({ messages: sentEmails, messageMaxLength: 2000 })}`;
         z.object({
           text: z.string(),
           count: z.number(),
-        }),
+        })
       ),
     }),
   });

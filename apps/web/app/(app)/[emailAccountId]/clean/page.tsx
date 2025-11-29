@@ -1,9 +1,9 @@
-import { redirect } from "next/navigation";
-import { getLastJob } from "@/app/(app)/[emailAccountId]/clean/helpers";
-import { ConfirmationStep } from "@/app/(app)/[emailAccountId]/clean/ConfirmationStep";
-import { Card } from "@/components/ui/card";
-import { prefixPath } from "@/utils/path";
-import { checkUserOwnsEmailAccount } from "@/utils/email-account";
+import { redirect } from 'next/navigation';
+import { ConfirmationStep } from '@/app/(app)/[emailAccountId]/clean/ConfirmationStep';
+import { getLastJob } from '@/app/(app)/[emailAccountId]/clean/helpers';
+import { Card } from '@/components/ui/card';
+import { checkUserOwnsEmailAccount } from '@/utils/email-account';
+import { prefixPath } from '@/utils/path';
 
 export default async function CleanPage({
   params,
@@ -14,7 +14,7 @@ export default async function CleanPage({
   await checkUserOwnsEmailAccount({ emailAccountId });
 
   const lastJob = await getLastJob({ emailAccountId });
-  if (!lastJob) redirect(prefixPath(emailAccountId, "/clean/onboarding"));
+  if (!lastJob) redirect(prefixPath(emailAccountId, '/clean/onboarding'));
 
   return (
     <Card className="my-4 max-w-2xl p-6 sm:mx-4 md:mx-auto">

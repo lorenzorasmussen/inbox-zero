@@ -1,4 +1,4 @@
-import { JSDOM } from "jsdom";
+import { JSDOM } from 'jsdom';
 
 /**
  * Extracts email signature from HTML content for Outlook emails
@@ -17,19 +17,19 @@ export function extractSignatureFromHtml(htmlContent: string): string | null {
     const signatureElement = document.querySelector('[id^="Signature"]');
 
     if (signatureElement) {
-      const tempDiv = document.createElement("div");
+      const tempDiv = document.createElement('div');
       tempDiv.innerHTML = signatureElement.innerHTML;
 
       return tempDiv.innerHTML
-        .replace(/&amp;/g, "&") // Convert &amp; to &
-        .replace(/>\s+/g, ">") // Remove spaces after tags
-        .replace(/\s+</g, "<") // Remove spaces before tags
-        .replace(/\s+/g, " ") // Normalize remaining whitespace
+        .replace(/&amp;/g, '&') // Convert &amp; to &
+        .replace(/>\s+/g, '>') // Remove spaces after tags
+        .replace(/\s+</g, '<') // Remove spaces before tags
+        .replace(/\s+/g, ' ') // Normalize remaining whitespace
         .trim();
     }
   } catch (error) {
     // biome-ignore lint/suspicious/noConsole: helpful for debugging
-    console.error("Error parsing signature HTML:", error);
+    console.error('Error parsing signature HTML:', error);
   }
 
   return null;

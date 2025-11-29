@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { ArrowRightIcon, SendIcon } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
-import { Input } from "@/components/Input";
-import { saveOnboardingAnswersAction } from "@/utils/actions/onboarding";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { usersRolesInfo } from "@/app/(app)/[emailAccountId]/onboarding/config";
-import { USER_ROLES } from "@/utils/constants/user-roles";
-import { cn } from "@/utils";
-import { ScrollableFadeContainer } from "@/components/ScrollableFadeContainer";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowRightIcon, SendIcon } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { usersRolesInfo } from '@/app/(app)/[emailAccountId]/onboarding/config';
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { OnboardingWrapper } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper';
+import { Input } from '@/components/Input';
+import { ScrollableFadeContainer } from '@/components/ScrollableFadeContainer';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
+import { cn } from '@/utils';
+import { updateEmailAccountRoleAction } from '@/utils/actions/email-account';
+import { saveOnboardingAnswersAction } from '@/utils/actions/onboarding';
 import {
-  stepWhoSchema,
   type StepWhoSchema,
-} from "@/utils/actions/onboarding.validation";
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { OnboardingWrapper } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper";
-import { updateEmailAccountRoleAction } from "@/utils/actions/email-account";
-import { Button } from "@/components/ui/button";
+  stepWhoSchema,
+} from '@/utils/actions/onboarding.validation';
+import { USER_ROLES } from '@/utils/constants/user-roles';
 
 export function StepWho({
   initialRole,
@@ -31,19 +31,19 @@ export function StepWho({
   onNext: () => void;
 }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [customRole, setCustomRole] = useState("");
+  const [customRole, setCustomRole] = useState('');
 
   // Check if the initial role is not in our list (custom role)
   const isCustomRole =
     initialRole && !USER_ROLES.some((role) => role.value === initialRole);
-  const defaultRole = isCustomRole ? "Other" : initialRole || "";
+  const defaultRole = isCustomRole ? 'Other' : initialRole || '';
 
   const form = useForm<StepWhoSchema>({
     resolver: zodResolver(stepWhoSchema),
     defaultValues: { role: defaultRole },
   });
   const { watch, setValue } = form;
-  const watchedRole = watch("role");
+  const watchedRole = watch('role');
 
   // Initialize custom role if it's a custom value
   useEffect(() => {
@@ -57,19 +57,19 @@ export function StepWho({
     if (defaultRole && scrollContainerRef.current) {
       // Find the button with the selected role
       const selectedIndex = USER_ROLES.findIndex(
-        (role) => role.value === defaultRole,
+        (role) => role.value === defaultRole
       );
       if (selectedIndex !== -1) {
         const buttons = scrollContainerRef.current.querySelectorAll(
-          'button[type="button"]',
+          'button[type="button"]'
         );
         const selectedButton = buttons[selectedIndex];
         if (selectedButton) {
           // Use setTimeout to ensure the DOM is ready
           setTimeout(() => {
             selectedButton.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
+              behavior: 'smooth',
+              block: 'center',
             });
           }, 100);
         }
@@ -100,13 +100,13 @@ export function StepWho({
           className="space-y-6 mt-4"
           onSubmit={form.handleSubmit(async (values) => {
             const roleToSave =
-              values.role === "Other" ? customRole : values.role;
+              values.role === 'Other' ? customRole : values.role;
 
             const updateEmailAccountRolePromise = updateEmailAccountRoleAction(
               emailAccountId,
               {
                 role: roleToSave,
-              },
+              }
             );
 
             // may deprecate this in the future, but to keep consistency with old data we're storing this too
@@ -130,7 +130,7 @@ export function StepWho({
             {Object.entries(usersRolesInfo).map(([roleName, role]) => {
               const Icon = role.icon;
               const description = USER_ROLES.find(
-                (r) => r.value === roleName,
+                (r) => r.value === roleName
               )?.description;
 
               return (
@@ -138,14 +138,14 @@ export function StepWho({
                   type="button"
                   key={roleName}
                   className={cn(
-                    "rounded-xl border bg-card p-4 text-card-foreground shadow-sm text-left flex items-center gap-4 transition-all",
+                    'rounded-xl border bg-card p-4 text-card-foreground shadow-sm text-left flex items-center gap-4 transition-all',
                     watchedRole === roleName &&
-                      "border-blue-600 ring-2 ring-blue-100",
+                      'border-blue-600 ring-2 ring-blue-100'
                   )}
                   onClick={() => {
-                    setValue("role", roleName);
-                    if (roleName !== "Other") {
-                      setCustomRole("");
+                    setValue('role', roleName);
+                    if (roleName !== 'Other') {
+                      setCustomRole('');
                     }
                   }}
                 >
@@ -164,7 +164,7 @@ export function StepWho({
             })}
           </ScrollableFadeContainer>
 
-          {watchedRole === "Other" && (
+          {watchedRole === 'Other' && (
             <div className="px-1 pb-6">
               <Input
                 name="customRole"
@@ -187,7 +187,7 @@ export function StepWho({
               size="sm"
               loading={form.formState.isSubmitting}
               disabled={
-                !watchedRole || (watchedRole === "Other" && !customRole.trim())
+                !watchedRole || (watchedRole === 'Other' && !customRole.trim())
               }
             >
               Continue

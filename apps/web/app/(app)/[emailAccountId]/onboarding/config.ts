@@ -1,22 +1,22 @@
 import {
-  RocketIcon,
   BriefcaseIcon,
-  StoreIcon,
-  CodeIcon,
   CalendarDaysIcon,
-  TrendingUpIcon,
-  PhoneIcon,
-  MegaphoneIcon,
+  CircleHelpIcon,
+  CodeIcon,
+  GraduationCapIcon,
   HeadphonesIcon,
   HomeIcon,
-  VideoIcon,
-  UsersIcon,
-  ShoppingCartIcon,
-  GraduationCapIcon,
-  UserIcon,
-  CircleHelpIcon,
   type LucideIcon,
-} from "lucide-react";
+  MegaphoneIcon,
+  PhoneIcon,
+  RocketIcon,
+  ShoppingCartIcon,
+  StoreIcon,
+  TrendingUpIcon,
+  UserIcon,
+  UsersIcon,
+  VideoIcon,
+} from 'lucide-react';
 
 export const usersRolesInfo: Record<
   string,
@@ -29,16 +29,16 @@ export const usersRolesInfo: Record<
     icon: RocketIcon,
     suggestedLabels: [
       {
-        label: "Customer Feedback",
-        description: "Feedback and suggestions we receive from our customers",
+        label: 'Customer Feedback',
+        description: 'Feedback and suggestions we receive from our customers',
       },
       {
-        label: "Investor",
-        description: "Communications from investors and VCs",
+        label: 'Investor',
+        description: 'Communications from investors and VCs',
       },
       {
-        label: "Urgent",
-        description: "Time-sensitive emails requiring immediate attention",
+        label: 'Urgent',
+        description: 'Time-sensitive emails requiring immediate attention',
       },
     ],
   },
@@ -46,47 +46,47 @@ export const usersRolesInfo: Record<
     icon: BriefcaseIcon,
     suggestedLabels: [
       {
-        label: "Board",
-        description: "Board meetings, materials, and director communications",
+        label: 'Board',
+        description: 'Board meetings, materials, and director communications',
       },
       {
-        label: "Key Stakeholder",
+        label: 'Key Stakeholder',
         description:
-          "Important partners, major clients, and VIP communications",
+          'Important partners, major clients, and VIP communications',
       },
     ],
   },
-  "Small Business Owner": {
+  'Small Business Owner': {
     icon: StoreIcon,
     suggestedLabels: [
       {
-        label: "Customer Feedback",
-        description: "Feedback and suggestions we receive from our customers",
+        label: 'Customer Feedback',
+        description: 'Feedback and suggestions we receive from our customers',
       },
       {
-        label: "Urgent",
-        description: "Time-sensitive emails requiring immediate attention",
+        label: 'Urgent',
+        description: 'Time-sensitive emails requiring immediate attention',
       },
     ],
   },
-  "Software Engineer": {
+  'Software Engineer': {
     icon: CodeIcon,
     suggestedLabels: [
       {
-        label: "Alert",
-        description: "Server errors and deployment notifications",
+        label: 'Alert',
+        description: 'Server errors and deployment notifications',
       },
       {
-        label: "GitHub",
-        description: "Pull requests and code reviews",
+        label: 'GitHub',
+        description: 'Pull requests and code reviews',
       },
       {
-        label: "Bug",
-        description: "Bug reports and issue tracking",
+        label: 'Bug',
+        description: 'Bug reports and issue tracking',
       },
       {
-        label: "Security",
-        description: "Security vulnerabilities and updates",
+        label: 'Security',
+        description: 'Security vulnerabilities and updates',
       },
     ],
   },
@@ -94,12 +94,12 @@ export const usersRolesInfo: Record<
     icon: CalendarDaysIcon,
     suggestedLabels: [
       {
-        label: "Schedule Meeting",
-        description: "Emails that need a meeting to be scheduled",
+        label: 'Schedule Meeting',
+        description: 'Emails that need a meeting to be scheduled',
       },
       {
-        label: "Travel",
-        description: "Travel arrangements and itineraries",
+        label: 'Travel',
+        description: 'Travel arrangements and itineraries',
       },
     ],
   },
@@ -107,20 +107,20 @@ export const usersRolesInfo: Record<
     icon: TrendingUpIcon,
     suggestedLabels: [
       {
-        label: "Company Update",
-        description: "Portfolio company progress reports",
+        label: 'Company Update',
+        description: 'Portfolio company progress reports',
       },
       {
-        label: "Pitch Deck",
-        description: "Startup presentations and investment opportunities",
+        label: 'Pitch Deck',
+        description: 'Startup presentations and investment opportunities',
       },
       {
-        label: "LP",
-        description: "Limited Partner communications",
+        label: 'LP',
+        description: 'Limited Partner communications',
       },
       {
-        label: "Due Diligence",
-        description: "Investment research and analysis",
+        label: 'Due Diligence',
+        description: 'Investment research and analysis',
       },
     ],
   },
@@ -128,20 +128,20 @@ export const usersRolesInfo: Record<
     icon: PhoneIcon,
     suggestedLabels: [
       {
-        label: "Prospect",
-        description: "Potential customers and leads",
+        label: 'Prospect',
+        description: 'Potential customers and leads',
       },
       {
-        label: "Customer",
-        description: "Existing customer communications",
+        label: 'Customer',
+        description: 'Existing customer communications',
       },
       {
-        label: "Deal Discussion",
-        description: "Active negotiations and proposals",
+        label: 'Deal Discussion',
+        description: 'Active negotiations and proposals',
       },
       {
-        label: "Churn Risk",
-        description: "Customers showing signs of cancellation",
+        label: 'Churn Risk',
+        description: 'Customers showing signs of cancellation',
       },
     ],
   },
@@ -149,37 +149,37 @@ export const usersRolesInfo: Record<
     icon: MegaphoneIcon,
     suggestedLabels: [
       {
-        label: "Campaign",
-        description: "Marketing campaigns and promotional activities",
+        label: 'Campaign',
+        description: 'Marketing campaigns and promotional activities',
       },
       {
-        label: "Content Review",
-        description: "Content drafts requiring approval or feedback",
+        label: 'Content Review',
+        description: 'Content drafts requiring approval or feedback',
       },
       {
-        label: "Analytics Report",
-        description: "Performance metrics and marketing analytics",
+        label: 'Analytics Report',
+        description: 'Performance metrics and marketing analytics',
       },
       {
-        label: "Partner/Agency",
-        description: "Communications with marketing agencies and partners",
+        label: 'Partner/Agency',
+        description: 'Communications with marketing agencies and partners',
       },
     ],
   },
-  "Customer Support": {
+  'Customer Support': {
     icon: HeadphonesIcon,
     suggestedLabels: [
       {
-        label: "Support Ticket",
-        description: "Customer requests for help with our product or service",
+        label: 'Support Ticket',
+        description: 'Customer requests for help with our product or service',
       },
       {
-        label: "Bug",
-        description: "Bug reports from customers",
+        label: 'Bug',
+        description: 'Bug reports from customers',
       },
       {
-        label: "Feature Request",
-        description: "Customer suggestions for new features",
+        label: 'Feature Request',
+        description: 'Customer suggestions for new features',
       },
     ],
   },
@@ -187,41 +187,41 @@ export const usersRolesInfo: Record<
     icon: HomeIcon,
     suggestedLabels: [
       {
-        label: "Buyer Lead",
-        description: "Potential home buyers inquiring about properties",
+        label: 'Buyer Lead',
+        description: 'Potential home buyers inquiring about properties',
       },
       {
-        label: "Seller Lead",
-        description: "Property owners looking to sell",
+        label: 'Seller Lead',
+        description: 'Property owners looking to sell',
       },
       {
-        label: "Showing Request",
-        description: "Requests to view properties",
+        label: 'Showing Request',
+        description: 'Requests to view properties',
       },
       {
-        label: "Closing",
-        description: "Documents and communications for property closings",
+        label: 'Closing',
+        description: 'Documents and communications for property closings',
       },
     ],
   },
-  "Content Creator": {
+  'Content Creator': {
     icon: VideoIcon,
     suggestedLabels: [
       {
-        label: "Sponsorship",
-        description: "Brand sponsorship inquiries and deals",
+        label: 'Sponsorship',
+        description: 'Brand sponsorship inquiries and deals',
       },
       {
-        label: "Collab",
-        description: "Collaboration requests from other creators",
+        label: 'Collab',
+        description: 'Collaboration requests from other creators',
       },
       {
-        label: "Brand Deal",
-        description: "Partnership opportunities with brands",
+        label: 'Brand Deal',
+        description: 'Partnership opportunities with brands',
       },
       {
-        label: "Press",
-        description: "Media inquiries and interview requests",
+        label: 'Press',
+        description: 'Media inquiries and interview requests',
       },
     ],
   },
@@ -229,38 +229,38 @@ export const usersRolesInfo: Record<
     icon: UsersIcon,
     suggestedLabels: [
       {
-        label: "Client Project",
-        description: "Active client engagements and project updates",
+        label: 'Client Project',
+        description: 'Active client engagements and project updates',
       },
       {
-        label: "Proposal",
-        description: "New business proposals and RFP responses",
+        label: 'Proposal',
+        description: 'New business proposals and RFP responses',
       },
       {
-        label: "Professional Network",
-        description: "Industry contacts and referral opportunities",
+        label: 'Professional Network',
+        description: 'Industry contacts and referral opportunities',
       },
     ],
   },
-  "E-commerce": { icon: ShoppingCartIcon, suggestedLabels: [] },
+  'E-commerce': { icon: ShoppingCartIcon, suggestedLabels: [] },
   Student: {
     icon: GraduationCapIcon,
     suggestedLabels: [
       {
-        label: "School",
-        description: "Emails from professors and teaching staff",
+        label: 'School',
+        description: 'Emails from professors and teaching staff',
       },
       {
-        label: "Assignment",
-        description: "Homework and project deadlines",
+        label: 'Assignment',
+        description: 'Homework and project deadlines',
       },
       {
-        label: "Internship",
-        description: "Internship opportunities and applications",
+        label: 'Internship',
+        description: 'Internship opportunities and applications',
       },
       {
-        label: "Study Materials",
-        description: "Class notes and learning resources",
+        label: 'Study Materials',
+        description: 'Class notes and learning resources',
       },
     ],
   },

@@ -1,14 +1,14 @@
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { ParsedMessage } from "@/utils/types";
-import { aiDetermineThreadStatus } from "@/utils/ai/reply/determine-thread-status";
-import prisma from "@/utils/prisma";
-import { createScopedLogger, type Logger } from "@/utils/logger";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
-import { internalDateToDate, sortByInternalDate } from "@/utils/date";
-import type { EmailProvider } from "@/utils/email/types";
-import { applyThreadStatusLabel } from "./label-helpers";
-import { updateThreadTrackers } from "@/utils/reply-tracker/handle-conversation-status";
-import { CONVERSATION_STATUS_TYPES } from "@/utils/reply-tracker/conversation-status-config";
+import { aiDetermineThreadStatus } from '@/utils/ai/reply/determine-thread-status';
+import { internalDateToDate, sortByInternalDate } from '@/utils/date';
+import type { EmailProvider } from '@/utils/email/types';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger, type Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { CONVERSATION_STATUS_TYPES } from '@/utils/reply-tracker/conversation-status-config';
+import { updateThreadTrackers } from '@/utils/reply-tracker/handle-conversation-status';
+import type { ParsedMessage } from '@/utils/types';
+import { applyThreadStatusLabel } from './label-helpers';
 
 export async function handleOutboundReply({
   emailAccount,
@@ -19,7 +19,7 @@ export async function handleOutboundReply({
   message: ParsedMessage;
   provider: EmailProvider;
 }) {
-  const logger = createScopedLogger("reply-tracker/outbound").with({
+  const logger = createScopedLogger('reply-tracker/outbound').with({
     email: emailAccount.email,
     messageId: message.id,
     threadId: message.threadId,
@@ -29,26 +29,26 @@ export async function handleOutboundReply({
     emailAccountId: emailAccount.id,
   });
   if (!isEnabled) {
-    logger.info("Outbound reply tracking disabled, skipping.");
+    logger.info('Outbound reply tracking disabled, skipping.');
     return;
   }
 
-  logger.info("Determining thread status for outbound message");
+  logger.info('Determining thread status for outbound message');
 
   const threadMessages = await provider.getThreadMessages(message.threadId);
   if (!threadMessages?.length) {
-    logger.error("No thread messages found, cannot proceed.");
+    logger.error('No thread messages found, cannot proceed.');
     return;
   }
 
   const { isLatest, sortedMessages } = isMessageLatestInThread(
     message,
     threadMessages,
-    logger,
+    logger
   );
   if (!isLatest) {
     logger.info(
-      "Skipping outbound check: message is not the latest in the thread",
+      'Skipping outbound check: message is not the latest in the thread'
     );
     return; // Stop processing if not the latest
   }
@@ -59,11 +59,11 @@ export async function handleOutboundReply({
       maxLength: index === sortedMessages.length - 1 ? 2000 : 500, // Give more context for the latest message
       extractReply: true,
       removeForwarded: false,
-    }),
+    })
   );
 
   if (!threadMessagesForLLM.length) {
-    logger.error("No messages for AI analysis");
+    logger.error('No messages for AI analysis');
     return;
   }
 
@@ -73,7 +73,7 @@ export async function handleOutboundReply({
     userSentLastEmail: true,
   });
 
-  logger.info("AI determined thread status", { status: aiResult.status });
+  logger.info('AI determined thread status', { status: aiResult.status });
 
   await Promise.all([
     applyThreadStatusLabel({
@@ -112,7 +112,7 @@ async function isOutboundTrackingEnabled({
 function isMessageLatestInThread(
   message: ParsedMessage,
   threadMessages: ParsedMessage[],
-  logger: Logger,
+  logger: Logger
 ): { isLatest: boolean; sortedMessages: ParsedMessage[] } {
   if (!threadMessages.length) return { isLatest: false, sortedMessages: [] }; // Should not happen if called correctly
 
@@ -121,11 +121,11 @@ function isMessageLatestInThread(
 
   if (actualLatestMessage?.id !== message.id) {
     logger.warn(
-      "Skipping outbound reply check: message is not the latest in the thread",
+      'Skipping outbound reply check: message is not the latest in the thread',
       {
         processingMessageId: message.id,
         actualLatestMessageId: actualLatestMessage?.id,
-      },
+      }
     );
     return { isLatest: false, sortedMessages };
   }

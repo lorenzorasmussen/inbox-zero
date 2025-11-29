@@ -1,10 +1,10 @@
-import { LoopsClient } from "loops";
+import { LoopsClient } from 'loops';
 
 let loops: LoopsClient | undefined;
 function getLoopsClient(): LoopsClient | undefined {
   // if loops api key hasn't been set this package doesn't do anything
   if (!process.env.LOOPS_API_SECRET) {
-    console.warn("LOOPS_API_SECRET is not set");
+    console.warn('LOOPS_API_SECRET is not set');
     return;
   }
 
@@ -16,7 +16,7 @@ function getLoopsClient(): LoopsClient | undefined {
 export async function createContact(
   email: string,
   firstName?: string,
-  provider?: string,
+  provider?: string
 ): Promise<{
   success: boolean;
   id?: string;
@@ -31,7 +31,7 @@ export async function createContact(
 }
 
 export async function deleteContact(
-  email: string,
+  email: string
 ): Promise<{ success: boolean }> {
   const loops = getLoopsClient();
   if (!loops) return { success: false };
@@ -40,12 +40,12 @@ export async function deleteContact(
 
 export async function startedTrial(
   email: string,
-  tier: string,
+  tier: string
 ): Promise<{ success: boolean }> {
   const loops = getLoopsClient();
   if (!loops) return { success: false };
   return await loops.sendEvent({
-    eventName: "upgraded",
+    eventName: 'upgraded',
     email,
     contactProperties: { tier },
     eventProperties: { tier },
@@ -54,12 +54,12 @@ export async function startedTrial(
 
 export async function completedTrial(
   email: string,
-  tier: string,
+  tier: string
 ): Promise<{ success: boolean }> {
   const loops = getLoopsClient();
   if (!loops) return { success: false };
   return await loops.sendEvent({
-    eventName: "completed_trial",
+    eventName: 'completed_trial',
     email,
     contactProperties: { tier },
     eventProperties: { tier },
@@ -68,12 +68,12 @@ export async function completedTrial(
 
 export async function switchedPremiumPlan(
   email: string,
-  tier: string,
+  tier: string
 ): Promise<{ success: boolean }> {
   const loops = getLoopsClient();
   if (!loops) return { success: false };
   return await loops.sendEvent({
-    eventName: "switched_premium_plan",
+    eventName: 'switched_premium_plan',
     email,
     contactProperties: { tier },
     eventProperties: { tier },
@@ -81,20 +81,20 @@ export async function switchedPremiumPlan(
 }
 
 export async function cancelledPremium(
-  email: string,
+  email: string
 ): Promise<{ success: boolean }> {
   const loops = getLoopsClient();
   if (!loops) return { success: false };
   return await loops.sendEvent({
-    eventName: "cancelled",
+    eventName: 'cancelled',
     email,
-    contactProperties: { tier: "" },
+    contactProperties: { tier: '' },
   });
 }
 
 async function updateContactProperty(
   email: string,
-  properties: Record<string, string | number | boolean>,
+  properties: Record<string, string | number | boolean>
 ): Promise<{ success: boolean }> {
   const loops = getLoopsClient();
   if (!loops) return { success: false };

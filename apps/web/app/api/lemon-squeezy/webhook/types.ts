@@ -4,19 +4,19 @@ export interface Payload {
 }
 
 export type EventName =
-  | "order_created"
-  | "order_refunded"
-  | "subscription_created"
-  | "subscription_updated"
-  | "subscription_cancelled"
-  | "subscription_resumed"
-  | "subscription_expired"
-  | "subscription_paused"
-  | "subscription_unpaused"
-  | "subscription_payment_failed"
-  | "subscription_payment_success"
-  | "subscription_payment_recovered"
-  | "subscription_plan_changed";
+  | 'order_created'
+  | 'order_refunded'
+  | 'subscription_created'
+  | 'subscription_updated'
+  | 'subscription_cancelled'
+  | 'subscription_resumed'
+  | 'subscription_expired'
+  | 'subscription_paused'
+  | 'subscription_unpaused'
+  | 'subscription_payment_failed'
+  | 'subscription_payment_success'
+  | 'subscription_payment_recovered'
+  | 'subscription_plan_changed';
 
 export interface Meta {
   test_mode: boolean;
@@ -81,11 +81,11 @@ export interface Relationships {
   store: Store;
   customer: Customer;
   order: Order;
-  "order-item": OrderItem;
+  'order-item': OrderItem;
   product: Product;
   variant: Variant;
-  "subscription-items": SubscriptionItems;
-  "subscription-invoices": SubscriptionInvoices;
+  'subscription-items': SubscriptionItems;
+  'subscription-invoices': SubscriptionInvoices;
 }
 
 export interface Store {

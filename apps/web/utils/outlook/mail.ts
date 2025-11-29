@@ -1,15 +1,15 @@
-import type { Message } from "@microsoft/microsoft-graph-types";
-import type { OutlookClient } from "@/utils/outlook/client";
-import type { Attachment } from "nodemailer/lib/mailer";
-import type { SendEmailBody } from "@/utils/gmail/mail";
-import type { ParsedMessage } from "@/utils/types";
-import type { EmailForAction } from "@/utils/ai/types";
-import { createOutlookReplyContent } from "@/utils/outlook/reply";
-import { forwardEmailHtml, forwardEmailSubject } from "@/utils/gmail/forward";
-import { buildReplyAllRecipients } from "@/utils/email/reply-all";
-import { withOutlookRetry } from "@/utils/outlook/retry";
-import { extractEmailAddress, extractNameFromEmail } from "@/utils/email";
-import { ensureEmailSendingEnabled } from "@/utils/mail";
+import type { Message } from '@microsoft/microsoft-graph-types';
+import type { Attachment } from 'nodemailer/lib/mailer';
+import type { EmailForAction } from '@/utils/ai/types';
+import { extractEmailAddress, extractNameFromEmail } from '@/utils/email';
+import { buildReplyAllRecipients } from '@/utils/email/reply-all';
+import { forwardEmailHtml, forwardEmailSubject } from '@/utils/gmail/forward';
+import type { SendEmailBody } from '@/utils/gmail/mail';
+import { ensureEmailSendingEnabled } from '@/utils/mail';
+import type { OutlookClient } from '@/utils/outlook/client';
+import { createOutlookReplyContent } from '@/utils/outlook/reply';
+import { withOutlookRetry } from '@/utils/outlook/retry';
+import type { ParsedMessage } from '@/utils/types';
 
 interface OutlookMessageRequest {
   subject: string;
@@ -27,14 +27,14 @@ interface OutlookMessageRequest {
 
 export async function sendEmailWithHtml(
   client: OutlookClient,
-  body: SendEmailBody,
+  body: SendEmailBody
 ) {
   ensureEmailSendingEnabled();
 
   const message: OutlookMessageRequest = {
     subject: body.subject,
     body: {
-      contentType: "html",
+      contentType: 'html',
       content: body.messageHtml,
     },
     toRecipients: [{ emailAddress: { address: body.to } }],
@@ -54,14 +54,14 @@ export async function sendEmailWithHtml(
   }
 
   const result: Message = await withOutlookRetry(() =>
-    client.getClient().api("/me/messages").post(message),
+    client.getClient().api('/me/messages').post(message)
   );
   return result;
 }
 
 export async function sendEmailWithPlainText(
   client: OutlookClient,
-  body: Omit<SendEmailBody, "messageHtml"> & { messageText: string },
+  body: Omit<SendEmailBody, 'messageHtml'> & { messageText: string }
 ) {
   const messageHtml = convertTextToHtmlParagraphs(body.messageText);
   return sendEmailWithHtml(client, { ...body, messageHtml });
@@ -70,7 +70,7 @@ export async function sendEmailWithPlainText(
 export async function replyToEmail(
   client: OutlookClient,
   message: EmailForAction,
-  reply: string,
+  reply: string
 ) {
   const { html } = createOutlookReplyContent({
     textContent: reply,
@@ -81,13 +81,13 @@ export async function replyToEmail(
   const replyMessage = {
     subject: `Re: ${message.headers.subject}`,
     body: {
-      contentType: "html",
+      contentType: 'html',
       content: html,
     },
     toRecipients: [
       {
         emailAddress: {
-          address: message.headers["reply-to"] || message.headers.from,
+          address: message.headers['reply-to'] || message.headers.from,
         },
       },
     ],
@@ -98,10 +98,10 @@ export async function replyToEmail(
 
   // Send the email immediately using the sendMail endpoint
   const result = await withOutlookRetry(() =>
-    client.getClient().api("/me/sendMail").post({
+    client.getClient().api('/me/sendMail').post({
       message: replyMessage,
       saveToSentItems: true,
-    }),
+    })
   );
   return result;
 }
@@ -114,35 +114,35 @@ export async function forwardEmail(
     cc?: string;
     bcc?: string;
     content?: string;
-  },
+  }
 ) {
   ensureEmailSendingEnabled();
 
-  if (!options.to.trim()) throw new Error("Recipient address is required");
+  if (!options.to.trim()) throw new Error('Recipient address is required');
 
   // Get the original message
   const originalMessage: Message = await withOutlookRetry(() =>
-    client.getClient().api(`/me/messages/${options.messageId}`).get(),
+    client.getClient().api(`/me/messages/${options.messageId}`).get()
   );
 
   const message: ParsedMessage = {
-    id: originalMessage.id || "",
-    threadId: originalMessage.conversationId || "",
-    snippet: originalMessage.bodyPreview || "",
-    textPlain: originalMessage.body?.content || "",
-    textHtml: originalMessage.body?.content || "",
+    id: originalMessage.id || '',
+    threadId: originalMessage.conversationId || '',
+    snippet: originalMessage.bodyPreview || '',
+    textPlain: originalMessage.body?.content || '',
+    textHtml: originalMessage.body?.content || '',
     headers: {
-      from: originalMessage.from?.emailAddress?.address || "",
-      to: originalMessage.toRecipients?.[0]?.emailAddress?.address || "",
-      subject: originalMessage.subject || "",
+      from: originalMessage.from?.emailAddress?.address || '',
+      to: originalMessage.toRecipients?.[0]?.emailAddress?.address || '',
+      subject: originalMessage.subject || '',
       date: originalMessage.receivedDateTime || new Date().toISOString(),
     },
-    historyId: "",
+    historyId: '',
     inline: [],
     internalDate: originalMessage.receivedDateTime || new Date().toISOString(),
-    subject: originalMessage.subject || "",
+    subject: originalMessage.subject || '',
     date: originalMessage.receivedDateTime || new Date().toISOString(),
-    conversationIndex: originalMessage.conversationId || "",
+    conversationIndex: originalMessage.conversationId || '',
   };
 
   const forwardMessage: OutlookMessageRequest = {
@@ -155,8 +155,8 @@ export async function forwardEmail(
       : {}),
     subject: forwardEmailSubject(message.headers.subject),
     body: {
-      contentType: "html",
-      content: forwardEmailHtml({ content: options.content ?? "", message }),
+      contentType: 'html',
+      content: forwardEmailHtml({ content: options.content ?? '', message }),
     },
   };
 
@@ -164,7 +164,7 @@ export async function forwardEmail(
     client
       .getClient()
       .api(`/me/messages/${options.messageId}/forward`)
-      .post({ message: forwardMessage }),
+      .post({ message: forwardMessage })
   );
 
   return result;
@@ -179,7 +179,7 @@ export async function draftEmail(
     content: string;
     attachments?: Attachment[];
   },
-  userEmail: string,
+  userEmail: string
 ) {
   const { html } = createOutlookReplyContent({
     textContent: args.content,
@@ -189,7 +189,7 @@ export async function draftEmail(
   const recipients = buildReplyAllRecipients(
     originalEmail.headers,
     args.to,
-    userEmail,
+    userEmail
   );
 
   // Use raw recipients if available (Outlook), otherwise parse from string (Gmail)
@@ -214,28 +214,28 @@ export async function draftEmail(
     client
       .getClient()
       .api(`/me/messages/${originalEmail.id}/createReplyAll`)
-      .post({}),
+      .post({})
   );
 
   // Update the draft with our content
   const updateRequest = client.getClient().api(`/me/messages/${replyDraft.id}`);
 
   // To handle change key error
-  const etag = (replyDraft as { "@odata.etag"?: string })?.["@odata.etag"];
+  const etag = (replyDraft as { '@odata.etag'?: string })?.['@odata.etag'];
   if (etag) {
-    updateRequest.header("If-Match", etag);
+    updateRequest.header('If-Match', etag);
   }
 
   const updatedDraft: Message = await withOutlookRetry(() =>
     updateRequest.patch({
       subject: args.subject || originalEmail.headers.subject,
       body: {
-        contentType: "html",
+        contentType: 'html',
         content: html,
       },
       toRecipients: [toRecipient],
       ...(ccRecipients.length > 0 ? { ccRecipients } : {}),
-    }),
+    })
   );
 
   // Use the original replyDraft.id since that's the stable ID
@@ -244,17 +244,17 @@ export async function draftEmail(
 }
 
 function convertTextToHtmlParagraphs(text?: string | null): string {
-  if (!text) return "";
+  if (!text) return '';
 
   // Split the text into paragraphs based on newline characters
   const paragraphs = text
-    .split("\n")
-    .filter((paragraph) => paragraph.trim() !== "");
+    .split('\n')
+    .filter((paragraph) => paragraph.trim() !== '');
 
   // Wrap each paragraph with <p> tags and join them back together
   const htmlContent = paragraphs
     .map((paragraph) => `<p>${paragraph.trim()}</p>`)
-    .join("");
+    .join('');
 
   return `<html><body>${htmlContent}</body></html>`;
 }

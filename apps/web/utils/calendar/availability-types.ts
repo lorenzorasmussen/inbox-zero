@@ -4,7 +4,7 @@ export type BusyPeriod = {
 };
 
 export interface CalendarAvailabilityProvider {
-  name: "google" | "microsoft";
+  name: 'google' | 'microsoft';
 
   /**
    * Fetch busy periods for the given calendars

@@ -1,15 +1,15 @@
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { ModelType } from "@/utils/llms/model";
-import type { ParsedMessage, RuleWithActions } from "@/utils/types";
-import type { EmailProvider } from "@/utils/email/types";
-import { aiDetermineThreadStatus } from "@/utils/ai/reply/determine-thread-status";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
-import { createScopedLogger } from "@/utils/logger";
-import { SystemType, ThreadTrackerType } from "@/generated/prisma/enums";
-import prisma from "@/utils/prisma";
-import { sortByInternalDate } from "@/utils/date";
+import { SystemType, ThreadTrackerType } from '@/generated/prisma/enums';
+import { aiDetermineThreadStatus } from '@/utils/ai/reply/determine-thread-status';
+import { sortByInternalDate } from '@/utils/date';
+import type { EmailProvider } from '@/utils/email/types';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import type { ModelType } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import type { ParsedMessage, RuleWithActions } from '@/utils/types';
 
-const logger = createScopedLogger("conversation-status-handler");
+const logger = createScopedLogger('conversation-status-handler');
 
 /**
  * Determines which conversation status sub-rule applies.
@@ -34,7 +34,7 @@ export async function determineConversationStatus({
   rule: RuleWithActions | null;
   reason: string;
 }> {
-  logger.info("Determining conversation status", {
+  logger.info('Determining conversation status', {
     messageId: message.id,
     threadId: message.threadId,
     isTest,
@@ -46,10 +46,10 @@ export async function determineConversationStatus({
     : await provider.getThreadMessages(message.threadId);
 
   if (!threadMessages?.length) {
-    logger.error("No thread messages found");
+    logger.error('No thread messages found');
     return {
       rule: null,
-      reason: "Failed to fetch thread messages",
+      reason: 'Failed to fetch thread messages',
     };
   }
 
@@ -60,7 +60,7 @@ export async function determineConversationStatus({
       maxLength: index === sortedMessages.length - 1 ? 2000 : 500,
       extractReply: true,
       removeForwarded: false,
-    }),
+    })
   );
 
   // Check if the user sent the last email in the thread
@@ -76,18 +76,18 @@ export async function determineConversationStatus({
     userSentLastEmail,
   });
 
-  logger.info("AI determined thread status", {
+  logger.info('AI determined thread status', {
     status,
     rationale,
     messageId: message.id,
   });
 
   const rule = conversationRules.find(
-    (r) => r.systemType === status && r.enabled,
+    (r) => r.systemType === status && r.enabled
   );
 
   if (!rule) {
-    logger.info("No enabled rule found for determined status", {
+    logger.info('No enabled rule found for determined status', {
       status,
       availableRules: conversationRules.map((r) => ({
         systemType: r.systemType,

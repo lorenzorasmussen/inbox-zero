@@ -1,13 +1,54 @@
 {
-  "name": "@inboxzero/loops",
-  "version": "0.0.0",
-  "main": "src/index.ts",
-  "dependencies": {
-    "loops": "^6.0.1"
-  },
-  "devDependencies": {
-    "@types/node": "24.9.1",
-    "tsconfig": "workspace:*",
-    "typescript": "5.9.3"
-  }
+	"name": "@inboxzero/loops",
+	"version": "0.1.0",
+	"description": "Loops integration wrapper for InboxZero",
+	"main": "dist/index.js",
+	"module": "dist/index.esm.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"test": "vitest",
+		"test:ci": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"prepublish": "pnpm run build",
+		"type-check": "tsc --noEmit"
+	},
+	"keywords": [
+		"loops",
+		"email",
+		"marketing",
+		"automation",
+		"inboxzero"
+	],
+	"author": "InboxZero Team",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/inboxzero/inbox-zero-google-migration.git",
+		"directory": "packages/loops"
+	},
+	"bugs": {
+		"url": "https://github.com/inboxzero/inbox-zero-google-migration/issues"
+	},
+	"homepage": "https://github.com/inboxzero/inbox-zero-google-migration/tree/main/packages/loops#readme",
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"dependencies": {
+		"loops": "^6.0.1"
+	},
+	"devDependencies": {
+		"@types/node": "24.9.1",
+		"tsconfig": "workspace:*",
+		"typescript": "5.9.3",
+		"vitest": "workspace:*"
+	}
 }

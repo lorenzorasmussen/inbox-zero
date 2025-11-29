@@ -1,11 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { CommandLoading } from "cmdk";
-import { Check, ChevronsUpDown, Loader2Icon } from "lucide-react";
-
-import { cn } from "@/utils";
-import { Button } from "@/components/ui/button";
+import { CommandLoading } from 'cmdk';
+import { Check, ChevronsUpDown, Loader2Icon } from 'lucide-react';
+import * as React from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -13,12 +11,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from '@/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
+import { cn } from '@/utils';
 
 export function Combobox(props: {
   options: { value: string; label: string }[];
@@ -72,14 +71,14 @@ export function Combobox(props: {
                     key={options.value}
                     value={options.value}
                     onSelect={(currentValue) => {
-                      onChangeValue(currentValue === value ? "" : currentValue);
+                      onChangeValue(currentValue === value ? '' : currentValue);
                       setOpen(false);
                     }}
                   >
                     <Check
                       className={cn(
-                        "mr-2 h-4 w-4",
-                        value === options.value ? "opacity-100" : "opacity-0",
+                        'mr-2 h-4 w-4',
+                        value === options.value ? 'opacity-100' : 'opacity-0'
                       )}
                     />
                     {options.label}

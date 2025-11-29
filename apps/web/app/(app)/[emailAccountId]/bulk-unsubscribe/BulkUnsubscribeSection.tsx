@@ -1,72 +1,72 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
-import subDays from "date-fns/subDays";
-import { usePostHog } from "posthog-js/react";
-import { ArchiveIcon, FilterIcon } from "lucide-react";
-import sortBy from "lodash/sortBy";
-import type { DateRange } from "react-day-picker";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import type {
-  NewsletterStatsQuery,
-  NewsletterStatsResponse,
-} from "@/app/api/user/stats/newsletters/route";
-import { useExpanded } from "@/app/(app)/[emailAccountId]/stats/useExpanded";
-import { getDateRangeParams } from "@/app/(app)/[emailAccountId]/stats/params";
-import { NewsletterModal } from "@/app/(app)/[emailAccountId]/stats/NewsletterModal";
-import { useEmailsToIncludeFilter } from "@/app/(app)/[emailAccountId]/stats/EmailsToIncludeFilter";
-import { DetailedStatsFilter } from "@/app/(app)/[emailAccountId]/stats/DetailedStatsFilter";
-import { usePremium } from "@/components/PremiumAlert";
-import {
-  useNewsletterFilter,
-  useBulkUnsubscribeShortcuts,
-} from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/hooks";
-import { useStatLoader } from "@/providers/StatLoaderProvider";
-import { usePremiumModal } from "@/app/(app)/premium/PremiumModal";
-import { useLabels } from "@/hooks/useLabels";
-import {
-  BulkUnsubscribeMobile,
-  BulkUnsubscribeRowMobile,
-} from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/BulkUnsubscribeMobile";
+import subDays from 'date-fns/subDays';
+import sortBy from 'lodash/sortBy';
+import { ArchiveIcon, FilterIcon } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { DateRange } from 'react-day-picker';
+import useSWR from 'swr';
+import { useWindowSize } from 'usehooks-ts';
+import { ArchiveProgress } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/ArchiveProgress';
+import { BulkActions } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/BulkActions';
 import {
   BulkUnsubscribeDesktop,
   BulkUnsubscribeRowDesktop,
-} from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/BulkUnsubscribeDesktop";
-import { Card } from "@/components/ui/card";
-import { SearchBar } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/SearchBar";
-import { useToggleSelect } from "@/hooks/useToggleSelect";
-import { BulkActions } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/BulkActions";
-import { ArchiveProgress } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/ArchiveProgress";
-import { ClientOnly } from "@/components/ClientOnly";
-import { Toggle } from "@/components/Toggle";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { useWindowSize } from "usehooks-ts";
-import { ActionBar } from "@/app/(app)/[emailAccountId]/stats/ActionBar";
-import { LoadStatsButton } from "@/app/(app)/[emailAccountId]/stats/LoadStatsButton";
-import { PageWrapper } from "@/components/PageWrapper";
-import { PageHeader } from "@/components/PageHeader";
-import { TextLink } from "@/components/Typography";
-import { DismissibleVideoCard } from "@/components/VideoCard";
+} from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/BulkUnsubscribeDesktop';
+import {
+  BulkUnsubscribeMobile,
+  BulkUnsubscribeRowMobile,
+} from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/BulkUnsubscribeMobile';
+import {
+  useBulkUnsubscribeShortcuts,
+  useNewsletterFilter,
+} from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/hooks';
+import { SearchBar } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/SearchBar';
+import { ActionBar } from '@/app/(app)/[emailAccountId]/stats/ActionBar';
+import { DetailedStatsFilter } from '@/app/(app)/[emailAccountId]/stats/DetailedStatsFilter';
+import { useEmailsToIncludeFilter } from '@/app/(app)/[emailAccountId]/stats/EmailsToIncludeFilter';
+import { LoadStatsButton } from '@/app/(app)/[emailAccountId]/stats/LoadStatsButton';
+import { NewsletterModal } from '@/app/(app)/[emailAccountId]/stats/NewsletterModal';
+import { getDateRangeParams } from '@/app/(app)/[emailAccountId]/stats/params';
+import { useExpanded } from '@/app/(app)/[emailAccountId]/stats/useExpanded';
+import { usePremiumModal } from '@/app/(app)/premium/PremiumModal';
+import type {
+  NewsletterStatsQuery,
+  NewsletterStatsResponse,
+} from '@/app/api/user/stats/newsletters/route';
+import { ClientOnly } from '@/components/ClientOnly';
+import { LoadingContent } from '@/components/LoadingContent';
+import { PageHeader } from '@/components/PageHeader';
+import { PageWrapper } from '@/components/PageWrapper';
+import { usePremium } from '@/components/PremiumAlert';
+import { Toggle } from '@/components/Toggle';
+import { TextLink } from '@/components/Typography';
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { DismissibleVideoCard } from '@/components/VideoCard';
+import { useLabels } from '@/hooks/useLabels';
+import { useToggleSelect } from '@/hooks/useToggleSelect';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { useStatLoader } from '@/providers/StatLoaderProvider';
 
 const selectOptions = [
-  { label: "Last week", value: "7" },
-  { label: "Last month", value: "30" },
-  { label: "Last 3 months", value: "90" },
-  { label: "Last year", value: "365" },
-  { label: "All", value: "0" },
+  { label: 'Last week', value: '7' },
+  { label: 'Last month', value: '30' },
+  { label: 'Last 3 months', value: '90' },
+  { label: 'Last year', value: '365' },
+  { label: 'All', value: '0' },
 ];
 const defaultSelected = selectOptions[2];
 
-type Newsletter = NewsletterStatsResponse["newsletters"][number];
+type Newsletter = NewsletterStatsResponse['newsletters'][number];
 
 export function BulkUnsubscribe() {
   const windowSize = useWindowSize();
   const isMobile = windowSize.width < 768;
 
   const [dateDropdown, setDateDropdown] = useState<string>(
-    defaultSelected.label,
+    defaultSelected.label
   );
 
   const onSetDateDropdown = useCallback(
@@ -74,7 +74,7 @@ export function BulkUnsubscribe() {
       const { label } = option;
       setDateDropdown(label);
     },
-    [],
+    []
   );
 
   const now = useMemo(() => new Date(), []);
@@ -92,8 +92,8 @@ export function BulkUnsubscribe() {
   const { emailAccountId, userEmail } = useAccount();
 
   const [sortColumn, setSortColumn] = useState<
-    "emails" | "unread" | "unarchived"
-  >("emails");
+    'emails' | 'unread' | 'unarchived'
+  >('emails');
 
   const { typesArray } = useEmailsToIncludeFilter();
   const { filtersArray, filters, setFilters } = useNewsletterFilter();
@@ -124,7 +124,7 @@ export function BulkUnsubscribe() {
 
   const onOpenNewsletter = (newsletter: Newsletter) => {
     setOpenedNewsletter(newsletter);
-    posthog?.capture("Clicked Expand Sender");
+    posthog?.capture('Clicked Expand Sender');
   };
 
   const [selectedRow, setSelectedRow] = useState<Newsletter | undefined>();
@@ -141,7 +141,7 @@ export function BulkUnsubscribe() {
     emailAccountId,
   });
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   const { isLoading: isStatsLoading } = useStatLoader();
 
@@ -159,7 +159,7 @@ export function BulkUnsubscribe() {
         ? (item) =>
             item.name.toLowerCase().includes(search.toLowerCase()) ||
             item.unsubscribeLink?.toLowerCase().includes(search.toLowerCase())
-        : Boolean,
+        : Boolean
     )
     .slice(0, expanded ? undefined : 50);
 
@@ -198,8 +198,8 @@ export function BulkUnsubscribe() {
   });
 
   const tableRows = sortBy(unsortedTableRows, (row) => {
-    if (sortColumn === "unread") return row.readPercentage;
-    if (sortColumn === "unarchived") return row.archivedPercentage;
+    if (sortColumn === 'unread') return row.readPercentage;
+    if (sortColumn === 'unarchived') return row.archivedPercentage;
   });
 
   const onlyUnhandled =
@@ -214,11 +214,11 @@ export function BulkUnsubscribe() {
         title="Bulk Unsubscriber"
         description="Unsubscribe from and archive emails you don't want to receive."
         video={{
-          title: "Getting started with Bulk Unsubscribe",
+          title: 'Getting started with Bulk Unsubscribe',
           description: (
             <>
               Learn how to quickly bulk unsubscribe from and archive unwanted
-              emails. You can read more in our{" "}
+              emails. You can read more in our{' '}
               <TextLink
                 href="https://docs.getinboxzero.com/essentials/bulk-email-unsubscriber"
                 target="_blank"
@@ -229,7 +229,7 @@ export function BulkUnsubscribe() {
               .
             </>
           ),
-          youtubeVideoId: "T1rnooV4OYc",
+          youtubeVideoId: 'T1rnooV4OYc',
         }}
       />
 
@@ -238,7 +238,7 @@ export function BulkUnsubscribe() {
         icon={<ArchiveIcon className="size-5" />}
         title="Getting started with Bulk Unsubscribe"
         description={
-          "Learn how to use the Bulk Unsubscribe to unsubscribe from and archive unwanted emails."
+          'Learn how to use the Bulk Unsubscribe to unsubscribe from and archive unwanted emails.'
         }
         videoSrc="https://www.youtube.com/embed/T1rnooV4OYc"
         thumbnailSrc="https://img.youtube.com/vi/T1rnooV4OYc/0.jpg"
@@ -266,7 +266,7 @@ export function BulkUnsubscribe() {
                         autoArchived: false,
                         unsubscribed: false,
                         approved: false,
-                      },
+                      }
                 )
               }
             />
@@ -280,7 +280,7 @@ export function BulkUnsubscribe() {
             keepOpenOnSelect
             columns={[
               {
-                label: "All",
+                label: 'All',
                 separatorAfter: true,
                 checked:
                   filters.approved &&
@@ -296,7 +296,7 @@ export function BulkUnsubscribe() {
                   }),
               },
               {
-                label: "Unhandled",
+                label: 'Unhandled',
                 checked: filters.unhandled,
                 setChecked: () =>
                   setFilters({
@@ -305,7 +305,7 @@ export function BulkUnsubscribe() {
                   }),
               },
               {
-                label: "Unsubscribed",
+                label: 'Unsubscribed',
                 checked: filters.unsubscribed,
                 setChecked: () =>
                   setFilters({
@@ -314,7 +314,7 @@ export function BulkUnsubscribe() {
                   }),
               },
               {
-                label: "Skip Inbox",
+                label: 'Skip Inbox',
                 checked: filters.autoArchived,
                 setChecked: () =>
                   setFilters({
@@ -323,7 +323,7 @@ export function BulkUnsubscribe() {
                   }),
               },
               {
-                label: "Approved",
+                label: 'Approved',
                 checked: filters.approved,
                 setChecked: () =>
                   setFilters({ ...filters, approved: !filters.approved }),

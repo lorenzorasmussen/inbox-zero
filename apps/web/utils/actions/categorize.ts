@@ -1,33 +1,33 @@
-"use server";
+'use server';
 
-import { z } from "zod";
-import { revalidatePath } from "next/cache";
-import { createEmailProvider } from "@/utils/email/provider";
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { getSenders } from '@/app/api/user/categorize/senders/uncategorized/get-senders';
 import {
   type CreateCategoryBody,
   createCategoryBody,
-} from "@/utils/actions/categorize.validation";
-import prisma from "@/utils/prisma";
-import { isDuplicateError } from "@/utils/prisma-helpers";
-import { defaultCategory } from "@/utils/categories";
+} from '@/utils/actions/categorize.validation';
+import { actionClient } from '@/utils/actions/safe-action';
+import { defaultCategory } from '@/utils/categories';
 import {
   categorizeSender,
   updateCategoryForSender,
-} from "@/utils/categorize/senders/categorize";
-import { validateUserAndAiAccess } from "@/utils/user/validate";
-import { SafeError } from "@/utils/error";
+} from '@/utils/categorize/senders/categorize';
+import { extractEmailAddress } from '@/utils/email';
+import { createEmailProvider } from '@/utils/email/provider';
+import { SafeError } from '@/utils/error';
+import { prefixPath } from '@/utils/path';
+import prisma from '@/utils/prisma';
+import { isDuplicateError } from '@/utils/prisma-helpers';
+import { saveCategorizationTotalItems } from '@/utils/redis/categorization-progress';
 import {
   deleteEmptyCategorizeSendersQueues,
   publishToAiCategorizeSendersQueue,
-} from "@/utils/upstash/categorize-senders";
-import { saveCategorizationTotalItems } from "@/utils/redis/categorization-progress";
-import { getSenders } from "@/app/api/user/categorize/senders/uncategorized/get-senders";
-import { extractEmailAddress } from "@/utils/email";
-import { actionClient } from "@/utils/actions/safe-action";
-import { prefixPath } from "@/utils/path";
+} from '@/utils/upstash/categorize-senders';
+import { validateUserAndAiAccess } from '@/utils/user/validate';
 
 export const bulkCategorizeSendersAction = actionClient
-  .metadata({ name: "bulkCategorizeSenders" })
+  .metadata({ name: 'bulkCategorizeSenders' })
   .action(async ({ ctx: { emailAccountId, logger } }) => {
     await validateUserAndAiAccess({ emailAccountId });
 
@@ -36,7 +36,7 @@ export const bulkCategorizeSendersAction = actionClient
     deleteEmptyCategorizeSendersQueues({
       skipEmailAccountId: emailAccountId,
     }).catch((error) => {
-      logger.error("Error deleting empty queues", { error });
+      logger.error('Error deleting empty queues', { error });
     });
 
     const LIMIT = 100;
@@ -48,7 +48,7 @@ export const bulkCategorizeSendersAction = actionClient
         offset,
       });
       const allSenders = result.map((sender) =>
-        extractEmailAddress(sender.from),
+        extractEmailAddress(sender.from)
       );
       const existingSenders = await prisma.newsletter.findMany({
         where: {
@@ -60,7 +60,7 @@ export const bulkCategorizeSendersAction = actionClient
       });
       const existingSenderEmails = new Set(existingSenders.map((s) => s.email));
       const uncategorizedSenders = allSenders.filter(
-        (email) => !existingSenderEmails.has(email),
+        (email) => !existingSenderEmails.has(email)
       );
 
       return uncategorizedSenders;
@@ -71,7 +71,7 @@ export const bulkCategorizeSendersAction = actionClient
     for (let i = 0; i < 20; i++) {
       const newUncategorizedSenders = await getUncategorizedSenders(i * LIMIT);
 
-      logger.trace("Got uncategorized senders", {
+      logger.trace('Got uncategorized senders', {
         uncategorizedSenders: newUncategorizedSenders.length,
       });
 
@@ -93,7 +93,7 @@ export const bulkCategorizeSendersAction = actionClient
       uncategorizedSenders = [];
     }
 
-    logger.info("Queued senders for categorization", {
+    logger.info('Queued senders for categorization', {
       totalUncategorizedSenders,
     });
 
@@ -101,7 +101,7 @@ export const bulkCategorizeSendersAction = actionClient
   });
 
 export const categorizeSenderAction = actionClient
-  .metadata({ name: "categorizeSender" })
+  .metadata({ name: 'categorizeSender' })
   .inputSchema(z.object({ senderAddress: z.string() }))
   .action(
     async ({
@@ -120,17 +120,17 @@ export const categorizeSenderAction = actionClient
       const result = await categorizeSender(
         senderAddress,
         emailAccount,
-        emailProvider,
+        emailProvider
       );
 
-      revalidatePath(prefixPath(emailAccountId, "/smart-categories"));
+      revalidatePath(prefixPath(emailAccountId, '/smart-categories'));
 
       return result;
-    },
+    }
   );
 
 export const changeSenderCategoryAction = actionClient
-  .metadata({ name: "changeSenderCategory" })
+  .metadata({ name: 'changeSenderCategory' })
   .inputSchema(z.object({ sender: z.string(), categoryId: z.string() }))
   .action(
     async ({
@@ -140,7 +140,7 @@ export const changeSenderCategoryAction = actionClient
       const category = await prisma.category.findUnique({
         where: { id: categoryId, emailAccountId },
       });
-      if (!category) throw new SafeError("Category not found");
+      if (!category) throw new SafeError('Category not found');
 
       await updateCategoryForSender({
         emailAccountId,
@@ -148,12 +148,12 @@ export const changeSenderCategoryAction = actionClient
         categoryId,
       });
 
-      revalidatePath(prefixPath(emailAccountId, "/smart-categories"));
-    },
+      revalidatePath(prefixPath(emailAccountId, '/smart-categories'));
+    }
   );
 
 export const upsertDefaultCategoriesAction = actionClient
-  .metadata({ name: "upsertDefaultCategories" })
+  .metadata({ name: 'upsertDefaultCategories' })
   .inputSchema(
     z.object({
       categories: z.array(
@@ -161,14 +161,14 @@ export const upsertDefaultCategoriesAction = actionClient
           id: z.string().optional(),
           name: z.string(),
           enabled: z.boolean(),
-        }),
+        })
       ),
-    }),
+    })
   )
   .action(async ({ ctx: { emailAccountId }, parsedInput: { categories } }) => {
     for (const { id, name, enabled } of categories) {
       const description = Object.values(defaultCategory).find(
-        (c) => c.name === name,
+        (c) => c.name === name
       )?.description;
 
       if (enabled) {
@@ -181,11 +181,11 @@ export const upsertDefaultCategoriesAction = actionClient
       }
     }
 
-    revalidatePath(prefixPath(emailAccountId, "/smart-categories"));
+    revalidatePath(prefixPath(emailAccountId, '/smart-categories'));
   });
 
 export const createCategoryAction = actionClient
-  .metadata({ name: "createCategory" })
+  .metadata({ name: 'createCategory' })
   .inputSchema(createCategoryBody)
   .action(
     async ({ ctx: { emailAccountId }, parsedInput: { name, description } }) => {
@@ -194,17 +194,17 @@ export const createCategoryAction = actionClient
         newCategory: { name, description },
       });
 
-      revalidatePath(prefixPath(emailAccountId, "/smart-categories"));
-    },
+      revalidatePath(prefixPath(emailAccountId, '/smart-categories'));
+    }
   );
 
 export const deleteCategoryAction = actionClient
-  .metadata({ name: "deleteCategory" })
+  .metadata({ name: 'deleteCategory' })
   .inputSchema(z.object({ categoryId: z.string() }))
   .action(async ({ ctx: { emailAccountId }, parsedInput: { categoryId } }) => {
     await deleteCategory({ emailAccountId, categoryId });
 
-    revalidatePath(prefixPath(emailAccountId, "/smart-categories"));
+    revalidatePath(prefixPath(emailAccountId, '/smart-categories'));
   });
 
 async function deleteCategory({
@@ -237,27 +237,26 @@ async function upsertCategory({
       });
 
       return { id: category.id };
-    } else {
-      const category = await prisma.category.create({
-        data: {
-          emailAccountId,
-          name: newCategory.name,
-          description: newCategory.description,
-        },
-      });
-
-      return { id: category.id };
     }
+    const category = await prisma.category.create({
+      data: {
+        emailAccountId,
+        name: newCategory.name,
+        description: newCategory.description,
+      },
+    });
+
+    return { id: category.id };
   } catch (error) {
-    if (isDuplicateError(error, "name"))
-      throw new SafeError("Category with this name already exists");
+    if (isDuplicateError(error, 'name'))
+      throw new SafeError('Category with this name already exists');
 
     throw error;
   }
 }
 
 export const setAutoCategorizeAction = actionClient
-  .metadata({ name: "setAutoCategorize" })
+  .metadata({ name: 'setAutoCategorize' })
   .inputSchema(z.object({ autoCategorizeSenders: z.boolean() }))
   .action(
     async ({
@@ -268,11 +267,11 @@ export const setAutoCategorizeAction = actionClient
         where: { id: emailAccountId },
         data: { autoCategorizeSenders },
       });
-    },
+    }
   );
 
 export const removeAllFromCategoryAction = actionClient
-  .metadata({ name: "removeAllFromCategory" })
+  .metadata({ name: 'removeAllFromCategory' })
   .inputSchema(z.object({ categoryName: z.string() }))
   .action(
     async ({ ctx: { emailAccountId }, parsedInput: { categoryName } }) => {
@@ -284,6 +283,6 @@ export const removeAllFromCategoryAction = actionClient
         data: { categoryId: null },
       });
 
-      revalidatePath(prefixPath(emailAccountId, "/smart-categories"));
-    },
+      revalidatePath(prefixPath(emailAccountId, '/smart-categories'));
+    }
   );

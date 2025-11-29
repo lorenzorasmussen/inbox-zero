@@ -1,18 +1,18 @@
-import { randomBytes } from "node:crypto";
-import prisma from "@/utils/prisma";
-import { SafeError } from "@/utils/error";
-import { isDuplicateError } from "@/utils/prisma-helpers";
-import { ReferralStatus } from "@/generated/prisma/enums";
+import { randomBytes } from 'node:crypto';
+import { ReferralStatus } from '@/generated/prisma/enums';
+import { SafeError } from '@/utils/error';
+import prisma from '@/utils/prisma';
+import { isDuplicateError } from '@/utils/prisma-helpers';
 
 /**
  * Generate a random alphanumeric string of specified length
  */
 function generateRandomString(length: number): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const bytes = randomBytes(length);
   return Array.from(bytes)
     .map((byte) => chars[byte % chars.length])
-    .join("");
+    .join('');
 }
 
 /**
@@ -36,7 +36,7 @@ export async function getOrCreateReferralCode(userId: string) {
     },
   });
 
-  if (!user) throw new SafeError("User not found");
+  if (!user) throw new SafeError('User not found');
 
   // If user already has a code, return it
   if (user.referralCode) return { code: user.referralCode };
@@ -63,7 +63,7 @@ export async function getOrCreateReferralCode(userId: string) {
         // If we've exhausted attempts, throw error
         if (attempts >= maxAttempts) {
           throw new SafeError(
-            "Unable to generate unique referral code after multiple attempts",
+            'Unable to generate unique referral code after multiple attempts'
           );
         }
         // Otherwise, continue to next iteration to try a new code
@@ -74,7 +74,7 @@ export async function getOrCreateReferralCode(userId: string) {
     }
   }
 
-  throw new SafeError("Unable to generate unique referral code");
+  throw new SafeError('Unable to generate unique referral code');
 }
 
 /**
@@ -92,7 +92,7 @@ export async function validateReferralCode(code: string) {
   });
 
   if (!user) {
-    return { valid: false, error: "Invalid referral code" };
+    return { valid: false, error: 'Invalid referral code' };
   }
 
   return {
@@ -127,24 +127,24 @@ export async function checkUserReferral(userId: string) {
  */
 export async function createReferral(
   referredUserId: string,
-  referralCodeString: string,
+  referralCodeString: string
 ) {
   // Validate the referral code
   const validation = await validateReferralCode(referralCodeString);
 
   if (!validation.valid || !validation.referrer) {
-    throw new Error(validation.error || "Invalid referral code");
+    throw new Error(validation.error || 'Invalid referral code');
   }
 
   // Check if user was already referred
   const existingReferral = await checkUserReferral(referredUserId);
   if (existingReferral) {
-    throw new Error("User was already referred");
+    throw new Error('User was already referred');
   }
 
   // Check if user is trying to refer themselves
   if (validation.referrer.id === referredUserId) {
-    throw new Error("You cannot refer yourself");
+    throw new Error('You cannot refer yourself');
   }
 
   // Create the referral

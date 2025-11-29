@@ -1,7 +1,7 @@
 // Run with: `npx tsx scripts/addUsersToResend.ts`. Make sure to set ENV vars
 
-import { createContact } from "@inboxzero/resend";
-import { PrismaClient } from "@/generated/prisma/client";
+import { createContact } from '@inboxzero/resend';
+import { PrismaClient } from '@/generated/prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -11,13 +11,13 @@ async function main() {
   for (const user of users) {
     try {
       if (user.email) {
-        console.log("Adding user", user.email);
+        console.log('Adding user', user.email);
         const result = await createContact({ email: user.email });
-        const error = result && "error" in result ? result.error : undefined;
+        const error = result && 'error' in result ? result.error : undefined;
         if (error) console.error(error);
       }
     } catch (error) {
-      console.error("Error creating contact for user: ", user.email, error);
+      console.error('Error creating contact for user: ', user.email, error);
     }
   }
 }

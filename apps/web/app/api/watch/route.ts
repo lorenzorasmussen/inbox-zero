@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { withAuth } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
-import { ensureEmailAccountsWatched } from "@/utils/email/watch-manager";
+import { NextResponse } from 'next/server';
+import { ensureEmailAccountsWatched } from '@/utils/email/watch-manager';
+import { withAuth } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-export const GET = withAuth("watch", async (request) => {
+export const GET = withAuth('watch', async (request) => {
   const userId = request.auth.userId;
   const emailAccountCount = await prisma.emailAccount.count({
     where: { userId },
@@ -13,8 +13,8 @@ export const GET = withAuth("watch", async (request) => {
 
   if (emailAccountCount === 0) {
     return NextResponse.json(
-      { message: "No email accounts found for this user." },
-      { status: 404 },
+      { message: 'No email accounts found for this user.' },
+      { status: 404 }
     );
   }
 

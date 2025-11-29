@@ -1,77 +1,77 @@
-import Link from "next/link";
-import { EXTENSION_URL } from "@/utils/config";
+import Link from 'next/link';
+import { EXTENSION_URL } from '@/utils/config';
 
 const navigation = {
   main: [
     {
-      name: "Inbox Zero Tabs (Chrome Extension)",
+      name: 'Inbox Zero Tabs (Chrome Extension)',
       href: EXTENSION_URL,
-      target: "_blank",
+      target: '_blank',
     },
-    { name: "AI Email Assistant", href: "/ai-automation" },
-    { name: "Reply Zero", href: "/reply-zero-ai" },
-    { name: "Bulk Email Unsubscriber", href: "/bulk-email-unsubscriber" },
-    { name: "Clean your inbox", href: "/clean-inbox" },
-    { name: "Cold Email Blocker", href: "/block-cold-emails" },
-    { name: "Email Analytics", href: "/email-analytics" },
-    { name: "Open Source", href: "/github", target: "_blank" },
+    { name: 'AI Email Assistant', href: '/ai-automation' },
+    { name: 'Reply Zero', href: '/reply-zero-ai' },
+    { name: 'Bulk Email Unsubscriber', href: '/bulk-email-unsubscriber' },
+    { name: 'Clean your inbox', href: '/clean-inbox' },
+    { name: 'Cold Email Blocker', href: '/block-cold-emails' },
+    { name: 'Email Analytics', href: '/email-analytics' },
+    { name: 'Open Source', href: '/github', target: '_blank' },
   ],
   useCases: [
-    { name: "Founder", href: "/founders" },
-    { name: "Small Business", href: "/small-business" },
-    { name: "Content Creator", href: "/creator" },
-    { name: "Realtor", href: "/real-estate" },
-    { name: "Customer Support", href: "/support" },
-    { name: "E-commerce", href: "/ecommerce" },
+    { name: 'Founder', href: '/founders' },
+    { name: 'Small Business', href: '/small-business' },
+    { name: 'Content Creator', href: '/creator' },
+    { name: 'Realtor', href: '/real-estate' },
+    { name: 'Customer Support', href: '/support' },
+    { name: 'E-commerce', href: '/ecommerce' },
   ],
   compare: [
-    { name: "vs Fyxer.ai", href: "/best-fyxer-alternative" },
+    { name: 'vs Fyxer.ai', href: '/best-fyxer-alternative' },
     {
-      name: "vs Perplexity Email Assistant",
-      href: "/best-perplexity-email-assistant-alternative",
+      name: 'vs Perplexity Email Assistant',
+      href: '/best-perplexity-email-assistant-alternative',
     },
   ],
   support: [
-    { name: "Pricing", href: "/#pricing" },
-    { name: "Contact", href: "mailto:elie@getinboxzero.com", target: "_blank" },
+    { name: 'Pricing', href: '/#pricing' },
+    { name: 'Contact', href: 'mailto:elie@getinboxzero.com', target: '_blank' },
     {
-      name: "Documentation",
-      href: "https://docs.getinboxzero.com",
-      target: "_blank",
+      name: 'Documentation',
+      href: 'https://docs.getinboxzero.com',
+      target: '_blank',
     },
-    { name: "Feature Requests", href: "/feature-requests", target: "_blank" },
-    { name: "Changelog", href: "/changelog", target: "_blank" },
+    { name: 'Feature Requests', href: '/feature-requests', target: '_blank' },
+    { name: 'Changelog', href: '/changelog', target: '_blank' },
     {
-      name: "Status",
-      href: "https://inbox-zero.openstatus.dev/",
-      target: "_blank",
+      name: 'Status',
+      href: 'https://inbox-zero.openstatus.dev/',
+      target: '_blank',
     },
   ],
   company: [
-    { name: "Affiliates", href: "/affiliates", target: "_blank" },
-    { name: "Blog", href: "/blog" },
-    { name: "Case Studies", href: "/case-studies" },
-    { name: "Twitter", href: "/twitter", target: "_blank" },
-    { name: "GitHub", href: "/github", target: "_blank" },
-    { name: "Discord", href: "/discord", target: "_blank" },
-    { name: "OSS Friends", href: "/oss-friends" },
-    { name: "Email Blaster", href: "/game" },
+    { name: 'Affiliates', href: '/affiliates', target: '_blank' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'Case Studies', href: '/case-studies' },
+    { name: 'Twitter', href: '/twitter', target: '_blank' },
+    { name: 'GitHub', href: '/github', target: '_blank' },
+    { name: 'Discord', href: '/discord', target: '_blank' },
+    { name: 'OSS Friends', href: '/oss-friends' },
+    { name: 'Email Blaster', href: '/game' },
   ],
   legal: [
-    { name: "Terms", href: "/terms" },
-    { name: "Privacy", href: "/privacy" },
+    { name: 'Terms', href: '/terms' },
+    { name: 'Privacy', href: '/privacy' },
     {
-      name: "SOC2 Compliant",
-      href: "https://security.getinboxzero.com",
-      target: "_blank",
+      name: 'SOC2 Compliant',
+      href: 'https://security.getinboxzero.com',
+      target: '_blank',
     },
-    { name: "Sitemap", href: "/sitemap.xml" },
+    { name: 'Sitemap', href: '/sitemap.xml' },
   ],
   social: [
     {
-      name: "Twitter",
-      href: "/twitter",
-      target: "_blank",
+      name: 'Twitter',
+      href: '/twitter',
+      target: '_blank',
       icon: (props: any) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <title>Twitter</title>
@@ -80,9 +80,9 @@ const navigation = {
       ),
     },
     {
-      name: "GitHub",
-      href: "/github",
-      target: "_blank",
+      name: 'GitHub',
+      href: '/github',
+      target: '_blank',
       icon: (props: any) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <title>GitHub</title>
@@ -95,9 +95,9 @@ const navigation = {
       ),
     },
     {
-      name: "Discord",
-      href: "/discord",
-      target: "_blank",
+      name: 'Discord',
+      href: '/discord',
+      target: '_blank',
       icon: (props: any) => (
         <svg width="100" height="100" viewBox="0 0 48 48" {...props}>
           <title>Discord</title>
@@ -172,7 +172,7 @@ function FooterList(props: {
             <Link
               href={item.href}
               target={item.target}
-              prefetch={item.target !== "_blank"}
+              prefetch={item.target !== '_blank'}
               className="text-sm leading-6 text-gray-600 hover:text-gray-900"
             >
               {item.name}

@@ -1,10 +1,10 @@
-import Link from "next/link";
-import { PlusIcon } from "lucide-react";
-import { CleanHistory } from "@/app/(app)/[emailAccountId]/clean/CleanHistory";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { PageHeading } from "@/components/Typography";
-import { Button } from "@/components/ui/button";
-import { prefixPath } from "@/utils/path";
+import { PlusIcon } from 'lucide-react';
+import Link from 'next/link';
+import { CleanHistory } from '@/app/(app)/[emailAccountId]/clean/CleanHistory';
+import { PageHeading } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { prefixPath } from '@/utils/path';
 
 export default async function CleanHistoryPage(props: {
   params: Promise<{ emailAccountId: string }>;
@@ -17,7 +17,7 @@ export default async function CleanHistoryPage(props: {
         <div className="flex items-center justify-between">
           <PageHeading>Clean History</PageHeading>
           <Button variant="outline" asChild>
-            <Link href={prefixPath(emailAccountId, "/clean")}>
+            <Link href={prefixPath(emailAccountId, '/clean')}>
               <PlusIcon className="mr-2 size-4" />
               New Clean
             </Link>

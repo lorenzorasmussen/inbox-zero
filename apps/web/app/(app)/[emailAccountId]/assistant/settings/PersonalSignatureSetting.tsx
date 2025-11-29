@@ -1,24 +1,11 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { toastError, toastSuccess, toastInfo } from "@/components/Toast";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import { SettingCard } from "@/components/SettingCard";
-import { useEmailAccountFull } from "@/hooks/useEmailAccountFull";
-import { useAction } from "next-safe-action/hooks";
-import { fetchSignaturesFromProviderAction } from "@/utils/actions/email-account";
-import { saveSignatureAction } from "@/utils/actions/user";
-import type { EmailSignature } from "@/utils/email/types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback, useState } from 'react';
+import { LoadingContent } from '@/components/LoadingContent';
+import { SettingCard } from '@/components/SettingCard';
+import { toastError, toastInfo, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -26,9 +13,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import { useEmailAccountFull } from '@/hooks/useEmailAccountFull';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { fetchSignaturesFromProviderAction } from '@/utils/actions/email-account';
+import { saveSignatureAction } from '@/utils/actions/user';
+import type { EmailSignature } from '@/utils/email/types';
 
 export function PersonalSignatureSetting() {
   const { data, isLoading, error } = useEmailAccountFull();
@@ -45,9 +45,9 @@ export function PersonalSignatureSetting() {
           error={error}
           loadingComponent={<Skeleton className="h-8 w-32" />}
         >
-          <SignatureDialog currentSignature={data?.signature || ""}>
+          <SignatureDialog currentSignature={data?.signature || ''}>
             <Button variant="outline" size="sm">
-              {hasSignature ? "Edit" : "Set"} Signature
+              {hasSignature ? 'Edit' : 'Set'} Signature
             </Button>
           </SignatureDialog>
         </LoadingContent>
@@ -67,29 +67,29 @@ function SignatureDialog({
   const { emailAccountId, provider } = useAccount();
   const { mutate } = useEmailAccountFull();
   const [signatures, setSignatures] = useState<EmailSignature[]>([]);
-  const [selectedSignature, setSelectedSignature] = useState<string>("");
+  const [selectedSignature, setSelectedSignature] = useState<string>('');
   const [manualSignature, setManualSignature] = useState(currentSignature);
 
-  const isGmail = provider === "google";
+  const isGmail = provider === 'google';
 
   const { execute: executeSave, isExecuting: isSaving } = useAction(
     saveSignatureAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
         toastSuccess({
-          description: "Signature saved!",
+          description: 'Signature saved!',
         });
         setOpen(false);
       },
       onError: (error) => {
         toastError({
-          description: error.error.serverError || "Failed to save signature",
+          description: error.error.serverError || 'Failed to save signature',
         });
       },
       onSettled: () => {
         mutate();
       },
-    },
+    }
   );
 
   const { executeAsync: executeFetchSignatures, isExecuting: isFetching } =
@@ -100,7 +100,7 @@ function SignatureDialog({
 
     if (result?.serverError) {
       toastError({
-        title: `Error loading signature from ${isGmail ? "Gmail" : "Outlook"}`,
+        title: `Error loading signature from ${isGmail ? 'Gmail' : 'Outlook'}`,
         description: result.serverError,
       });
       return;
@@ -110,10 +110,10 @@ function SignatureDialog({
 
     if (fetchedSignatures.length === 0) {
       toastInfo({
-        title: "No signatures found",
+        title: 'No signatures found',
         description: isGmail
-          ? "No signatures found in your Gmail account"
-          : "No signature found in recent sent emails",
+          ? 'No signatures found in your Gmail account'
+          : 'No signature found in recent sent emails',
       });
       return;
     }
@@ -129,8 +129,8 @@ function SignatureDialog({
     }
 
     toastSuccess({
-      title: "Signatures loaded",
-      description: `Found ${fetchedSignatures.length} signature${fetchedSignatures.length !== 1 ? "s" : ""}`,
+      title: 'Signatures loaded',
+      description: `Found ${fetchedSignatures.length} signature${fetchedSignatures.length !== 1 ? 's' : ''}`,
     });
   }, [executeFetchSignatures, isGmail]);
 
@@ -142,7 +142,7 @@ function SignatureDialog({
         setManualSignature(signature.signature);
       }
     },
-    [signatures],
+    [signatures]
   );
 
   const handleSave = useCallback(() => {
@@ -150,8 +150,8 @@ function SignatureDialog({
   }, [executeSave, manualSignature]);
 
   const handleClear = useCallback(() => {
-    setManualSignature("");
-    executeSave({ signature: "" });
+    setManualSignature('');
+    executeSave({ signature: '' });
   }, [executeSave]);
 
   return (
@@ -163,9 +163,9 @@ function SignatureDialog({
           <DialogDescription>
             Set your email signature to include in all drafted messages.
             {isGmail &&
-              " You can load signatures from Gmail or enter manually."}
+              ' You can load signatures from Gmail or enter manually.'}
             {!isGmail &&
-              " For Outlook, we can extract from recent sent emails or you can enter manually."}
+              ' For Outlook, we can extract from recent sent emails or you can enter manually.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -177,8 +177,8 @@ function SignatureDialog({
               disabled={isFetching}
             >
               {isFetching
-                ? "Loading..."
-                : `Load from ${isGmail ? "Gmail" : "Outlook"}`}
+                ? 'Loading...'
+                : `Load from ${isGmail ? 'Gmail' : 'Outlook'}`}
             </Button>
             {signatures.length > 1 && (
               <Select
@@ -192,7 +192,7 @@ function SignatureDialog({
                   {signatures.map((sig) => (
                     <SelectItem key={sig.email} value={sig.email}>
                       {sig.displayName || sig.email}
-                      {sig.isDefault && " (default)"}
+                      {sig.isDefault && ' (default)'}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -222,7 +222,7 @@ function SignatureDialog({
               Clear
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save Signature"}
+              {isSaving ? 'Saving...' : 'Save Signature'}
             </Button>
           </div>
         </div>

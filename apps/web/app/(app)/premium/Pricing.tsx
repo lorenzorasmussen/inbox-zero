@@ -1,40 +1,40 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { Label, Radio, RadioGroup } from "@headlessui/react";
-import { CheckIcon, SparklesIcon } from "lucide-react";
-import Link from "next/link";
-import { env } from "@/env";
-import { LoadingContent } from "@/components/LoadingContent";
-import { usePremium } from "@/components/PremiumAlert";
-import { Button } from "@/components/ui/button";
-import { getUserTier } from "@/utils/premium";
-import { type Tier, tiers } from "@/app/(app)/premium/config";
-import { AlertWithButton } from "@/components/Alert";
-import { TooltipExplanation } from "@/components/TooltipExplanation";
-import { toastError } from "@/components/Toast";
+import { Label, Radio, RadioGroup } from '@headlessui/react';
+import { CheckIcon, SparklesIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { type Tier, tiers } from '@/app/(app)/premium/config';
+import { ManageSubscription } from '@/app/(app)/premium/ManageSubscription';
+import { AlertWithButton } from '@/components/Alert';
+import { LoadingMiniSpinner } from '@/components/Loading';
+import { LoadingContent } from '@/components/LoadingContent';
+import { usePremium } from '@/components/PremiumAlert';
+import { toastError } from '@/components/Toast';
+import { TooltipExplanation } from '@/components/TooltipExplanation';
+import { Button } from '@/components/ui/button';
+import { env } from '@/env';
+import type { PremiumTier } from '@/generated/prisma/enums';
+import { cn } from '@/utils';
 import {
   generateCheckoutSessionAction,
   getBillingPortalUrlAction,
-} from "@/utils/actions/premium";
-import type { PremiumTier } from "@/generated/prisma/enums";
-import { LoadingMiniSpinner } from "@/components/Loading";
-import { cn } from "@/utils";
-import { ManageSubscription } from "@/app/(app)/premium/ManageSubscription";
-import { captureException } from "@/utils/error";
+} from '@/utils/actions/premium';
+import { captureException } from '@/utils/error';
+import { getUserTier } from '@/utils/premium';
 
 const frequencies = [
   {
-    value: "monthly" as const,
-    label: "Monthly",
-    priceSuffix: "/month, billed monthly",
+    value: 'monthly' as const,
+    label: 'Monthly',
+    priceSuffix: '/month, billed monthly',
   },
   {
-    value: "annually" as const,
-    label: "Annually",
-    priceSuffix: "/month, billed annually",
+    value: 'annually' as const,
+    label: 'Annually',
+    priceSuffix: '/month, billed annually',
   },
 ];
 
@@ -76,8 +76,8 @@ export default function Pricing(props: PricingProps) {
       <div
         id="pricing"
         className={cn(
-          "relative isolate mx-auto max-w-7xl bg-white px-6 pt-10 lg:px-8",
-          props.className,
+          'relative isolate mx-auto max-w-7xl bg-white px-6 pt-10 lg:px-8',
+          props.className
         )}
       >
         {header}
@@ -97,8 +97,8 @@ export default function Pricing(props: PricingProps) {
                   </Link>
                 </Button>
                 <div className="mx-auto mt-4 max-w-md">
-                  {userPremiumTier === "BUSINESS_MONTHLY" ||
-                  userPremiumTier === "BUSINESS_ANNUALLY" ? (
+                  {userPremiumTier === 'BUSINESS_MONTHLY' ||
+                  userPremiumTier === 'BUSINESS_ANNUALLY' ? (
                     <AlertWithButton
                       className="bg-background"
                       variant="blue"
@@ -133,8 +133,8 @@ export default function Pricing(props: PricingProps) {
                 value={option}
                 className={({ checked }) =>
                   cn(
-                    checked ? "bg-black text-white" : "text-gray-500",
-                    "cursor-pointer rounded-full px-2.5 py-1",
+                    checked ? 'bg-black text-white' : 'text-gray-500',
+                    'cursor-pointer rounded-full px-2.5 py-1'
                   )
                 }
               >
@@ -194,8 +194,8 @@ function PriceTier({
   const isCurrentPlan = tier.tiers[frequency.value] === userPremiumTier;
 
   function getCTAText() {
-    if (isCurrentPlan) return "Current plan";
-    if (userPremiumTier && !tier.ctaLink) return "Switch to this plan";
+    if (isCurrentPlan) return 'Current plan';
+    if (userPremiumTier && !tier.ctaLink) return 'Switch to this plan';
     return tier.cta;
   }
 
@@ -209,8 +209,8 @@ function PriceTier({
           <h3
             id={tier.name}
             className={cn(
-              tier.mostPopular ? "text-blue-600" : "text-gray-900",
-              "font-title text-lg leading-8",
+              tier.mostPopular ? 'text-blue-600' : 'text-gray-900',
+              'font-title text-lg leading-8'
             )}
           >
             {tier.name}
@@ -246,7 +246,7 @@ function PriceTier({
         </p>
 
         <p className="mt-2 text-sm leading-6 text-gray-600">
-          {tier.price[frequency.value] ? frequency.priceSuffix : "\u00A0"}
+          {tier.price[frequency.value] ? frequency.priceSuffix : '\u00A0'}
         </p>
 
         <ul className="mt-8 space-y-3 text-sm leading-6 text-gray-600">
@@ -278,7 +278,7 @@ function PriceTier({
           }
 
           if (!isLoggedIn) {
-            router.push("/login");
+            router.push('/login');
             return;
           }
 
@@ -286,7 +286,7 @@ function PriceTier({
 
           async function load() {
             if (tier.tiers[frequency.value] === userPremiumTier) {
-              toast.info("You are already on this plan");
+              toast.info('You are already on this plan');
               return;
             }
 
@@ -296,7 +296,7 @@ function PriceTier({
             const hasActiveStripeSubscription =
               stripeSubscriptionId &&
               stripeSubscriptionStatus &&
-              ["active", "trialing"].includes(stripeSubscriptionStatus);
+              ['active', 'trialing'].includes(stripeSubscriptionStatus);
 
             let result:
               | Awaited<ReturnType<typeof getBillingPortalUrlAction>>
@@ -317,7 +317,7 @@ function PriceTier({
             }
 
             if (!result?.data?.url || result?.serverError) {
-              captureException(new Error("Error creating checkout session"), {
+              captureException(new Error('Error creating checkout session'), {
                 extra: {
                   tier: upgradeToTier,
                   frequency: frequency.value,
@@ -354,9 +354,9 @@ function PriceTier({
         aria-describedby={tier.name}
         className={cn(
           tier.mostPopular
-            ? "bg-blue-600 text-white shadow-sm hover:bg-blue-500"
-            : "text-blue-600 ring-1 ring-inset ring-blue-200 hover:ring-blue-300",
-          "mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600",
+            ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-500'
+            : 'text-blue-600 ring-1 ring-inset ring-blue-200 hover:ring-blue-300',
+          'mt-8 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
         )}
       >
         {loading ? (

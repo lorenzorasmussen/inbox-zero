@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withError } from "@/utils/middleware";
-import { SafeError } from "@/utils/error";
-import { auth } from "@/utils/auth";
+import { NextResponse } from 'next/server';
+import { auth } from '@/utils/auth';
+import { SafeError } from '@/utils/error';
+import { withError } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type UserResponse = Awaited<ReturnType<typeof getUser>> | null;
 
@@ -49,13 +49,13 @@ async function getUser({ userId }: { userId: string }) {
     },
   });
 
-  if (!user) throw new SafeError("User not found");
+  if (!user) throw new SafeError('User not found');
 
   const members = user.emailAccounts.flatMap((account) =>
     account.members.map((member) => ({
       ...member,
       emailAccountId: account.id,
-    })),
+    }))
   );
 
   return {
@@ -65,7 +65,7 @@ async function getUser({ userId }: { userId: string }) {
 }
 
 // Intentionally not using withAuth because we want to return null if the user is not authenticated
-export const GET = withError("user/me", async () => {
+export const GET = withError('user/me', async () => {
   const session = await auth();
   const userId = session?.user.id;
   if (!userId) return NextResponse.json(null);

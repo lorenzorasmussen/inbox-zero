@@ -1,4 +1,4 @@
-import prisma from "@/utils/prisma";
+import prisma from '@/utils/prisma';
 
 /**
  * Gets the email account ID from the provided email or looks it up using the account ID

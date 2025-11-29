@@ -1,120 +1,120 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { handleAccountLinking } from "./account-linking";
-import prisma from "@/utils/__mocks__/prisma";
-import { getMockEmailAccountSelect } from "@/__tests__/helpers";
-import { createScopedLogger } from "@/utils/logger";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getMockEmailAccountSelect } from '@/__tests__/helpers';
+import prisma from '@/utils/__mocks__/prisma';
+import { createScopedLogger } from '@/utils/logger';
+import { handleAccountLinking } from './account-linking';
 
-const logger = createScopedLogger("test");
+const logger = createScopedLogger('test');
 
-vi.mock("@/utils/prisma");
-vi.mock("@/utils/user/orphaned-account");
+vi.mock('@/utils/prisma');
+vi.mock('@/utils/user/orphaned-account');
 
-describe("handleAccountLinking", () => {
+describe('handleAccountLinking', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should cleanup orphaned account and continue create", async () => {
+  it('should cleanup orphaned account and continue create', async () => {
     const { cleanupOrphanedAccount } = await import(
-      "@/utils/user/orphaned-account"
+      '@/utils/user/orphaned-account'
     );
     vi.mocked(cleanupOrphanedAccount).mockResolvedValue();
 
     const result = await handleAccountLinking({
-      existingAccountId: "orphaned-account-id",
+      existingAccountId: 'orphaned-account-id',
       hasEmailAccount: false,
-      existingUserId: "orphaned-user-id",
-      targetUserId: "target-user-id",
-      provider: "google",
-      providerEmail: "test@gmail.com",
-      baseUrl: "http://localhost:3001",
+      existingUserId: 'orphaned-user-id',
+      targetUserId: 'target-user-id',
+      provider: 'google',
+      providerEmail: 'test@gmail.com',
+      baseUrl: 'http://localhost:3001',
       logger,
     });
 
     expect(cleanupOrphanedAccount).toHaveBeenCalledWith(
-      "orphaned-account-id",
-      logger,
+      'orphaned-account-id',
+      logger
     );
-    expect(result).toEqual({ type: "continue_create" });
+    expect(result).toEqual({ type: 'continue_create' });
   });
 
-  it("should return continue_create when no existing account", async () => {
+  it('should return continue_create when no existing account', async () => {
     const result = await handleAccountLinking({
       existingAccountId: null,
       hasEmailAccount: false,
       existingUserId: null,
-      targetUserId: "target-user-id",
-      provider: "google",
-      providerEmail: "new@gmail.com",
-      baseUrl: "http://localhost:3001",
+      targetUserId: 'target-user-id',
+      provider: 'google',
+      providerEmail: 'new@gmail.com',
+      baseUrl: 'http://localhost:3001',
       logger,
     });
 
-    expect(result).toEqual({ type: "continue_create" });
+    expect(result).toEqual({ type: 'continue_create' });
   });
 
-  it("should redirect with error when account already linked to self", async () => {
+  it('should redirect with error when account already linked to self', async () => {
     const result = await handleAccountLinking({
-      existingAccountId: "account-id",
+      existingAccountId: 'account-id',
       hasEmailAccount: true,
-      existingUserId: "same-user-id",
-      targetUserId: "same-user-id",
-      provider: "google",
-      providerEmail: "test@gmail.com",
-      baseUrl: "http://localhost:3001",
+      existingUserId: 'same-user-id',
+      targetUserId: 'same-user-id',
+      provider: 'google',
+      providerEmail: 'test@gmail.com',
+      baseUrl: 'http://localhost:3001',
       logger,
     });
 
-    expect(result.type).toBe("redirect");
-    if (result.type === "redirect") {
-      const url = new URL(result.response.headers.get("location") || "");
-      expect(url.searchParams.get("error")).toBe("already_linked_to_self");
+    expect(result.type).toBe('redirect');
+    if (result.type === 'redirect') {
+      const url = new URL(result.response.headers.get('location') || '');
+      expect(url.searchParams.get('error')).toBe('already_linked_to_self');
     }
   });
 
-  it("should return merge when account exists for different user", async () => {
+  it('should return merge when account exists for different user', async () => {
     const result = await handleAccountLinking({
-      existingAccountId: "account-id",
+      existingAccountId: 'account-id',
       hasEmailAccount: true,
-      existingUserId: "different-user-id",
-      targetUserId: "target-user-id",
-      provider: "google",
-      providerEmail: "test@gmail.com",
-      baseUrl: "http://localhost:3001",
+      existingUserId: 'different-user-id',
+      targetUserId: 'target-user-id',
+      provider: 'google',
+      providerEmail: 'test@gmail.com',
+      baseUrl: 'http://localhost:3001',
       logger,
     });
 
     expect(result).toEqual({
-      type: "merge",
-      sourceAccountId: "account-id",
-      sourceUserId: "different-user-id",
+      type: 'merge',
+      sourceAccountId: 'account-id',
+      sourceUserId: 'different-user-id',
     });
   });
 
-  it("should redirect with error when creating account that already exists for different user", async () => {
+  it('should redirect with error when creating account that already exists for different user', async () => {
     prisma.emailAccount.findUnique.mockResolvedValue(
       getMockEmailAccountSelect({
-        userId: "different-user-id",
-        email: "existing@gmail.com",
-      }) as any,
+        userId: 'different-user-id',
+        email: 'existing@gmail.com',
+      }) as any
     );
 
     const result = await handleAccountLinking({
       existingAccountId: null,
       hasEmailAccount: false,
       existingUserId: null,
-      targetUserId: "target-user-id",
-      provider: "google",
-      providerEmail: "existing@gmail.com",
-      baseUrl: "http://localhost:3001",
+      targetUserId: 'target-user-id',
+      provider: 'google',
+      providerEmail: 'existing@gmail.com',
+      baseUrl: 'http://localhost:3001',
       logger,
     });
 
-    expect(result.type).toBe("redirect");
-    if (result.type === "redirect") {
-      const url = new URL(result.response.headers.get("location") || "");
-      expect(url.searchParams.get("error")).toBe(
-        "account_already_exists_use_merge",
+    expect(result.type).toBe('redirect');
+    if (result.type === 'redirect') {
+      const url = new URL(result.response.headers.get('location') || '');
+      expect(url.searchParams.get('error')).toBe(
+        'account_already_exists_use_merge'
       );
     }
   });

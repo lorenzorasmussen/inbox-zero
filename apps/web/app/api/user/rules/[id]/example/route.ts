@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailProvider } from "@/utils/middleware";
-import { fetchExampleMessages } from "@/app/api/user/rules/[id]/example/controller";
-import { SafeError } from "@/utils/error";
-import { createEmailProvider } from "@/utils/email/provider";
-import type { Logger } from "@/utils/logger";
+import { NextResponse } from 'next/server';
+import { fetchExampleMessages } from '@/app/api/user/rules/[id]/example/controller';
+import { createEmailProvider } from '@/utils/email/provider';
+import { SafeError } from '@/utils/error';
+import type { Logger } from '@/utils/logger';
+import { withEmailProvider } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type ExamplesResponse = Awaited<ReturnType<typeof getExamples>>;
 
@@ -24,7 +24,7 @@ async function getExamples({
     include: { group: { include: { items: true } } },
   });
 
-  if (!rule) throw new SafeError("Rule not found");
+  if (!rule) throw new SafeError('Rule not found');
 
   const emailProvider = await createEmailProvider({
     emailAccountId,
@@ -35,20 +35,20 @@ async function getExamples({
   const exampleMessages = await fetchExampleMessages(
     rule,
     emailProvider,
-    logger,
+    logger
   );
 
   return exampleMessages;
 }
 
 export const GET = withEmailProvider(
-  "user/rules/example",
+  'user/rules/example',
   async (request, { params }) => {
     const emailAccountId = request.auth.emailAccountId;
     const provider = request.emailProvider.name;
 
     const { id } = await params;
-    if (!id) return NextResponse.json({ error: "Missing rule id" });
+    if (!id) return NextResponse.json({ error: 'Missing rule id' });
 
     const result = await getExamples({
       ruleId: id,
@@ -58,5 +58,5 @@ export const GET = withEmailProvider(
     });
 
     return NextResponse.json(result);
-  },
+  }
 );

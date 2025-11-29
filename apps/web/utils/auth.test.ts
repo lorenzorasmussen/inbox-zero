@@ -1,27 +1,27 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { cookies } from "next/headers";
-import { createReferral } from "@/utils/referral/referral-code";
-import { captureException } from "@/utils/error";
-import { handleReferralOnSignUp } from "@/utils/auth";
+import { cookies } from 'next/headers';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { handleReferralOnSignUp } from '@/utils/auth';
+import { captureException } from '@/utils/error';
+import { createReferral } from '@/utils/referral/referral-code';
 
 // Mock the dependencies
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
-vi.mock("next/headers", () => ({
+vi.mock('next/headers', () => ({
   cookies: vi.fn(),
 }));
 
-vi.mock("@/utils/referral/referral-code", () => ({
+vi.mock('@/utils/referral/referral-code', () => ({
   createReferral: vi.fn(),
 }));
 
-vi.mock("@/utils/error", () => ({
+vi.mock('@/utils/error', () => ({
   captureException: vi.fn(),
 }));
 
 // Import the real function from auth.ts for testing
 
-describe("handleReferralOnSignUp", () => {
+describe('handleReferralOnSignUp', () => {
   const mockCookies = vi.mocked(cookies);
   const mockCreateReferral = vi.mocked(createReferral);
   const mockCaptureException = vi.mocked(captureException);
@@ -30,10 +30,10 @@ describe("handleReferralOnSignUp", () => {
     vi.clearAllMocks();
   });
 
-  it("should create referral when referral code cookie exists", async () => {
-    const userId = "user123";
-    const email = "user@example.com";
-    const referralCode = "ABC123";
+  it('should create referral when referral code cookie exists', async () => {
+    const userId = 'user123';
+    const email = 'user@example.com';
+    const referralCode = 'ABC123';
 
     mockCookies.mockResolvedValue({
       get: vi.fn().mockReturnValue({ value: referralCode }),
@@ -46,9 +46,9 @@ describe("handleReferralOnSignUp", () => {
     expect(mockCreateReferral).toHaveBeenCalledWith(userId, referralCode);
   });
 
-  it("should not create referral when no referral code cookie exists", async () => {
-    const userId = "user123";
-    const email = "user@example.com";
+  it('should not create referral when no referral code cookie exists', async () => {
+    const userId = 'user123';
+    const email = 'user@example.com';
 
     mockCookies.mockResolvedValue({
       get: vi.fn().mockReturnValue(undefined),
@@ -59,11 +59,11 @@ describe("handleReferralOnSignUp", () => {
     expect(mockCreateReferral).not.toHaveBeenCalled();
   });
 
-  it("should handle errors gracefully and not throw", async () => {
-    const userId = "user123";
-    const email = "user@example.com";
-    const referralCode = "ABC123";
-    const error = new Error("Referral creation failed");
+  it('should handle errors gracefully and not throw', async () => {
+    const userId = 'user123';
+    const email = 'user@example.com';
+    const referralCode = 'ABC123';
+    const error = new Error('Referral creation failed');
 
     mockCookies.mockResolvedValue({
       get: vi.fn().mockReturnValue({ value: referralCode }),
@@ -73,20 +73,20 @@ describe("handleReferralOnSignUp", () => {
 
     // Should not throw
     await expect(
-      handleReferralOnSignUp({ userId, email }),
+      handleReferralOnSignUp({ userId, email })
     ).resolves.toBeUndefined();
 
     expect(mockCaptureException).toHaveBeenCalledWith(error, {
-      extra: { userId, email, location: "handleReferralOnSignUp" },
+      extra: { userId, email, location: 'handleReferralOnSignUp' },
     });
   });
 
-  it("should not create referral when referral code cookie has empty value", async () => {
-    const userId = "user123";
-    const email = "user@example.com";
+  it('should not create referral when referral code cookie has empty value', async () => {
+    const userId = 'user123';
+    const email = 'user@example.com';
 
     mockCookies.mockResolvedValue({
-      get: vi.fn().mockReturnValue({ value: "" }),
+      get: vi.fn().mockReturnValue({ value: '' }),
     } as any);
 
     await handleReferralOnSignUp({ userId, email });

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const coldEmailBlockerBody = z.object({
   from: z.string(),

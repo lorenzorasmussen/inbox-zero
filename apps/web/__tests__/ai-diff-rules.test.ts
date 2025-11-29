@@ -1,18 +1,18 @@
-import { describe, it, expect, vi } from "vitest";
-import { aiDiffRules } from "@/utils/ai/rule/diff-rules";
-import { getEmailAccount } from "@/__tests__/helpers";
+import { describe, expect, it, vi } from 'vitest';
+import { getEmailAccount } from '@/__tests__/helpers';
+import { aiDiffRules } from '@/utils/ai/rule/diff-rules';
 
 // RUN_AI_TESTS=true pnpm test-ai ai-diff-rules
 
 const TIMEOUT = 15_000;
 
-const isAiTest = process.env.RUN_AI_TESTS === "true";
+const isAiTest = process.env.RUN_AI_TESTS === 'true';
 
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
-describe.runIf(isAiTest)("aiDiffRules", () => {
+describe.runIf(isAiTest)('aiDiffRules', () => {
   it(
-    "should correctly identify added, edited, and removed rules",
+    'should correctly identify added, edited, and removed rules',
     async () => {
       const emailAccount = getEmailAccount();
 
@@ -49,19 +49,19 @@ describe.runIf(isAiTest)("aiDiffRules", () => {
         removedRules: [`* Label receipts as "Receipt"`],
       });
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
-  it("should handle errors gracefully", async () => {
+  it('should handle errors gracefully', async () => {
     const emailAccount = {
       ...getEmailAccount(),
-      user: { ...getEmailAccount().user, aiApiKey: "invalid-api-key" },
+      user: { ...getEmailAccount().user, aiApiKey: 'invalid-api-key' },
     };
-    const oldPromptFile = "Some old prompt";
-    const newPromptFile = "Some new prompt";
+    const oldPromptFile = 'Some old prompt';
+    const newPromptFile = 'Some new prompt';
 
     await expect(
-      aiDiffRules({ emailAccount, oldPromptFile, newPromptFile }),
+      aiDiffRules({ emailAccount, oldPromptFile, newPromptFile })
     ).rejects.toThrow();
   });
 });

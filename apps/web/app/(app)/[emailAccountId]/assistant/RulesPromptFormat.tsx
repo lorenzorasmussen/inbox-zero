@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useCallback, useRef, useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { useCallback, useMemo, useRef } from 'react';
 import {
   SimpleRichTextEditor,
   type SimpleRichTextEditorRef,
-} from "@/components/editor/SimpleRichTextEditor";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useLabels } from "@/hooks/useLabels";
-import { useRules } from "@/hooks/useRules";
-import { toastError } from "@/components/Toast";
-import { ruleToText } from "@/utils/rule/rule-to-text";
-import { MessageText } from "@/components/Typography";
-import { Notice } from "@/components/Notice";
+} from '@/components/editor/SimpleRichTextEditor';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Notice } from '@/components/Notice';
+import { toastError } from '@/components/Toast';
+import { MessageText } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useLabels } from '@/hooks/useLabels';
+import { useRules } from '@/hooks/useRules';
+import { ruleToText } from '@/utils/rule/rule-to-text';
 
 export function RulesPromptFormat() {
   const { data: rules, isLoading: isLoadingRules } = useRules();
@@ -22,23 +22,23 @@ export function RulesPromptFormat() {
   const editorRef = useRef<SimpleRichTextEditorRef>(null);
 
   const rulesText = useMemo(() => {
-    if (!rules) return "";
+    if (!rules) return '';
 
     return rules
       .filter((rule) => rule.enabled)
       .map((rule, index) => {
         const ruleText = ruleToText(rule);
-        return `## Rule ${index + 1}: ${rule.name}\n${rule.enabled ? "" : "(Disabled)\n"}${ruleText}`;
+        return `## Rule ${index + 1}: ${rule.name}\n${rule.enabled ? '' : '(Disabled)\n'}${ruleText}`;
       })
-      .join("\n\n---\n\n");
+      .join('\n\n---\n\n');
   }, [rules]);
 
   const onSubmit = useCallback(async () => {
     const markdown = editorRef.current?.getMarkdown();
-    if (typeof markdown !== "string") return;
-    if (markdown.trim() === "") {
+    if (typeof markdown !== 'string') return;
+    if (markdown.trim() === '') {
       toastError({
-        description: "Please enter a prompt to create rules",
+        description: 'Please enter a prompt to create rules',
       });
       return;
     }

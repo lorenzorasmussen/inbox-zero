@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import { useHotkeys } from "react-hotkeys-hook";
 import {
   Combobox,
   ComboboxInput,
   ComboboxOption,
   ComboboxOptions,
-} from "@headlessui/react";
-import { CheckCircleIcon, TrashIcon, XIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import useSWR from "swr";
-import { z } from "zod";
-import { Input, Label } from "@/components/Input";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ButtonLoader } from "@/components/Loading";
-import { env } from "@/env";
-import { extractNameFromEmail } from "@/utils/email";
-import { Tiptap, type TiptapHandle } from "@/components/editor/Tiptap";
-import { sendEmailAction } from "@/utils/actions/mail";
-import type { ContactsResponse } from "@/app/api/google/contacts/route";
-import type { SendEmailBody } from "@/utils/gmail/mail";
-import { CommandShortcut } from "@/components/ui/command";
-import { useModifierKey } from "@/hooks/useModifierKey";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from '@headlessui/react';
+import { CheckCircleIcon, TrashIcon, XIcon } from 'lucide-react';
+import { useCallback, useRef, useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { useHotkeys } from 'react-hotkeys-hook';
+import useSWR from 'swr';
+import { z } from 'zod';
+import type { ContactsResponse } from '@/app/api/google/contacts/route';
+import { Tiptap, type TiptapHandle } from '@/components/editor/Tiptap';
+import { Input, Label } from '@/components/Input';
+import { ButtonLoader } from '@/components/Loading';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { CommandShortcut } from '@/components/ui/command';
+import { env } from '@/env';
+import { useModifierKey } from '@/hooks/useModifierKey';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { sendEmailAction } from '@/utils/actions/mail';
+import { extractNameFromEmail } from '@/utils/email';
+import type { SendEmailBody } from '@/utils/gmail/mail';
 
 export type ReplyingToEmail = {
   threadId: string;
@@ -78,32 +78,32 @@ export const ComposeEmailForm = ({
       const enrichedData = {
         ...data,
         messageHtml: showFullContent
-          ? data.messageHtml || ""
-          : `${data.messageHtml || ""}<br>${replyingToEmail?.quotedContentHtml || ""}`,
+          ? data.messageHtml || ''
+          : `${data.messageHtml || ''}<br>${replyingToEmail?.quotedContentHtml || ''}`,
       };
 
       try {
         const res = await sendEmailAction(emailAccountId, enrichedData);
         if (res?.serverError) {
           toastError({
-            description: "There was an error sending the email :(",
+            description: 'There was an error sending the email :(',
           });
         } else if (res?.data) {
-          toastSuccess({ description: "Email sent!" });
-          onSuccess?.(res.data.messageId ?? "", res.data.threadId ?? "");
+          toastSuccess({ description: 'Email sent!' });
+          onSuccess?.(res.data.messageId ?? '', res.data.threadId ?? '');
         }
       } catch (error) {
         console.error(error);
-        toastError({ description: "There was an error sending the email :(" });
+        toastError({ description: 'There was an error sending the email :(' });
       }
 
       refetch?.();
     },
-    [refetch, onSuccess, showFullContent, replyingToEmail, emailAccountId],
+    [refetch, onSuccess, showFullContent, replyingToEmail, emailAccountId]
   );
 
   useHotkeys(
-    "mod+enter",
+    'mod+enter',
     (e) => {
       e.preventDefault();
       if (!isSubmitting) {
@@ -114,27 +114,27 @@ export const ComposeEmailForm = ({
       enableOnFormTags: true,
       enableOnContentEditable: true,
       preventDefault: true,
-    },
+    }
   );
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const { data } = useSWR<ContactsResponse, { error: string }>(
     env.NEXT_PUBLIC_CONTACTS_ENABLED
       ? `/api/google/contacts?query=${searchQuery}`
       : null,
     {
       keepPreviousData: true,
-    },
+    }
   );
 
   // TODO not in love with how this was implemented
-  const selectedEmailAddressses = watch("to", "").split(",").filter(Boolean);
+  const selectedEmailAddressses = watch('to', '').split(',').filter(Boolean);
 
   const onRemoveSelectedEmail = (emailAddress: string) => {
     const filteredEmailAddresses = selectedEmailAddressses.filter(
-      (email) => email !== emailAddress,
+      (email) => email !== emailAddress
     );
-    setValue("to", filteredEmailAddresses.join(","));
+    setValue('to', filteredEmailAddresses.join(','));
   };
 
   const handleComboboxOnChange = (values: string[]) => {
@@ -143,8 +143,8 @@ export const ComposeEmailForm = ({
 
     const { success } = z.string().email().safeParse(lastValue);
     if (success) {
-      setValue("to", values.join(","));
-      setSearchQuery("");
+      setValue('to', values.join(','));
+      setSearchQuery('');
     }
   };
 
@@ -152,9 +152,9 @@ export const ComposeEmailForm = ({
 
   const handleEditorChange = useCallback(
     (html: string) => {
-      setValue("messageHtml", html);
+      setValue('messageHtml', html);
     },
-    [setValue],
+    [setValue]
   );
 
   const editorRef = useRef<TiptapHandle>(null);
@@ -163,11 +163,11 @@ export const ComposeEmailForm = ({
     if (!showFullContent) {
       try {
         editorRef.current?.appendContent(
-          replyingToEmail?.quotedContentHtml ?? "",
+          replyingToEmail?.quotedContentHtml ?? ''
         );
       } catch (error) {
-        console.error("Failed to append content:", error);
-        toastError({ description: "Failed to show full content" });
+        console.error('Failed to append content:', error);
+        toastError({ description: 'Failed to show full content' });
         return; // Don't set showFullContent to true if append failed
       }
     }
@@ -182,7 +182,7 @@ export const ComposeEmailForm = ({
           className="flex gap-1 text-left"
           onClick={() => setEditReply(true)}
         >
-          <span className="text-green-500">Draft</span>{" "}
+          <span className="text-green-500">Draft</span>{' '}
           <span className="max-w-md break-words text-foreground">
             to {extractNameFromEmail(replyingToEmail.to)}
           </span>
@@ -227,13 +227,13 @@ export const ComposeEmailForm = ({
                       className="w-full border-none bg-background p-0 text-sm focus:border-none focus:ring-0"
                       onChange={(event) => setSearchQuery(event.target.value)}
                       onKeyUp={(event) => {
-                        if (event.key === "Enter") {
+                        if (event.key === 'Enter') {
                           event.preventDefault();
                           setValue(
-                            "to",
-                            [...selectedEmailAddressses, searchQuery].join(","),
+                            'to',
+                            [...selectedEmailAddressses, searchQuery].join(',')
                           );
-                          setSearchQuery("");
+                          setSearchQuery('');
                         }
                       }}
                     />
@@ -241,7 +241,7 @@ export const ComposeEmailForm = ({
                     {!!data?.result?.length && (
                       <ComboboxOptions
                         className={
-                          "absolute z-10 mt-1 max-h-60 overflow-auto rounded-md bg-popover py-1 text-base shadow-lg ring-1 ring-border focus:outline-none sm:text-sm"
+                          'absolute z-10 mt-1 max-h-60 overflow-auto rounded-md bg-popover py-1 text-base shadow-lg ring-1 ring-border focus:outline-none sm:text-sm'
                         }
                       >
                         <ComboboxOption
@@ -260,7 +260,7 @@ export const ComposeEmailForm = ({
                             <ComboboxOption
                               className={({ focus }) =>
                                 `cursor-default select-none px-4 py-1 text-foreground ${
-                                  focus && "bg-accent"
+                                  focus && 'bg-accent'
                                 }`
                               }
                               key={person.emailAddress}
@@ -278,11 +278,11 @@ export const ComposeEmailForm = ({
                                         src={person.profilePictureUrl!}
                                         alt={
                                           person.emailAddress ||
-                                          "Profile picture"
+                                          'Profile picture'
                                         }
                                       />
                                       <AvatarFallback>
-                                        {person.emailAddress?.[0] || "A"}
+                                        {person.emailAddress?.[0] || 'A'}
                                       </AvatarFallback>
                                     </Avatar>
                                   )}
@@ -310,7 +310,7 @@ export const ComposeEmailForm = ({
               type="text"
               name="to"
               label="To"
-              registerProps={register("to", { required: true })}
+              registerProps={register('to', { required: true })}
               error={errors.to}
             />
           )}
@@ -318,7 +318,7 @@ export const ComposeEmailForm = ({
           <Input
             type="text"
             name="subject"
-            registerProps={register("subject", { required: true })}
+            registerProps={register('subject', { required: true })}
             error={errors.subject}
             placeholder="Subject"
             className="border border-input bg-background focus:border-slate-200 focus:ring-0 focus:ring-slate-200"

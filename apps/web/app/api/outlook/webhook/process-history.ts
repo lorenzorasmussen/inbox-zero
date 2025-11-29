@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
-import { captureException } from "@/utils/error";
-import { createEmailProvider } from "@/utils/email/provider";
-import type { OutlookResourceData } from "@/app/api/outlook/webhook/types";
-import { processHistoryItem } from "@/utils/webhook/process-history-item";
+import { NextResponse } from 'next/server';
+import type { OutlookResourceData } from '@/app/api/outlook/webhook/types';
+import { createEmailProvider } from '@/utils/email/provider';
+import { captureException } from '@/utils/error';
+import type { Logger } from '@/utils/logger';
+import { processHistoryItem } from '@/utils/webhook/process-history-item';
 import {
-  validateWebhookAccount,
   getWebhookEmailAccount,
-} from "@/utils/webhook/validate-webhook-account";
-import type { Logger } from "@/utils/logger";
+  validateWebhookAccount,
+} from '@/utils/webhook/validate-webhook-account';
 
 export async function processHistoryForUser({
   subscriptionId,
@@ -22,7 +22,7 @@ export async function processHistoryForUser({
     {
       watchEmailsSubscriptionId: subscriptionId,
     },
-    logger,
+    logger
   );
 
   logger = logger.with({
@@ -44,7 +44,7 @@ export async function processHistoryForUser({
   } = validation.data;
 
   const accountProvider =
-    validatedEmailAccount.account?.provider || "microsoft";
+    validatedEmailAccount.account?.provider || 'microsoft';
 
   const provider = await createEmailProvider({
     emailAccountId: validatedEmailAccount.id,
@@ -65,22 +65,22 @@ export async function processHistoryForUser({
         hasAiAccess: userHasAiAccess,
         rules: validatedEmailAccount.rules,
         logger,
-      },
+      }
     );
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    if (error instanceof Error && error.message.includes("invalid_grant")) {
-      logger.warn("Invalid grant", { email: validatedEmailAccount.email });
+    if (error instanceof Error && error.message.includes('invalid_grant')) {
+      logger.warn('Invalid grant', { email: validatedEmailAccount.email });
       return NextResponse.json({ ok: true });
     }
 
     captureException(
       error,
       { extra: { subscriptionId, resourceData } },
-      validatedEmailAccount.email,
+      validatedEmailAccount.email
     );
-    logger.error("Error processing webhook", {
+    logger.error('Error processing webhook', {
       resourceData,
       email: validatedEmailAccount.email,
       error:

@@ -1,5 +1,5 @@
-import { redirectToEmailAccountPath } from "@/utils/account";
+import { redirectToEmailAccountPath } from '@/utils/account';
 
 export default async function BulkUnsubscribePage() {
-  await redirectToEmailAccountPath("/bulk-unsubscribe");
+  await redirectToEmailAccountPath('/bulk-unsubscribe');
 }

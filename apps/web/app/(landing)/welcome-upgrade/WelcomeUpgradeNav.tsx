@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { logOut } from "@/utils/user";
+import { Button } from '@/components/ui/button';
+import { logOut } from '@/utils/user';
 
 export function WelcomeUpgradeNav() {
   return (
@@ -9,7 +9,7 @@ export function WelcomeUpgradeNav() {
       <div className="flex justify-end">
         <Button
           onClick={() => {
-            logOut("/");
+            logOut('/');
           }}
           variant="ghost"
         >

@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo } from 'react';
+import type { RulesResponse } from '@/app/api/user/rules/route';
+import { LoadingContent } from '@/components/LoadingContent';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { RuleForm } from "./RuleForm";
-import { LoadingContent } from "@/components/LoadingContent";
-import { useRule } from "@/hooks/useRule";
-import type { CreateRuleBody } from "@/utils/actions/rule.validation";
-import { useDialogState } from "@/hooks/useDialogState";
-import { ActionType, LogicalOperator } from "@/generated/prisma/enums";
-import { ConditionType } from "@/utils/config";
-import type { RulesResponse } from "@/app/api/user/rules/route";
+} from '@/components/ui/dialog';
+import { ActionType, LogicalOperator } from '@/generated/prisma/enums';
+import { useDialogState } from '@/hooks/useDialogState';
+import { useRule } from '@/hooks/useRule';
+import type { CreateRuleBody } from '@/utils/actions/rule.validation';
+import { ConditionType } from '@/utils/config';
+import { RuleForm } from './RuleForm';
 
 interface RuleDialogProps {
   ruleId?: string;
@@ -52,7 +52,7 @@ export function RuleDialog({
   initialRule,
   editMode = true,
 }: RuleDialogProps) {
-  const { data, isLoading, error, mutate } = useRule(ruleId || "");
+  const { data, isLoading, error, mutate } = useRule(ruleId || '');
 
   const handleSuccess = () => {
     onSuccess?.();
@@ -71,8 +71,8 @@ export function RuleDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
-        <DialogHeader className={ruleId ? "sr-only" : ""}>
-          <DialogTitle>{ruleId ? "Edit Rule" : "Create Rule"}</DialogTitle>
+        <DialogHeader className={ruleId ? 'sr-only' : ''}>
+          <DialogTitle>{ruleId ? 'Edit Rule' : 'Create Rule'}</DialogTitle>
         </DialogHeader>
         <div>
           {ruleId ? (
@@ -91,7 +91,7 @@ export function RuleDialog({
           ) : (
             <RuleForm
               rule={{
-                name: "",
+                name: '',
                 conditions: [
                   {
                     type: ConditionType.AI,
@@ -119,9 +119,9 @@ export function RuleDialog({
 }
 
 function transformRuleForDuplication(
-  rule: RulesResponse[number],
+  rule: RulesResponse[number]
 ): Partial<CreateRuleBody> {
-  const conditions: CreateRuleBody["conditions"] = [];
+  const conditions: CreateRuleBody['conditions'] = [];
 
   // Add AI condition if instructions exist
   if (rule.instructions) {

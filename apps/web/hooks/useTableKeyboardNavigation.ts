@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, type RefCallback } from "react";
+import { type RefCallback, useCallback, useEffect, useState } from 'react';
 
 interface UseTableKeyboardNavigationOptions<T> {
   items: T[];
@@ -22,7 +22,7 @@ export function useTableKeyboardNavigation<T>({
         }
       };
     },
-    [rowRefs],
+    [rowRefs]
   );
 
   const handleKeyDown = useCallback(
@@ -32,26 +32,26 @@ export function useTableKeyboardNavigation<T>({
       // Check if we're in an editable element (input, textarea, or contenteditable)
       const target = e.target as HTMLElement;
       const isEditableElement =
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.getAttribute("contenteditable") === "true" ||
-        target.closest("[contenteditable=true]") !== null;
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.getAttribute('contenteditable') === 'true' ||
+        target.closest('[contenteditable=true]') !== null;
 
       if (isEditableElement) return;
 
-      if (e.key === "ArrowUp") {
+      if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelectedIndex((prev) => (prev <= 0 ? 0 : prev - 1));
-      } else if (e.key === "ArrowDown") {
+      } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         setSelectedIndex((prev) =>
-          prev >= items.length - 1 ? items.length - 1 : prev + 1,
+          prev >= items.length - 1 ? items.length - 1 : prev + 1
         );
       } else if (onKeyAction && selectedIndex >= 0) {
         onKeyAction(selectedIndex, e.key);
       }
     },
-    [items.length, onKeyAction, selectedIndex],
+    [items.length, onKeyAction, selectedIndex]
   );
 
   // Make sure the selected row is visible
@@ -60,16 +60,16 @@ export function useTableKeyboardNavigation<T>({
       const element = rowRefs.get(selectedIndex);
       if (element) {
         element.scrollIntoView({
-          block: "nearest",
-          behavior: "smooth",
+          block: 'nearest',
+          behavior: 'smooth',
         });
       }
     }
   }, [selectedIndex, rowRefs]);
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
   return { selectedIndex, setSelectedIndex, getRefCallback };

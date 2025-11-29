@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import { summarise } from "@/app/api/ai/summarise/controller";
-import { withEmailAccount } from "@/utils/middleware";
-import { summariseBody } from "@/app/api/ai/summarise/validation";
-import { getSummary } from "@/utils/redis/summary";
-import { emailToContent } from "@/utils/mail";
-import { getEmailAccountWithAi } from "@/utils/user/get";
+import { NextResponse } from 'next/server';
+import { summarise } from '@/app/api/ai/summarise/controller';
+import { summariseBody } from '@/app/api/ai/summarise/validation';
+import { emailToContent } from '@/utils/mail';
+import { withEmailAccount } from '@/utils/middleware';
+import { getSummary } from '@/utils/redis/summary';
+import { getEmailAccountWithAi } from '@/utils/user/get';
 
 export const POST = withEmailAccount(async (request) => {
   const emailAccountId = request.auth.emailAccountId;
@@ -15,11 +15,11 @@ export const POST = withEmailAccount(async (request) => {
   const prompt = emailToContent({
     textHtml: body.textHtml || undefined,
     textPlain: body.textPlain || undefined,
-    snippet: "",
+    snippet: '',
   });
 
   if (!prompt)
-    return NextResponse.json({ error: "No text provided" }, { status: 400 });
+    return NextResponse.json({ error: 'No text provided' }, { status: 400 });
 
   const cachedSummary = await getSummary(prompt);
   if (cachedSummary) return new NextResponse(cachedSummary);
@@ -27,7 +27,7 @@ export const POST = withEmailAccount(async (request) => {
   const userAi = await getEmailAccountWithAi({ emailAccountId });
 
   if (!userAi)
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
   const stream = await summarise({
     text: prompt,

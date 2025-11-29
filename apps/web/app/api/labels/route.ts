@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { withEmailProvider } from "@/utils/middleware";
+import { NextResponse } from 'next/server';
+import { withEmailProvider } from '@/utils/middleware';
 
 export type UnifiedLabel = {
   id: string;
@@ -17,10 +17,10 @@ export type LabelsResponse = {
   labels: UnifiedLabel[];
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
-export const GET = withEmailProvider("labels", async (request) => {
+export const GET = withEmailProvider('labels', async (request) => {
   const { emailProvider } = request;
 
   try {
@@ -36,7 +36,7 @@ export const GET = withEmailProvider("labels", async (request) => {
     }));
     return NextResponse.json({ labels: unifiedLabels });
   } catch (error) {
-    request.logger.error("Error fetching labels", { error });
+    request.logger.error('Error fetching labels', { error });
     return NextResponse.json({ labels: [] }, { status: 500 });
   }
 });

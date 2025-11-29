@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { runRulesAction } from "@/utils/actions/ai-rule";
-import { pushToAiQueueAtom, removeFromAiQueueAtom } from "@/store/ai-queue";
-import { isDefined } from "@/utils/types";
-import { aiQueue } from "@/utils/queue/ai-queue";
-import type { ThreadsResponse } from "@/app/api/threads/route";
+import type { ThreadsResponse } from '@/app/api/threads/route';
+import { pushToAiQueueAtom, removeFromAiQueueAtom } from '@/store/ai-queue';
+import { runRulesAction } from '@/utils/actions/ai-rule';
+import { aiQueue } from '@/utils/queue/ai-queue';
+import { isDefined } from '@/utils/types';
 
 export const runAiRules = async (
   emailAccountId: string,
-  threadsArray: ThreadsResponse["threads"],
-  rerun: boolean,
+  threadsArray: ThreadsResponse['threads'],
+  rerun: boolean
 ) => {
   const threads = threadsArray.filter(isDefined);
   const threadIds = threads.map((t) => t.id);
@@ -26,6 +26,6 @@ export const runAiRules = async (
         isTest: false,
       });
       removeFromAiQueueAtom(thread.id);
-    }),
+    })
   );
 };

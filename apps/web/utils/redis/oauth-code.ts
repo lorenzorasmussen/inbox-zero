@@ -1,9 +1,9 @@
-import { redis } from "@/utils/redis";
-import { createHash } from "node:crypto";
+import { createHash } from 'node:crypto';
+import { redis } from '@/utils/redis';
 
 // Not password hashing - creating a short cache key for OAuth authorization codes
 function createOAuthCodeCacheKey(code: string): string {
-  return createHash("sha256").update(code).digest("hex").slice(0, 16);
+  return createHash('sha256').update(code).digest('hex').slice(0, 16);
 }
 
 function getCodeKey(code: string) {
@@ -11,29 +11,29 @@ function getCodeKey(code: string) {
 }
 
 interface OAuthCodeResult {
-  status: "success";
+  status: 'success';
   params: Record<string, string>;
 }
 
 export async function acquireOAuthCodeLock(code: string): Promise<boolean> {
-  const result = await redis.set(getCodeKey(code), "processing", {
+  const result = await redis.set(getCodeKey(code), 'processing', {
     ex: 60,
     nx: true, // Only set if key doesn't exist (atomic)
   });
 
-  return result === "OK";
+  return result === 'OK';
 }
 
 export async function getOAuthCodeResult(
-  code: string,
+  code: string
 ): Promise<OAuthCodeResult | null> {
   const value = await redis.get<string | OAuthCodeResult>(getCodeKey(code));
 
-  if (!value || value === "processing") {
+  if (!value || value === 'processing') {
     return null;
   }
 
-  if (typeof value === "object" && value.status === "success") {
+  if (typeof value === 'object' && value.status === 'success') {
     return value;
   }
 
@@ -42,10 +42,10 @@ export async function getOAuthCodeResult(
 
 export async function setOAuthCodeResult(
   code: string,
-  params: Record<string, string>,
+  params: Record<string, string>
 ): Promise<void> {
   const result: OAuthCodeResult = {
-    status: "success",
+    status: 'success',
     params,
   };
 

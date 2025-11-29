@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { XIcon, CreditCardIcon, AlertTriangleIcon } from "lucide-react";
-import { useUser } from "@/hooks/useUser";
-import { isPremium } from "@/utils/premium";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/utils";
-import { HoverCard } from "@/components/HoverCard";
+import { AlertTriangleIcon, CreditCardIcon, XIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { HoverCard } from '@/components/HoverCard';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { useUser } from '@/hooks/useUser';
+import { cn } from '@/utils';
+import { isPremium } from '@/utils/premium';
 
 interface PremiumData {
   lemonSqueezyRenewsAt?: Date | string | null;
@@ -30,22 +30,22 @@ export function PremiumExpiredCardContent({
 }: PremiumExpiredCardProps & { isCollapsed?: boolean }) {
   // Convert string dates to Date objects if needed
   const lemonSqueezyRenewsAt = premium?.lemonSqueezyRenewsAt
-    ? typeof premium.lemonSqueezyRenewsAt === "string"
+    ? typeof premium.lemonSqueezyRenewsAt === 'string'
       ? new Date(premium.lemonSqueezyRenewsAt)
       : premium.lemonSqueezyRenewsAt
     : null;
 
   const isUserPremium = isPremium(
     lemonSqueezyRenewsAt,
-    premium?.stripeSubscriptionStatus || null,
+    premium?.stripeSubscriptionStatus || null
   );
 
   if (isUserPremium) return null;
 
   const getSubscriptionMessage = () => {
     const UPGRADE_MESSAGE = {
-      title: "Upgrade to Premium",
-      description: "Upgrade to Premium to enable your AI email assistant.",
+      title: 'Upgrade to Premium',
+      description: 'Upgrade to Premium to enable your AI email assistant.',
     };
 
     if (!premium) {
@@ -64,50 +64,50 @@ export function PremiumExpiredCardContent({
 
     if (!premium || hasNoSubscription) {
       return {
-        title: "Upgrade to Premium",
-        description: "Upgrade to Premium to enable your AI email assistant.",
+        title: 'Upgrade to Premium',
+        description: 'Upgrade to Premium to enable your AI email assistant.',
       };
     }
 
-    if (status === "past_due") {
+    if (status === 'past_due') {
       return {
-        title: "Payment Past Due",
-        description: "Update your payment method to continue service",
+        title: 'Payment Past Due',
+        description: 'Update your payment method to continue service',
       };
     }
 
-    if (status === "canceled" || status === "cancelled") {
+    if (status === 'canceled' || status === 'cancelled') {
       return {
-        title: "Subscription Cancelled",
-        description: "Reactivate to resume AI email management",
+        title: 'Subscription Cancelled',
+        description: 'Reactivate to resume AI email management',
       };
     }
 
-    if (status === "incomplete" || status === "incomplete_expired") {
+    if (status === 'incomplete' || status === 'incomplete_expired') {
       return {
-        title: "Payment Incomplete",
-        description: "Complete your payment to activate service",
+        title: 'Payment Incomplete',
+        description: 'Complete your payment to activate service',
       };
     }
 
-    if (status === "unpaid") {
+    if (status === 'unpaid') {
       return {
-        title: "Payment Required",
-        description: "Update payment to continue AI features",
+        title: 'Payment Required',
+        description: 'Update payment to continue AI features',
       };
     }
 
-    if (hasLemonSqueezyExpired || status === "expired") {
+    if (hasLemonSqueezyExpired || status === 'expired') {
       return {
-        title: "Subscription Expired",
-        description: "Renew your subscription to continue",
+        title: 'Subscription Expired',
+        description: 'Renew your subscription to continue',
       };
     }
 
     // Default fallback
     return {
-      title: "Subscription Issue",
-      description: "Please check your subscription status",
+      title: 'Subscription Issue',
+      description: 'Please check your subscription status',
     };
   };
 
@@ -119,8 +119,8 @@ export function PremiumExpiredCardContent({
       !premium.stripeSubscriptionId &&
       !premium.lemonSqueezySubscriptionId);
 
-  const buttonText = isNewUser ? "Upgrade" : "Reactivate";
-  const buttonHref = isNewUser ? "/premium" : "/settings";
+  const buttonText = isNewUser ? 'Upgrade' : 'Reactivate';
+  const buttonHref = isNewUser ? '/premium' : '/settings';
 
   // When collapsed, show only the alert icon with a hover card
   if (isCollapsed) {
@@ -162,8 +162,8 @@ export function PremiumExpiredCardContent({
   return (
     <Card
       className={cn(
-        "border-orange-200 bg-gradient-to-tr from-transparent via-orange-50/80 to-orange-500/15 shadow-sm",
-        "dark:border-orange-900 dark:from-orange-950/50 dark:via-orange-900/20 dark:to-orange-800/10",
+        'border-orange-200 bg-gradient-to-tr from-transparent via-orange-50/80 to-orange-500/15 shadow-sm',
+        'dark:border-orange-900 dark:from-orange-950/50 dark:via-orange-900/20 dark:to-orange-800/10'
       )}
     >
       <div className="p-3">
@@ -221,7 +221,7 @@ export function PremiumCard({
   if (isLoading || dismissed || !user) return null;
 
   return (
-    <div className={cn("px-3 pt-4", isCollapsed && "flex justify-center")}>
+    <div className={cn('px-3 pt-4', isCollapsed && 'flex justify-center')}>
       <PremiumExpiredCardContent
         premium={user.premium}
         onDismiss={isCollapsed ? undefined : () => setDismissed(true)}

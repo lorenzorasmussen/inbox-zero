@@ -1,6 +1,6 @@
-import prisma from "@/utils/prisma";
+import prisma from '@/utils/prisma';
 
-type EmailField = "to" | "from" | "fromDomain";
+type EmailField = 'to' | 'from' | 'fromDomain';
 
 interface EmailFieldStatsResult {
   data: Array<{
@@ -43,7 +43,7 @@ export async function getEmailFieldStats({
     },
     orderBy: {
       _count: {
-        [field]: "desc",
+        [field]: 'desc',
       },
     },
     take: 50,
@@ -52,12 +52,12 @@ export async function getEmailFieldStats({
   // Create the result with the correct field name
   return {
     data: emailsCount.map((item) => {
-      const resultField = field.includes("Domain")
-        ? field.replace("Domain", "")
+      const resultField = field.includes('Domain')
+        ? field.replace('Domain', '')
         : field;
 
       return {
-        [resultField]: item[field] || "",
+        [resultField]: item[field] || '',
         count: item._count ? item._count[field] : 0,
       };
     }),

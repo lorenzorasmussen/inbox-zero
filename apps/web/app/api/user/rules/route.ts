@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { withEmailAccount } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type RulesResponse = Awaited<ReturnType<typeof getRules>>;
 
@@ -11,11 +11,11 @@ async function getRules({ emailAccountId }: { emailAccountId: string }) {
       actions: true,
       group: { select: { name: true } },
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: 'asc' },
   });
 }
 
-export const GET = withEmailAccount("user/rules", async (request) => {
+export const GET = withEmailAccount('user/rules', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
   const result = await getRules({ emailAccountId });
   return NextResponse.json(result);

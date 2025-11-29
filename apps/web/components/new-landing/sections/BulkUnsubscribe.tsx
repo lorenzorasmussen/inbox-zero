@@ -1,13 +1,13 @@
-import Image from "next/image";
+import Image from 'next/image';
+import { CardWrapper } from '@/components/new-landing/common/CardWrapper';
 import {
   Section,
   SectionContent,
-} from "@/components/new-landing/common/Section";
-import { CardWrapper } from "@/components/new-landing/common/CardWrapper";
+} from '@/components/new-landing/common/Section';
 import {
   SectionHeading,
   SectionSubtitle,
-} from "@/components/new-landing/common/Typography";
+} from '@/components/new-landing/common/Typography';
 
 export function BulkUnsubscribe() {
   return (

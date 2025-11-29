@@ -1,18 +1,18 @@
-import { NextResponse, after } from "next/server";
-import { headers } from "next/headers";
-import { z } from "zod";
-import { withError } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
-import { createScopedLogger, type Logger } from "@/utils/logger";
-import type { ParsedMessage } from "@/utils/types";
-import { aiDetectRecurringPattern } from "@/utils/ai/choose-rule/ai-detect-recurring-pattern";
-import { isValidInternalApiKey } from "@/utils/internal-api";
-import { extractEmailAddress } from "@/utils/email";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
-import { saveLearnedPattern } from "@/utils/rule/learned-patterns";
-import { checkSenderRuleHistory } from "@/utils/rule/check-sender-rule-history";
-import { createEmailProvider } from "@/utils/email/provider";
-import type { EmailProvider } from "@/utils/email/types";
+import { headers } from 'next/headers';
+import { after, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { aiDetectRecurringPattern } from '@/utils/ai/choose-rule/ai-detect-recurring-pattern';
+import { extractEmailAddress } from '@/utils/email';
+import { createEmailProvider } from '@/utils/email/provider';
+import type { EmailProvider } from '@/utils/email/types';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import { isValidInternalApiKey } from '@/utils/internal-api';
+import { createScopedLogger, type Logger } from '@/utils/logger';
+import { withError } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { checkSenderRuleHistory } from '@/utils/rule/check-sender-rule-history';
+import { saveLearnedPattern } from '@/utils/rule/learned-patterns';
+import type { ParsedMessage } from '@/utils/types';
 
 export const maxDuration = 60;
 
@@ -28,11 +28,11 @@ export type AnalyzeSenderPatternBody = z.infer<typeof schema>;
 export const POST = withError(async (request) => {
   const json = await request.json();
 
-  let logger = createScopedLogger("api/ai/pattern-match");
+  let logger = createScopedLogger('api/ai/pattern-match');
 
   if (!isValidInternalApiKey(await headers(), logger)) {
-    logger.error("Invalid API key for sender pattern analysis", json);
-    return NextResponse.json({ error: "Invalid API key" });
+    logger.error('Invalid API key for sender pattern analysis', json);
+    return NextResponse.json({ error: 'Invalid API key' });
   }
 
   const data = schema.parse(json);
@@ -41,7 +41,7 @@ export const POST = withError(async (request) => {
 
   logger = logger.with({ emailAccountId, from });
 
-  logger.trace("Analyzing sender pattern");
+  logger.trace('Analyzing sender pattern');
 
   // return immediately and process in background
   after(() => process({ emailAccountId, from, logger }));
@@ -69,7 +69,7 @@ async function process({
     const emailAccount = await getEmailAccountWithRules({ emailAccountId });
 
     if (!emailAccount) {
-      logger.error("Email account not found");
+      logger.error('Email account not found');
       return NextResponse.json({ success: false }, { status: 404 });
     }
 
@@ -83,14 +83,14 @@ async function process({
     });
 
     if (existingCheck?.patternAnalyzed) {
-      logger.info("Sender has already been analyzed");
+      logger.info('Sender has already been analyzed');
       return NextResponse.json({ success: true });
     }
 
     const account = emailAccount.account;
 
     if (!account?.provider) {
-      logger.error("No email provider found");
+      logger.error('No email provider found');
       return NextResponse.json({ success: false }, { status: 404 });
     }
 
@@ -104,7 +104,7 @@ async function process({
 
     // If no threads found or we've detected a conversation, return early
     if (conversationDetected) {
-      logger.info("Skipping sender pattern detection - conversation detected", {
+      logger.info('Skipping sender pattern detection - conversation detected', {
         provider: account.provider,
       });
       await savePatternCheck({ emailAccountId, from });
@@ -112,7 +112,7 @@ async function process({
     }
 
     if (threadsWithMessages.length === 0) {
-      logger.error("No threads found from this sender", {
+      logger.error('No threads found from this sender', {
         provider: account.provider,
       });
 
@@ -121,7 +121,7 @@ async function process({
     }
 
     if (threadsWithMessages.length < THRESHOLD_THREADS) {
-      logger.info("Not enough emails found from this sender", {
+      logger.info('Not enough emails found from this sender', {
         threadsWithMessagesCount: threadsWithMessages.length,
       });
 
@@ -129,7 +129,7 @@ async function process({
     }
 
     const allMessages = threadsWithMessages.flatMap(
-      (thread) => thread.messages,
+      (thread) => thread.messages
     );
 
     const senderHistory = await checkSenderRuleHistory({
@@ -139,7 +139,7 @@ async function process({
     });
 
     if (!senderHistory.hasConsistentRule) {
-      logger.info("Sender does not have consistent rule history", {
+      logger.info('Sender does not have consistent rule history', {
         totalEmails: senderHistory.totalEmails,
         uniqueRulesMatched: senderHistory.ruleMatches.size,
       });
@@ -151,7 +151,7 @@ async function process({
       return NextResponse.json({ success: true });
     }
 
-    logger.info("Sender has consistent rule history", {
+    logger.info('Sender has consistent rule history', {
       consistentRule: senderHistory.consistentRuleName,
       totalEmails: senderHistory.totalEmails,
     });
@@ -163,7 +163,7 @@ async function process({
       emailAccount,
       rules: emailAccount.rules.map((rule) => ({
         name: rule.name,
-        instructions: rule.instructions || "",
+        instructions: rule.instructions || '',
       })),
       consistentRuleName: senderHistory.consistentRuleName,
     });
@@ -177,7 +177,7 @@ async function process({
           ruleName: patternResult.matchedRule,
         });
       } else {
-        logger.warn("AI suggested different rule than historical data", {
+        logger.warn('AI suggested different rule than historical data', {
           aiRule: patternResult.matchedRule,
           historicalRule: senderHistory.consistentRuleName,
         });
@@ -188,11 +188,11 @@ async function process({
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    logger.error("Error in pattern match API", { error });
+    logger.error('Error in pattern match API', { error });
 
     return NextResponse.json(
-      { error: "Failed to detect pattern" },
-      { status: 500 },
+      { error: 'Failed to detect pattern' },
+      { status: 500 }
     );
   }
 }
@@ -237,7 +237,7 @@ async function getThreadsFromSender(
   provider: EmailProvider,
   sender: string,
   maxResults: number,
-  logger: Logger,
+  logger: Logger
 ): Promise<{
   threads: Array<{
     threadId: string;
@@ -248,7 +248,7 @@ async function getThreadsFromSender(
   const from = extractEmailAddress(sender);
 
   if (!from) {
-    logger.error("Unable to analyze sender pattern - from address missing", {
+    logger.error('Unable to analyze sender pattern - from address missing', {
       from: sender,
     });
     return {
@@ -258,7 +258,7 @@ async function getThreadsFromSender(
   }
 
   const { threads } = await provider.getThreadsWithQuery({
-    query: { fromEmail: from, type: "all" },
+    query: { fromEmail: from, type: 'all' },
     maxResults,
   });
 

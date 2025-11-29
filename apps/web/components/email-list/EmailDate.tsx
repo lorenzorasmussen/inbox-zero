@@ -1,4 +1,4 @@
-import { formatShortDate } from "@/utils/date";
+import { formatShortDate } from '@/utils/date';
 
 export function EmailDate(props: { date: Date }) {
   return (

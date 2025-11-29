@@ -1,37 +1,37 @@
-"use client";
+'use client';
 
-import { Suspense } from "react";
-import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
-import { NavBottom } from "@/components/NavBottom";
+import dynamic from 'next/dynamic';
+import { usePathname } from 'next/navigation';
+import { Suspense } from 'react';
+import { NavBottom } from '@/components/NavBottom';
+import { SidebarRight } from '@/components/SidebarRight';
+import { SideNav } from '@/components/SideNav';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { SideNav } from "@/components/SideNav";
-import { SidebarRight } from "@/components/SidebarRight";
-import { cn } from "@/utils";
+} from '@/components/ui/sidebar';
+import { cn } from '@/utils';
 
-const CrispWithNoSSR = dynamic(() => import("@/components/CrispChat"));
+const CrispWithNoSSR = dynamic(() => import('@/components/CrispChat'));
 
 function ContentWrapper({ children }: { children: React.ReactNode }) {
   const { state } = useSidebar();
-  const isRightSidebarOpen = state.includes("chat-sidebar");
+  const isRightSidebarOpen = state.includes('chat-sidebar');
 
   return (
     <div
       className={cn(
-        "flex-1 transition-all duration-200 ease-linear",
-        isRightSidebarOpen && "lg:mr-[450px]",
+        'flex-1 transition-all duration-200 ease-linear',
+        isRightSidebarOpen && 'lg:mr-[450px]'
       )}
     >
       <SidebarInset className="overflow-hidden bg-background pt-9 max-w-full">
         {children}
         <div
           className="md:hidden md:pt-0"
-          style={{ paddingTop: "calc(env(safe-area-inset-bottom) + 1rem)" }}
+          style={{ paddingTop: 'calc(env(safe-area-inset-bottom) + 1rem)' }}
         >
           <NavBottom />
         </div>
@@ -56,13 +56,13 @@ export function SideNavWithTopNav({
 
   // Ugly code. May change the onboarding path later so we don't need to do this.
   // Only return children for the main onboarding page: /[emailAccountId]/onboarding
-  const segments = pathname.split("/").filter(Boolean);
-  if (segments.length === 2 && segments[1] === "onboarding") return children;
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length === 2 && segments[1] === 'onboarding') return children;
 
   return (
     <SidebarProvider
-      defaultOpen={defaultOpen ? ["left-sidebar"] : []}
-      sidebarNames={["left-sidebar", "chat-sidebar"]}
+      defaultOpen={defaultOpen ? ['left-sidebar'] : []}
+      sidebarNames={['left-sidebar', 'chat-sidebar']}
     >
       <MobileHeader />
       <SideNav name="left-sidebar" />

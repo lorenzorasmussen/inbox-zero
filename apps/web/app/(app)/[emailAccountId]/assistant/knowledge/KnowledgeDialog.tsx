@@ -1,5 +1,6 @@
-"use client";
+'use client';
 
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,9 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { KnowledgeBase } from "./KnowledgeBase";
+} from '@/components/ui/dialog';
+import { KnowledgeBase } from './KnowledgeBase';
 
 export function KnowledgeDialog({ enabled }: { enabled: boolean }) {
   return (

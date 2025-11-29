@@ -1,13 +1,13 @@
-import { Suspense } from "react";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import prisma from "@/utils/prisma";
-import { PermissionsCheck } from "@/app/(app)/[emailAccountId]/PermissionsCheck";
-import { EmailProvider } from "@/providers/EmailProvider";
-import { ASSISTANT_ONBOARDING_COOKIE } from "@/utils/cookies";
-import { prefixPath } from "@/utils/path";
-import { Chat } from "@/components/assistant-chat/chat";
-import { checkUserOwnsEmailAccount } from "@/utils/email-account";
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { PermissionsCheck } from '@/app/(app)/[emailAccountId]/PermissionsCheck';
+import { Chat } from '@/components/assistant-chat/chat';
+import { EmailProvider } from '@/providers/EmailProvider';
+import { ASSISTANT_ONBOARDING_COOKIE } from '@/utils/cookies';
+import { checkUserOwnsEmailAccount } from '@/utils/email-account';
+import { prefixPath } from '@/utils/path';
+import prisma from '@/utils/prisma';
 
 export const maxDuration = 300; // Applies to the actions
 
@@ -22,7 +22,7 @@ export default async function AssistantPage({
   // onboarding redirect
   const cookieStore = await cookies();
   const viewedOnboarding =
-    cookieStore.get(ASSISTANT_ONBOARDING_COOKIE)?.value === "true";
+    cookieStore.get(ASSISTANT_ONBOARDING_COOKIE)?.value === 'true';
 
   if (!viewedOnboarding) {
     const hasRule = await prisma.rule.findFirst({
@@ -31,7 +31,7 @@ export default async function AssistantPage({
     });
 
     if (!hasRule) {
-      redirect(prefixPath(emailAccountId, "/assistant?onboarding=true"));
+      redirect(prefixPath(emailAccountId, '/assistant?onboarding=true'));
     }
   }
 

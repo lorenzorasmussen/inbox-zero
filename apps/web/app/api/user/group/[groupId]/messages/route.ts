@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server";
-import { withEmailProvider } from "@/utils/middleware";
-import { getGroupEmails } from "@/app/api/user/group/[groupId]/messages/controller";
+import { NextResponse } from 'next/server';
+import { getGroupEmails } from '@/app/api/user/group/[groupId]/messages/controller';
+import { withEmailProvider } from '@/utils/middleware';
 
 export const GET = withEmailProvider(
-  "user/group/messages",
+  'user/group/messages',
   async (request, { params }) => {
     const emailAccountId = request.auth.emailAccountId;
 
     const { groupId } = await params;
-    if (!groupId) return NextResponse.json({ error: "Missing group id" });
+    if (!groupId) return NextResponse.json({ error: 'Missing group id' });
 
     const { messages } = await getGroupEmails({
       provider: request.emailProvider.name,
@@ -16,9 +16,9 @@ export const GET = withEmailProvider(
       emailAccountId,
       from: undefined,
       to: undefined,
-      pageToken: "",
+      pageToken: '',
     });
 
     return NextResponse.json({ messages });
-  },
+  }
 );

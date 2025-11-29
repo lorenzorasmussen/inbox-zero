@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { Markdown } from "tiptap-markdown";
-import { Placeholder } from "@tiptap/extension-placeholder";
-import { useImperativeHandle, forwardRef } from "react";
-import { cn } from "@/utils";
-import { createLabelMentionExtension } from "./extensions/LabelMention";
-import type { EmailLabel } from "@/providers/EmailProvider";
-import "./SimpleRichTextEditor.css";
+import { Placeholder } from '@tiptap/extension-placeholder';
+import { EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import { forwardRef, useImperativeHandle } from 'react';
+import { Markdown } from 'tiptap-markdown';
+import type { EmailLabel } from '@/providers/EmailProvider';
+import { cn } from '@/utils';
+import { createLabelMentionExtension } from './extensions/LabelMention';
+import './SimpleRichTextEditor.css';
 
 interface SimpleRichTextEditorProps {
   placeholder?: string;
@@ -33,13 +33,13 @@ export const SimpleRichTextEditor = forwardRef<
     {
       placeholder,
       className,
-      defaultValue = "",
+      defaultValue = '',
       minHeight = 300,
       userLabels,
       onClearContents,
       editable = true,
     },
-    ref,
+    ref
   ) => {
     const editor = useEditor({
       editable,
@@ -49,7 +49,7 @@ export const SimpleRichTextEditor = forwardRef<
           strike: false,
           code: {
             HTMLAttributes: {
-              class: "simple-editor-highlight",
+              class: 'simple-editor-highlight',
             },
           },
           codeBlock: false,
@@ -81,7 +81,7 @@ export const SimpleRichTextEditor = forwardRef<
           transformCopiedText: true,
           breaks: false,
           linkify: false,
-          bulletListMarker: "*",
+          bulletListMarker: '*',
         }),
         ...(userLabels ? [createLabelMentionExtension(userLabels)] : []),
       ],
@@ -89,22 +89,22 @@ export const SimpleRichTextEditor = forwardRef<
       editorProps: {
         attributes: {
           class: cn(
-            "p-3 max-w-none focus:outline-none max-w-none simple-rich-editor",
-            "prose prose-sm",
-            "prose-headings:font-title prose-headings:text-foreground",
-            "prose-p:text-foreground prose-li:text-foreground",
-            "prose-strong:text-foreground prose-strong:font-semibold",
-            "prose-ul:text-foreground prose-ol:text-foreground",
-            "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+            'p-3 max-w-none focus:outline-none max-w-none simple-rich-editor',
+            'prose prose-sm',
+            'prose-headings:font-title prose-headings:text-foreground',
+            'prose-p:text-foreground prose-li:text-foreground',
+            'prose-strong:text-foreground prose-strong:font-semibold',
+            'prose-ul:text-foreground prose-ol:text-foreground',
+            '[&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
             // Placeholder styles
-            "[&_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]",
-            "[&_p.is-editor-empty:first-child::before]:float-left",
-            "[&_p.is-editor-empty:first-child::before]:text-muted-foreground",
-            "[&_p.is-editor-empty:first-child::before]:pointer-events-none",
-            "[&_p.is-editor-empty:first-child::before]:h-0",
+            '[&_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]',
+            '[&_p.is-editor-empty:first-child::before]:float-left',
+            '[&_p.is-editor-empty:first-child::before]:text-muted-foreground',
+            '[&_p.is-editor-empty:first-child::before]:pointer-events-none',
+            '[&_p.is-editor-empty:first-child::before]:h-0'
           ),
           style: `min-height: ${minHeight}px`,
-          ...(placeholder && { "data-placeholder": placeholder }),
+          ...(placeholder && { 'data-placeholder': placeholder }),
         },
       },
       onUpdate: ({ editor }) => {
@@ -112,7 +112,7 @@ export const SimpleRichTextEditor = forwardRef<
           onClearContents &&
           editor.isEmpty &&
           defaultValue &&
-          defaultValue.trim() !== ""
+          defaultValue.trim() !== ''
         ) {
           onClearContents();
         }
@@ -133,20 +133,20 @@ export const SimpleRichTextEditor = forwardRef<
           }
         },
         getMarkdown: () => {
-          return editor?.storage.markdown.getMarkdown() || "";
+          return editor?.storage.markdown.getMarkdown() || '';
         },
       }),
-      [editor],
+      [editor]
     );
 
     return (
-      <div className={cn("relative w-full", className)}>
+      <div className={cn('relative w-full', className)}>
         <div
           className={cn(
-            "rounded-md border border-input bg-background",
+            'rounded-md border border-input bg-background',
             editable &&
-              "focus-within:border-ring focus-within:ring-1 focus-within:ring-ring",
-            !editable && "bg-muted/30 cursor-not-allowed",
+              'focus-within:border-ring focus-within:ring-1 focus-within:ring-ring',
+            !editable && 'bg-muted/30 cursor-not-allowed'
           )}
           style={{ minHeight }}
         >
@@ -154,5 +154,5 @@ export const SimpleRichTextEditor = forwardRef<
         </div>
       </div>
     );
-  },
+  }
 );

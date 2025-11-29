@@ -1,14 +1,14 @@
-import { ScheduledActionStatus } from "@/generated/prisma/enums";
-import prisma from "@/utils/prisma";
-import type { ActionItem } from "@/utils/ai/types";
-import { createScopedLogger } from "@/utils/logger";
-import { canActionBeDelayed } from "@/utils/delayed-actions";
-import { env } from "@/env";
-import { getCronSecretHeader } from "@/utils/cron";
-import { Client } from "@upstash/qstash";
-import { addMinutes, getUnixTime } from "date-fns";
+import { Client } from '@upstash/qstash';
+import { addMinutes, getUnixTime } from 'date-fns';
+import { env } from '@/env';
+import { ScheduledActionStatus } from '@/generated/prisma/enums';
+import type { ActionItem } from '@/utils/ai/types';
+import { getCronSecretHeader } from '@/utils/cron';
+import { canActionBeDelayed } from '@/utils/delayed-actions';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("qstash-scheduled-actions");
+const logger = createScopedLogger('qstash-scheduled-actions');
 
 interface ScheduledActionPayload {
   scheduledActionId: string;
@@ -36,13 +36,13 @@ export async function createScheduledAction({
 }) {
   if (!canActionBeDelayed(actionItem.type)) {
     throw new Error(
-      `Action type ${actionItem.type} is not supported for delayed execution`,
+      `Action type ${actionItem.type} is not supported for delayed execution`
     );
   }
 
   if (actionItem.delayInMinutes == null || actionItem.delayInMinutes <= 0) {
     throw new Error(
-      `Invalid delayInMinutes: ${actionItem.delayInMinutes}. Must be a positive number.`,
+      `Invalid delayInMinutes: ${actionItem.delayInMinutes}. Must be a positive number.`
     );
   }
 
@@ -86,12 +86,12 @@ export async function createScheduledAction({
         where: { id: scheduledAction.id },
         data: {
           scheduledId,
-          schedulingStatus: "SCHEDULED" as const,
+          schedulingStatus: 'SCHEDULED' as const,
         },
       });
     }
 
-    logger.info("Created and scheduled action with QStash", {
+    logger.info('Created and scheduled action with QStash', {
       scheduledActionId: scheduledAction.id,
       actionType: actionItem.type,
       scheduledFor,
@@ -102,7 +102,7 @@ export async function createScheduledAction({
 
     return scheduledAction;
   } catch (error) {
-    logger.error("Failed to create QStash scheduled action", {
+    logger.error('Failed to create QStash scheduled action', {
       error,
       executedRuleId,
       actionType: actionItem.type,
@@ -130,7 +130,7 @@ export async function scheduleDelayedActions({
     (item) =>
       item.delayInMinutes != null &&
       item.delayInMinutes > 0 &&
-      canActionBeDelayed(item.type),
+      canActionBeDelayed(item.type)
   );
 
   if (!delayedActions?.length) {
@@ -154,7 +154,7 @@ export async function scheduleDelayedActions({
     scheduledActions.push(scheduledAction);
   }
 
-  logger.info("Scheduled delayed actions with QStash", {
+  logger.info('Scheduled delayed actions with QStash', {
     count: scheduledActions.length,
     executedRuleId,
     messageId,
@@ -169,7 +169,7 @@ export async function cancelScheduledActions({
   messageId,
   threadId,
   ruleId,
-  reason = "Superseded by new rule",
+  reason = 'Superseded by new rule',
 }: {
   emailAccountId: string;
   messageId: string;
@@ -203,13 +203,13 @@ export async function cancelScheduledActions({
         if (action.scheduledId) {
           try {
             await cancelMessage(client, action.scheduledId);
-            logger.info("Cancelled QStash message", {
+            logger.info('Cancelled QStash message', {
               scheduledActionId: action.id,
               scheduledId: action.scheduledId,
             });
           } catch (error) {
             // Log but don't fail the entire operation if QStash cancellation fails
-            logger.warn("Failed to cancel QStash message", {
+            logger.warn('Failed to cancel QStash message', {
               scheduledActionId: action.id,
               scheduledId: action.scheduledId,
               error,
@@ -232,7 +232,7 @@ export async function cancelScheduledActions({
       },
     });
 
-    logger.info("Cancelled QStash scheduled actions", {
+    logger.info('Cancelled QStash scheduled actions', {
       count: cancelledActions.count,
       emailAccountId,
       messageId,
@@ -243,7 +243,7 @@ export async function cancelScheduledActions({
 
     return cancelledActions.count;
   } catch (error) {
-    logger.error("Failed to cancel QStash scheduled actions", {
+    logger.error('Failed to cancel QStash scheduled actions', {
       error,
       emailAccountId,
       messageId,
@@ -281,9 +281,9 @@ async function scheduleMessage({
       // The messageId here has a different meaning because it is
       // the QStash identifier and not the usual messageId of the email
       const messageId =
-        "messageId" in response ? response.messageId : undefined;
+        'messageId' in response ? response.messageId : undefined;
 
-      logger.info("Successfully scheduled with QStash", {
+      logger.info('Successfully scheduled with QStash', {
         scheduledActionId: payload.scheduledActionId,
         scheduledId: messageId,
         notBefore,
@@ -292,27 +292,26 @@ async function scheduleMessage({
       });
 
       return messageId;
-    } else {
-      logger.error(
-        "QStash client not available, scheduled action cannot be executed",
-        {
-          scheduledActionId: payload.scheduledActionId,
-        },
-      );
-
-      await prisma.scheduledAction.update({
-        where: { id: payload.scheduledActionId },
-        data: {
-          schedulingStatus: "FAILED" as const,
-        },
-      });
-
-      throw new Error(
-        "QStash client not available - scheduled action cannot be executed",
-      );
     }
+    logger.error(
+      'QStash client not available, scheduled action cannot be executed',
+      {
+        scheduledActionId: payload.scheduledActionId,
+      }
+    );
+
+    await prisma.scheduledAction.update({
+      where: { id: payload.scheduledActionId },
+      data: {
+        schedulingStatus: 'FAILED' as const,
+      },
+    });
+
+    throw new Error(
+      'QStash client not available - scheduled action cannot be executed'
+    );
   } catch (error) {
-    logger.error("Failed to schedule with QStash", {
+    logger.error('Failed to schedule with QStash', {
       error,
       scheduledActionId: payload.scheduledActionId,
       deduplicationId,
@@ -321,7 +320,7 @@ async function scheduleMessage({
     await prisma.scheduledAction.update({
       where: { id: payload.scheduledActionId },
       data: {
-        schedulingStatus: "FAILED" as const,
+        schedulingStatus: 'FAILED' as const,
       },
     });
 
@@ -331,16 +330,16 @@ async function scheduleMessage({
 
 async function cancelMessage(
   client: InstanceType<typeof Client>,
-  messageId: string,
+  messageId: string
 ) {
   try {
     await client.http.request({
-      path: ["v2", "messages", messageId],
-      method: "DELETE",
+      path: ['v2', 'messages', messageId],
+      method: 'DELETE',
     });
-    logger.info("Successfully cancelled QStash message", { messageId });
+    logger.info('Successfully cancelled QStash message', { messageId });
   } catch (error) {
-    logger.error("Failed to cancel QStash message", { messageId, error });
+    logger.error('Failed to cancel QStash message', { messageId, error });
     throw error;
   }
 }
@@ -360,7 +359,7 @@ export async function markQStashActionAsExecuting(scheduledActionId: string) {
     return updatedAction;
   } catch (error) {
     // If update fails, the action might already be executing, completed, or cancelled
-    logger.warn("Failed to mark QStash action as executing", {
+    logger.warn('Failed to mark QStash action as executing', {
       scheduledActionId,
       error,
     });

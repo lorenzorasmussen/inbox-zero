@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { cn } from "@/utils";
-import { forwardRef, type ReactNode } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { forwardRef, type ReactNode } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/utils';
 
 interface ScrollableFadeContainerProps {
   children: ReactNode;
@@ -21,27 +21,27 @@ export const ScrollableFadeContainer = forwardRef<
   {
     children,
     className,
-    height = "h-[500px]",
+    height = 'h-[500px]',
     showTopFade = true,
     showBottomFade = true,
-    fadeHeight = "h-8",
-    fadeFromClass = "from-background",
+    fadeHeight = 'h-8',
+    fadeFromClass = 'from-background',
   },
-  ref,
+  ref
 ) {
   return (
     <div className="relative">
       {showTopFade && (
         <div
           className={cn(
-            "absolute top-0 left-0 right-0 bg-gradient-to-b to-transparent z-10 pointer-events-none",
+            'absolute top-0 left-0 right-0 bg-gradient-to-b to-transparent z-10 pointer-events-none',
             fadeHeight,
-            fadeFromClass,
+            fadeFromClass
           )}
         />
       )}
 
-      <ScrollArea className={cn(height, "pr-1.5")}>
+      <ScrollArea className={cn(height, 'pr-1.5')}>
         <div ref={ref} className={className}>
           {children}
         </div>
@@ -50,9 +50,9 @@ export const ScrollableFadeContainer = forwardRef<
       {showBottomFade && (
         <div
           className={cn(
-            "absolute bottom-0 left-0 right-0 bg-gradient-to-t to-transparent z-10 pointer-events-none",
+            'absolute bottom-0 left-0 right-0 bg-gradient-to-t to-transparent z-10 pointer-events-none',
             fadeHeight,
-            fadeFromClass,
+            fadeFromClass
           )}
         />
       )}

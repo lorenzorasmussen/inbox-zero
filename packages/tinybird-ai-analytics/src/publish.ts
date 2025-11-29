@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { getTinybird } from "./client";
+import { z } from 'zod';
+import { getTinybird } from './client';
 
 const tinybirdAiCall = z.object({
   userId: z.string(),
@@ -19,7 +19,7 @@ const tb = getTinybird();
 
 export const publishAiCall = tb
   ? tb.buildIngestEndpoint({
-      datasource: "aiCall",
+      datasource: 'aiCall',
       event: tinybirdAiCall,
     })
   : () => {};

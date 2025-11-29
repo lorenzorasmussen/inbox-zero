@@ -1,45 +1,45 @@
-"use client";
+'use client';
 
 import {
-  Building2,
-  Users,
   Building,
+  Building2,
   Factory,
   Landmark,
   User,
-} from "lucide-react";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { OnboardingWrapper } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper";
-import { useCallback } from "react";
-import { saveOnboardingAnswersAction } from "@/utils/actions/onboarding";
-import { toastError } from "@/components/Toast";
-import { OnboardingButton } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingButton";
+  Users,
+} from 'lucide-react';
+import { useCallback } from 'react';
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { OnboardingButton } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingButton';
+import { OnboardingWrapper } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper';
+import { toastError } from '@/components/Toast';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { saveOnboardingAnswersAction } from '@/utils/actions/onboarding';
 
 const COMPANY_SIZES = [
   {
     value: 1,
-    label: "Only me",
+    label: 'Only me',
     icon: <User className="size-4" />,
   },
   {
     value: 5,
-    label: "2-10 people",
+    label: '2-10 people',
     icon: <Users className="size-4" />,
   },
   {
     value: 50,
-    label: "11-100 people",
+    label: '11-100 people',
     icon: <Building className="size-4" />,
   },
   {
     value: 500,
-    label: "101-1000 people",
+    label: '101-1000 people',
     icon: <Factory className="size-4" />,
   },
   {
     value: 1000,
-    label: "1000+ people",
+    label: '1000+ people',
     icon: <Landmark className="size-4" />,
   },
 ];
@@ -49,21 +49,21 @@ export function StepCompanySize({ onNext }: { onNext: () => void }) {
     async (companySize: number) => {
       try {
         await saveOnboardingAnswersAction({
-          surveyId: "onboarding",
-          questions: [{ key: "company_size", type: "single_choice" }],
+          surveyId: 'onboarding',
+          questions: [{ key: 'company_size', type: 'single_choice' }],
           answers: { $survey_response: companySize },
         });
 
         onNext();
       } catch (error) {
-        console.error("Failed to save company size:", error);
+        console.error('Failed to save company size:', error);
         toastError({
           description:
-            "There was an error saving your selection. Please try again.",
+            'There was an error saving your selection. Please try again.',
         });
       }
     },
-    [onNext],
+    [onNext]
   );
 
   return (

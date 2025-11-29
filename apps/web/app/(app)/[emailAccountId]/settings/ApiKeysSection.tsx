@@ -1,6 +1,12 @@
-"use client";
+'use client';
 
-import { FormSection, FormSectionLeft } from "@/components/Form";
+import {
+  ApiKeysCreateButtonModal,
+  ApiKeysDeactivateButton,
+} from '@/app/(app)/[emailAccountId]/settings/ApiKeysCreateForm';
+import { FormSection, FormSectionLeft } from '@/components/Form';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Card } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -8,14 +14,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import {
-  ApiKeysCreateButtonModal,
-  ApiKeysDeactivateButton,
-} from "@/app/(app)/[emailAccountId]/settings/ApiKeysCreateForm";
-import { Card } from "@/components/ui/card";
-import { useApiKeys } from "@/hooks/useApiKeys";
-import { LoadingContent } from "@/components/LoadingContent";
+} from '@/components/ui/table';
+import { useApiKeys } from '@/hooks/useApiKeys';
 
 export function ApiKeysSection() {
   const { data, isLoading, error, mutate } = useApiKeys();

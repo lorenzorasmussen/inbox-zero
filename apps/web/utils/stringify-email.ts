@@ -1,5 +1,5 @@
-import { removeExcessiveWhitespace, truncate } from "@/utils/string";
-import type { EmailForLLM } from "@/utils/types";
+import { removeExcessiveWhitespace, truncate } from '@/utils/string';
+import type { EmailForLLM } from '@/utils/types';
 
 export function stringifyEmail(email: EmailForLLM, maxLength: number) {
   // not sure we need to do truncate/removeExcessiveWhitespace here as `emailToContent` will do this. but need to make sure it's always called
@@ -17,13 +17,13 @@ export function stringifyEmail(email: EmailForLLM, maxLength: number) {
     const attachmentsXml = email.attachments
       .map(
         (att) =>
-          `<attachment filename="${att.filename}" type="${att.mimeType}" size="${att.size}" />`,
+          `<attachment filename="${att.filename}" type="${att.mimeType}" size="${att.size}" />`
       )
-      .join("\n");
+      .join('\n');
     emailParts.push(`<attachments>\n${attachmentsXml}\n</attachments>`);
   }
 
-  return emailParts.filter(Boolean).join("\n");
+  return emailParts.filter(Boolean).join('\n');
 }
 
 export function stringifyEmailSimple(email: EmailForLLM) {
@@ -33,7 +33,7 @@ export function stringifyEmailSimple(email: EmailForLLM) {
     `<body>${email.content}</body>`,
   ];
 
-  return emailParts.filter(Boolean).join("\n");
+  return emailParts.filter(Boolean).join('\n');
 }
 
 export function stringifyEmailFromBody(email: EmailForLLM) {
@@ -42,5 +42,5 @@ export function stringifyEmailFromBody(email: EmailForLLM) {
     `<body>${email.content}</body>`,
   ];
 
-  return emailParts.filter(Boolean).join("\n");
+  return emailParts.filter(Boolean).join('\n');
 }

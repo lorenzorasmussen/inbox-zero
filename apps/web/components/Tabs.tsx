@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import clsx from "clsx";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import clsx from 'clsx';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface TabsProps {
   tabs: Tab[];
   selected: string;
-  breakpoint?: "xs" | "sm" | "md" | "lg" | "xl";
+  breakpoint?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   onClickTab?: (tab: Tab) => void;
   shallow?: boolean;
 }
@@ -19,18 +19,18 @@ interface Tab {
 }
 
 export function Tabs(props: TabsProps) {
-  const { tabs, selected, breakpoint = "sm", onClickTab } = props;
+  const { tabs, selected, breakpoint = 'sm', onClickTab } = props;
   const router = useRouter();
 
   return (
     <div className="w-full">
       <div
         className={clsx({
-          hidden: breakpoint === "xs",
-          "sm:hidden": breakpoint === "sm",
-          "md:hidden": breakpoint === "md",
-          "lg:hidden": breakpoint === "lg",
-          "xl:hidden": breakpoint === "xl",
+          hidden: breakpoint === 'xs',
+          'sm:hidden': breakpoint === 'sm',
+          'md:hidden': breakpoint === 'md',
+          'lg:hidden': breakpoint === 'lg',
+          'xl:hidden': breakpoint === 'xl',
         })}
       >
         <label htmlFor="tabs" className="sr-only">
@@ -46,7 +46,7 @@ export function Tabs(props: TabsProps) {
             const tab = tabs.find((t) => t.label === label);
             if (tab) {
               onClickTab?.(tab);
-              // @ts-ignore
+              // @ts-expect-error
               if (tab.href) router.push(tab.href);
             }
           }}
@@ -58,11 +58,11 @@ export function Tabs(props: TabsProps) {
       </div>
       <div
         className={clsx({
-          block: breakpoint === "xs",
-          "hidden sm:block": breakpoint === "sm",
-          "hidden md:block": breakpoint === "md",
-          "hidden lg:block": breakpoint === "lg",
-          "hidden xl:block": breakpoint === "xl",
+          block: breakpoint === 'xs',
+          'hidden sm:block': breakpoint === 'sm',
+          'hidden md:block': breakpoint === 'md',
+          'hidden lg:block': breakpoint === 'lg',
+          'hidden xl:block': breakpoint === 'xl',
         })}
       >
         <nav className="flex space-x-4" aria-label="Tabs">
@@ -72,15 +72,15 @@ export function Tabs(props: TabsProps) {
             return (
               <Link
                 key={tab.value}
-                // @ts-ignore
-                href={tab.href || "#"}
+                // @ts-expect-error
+                href={tab.href || '#'}
                 className={clsx(
-                  "whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium",
+                  'whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium',
                   isSelected
-                    ? "bg-blue-100 text-blue-700"
-                    : "text-muted-foreground hover:text-gray-700",
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-muted-foreground hover:text-gray-700'
                 )}
-                aria-current={isSelected ? "page" : undefined}
+                aria-current={isSelected ? 'page' : undefined}
                 onClick={onClickTab ? () => onClickTab(tab) : undefined}
                 shallow={props.shallow}
               >

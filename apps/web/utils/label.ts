@@ -1,19 +1,19 @@
-import { messageVisibility } from "@/utils/gmail/constants";
-import { getRuleLabel } from "@/utils/rule/consts";
-import { SystemType } from "@/generated/prisma/enums";
+import { SystemType } from '@/generated/prisma/enums';
+import { messageVisibility } from '@/utils/gmail/constants';
+import { getRuleLabel } from '@/utils/rule/consts';
 
-export const PARENT_LABEL = "Inbox Zero";
+export const PARENT_LABEL = 'Inbox Zero';
 
-const blue = "#b6cff5";
-const cyan = "#98d7e4";
-const purple = "#e3d7ff";
-const pink = "#fbd3e0";
-const red = "#f2b2a8";
-const coral = "#ffc8af";
-const orange = "#ffdeb5";
-const yellow = "#fdedc1";
-const green = "#b3efd3";
-const gray = "#c2c2c2";
+const blue = '#b6cff5';
+const cyan = '#98d7e4';
+const purple = '#e3d7ff';
+const pink = '#fbd3e0';
+const red = '#f2b2a8';
+const coral = '#ffc8af';
+const orange = '#ffdeb5';
+const yellow = '#fdedc1';
+const green = '#b3efd3';
+const gray = '#c2c2c2';
 
 const LABEL_COLORS = [
   blue,

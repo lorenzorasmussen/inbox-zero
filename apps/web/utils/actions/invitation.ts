@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import { actionClientUser } from "@/utils/actions/safe-action";
-import { handleInvitationBody } from "@/utils/actions/invitation.validation";
-import { SafeError } from "@/utils/error";
-import prisma from "@/utils/prisma";
+import { handleInvitationBody } from '@/utils/actions/invitation.validation';
+import { actionClientUser } from '@/utils/actions/safe-action';
+import { SafeError } from '@/utils/error';
+import prisma from '@/utils/prisma';
 
 type PrismaInvitation = {
   id: string;
@@ -27,11 +27,11 @@ async function getInvitation({
   });
 
   if (!invitation) {
-    throw new SafeError("Invitation not found", 404);
+    throw new SafeError('Invitation not found', 404);
   }
 
-  if (invitation.status !== "pending" || invitation.expiresAt < new Date()) {
-    throw new SafeError("Failed to retrieve invitation", 400);
+  if (invitation.status !== 'pending' || invitation.expiresAt < new Date()) {
+    throw new SafeError('Failed to retrieve invitation', 400);
   }
 
   const email = invitation.email.trim();
@@ -39,13 +39,13 @@ async function getInvitation({
   const hasMatchingEmail = await prisma.emailAccount.findFirst({
     where: {
       id: emailAccountId,
-      email: { equals: email, mode: "insensitive" },
+      email: { equals: email, mode: 'insensitive' },
     },
     select: { id: true },
   });
 
   if (!hasMatchingEmail) {
-    throw new SafeError("You are not the recipient of the invitation", 400);
+    throw new SafeError('You are not the recipient of the invitation', 400);
   }
 
   return invitation;
@@ -81,14 +81,14 @@ async function acceptInvitation({
     data: {
       emailAccountId,
       organizationId: invitation.organizationId,
-      role: invitation.role ?? "member",
+      role: invitation.role ?? 'member',
     },
     select: { id: true },
   });
 
   await prisma.invitation.update({
     where: { id: invitationId },
-    data: { status: "accepted" },
+    data: { status: 'accepted' },
   });
 
   return {
@@ -98,7 +98,7 @@ async function acceptInvitation({
 }
 
 export const handleInvitationAction = actionClientUser
-  .metadata({ name: "handleInvitation" })
+  .metadata({ name: 'handleInvitation' })
   .inputSchema(handleInvitationBody)
   .action(async ({ ctx: { userId }, parsedInput: { invitationId } }) => {
     const invitation = await prisma.invitation.findUnique({
@@ -106,23 +106,23 @@ export const handleInvitationAction = actionClientUser
     });
 
     if (!invitation) {
-      throw new SafeError("Invitation not found", 404);
+      throw new SafeError('Invitation not found', 404);
     }
 
-    if (invitation.status !== "pending" || invitation.expiresAt < new Date()) {
-      throw new SafeError("Failed to retrieve invitation", 400);
+    if (invitation.status !== 'pending' || invitation.expiresAt < new Date()) {
+      throw new SafeError('Failed to retrieve invitation', 400);
     }
 
     const emailAccount = await prisma.emailAccount.findFirst({
       where: {
         user: { id: userId },
-        email: { equals: invitation.email.trim(), mode: "insensitive" },
+        email: { equals: invitation.email.trim(), mode: 'insensitive' },
       },
       select: { id: true },
     });
 
     if (!emailAccount) {
-      throw new SafeError("You are not the recipient of the invitation", 400);
+      throw new SafeError('You are not the recipient of the invitation', 400);
     }
 
     const emailAccountId = emailAccount.id;

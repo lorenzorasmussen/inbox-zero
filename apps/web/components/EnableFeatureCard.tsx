@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { SectionDescription, TypographyH3 } from "@/components/Typography";
-import { cn } from "@/utils";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
+import { SectionDescription, TypographyH3 } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { cn } from '@/utils';
 
 interface EnableFeatureCardProps {
   title: string;
@@ -42,8 +42,8 @@ export function EnableFeatureCard({
   return (
     <Card
       className={cn(
-        "mx-4 mt-10 max-w-2xl p-6 md:mx-auto",
-        hideBorder && "border-none shadow-none",
+        'mx-4 mt-10 max-w-2xl p-6 md:mx-auto',
+        hideBorder && 'border-none shadow-none'
       )}
     >
       <div className="text-center">

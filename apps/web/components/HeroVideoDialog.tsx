@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { Play } from "lucide-react";
-import { cn } from "@/utils";
-import { usePostHog } from "posthog-js/react";
+import { Play } from 'lucide-react';
+import Image from 'next/image';
+import { usePostHog } from 'posthog-js/react';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { landingPageAnalytics } from "@/hooks/useAnalytics";
+} from '@/components/ui/dialog';
+import { landingPageAnalytics } from '@/hooks/useAnalytics';
+import { cn } from '@/utils';
 
 interface HeroVideoProps {
   videoSrc: string;
@@ -22,14 +22,14 @@ interface HeroVideoProps {
 export default function HeroVideoDialog({
   videoSrc,
   thumbnailSrc,
-  thumbnailAlt = "Video thumbnail",
+  thumbnailAlt = 'Video thumbnail',
   className,
 }: HeroVideoProps) {
   const posthog = usePostHog();
 
   return (
     <Dialog>
-      <div className={cn("relative", className)}>
+      <div className={cn('relative', className)}>
         <DialogTrigger asChild>
           <button
             type="button"
@@ -54,7 +54,7 @@ export default function HeroVideoDialog({
                     className="size-8 scale-100 fill-white text-white transition-transform duration-200 ease-out group-hover:scale-105"
                     style={{
                       filter:
-                        "drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))",
+                        'drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))',
                     }}
                   />
                 </div>

@@ -1,20 +1,20 @@
-import { redirect } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircleIcon, ClockIcon, MailIcon } from "lucide-react";
-import { NeedsReply } from "./NeedsReply";
-import { Resolved } from "./Resolved";
-import { AwaitingReply } from "./AwaitingReply";
-import prisma from "@/utils/prisma";
-import { TimeRangeFilter } from "./TimeRangeFilter";
-import type { TimeRange } from "./date-filter";
-import { isAnalyzingReplyTracker } from "@/utils/redis/reply-tracker-analyzing";
-import { TabsToolbar } from "@/components/TabsToolbar";
-import { GmailProvider } from "@/providers/GmailProvider";
-import { cookies } from "next/headers";
-import { REPLY_ZERO_ONBOARDING_COOKIE } from "@/utils/cookies";
-import { prefixPath } from "@/utils/path";
-import { checkUserOwnsEmailAccount } from "@/utils/email-account";
-import { CONVERSATION_STATUS_TYPES } from "@/utils/reply-tracker/conversation-status-config";
+import { CheckCircleIcon, ClockIcon, MailIcon } from 'lucide-react';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { TabsToolbar } from '@/components/TabsToolbar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { GmailProvider } from '@/providers/GmailProvider';
+import { REPLY_ZERO_ONBOARDING_COOKIE } from '@/utils/cookies';
+import { checkUserOwnsEmailAccount } from '@/utils/email-account';
+import { prefixPath } from '@/utils/path';
+import prisma from '@/utils/prisma';
+import { isAnalyzingReplyTracker } from '@/utils/redis/reply-tracker-analyzing';
+import { CONVERSATION_STATUS_TYPES } from '@/utils/reply-tracker/conversation-status-config';
+import { AwaitingReply } from './AwaitingReply';
+import type { TimeRange } from './date-filter';
+import { NeedsReply } from './NeedsReply';
+import { Resolved } from './Resolved';
+import { TimeRangeFilter } from './TimeRangeFilter';
 
 export const maxDuration = 300;
 
@@ -33,10 +33,10 @@ export default async function ReplyTrackerPage(props: {
 
   const cookieStore = await cookies();
   const viewedOnboarding =
-    cookieStore.get(REPLY_ZERO_ONBOARDING_COOKIE)?.value === "true";
+    cookieStore.get(REPLY_ZERO_ONBOARDING_COOKIE)?.value === 'true';
 
   if (!viewedOnboarding)
-    redirect(prefixPath(emailAccountId, "/reply-zero/onboarding"));
+    redirect(prefixPath(emailAccountId, '/reply-zero/onboarding'));
 
   const emailAccount = await prisma.emailAccount.findUnique({
     where: { id: emailAccountId },
@@ -56,12 +56,12 @@ export default async function ReplyTrackerPage(props: {
   const trackerRule = emailAccount?.rules[0];
 
   if (!trackerRule)
-    redirect(prefixPath(emailAccountId, "/reply-zero/onboarding"));
+    redirect(prefixPath(emailAccountId, '/reply-zero/onboarding'));
 
   const isAnalyzing = await isAnalyzingReplyTracker({ emailAccountId });
 
-  const page = Number(searchParams.page || "1");
-  const timeRange = searchParams.timeRange || "all";
+  const page = Number(searchParams.page || '1');
+  const timeRange = searchParams.timeRange || 'all';
 
   return (
     <GmailProvider>

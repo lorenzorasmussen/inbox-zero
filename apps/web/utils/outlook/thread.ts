@@ -1,16 +1,16 @@
-import type { OutlookClient } from "@/utils/outlook/client";
-import type { Message } from "@microsoft/microsoft-graph-types";
-import type { ParsedMessage } from "@/utils/types";
-import { escapeODataString } from "@/utils/outlook/odata-escape";
-import { createScopedLogger } from "@/utils/logger";
-import { convertMessage, createMessagesRequest } from "@/utils/outlook/message";
-import { withOutlookRetry } from "@/utils/outlook/retry";
+import type { Message } from '@microsoft/microsoft-graph-types';
+import { createScopedLogger } from '@/utils/logger';
+import type { OutlookClient } from '@/utils/outlook/client';
+import { convertMessage, createMessagesRequest } from '@/utils/outlook/message';
+import { escapeODataString } from '@/utils/outlook/odata-escape';
+import { withOutlookRetry } from '@/utils/outlook/retry';
+import type { ParsedMessage } from '@/utils/types';
 
-const logger = createScopedLogger("outlook/thread");
+const logger = createScopedLogger('outlook/thread');
 
 export async function getThread(
   threadId: string,
-  client: OutlookClient,
+  client: OutlookClient
 ): Promise<Message[]> {
   const escapedThreadId = escapeODataString(threadId);
   const filter = `conversationId eq '${escapedThreadId}'`;
@@ -20,7 +20,7 @@ export async function getThread(
       createMessagesRequest(client)
         .filter(filter)
         .top(100) // Get up to 100 messages instead of default 10
-        .get(),
+        .get()
     );
 
     // Sort in memory to avoid "restriction or sort order is too complex" error
@@ -32,7 +32,7 @@ export async function getThread(
   } catch (error) {
     const err = error as any;
 
-    logger.error("getThread failed", {
+    logger.error('getThread failed', {
       threadId,
       filter,
       error: error instanceof Error ? error.message : err,
@@ -46,25 +46,25 @@ export async function getThread(
 export async function getThreads(
   query: string,
   client: OutlookClient,
-  maxResults = 100,
+  maxResults = 100
 ): Promise<{
   nextPageToken?: string | null;
   threads: { id: string; snippet: string }[];
 }> {
-  let request = client.getClient().api("/me/messages");
+  let request = client.getClient().api('/me/messages');
 
   if (query) {
     request = request.filter(
-      `contains(subject, '${escapeODataString(query)}')`,
+      `contains(subject, '${escapeODataString(query)}')`
     );
   }
 
-  const response: { value: Message[]; "@odata.nextLink"?: string } =
+  const response: { value: Message[]; '@odata.nextLink'?: string } =
     await withOutlookRetry(() =>
       request
         .top(maxResults)
-        .select("id,conversationId,subject,bodyPreview")
-        .get(),
+        .select('id,conversationId,subject,bodyPreview')
+        .get()
     );
 
   // Group messages by conversationId to create thread-like structure
@@ -73,14 +73,14 @@ export async function getThreads(
     if (message.conversationId && !threadMap.has(message.conversationId)) {
       threadMap.set(message.conversationId, {
         id: message.conversationId,
-        snippet: message.bodyPreview || "",
+        snippet: message.bodyPreview || '',
       });
     }
   }
 
   return {
     threads: Array.from(threadMap.values()),
-    nextPageToken: response["@odata.nextLink"],
+    nextPageToken: response['@odata.nextLink'],
   };
 }
 
@@ -97,17 +97,17 @@ export async function getThreadsWithNextPageToken({
 }) {
   let request = client
     .getClient()
-    .api(pageToken || "/me/messages")
+    .api(pageToken || '/me/messages')
     .top(maxResults)
-    .select("id,conversationId,subject,bodyPreview");
+    .select('id,conversationId,subject,bodyPreview');
 
   if (query) {
     request = request.filter(
-      `contains(subject, '${escapeODataString(query)}')`,
+      `contains(subject, '${escapeODataString(query)}')`
     );
   }
 
-  const response: { value: Message[]; "@odata.nextLink"?: string } =
+  const response: { value: Message[]; '@odata.nextLink'?: string } =
     await withOutlookRetry(() => request.get());
 
   // Group messages by conversationId to create thread-like structure
@@ -116,30 +116,30 @@ export async function getThreadsWithNextPageToken({
     if (message.conversationId && !threadMap.has(message.conversationId)) {
       threadMap.set(message.conversationId, {
         id: message.conversationId,
-        snippet: message.bodyPreview || "",
+        snippet: message.bodyPreview || '',
       });
     }
   }
 
   return {
     threads: Array.from(threadMap.values()),
-    nextPageToken: response["@odata.nextLink"],
+    nextPageToken: response['@odata.nextLink'],
   };
 }
 
 export async function getThreadsFromSender(
   client: OutlookClient,
   sender: string,
-  limit: number,
+  limit: number
 ): Promise<Array<{ id: string; snippet: string }>> {
   const response: { value: Message[] } = await withOutlookRetry(() =>
     client
       .getClient()
-      .api("/me/messages")
+      .api('/me/messages')
       .filter(`from/emailAddress/address eq '${escapeODataString(sender)}'`)
       .top(limit)
-      .select("id,conversationId,bodyPreview")
-      .get(),
+      .select('id,conversationId,bodyPreview')
+      .get()
   );
 
   // Group messages by conversationId
@@ -148,7 +148,7 @@ export async function getThreadsFromSender(
     if (message.conversationId && !threadMap.has(message.conversationId)) {
       threadMap.set(message.conversationId, {
         id: message.conversationId,
-        snippet: message.bodyPreview || "",
+        snippet: message.bodyPreview || '',
       });
     }
   }
@@ -159,16 +159,16 @@ export async function getThreadsFromSender(
 export async function getThreadsFromSenderWithSubject(
   client: OutlookClient,
   sender: string,
-  limit: number,
+  limit: number
 ): Promise<Array<{ id: string; snippet: string; subject: string }>> {
   const response: { value: Message[] } = await withOutlookRetry(() =>
     client
       .getClient()
-      .api("/me/messages")
+      .api('/me/messages')
       .filter(`from/emailAddress/address eq '${escapeODataString(sender)}'`)
       .top(limit)
-      .select("id,conversationId,subject,bodyPreview")
-      .get(),
+      .select('id,conversationId,subject,bodyPreview')
+      .get()
   );
 
   // Group messages by conversationId
@@ -180,8 +180,8 @@ export async function getThreadsFromSenderWithSubject(
     if (message.conversationId && !threadMap.has(message.conversationId)) {
       threadMap.set(message.conversationId, {
         id: message.conversationId,
-        snippet: message.bodyPreview || "",
-        subject: message.subject || "",
+        snippet: message.bodyPreview || '',
+        subject: message.subject || '',
       });
     }
   }
@@ -191,7 +191,7 @@ export async function getThreadsFromSenderWithSubject(
 
 export async function getThreadMessages(
   threadId: string,
-  client: OutlookClient,
+  client: OutlookClient
 ): Promise<ParsedMessage[]> {
   const messages: Message[] = await getThread(threadId, client);
 

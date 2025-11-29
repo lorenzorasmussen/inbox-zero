@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export const GET = withEmailAccount(
   async (request, { params }: { params: Promise<{ id?: string }> }) => {
@@ -8,8 +8,8 @@ export const GET = withEmailAccount(
     const { id } = await params;
     if (!id)
       return NextResponse.json(
-        { error: "Missing schedule id" },
-        { status: 400 },
+        { error: 'Missing schedule id' },
+        { status: 400 }
       );
 
     const schedule = await prisma.schedule.findUnique({
@@ -18,11 +18,11 @@ export const GET = withEmailAccount(
 
     if (!schedule) {
       return NextResponse.json(
-        { error: "Schedule not found" },
-        { status: 404 },
+        { error: 'Schedule not found' },
+        { status: 404 }
       );
     }
 
     return NextResponse.json(schedule);
-  },
+  }
 );

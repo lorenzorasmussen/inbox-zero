@@ -1,32 +1,32 @@
-import { NextResponse } from "next/server";
-import { aiCategorizeSendersSchema } from "@/app/api/user/categorize/senders/batch/handle-batch-validation";
-import { getThreadsFromSenderWithSubject } from "@/utils/gmail/thread";
+import { NextResponse } from 'next/server';
+import { aiCategorizeSendersSchema } from '@/app/api/user/categorize/senders/batch/handle-batch-validation';
+import { UNKNOWN_CATEGORY } from '@/utils/ai/categorize-sender/ai-categorize-senders';
 import {
   categorizeWithAi,
   getCategories,
   updateSenderCategory,
-} from "@/utils/categorize/senders/categorize";
-import { validateUserAndAiAccess } from "@/utils/user/validate";
-import { getGmailClientWithRefresh } from "@/utils/gmail/client";
-import { UNKNOWN_CATEGORY } from "@/utils/ai/categorize-sender/ai-categorize-senders";
-import { createScopedLogger } from "@/utils/logger";
-import prisma from "@/utils/prisma";
-import { saveCategorizationProgress } from "@/utils/redis/categorization-progress";
-import { SafeError } from "@/utils/error";
+} from '@/utils/categorize/senders/categorize';
+import { SafeError } from '@/utils/error';
+import { getGmailClientWithRefresh } from '@/utils/gmail/client';
+import { getThreadsFromSenderWithSubject } from '@/utils/gmail/thread';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { saveCategorizationProgress } from '@/utils/redis/categorization-progress';
+import { validateUserAndAiAccess } from '@/utils/user/validate';
 
-const logger = createScopedLogger("api/user/categorize/senders/batch");
+const logger = createScopedLogger('api/user/categorize/senders/batch');
 
 export async function handleBatchRequest(
-  request: Request,
+  request: Request
 ): Promise<NextResponse> {
   try {
     await handleBatchInternal(request);
     return NextResponse.json({ ok: true });
   } catch (error) {
-    logger.error("Handle batch request error", { error });
+    logger.error('Handle batch request error', { error });
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
+      { error: 'Internal server error' },
+      { status: 500 }
     );
   }
 }
@@ -36,7 +36,7 @@ async function handleBatchInternal(request: Request) {
   const body = aiCategorizeSendersSchema.parse(json);
   const { emailAccountId, senders } = body;
 
-  logger.trace("Handle batch request", {
+  logger.trace('Handle batch request', {
     emailAccountId,
     senders: senders.length,
   });
@@ -63,9 +63,9 @@ async function handleBatchInternal(request: Request) {
 
   const account = emailAccountWithAccount?.account;
 
-  if (!account) throw new SafeError("No account found");
+  if (!account) throw new SafeError('No account found');
   if (!account.access_token || !account.refresh_token)
-    throw new SafeError("No access or refresh token");
+    throw new SafeError('No access or refresh token');
 
   const gmail = await getGmailClientWithRefresh({
     accessToken: account.access_token,
@@ -83,7 +83,7 @@ async function handleBatchInternal(request: Request) {
       gmail,
       account.access_token,
       sender,
-      3,
+      3
     );
     sendersWithEmails.set(sender, threadsFromSender);
   }

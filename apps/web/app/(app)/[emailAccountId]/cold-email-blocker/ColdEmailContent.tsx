@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { ColdEmailList } from "@/app/(app)/[emailAccountId]/cold-email-blocker/ColdEmailList";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ColdEmailRejected } from "@/app/(app)/[emailAccountId]/cold-email-blocker/ColdEmailRejected";
-import { ColdEmailTest } from "@/app/(app)/[emailAccountId]/cold-email-blocker/ColdEmailTest";
-import { Button } from "@/components/ui/button";
-import { prefixPath } from "@/utils/path";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import Link from "next/link";
-import { MessageText } from "@/components/Typography";
+import Link from 'next/link';
+import { ColdEmailList } from '@/app/(app)/[emailAccountId]/cold-email-blocker/ColdEmailList';
+import { ColdEmailRejected } from '@/app/(app)/[emailAccountId]/cold-email-blocker/ColdEmailRejected';
+import { ColdEmailTest } from '@/app/(app)/[emailAccountId]/cold-email-blocker/ColdEmailTest';
+import { MessageText } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { prefixPath } from '@/utils/path';
 
 export function ColdEmailContent({ searchParam }: { searchParam?: string }) {
   const { emailAccountId } = useAccount();
@@ -44,7 +44,7 @@ export function ColdEmailContent({ searchParam }: { searchParam?: string }) {
           Edit on the Cold Email rule.
         </MessageText>
         <Button asChild variant="outline">
-          <Link href={prefixPath(emailAccountId, "/automation?tab=rules")}>
+          <Link href={prefixPath(emailAccountId, '/automation?tab=rules')}>
             Go to Assistant Rules
           </Link>
         </Button>

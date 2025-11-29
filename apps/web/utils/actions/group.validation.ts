@@ -1,8 +1,8 @@
-import { z } from "zod";
-import { GroupItemType } from "@/generated/prisma/enums";
+import { z } from 'zod';
+import { GroupItemType } from '@/generated/prisma/enums';
 
 export const createGroupBody = z.object({
-  ruleId: z.string().min(1, "Rule ID is required"),
+  ruleId: z.string().min(1, 'Rule ID is required'),
 });
 export type CreateGroupBody = z.infer<typeof createGroupBody>;
 

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { parseAsInteger, useQueryState } from "nuqs";
-import { TypographyH3 } from "@/components/Typography";
-import { timeRangeOptions } from "@/app/(app)/[emailAccountId]/clean/types";
-import { useStep } from "@/app/(app)/[emailAccountId]/clean/useStep";
-import { ButtonListSurvey } from "@/components/ButtonListSurvey";
+import { parseAsInteger, useQueryState } from 'nuqs';
+import { useCallback } from 'react';
+import { timeRangeOptions } from '@/app/(app)/[emailAccountId]/clean/types';
+import { useStep } from '@/app/(app)/[emailAccountId]/clean/useStep';
+import { ButtonListSurvey } from '@/components/ButtonListSurvey';
+import { TypographyH3 } from '@/components/Typography';
 
 export function TimeRangeStep() {
   const { onNext } = useStep();
 
-  const [_, setTimeRange] = useQueryState("timeRange", parseAsInteger);
+  const [_, setTimeRange] = useQueryState('timeRange', parseAsInteger);
 
   const handleTimeRangeSelect = useCallback(
     (selectedRange: string | number) => {
@@ -18,7 +18,7 @@ export function TimeRangeStep() {
       setTimeRange(range);
       onNext();
     },
-    [setTimeRange, onNext],
+    [setTimeRange, onNext]
   );
 
   return (

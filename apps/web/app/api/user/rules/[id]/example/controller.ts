@@ -1,21 +1,21 @@
 import type {
   MessageWithGroupItem,
   RuleWithGroup,
-} from "@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/types";
+} from '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/types';
+import { fetchPaginatedMessages } from '@/app/api/user/group/[groupId]/messages/controller';
+import { LogicalOperator } from '@/generated/prisma/enums';
 import {
   matchesStaticRule,
   splitEmailPatterns,
-} from "@/utils/ai/choose-rule/match-rules";
-import { fetchPaginatedMessages } from "@/app/api/user/group/[groupId]/messages/controller";
-import { isGroupRule, isAIRule, isStaticRule } from "@/utils/condition";
-import { LogicalOperator } from "@/generated/prisma/enums";
-import type { EmailProvider } from "@/utils/email/types";
-import type { Logger } from "@/utils/logger";
+} from '@/utils/ai/choose-rule/match-rules';
+import { isAIRule, isGroupRule, isStaticRule } from '@/utils/condition';
+import type { EmailProvider } from '@/utils/email/types';
+import type { Logger } from '@/utils/logger';
 
 export async function fetchExampleMessages(
   rule: RuleWithGroup,
   emailProvider: EmailProvider,
-  logger: Logger,
+  logger: Logger
 ) {
   const isStatic = isStaticRule(rule);
   const isGroup = isGroupRule(rule);
@@ -52,10 +52,10 @@ export async function fetchExampleMessages(
 async function fetchStaticExampleMessages(
   rule: RuleWithGroup,
   emailProvider: EmailProvider,
-  logger: Logger,
+  logger: Logger
 ): Promise<MessageWithGroupItem[]> {
   // Build structured query options instead of provider-specific query strings
-  const options: Parameters<EmailProvider["getMessagesByFields"]>[0] = {
+  const options: Parameters<EmailProvider['getMessagesByFields']>[0] = {
     maxResults: 50,
   };
 
@@ -73,6 +73,6 @@ async function fetchStaticExampleMessages(
 
   // search might include messages that don't match the rule, so we filter those out
   return response.messages.filter((message) =>
-    matchesStaticRule(rule, message, logger),
+    matchesStaticRule(rule, message, logger)
   );
 }

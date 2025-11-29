@@ -1,21 +1,20 @@
-"use server";
+'use server';
 
-import { actionClient } from "@/utils/actions/safe-action";
+import type { Prisma } from '@/generated/prisma/client';
+import { ActionType } from '@/generated/prisma/enums';
+import { actionClient, actionClientUser } from '@/utils/actions/safe-action';
 import {
   saveAiSettingsBody,
-  saveEmailUpdateSettingsBody,
   saveDigestScheduleBody,
+  saveEmailUpdateSettingsBody,
   updateDigestItemsBody,
-} from "@/utils/actions/settings.validation";
-import { DEFAULT_PROVIDER } from "@/utils/llms/config";
-import prisma from "@/utils/prisma";
-import { calculateNextScheduleDate } from "@/utils/schedule";
-import { actionClientUser } from "@/utils/actions/safe-action";
-import { ActionType } from "@/generated/prisma/enums";
-import type { Prisma } from "@/generated/prisma/client";
+} from '@/utils/actions/settings.validation';
+import { DEFAULT_PROVIDER } from '@/utils/llms/config';
+import prisma from '@/utils/prisma';
+import { calculateNextScheduleDate } from '@/utils/schedule';
 
 export const updateEmailSettingsAction = actionClient
-  .metadata({ name: "updateEmailSettings" })
+  .metadata({ name: 'updateEmailSettings' })
   .inputSchema(saveEmailUpdateSettingsBody)
   .action(
     async ({
@@ -29,11 +28,11 @@ export const updateEmailSettingsAction = actionClient
           summaryEmailFrequency,
         },
       });
-    },
+    }
   );
 
 export const updateAiSettingsAction = actionClientUser
-  .metadata({ name: "updateAiSettings" })
+  .metadata({ name: 'updateAiSettings' })
   .inputSchema(saveAiSettingsBody)
   .action(
     async ({
@@ -47,16 +46,16 @@ export const updateAiSettingsAction = actionClientUser
             ? { aiProvider: null, aiModel: null, aiApiKey: null }
             : { aiProvider, aiModel, aiApiKey },
       });
-    },
+    }
   );
 
 export const updateDigestScheduleAction = actionClient
-  .metadata({ name: "updateDigestSchedule" })
+  .metadata({ name: 'updateDigestSchedule' })
   .inputSchema(saveDigestScheduleBody)
   .action(async ({ ctx: { emailAccountId }, parsedInput }) => {
     const { intervalDays, daysOfWeek, timeOfDay, occurrences } = parsedInput;
 
-    const create: Prisma.ScheduleUpsertArgs["create"] = {
+    const create: Prisma.ScheduleUpsertArgs['create'] = {
       emailAccountId,
       intervalDays,
       daysOfWeek,
@@ -82,7 +81,7 @@ export const updateDigestScheduleAction = actionClient
   });
 
 export const updateDigestItemsAction = actionClient
-  .metadata({ name: "updateDigestItems" })
+  .metadata({ name: 'updateDigestItems' })
   .inputSchema(updateDigestItemsBody)
   .action(
     async ({
@@ -101,12 +100,12 @@ export const updateDigestItemsAction = actionClient
           });
 
           if (!rule) {
-            logger.error("Rule not found", { ruleId });
+            logger.error('Rule not found', { ruleId });
             return;
           }
 
           const hasDigestAction = rule.actions.some(
-            (action) => action.type === ActionType.DIGEST,
+            (action) => action.type === ActionType.DIGEST
           );
 
           if (enabled && !hasDigestAction) {
@@ -126,10 +125,10 @@ export const updateDigestItemsAction = actionClient
               },
             });
           }
-        },
+        }
       );
 
       await Promise.all(promises);
       return { success: true };
-    },
+    }
   );

@@ -21,31 +21,31 @@
  */
 const GMAIL_RESERVED_LABELS = [
   // Standard System Labels (Documented)
-  "INBOX",
-  "SPAM",
-  "TRASH",
-  "UNREAD",
-  "STARRED",
-  "IMPORTANT",
-  "SENT",
-  "DRAFT",
-  "ALL_MAIL",
-  "ALLMAIL",
+  'INBOX',
+  'SPAM',
+  'TRASH',
+  'UNREAD',
+  'STARRED',
+  'IMPORTANT',
+  'SENT',
+  'DRAFT',
+  'ALL_MAIL',
+  'ALLMAIL',
 
   // Category Labels
-  "PERSONAL",
-  "SOCIAL",
-  "PROMOTIONS",
-  "UPDATES",
-  "FORUMS",
+  'PERSONAL',
+  'SOCIAL',
+  'PROMOTIONS',
+  'UPDATES',
+  'FORUMS',
 
   // Additional Reserved Labels (Undocumented but Reserved)
-  "TRAVEL",
-  "FINANCE",
-  "CHAT",
-  "VOICEMAIL",
-  "SCHEDULED",
-  "MUTED",
+  'TRAVEL',
+  'FINANCE',
+  'CHAT',
+  'VOICEMAIL',
+  'SCHEDULED',
+  'MUTED',
 ] as const;
 
 /**
@@ -55,10 +55,10 @@ const GMAIL_RESERVED_LABELS = [
  * nested labels (e.g., "Inbox Zero/Archived")
  */
 const GMAIL_LABEL_INVALID_CHARS = [
-  "\\", // Backslash
-  "*", // Asterisk
-  "+", // Plus sign
-  "`", // Backtick
+  '\\', // Backslash
+  '*', // Asterisk
+  '+', // Plus sign
+  '`', // Backtick
 ] as const;
 
 /**
@@ -83,7 +83,7 @@ type LabelValidationResult = {
 export function validateLabelNameBasic(name: string): LabelValidationResult {
   // Check if empty
   if (!name || !name.trim()) {
-    return { valid: false, error: "Label name cannot be empty" };
+    return { valid: false, error: 'Label name cannot be empty' };
   }
 
   const trimmedName = name.trim();
@@ -99,13 +99,13 @@ export function validateLabelNameBasic(name: string): LabelValidationResult {
   if (name !== trimmedName) {
     return {
       valid: false,
-      error: "Label name cannot have leading or trailing spaces",
+      error: 'Label name cannot have leading or trailing spaces',
     };
   }
 
   // Check for double spaces
-  if (name.includes("  ")) {
-    return { valid: false, error: "Label name cannot contain double spaces" };
+  if (name.includes('  ')) {
+    return { valid: false, error: 'Label name cannot contain double spaces' };
   }
 
   // Check for invalid characters

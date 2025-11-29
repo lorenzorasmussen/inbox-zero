@@ -1,21 +1,21 @@
-import clsx from "clsx";
+import clsx from 'clsx';
 import {
   BarChart2Icon,
+  BellIcon,
   EyeIcon,
   LineChart,
   type LucideIcon,
   MousePointer2Icon,
   Orbit,
+  ReplyIcon,
   ShieldHalfIcon,
   Sparkles,
   SparklesIcon,
   TagIcon,
-  BellIcon,
-  ReplyIcon,
-} from "lucide-react";
-import Image from "next/image";
+} from 'lucide-react';
+import Image from 'next/image';
 
-type Side = "left" | "right";
+type Side = 'left' | 'right';
 
 export function FeaturesHome() {
   return (
@@ -30,14 +30,14 @@ export function FeaturesHome() {
 }
 
 export function FeaturesWithImage({
-  imageSide = "left",
+  imageSide = 'left',
   title,
   subtitle,
   description,
   image,
   features,
 }: {
-  imageSide?: "left" | "right";
+  imageSide?: 'left' | 'right';
   title: string;
   subtitle: string;
   description: React.ReactNode;
@@ -54,10 +54,8 @@ export function FeaturesWithImage({
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
           <div
             className={clsx(
-              "lg:pt-4",
-              imageSide === "left"
-                ? "lg:ml-auto lg:pl-4"
-                : "lg:mr-auto lg:pr-4",
+              'lg:pt-4',
+              imageSide === 'left' ? 'lg:ml-auto lg:pl-4' : 'lg:mr-auto lg:pr-4'
             )}
           >
             <div className="lg:max-w-lg">
@@ -80,7 +78,7 @@ export function FeaturesWithImage({
                           aria-hidden="true"
                         />
                         {feature.name}
-                      </dt>{" "}
+                      </dt>{' '}
                       <dd className="inline">{feature.description}</dd>
                     </div>
                   ))}
@@ -90,10 +88,10 @@ export function FeaturesWithImage({
           </div>
           <div
             className={clsx(
-              "flex items-start",
-              imageSide === "left"
-                ? "justify-end lg:order-first"
-                : "justify-start lg:order-last",
+              'flex items-start',
+              imageSide === 'left'
+                ? 'justify-end lg:order-first'
+                : 'justify-start lg:order-last'
             )}
           >
             <div className="rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:rounded-2xl lg:p-4">
@@ -113,8 +111,8 @@ export function FeaturesWithImage({
 }
 
 export function FeaturesAiAssistant({ imageSide }: { imageSide?: Side }) {
-  const title = "Your Personal Assistant";
-  const subtitle = "Your AI Email Assistant That Works Like Magic";
+  const title = 'Your Personal Assistant';
+  const subtitle = 'Your AI Email Assistant That Works Like Magic';
   const description = (
     <>
       All the benefits of a personal assistant, at a fraction of the cost. It
@@ -147,29 +145,29 @@ export function FeaturesAiAssistant({ imageSide }: { imageSide?: Side }) {
 
 const featuresColdEmailBlocker = [
   {
-    name: "Block out the noise",
+    name: 'Block out the noise',
     description:
-      "Automatically archive or label cold emails. Keep your inbox clean and focused on what matters.",
+      'Automatically archive or label cold emails. Keep your inbox clean and focused on what matters.',
     icon: ShieldHalfIcon,
   },
   {
-    name: "Adjust cold email prompt",
+    name: 'Adjust cold email prompt',
     description:
-      "Tell Inbox Zero what constitutes a cold email for you. It will block them based on your instructions.",
+      'Tell Inbox Zero what constitutes a cold email for you. It will block them based on your instructions.',
     icon: SparklesIcon,
   },
   {
-    name: "Label cold emails",
+    name: 'Label cold emails',
     description:
-      "Automatically label cold emails so you can review them later. Keep your inbox clean and focused on what matters.",
+      'Automatically label cold emails so you can review them later. Keep your inbox clean and focused on what matters.',
     icon: TagIcon,
   },
 ];
 
 export function FeaturesColdEmailBlocker({ imageSide }: { imageSide?: Side }) {
-  const subtitle = "Never read a cold email again";
+  const subtitle = 'Never read a cold email again';
   const description =
-    "Say goodbye to unsolicited outreach. Automatically filter sales pitches and cold emails so you only see messages that matter.";
+    'Say goodbye to unsolicited outreach. Automatically filter sales pitches and cold emails so you only see messages that matter.';
 
   return (
     <FeaturesWithImage
@@ -185,21 +183,21 @@ export function FeaturesColdEmailBlocker({ imageSide }: { imageSide?: Side }) {
 
 const featuresStats = [
   {
-    name: "Who emails you most",
+    name: 'Who emails you most',
     description:
-      "Someone emailing you too much? Figure out a plan to handle this better.",
+      'Someone emailing you too much? Figure out a plan to handle this better.',
     icon: Sparkles,
   },
   {
-    name: "Who you email most",
+    name: 'Who you email most',
     description:
       "If there's one person you're constantly speaking to is there a better way for you to speak?",
     icon: Orbit,
   },
   {
-    name: "What type of emails you get",
+    name: 'What type of emails you get',
     description:
-      "Getting a lot of newsletters or cold emails? Try automatically archiving and labelling them with our AI.",
+      'Getting a lot of newsletters or cold emails? Try automatically archiving and labelling them with our AI.',
     icon: LineChart,
   },
 ];
@@ -219,19 +217,19 @@ export function FeaturesStats({ imageSide }: { imageSide?: Side }) {
 
 const featuresUnsubscribe = [
   {
-    name: "One-click unsubscribe",
+    name: 'One-click unsubscribe',
     description:
       "Don't search for the unsubscribe button. Unsubscribe in a click, or auto archive instead.",
     icon: MousePointer2Icon,
   },
   {
-    name: "See who emails you most",
+    name: 'See who emails you most',
     description:
       "See who's sending you the most emails to prioritise which ones to unsubscribe from.",
     icon: EyeIcon,
   },
   {
-    name: "How often you read them",
+    name: 'How often you read them',
     description:
       "See what percentage of emails you read from each sender. Unsubscribe from the ones you don't read.",
     icon: BarChart2Icon,
@@ -253,27 +251,27 @@ export function FeaturesUnsubscribe({ imageSide }: { imageSide?: Side }) {
 
 const featuresReplyZero = [
   {
-    name: "Pre-drafted replies",
+    name: 'Pre-drafted replies',
     description:
-      "AI-drafted replies waiting in Gmail or Outlook, ready to send or customize.",
+      'AI-drafted replies waiting in Gmail or Outlook, ready to send or customize.',
     icon: ReplyIcon,
   },
   {
-    name: "Focus on what needs a reply",
+    name: 'Focus on what needs a reply',
     description:
       "We label every email that needs a reply, so it's easy to focus on the ones that matter.",
     icon: EyeIcon,
   },
   {
-    name: "Follow up reminders",
+    name: 'Follow up reminders',
     description:
-      "Never lose track of conversations. We label emails awaiting replies and help you filter for overdue ones.",
+      'Never lose track of conversations. We label emails awaiting replies and help you filter for overdue ones.',
     icon: BellIcon,
   },
   {
-    name: "One-click follow-ups",
+    name: 'One-click follow-ups',
     description:
-      "Send polite nudges effortlessly. Our AI drafts follow-up messages, keeping conversations moving.",
+      'Send polite nudges effortlessly. Our AI drafts follow-up messages, keeping conversations moving.',
     icon: SparklesIcon,
   },
 ];

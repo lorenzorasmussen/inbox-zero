@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { TypographyH3 } from "@/components/Typography";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/Badge";
-import { cleanInboxAction } from "@/utils/actions/clean";
-import { toastError } from "@/components/Toast";
-import { CleanAction } from "@/generated/prisma/enums";
-import { PREVIEW_RUN_COUNT } from "@/app/(app)/[emailAccountId]/clean/consts";
-import { HistoryIcon, SettingsIcon } from "lucide-react";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
+import { HistoryIcon, SettingsIcon } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { PREVIEW_RUN_COUNT } from '@/app/(app)/[emailAccountId]/clean/consts';
+import { Badge } from '@/components/Badge';
+import { toastError } from '@/components/Toast';
+import { TypographyH3 } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { CleanAction } from '@/generated/prisma/enums';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { cleanInboxAction } from '@/utils/actions/clean';
+import { prefixPath } from '@/utils/path';
 
 export function ConfirmationStep({
   showFooter,
@@ -41,7 +41,7 @@ export function ConfirmationStep({
   const handleStartCleaning = async () => {
     const result = await cleanInboxAction(emailAccountId, {
       daysOld: timeRange ?? 7,
-      instructions: instructions || "",
+      instructions: instructions || '',
       action: action || CleanAction.ARCHIVE,
       maxEmails: PREVIEW_RUN_COUNT,
       skips,
@@ -55,8 +55,8 @@ export function ConfirmationStep({
     router.push(
       prefixPath(
         emailAccountId,
-        `/clean/run?jobId=${result?.data?.jobId}&isPreviewBatch=true`,
-      ),
+        `/clean/run?jobId=${result?.data?.jobId}&isPreviewBatch=true`
+      )
     );
   };
 
@@ -89,12 +89,12 @@ export function ConfirmationStep({
         <li>
           {action === CleanAction.ARCHIVE ? (
             <>
-              Archived emails will be labeled{" "}
+              Archived emails will be labeled{' '}
               <Badge color="green">Archived</Badge> in Gmail.
             </>
           ) : (
             <>
-              Emails marked as read will be labeled{" "}
+              Emails marked as read will be labeled{' '}
               <Badge color="green">Read</Badge> in Gmail.
             </>
           )}
@@ -103,10 +103,10 @@ export function ConfirmationStep({
         {reuseSettings && (
           <li>
             We'll use your settings from the last time you cleaned your inbox.
-            You can adjust these{" "}
+            You can adjust these{' '}
             <Link
               className="font-semibold hover:underline"
-              href={prefixPath(emailAccountId, "/clean/onboarding")}
+              href={prefixPath(emailAccountId, '/clean/onboarding')}
             >
               here
             </Link>
@@ -126,12 +126,12 @@ export function ConfirmationStep({
           <FooterLink
             icon={HistoryIcon}
             text="History"
-            href={prefixPath(emailAccountId, "/clean/history")}
+            href={prefixPath(emailAccountId, '/clean/history')}
           />
           <FooterLink
             icon={SettingsIcon}
             text="Edit settings"
-            href={prefixPath(emailAccountId, "/clean/onboarding")}
+            href={prefixPath(emailAccountId, '/clean/onboarding')}
           />
         </div>
       )}

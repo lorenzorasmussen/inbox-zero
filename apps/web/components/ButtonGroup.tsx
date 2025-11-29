@@ -1,6 +1,6 @@
-import { Tooltip } from "@/components/Tooltip";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/utils";
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/utils';
 
 export function ButtonGroup(props: {
   buttons: {
@@ -13,7 +13,7 @@ export function ButtonGroup(props: {
 }) {
   return (
     <span
-      className={cn("isolate inline-flex rounded-md bg-background", {
+      className={cn('isolate inline-flex rounded-md bg-background', {
         shadow: props.shadow,
       })}
     >

@@ -1,7 +1,13 @@
-"use client";
+'use client';
 
-import type React from "react";
-import { ProgressBar } from "@tremor/react";
+import { ProgressBar } from '@tremor/react';
+import type React from 'react';
+import {
+  ActionCell,
+  HeaderButton,
+} from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/common';
+import type { RowProps } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/types';
+import { Checkbox } from '@/components/Checkbox';
 import {
   Table,
   TableBody,
@@ -9,13 +15,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import {
-  ActionCell,
-  HeaderButton,
-} from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/common";
-import type { RowProps } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/types";
-import { Checkbox } from "@/components/Checkbox";
+} from '@/components/ui/table';
 
 export function BulkUnsubscribeDesktop({
   tableRows,
@@ -25,8 +25,8 @@ export function BulkUnsubscribeDesktop({
   onToggleSelectAll,
 }: {
   tableRows?: React.ReactNode;
-  sortColumn: "emails" | "unread" | "unarchived";
-  setSortColumn: (sortColumn: "emails" | "unread" | "unarchived") => void;
+  sortColumn: 'emails' | 'unread' | 'unarchived';
+  setSortColumn: (sortColumn: 'emails' | 'unread' | 'unarchived') => void;
   isAllSelected: boolean;
   onToggleSelectAll: () => void;
 }) {
@@ -42,24 +42,24 @@ export function BulkUnsubscribeDesktop({
           </TableHead>
           <TableHead>
             <HeaderButton
-              sorted={sortColumn === "emails"}
-              onClick={() => setSortColumn("emails")}
+              sorted={sortColumn === 'emails'}
+              onClick={() => setSortColumn('emails')}
             >
               Emails
             </HeaderButton>
           </TableHead>
           <TableHead>
             <HeaderButton
-              sorted={sortColumn === "unread"}
-              onClick={() => setSortColumn("unread")}
+              sorted={sortColumn === 'unread'}
+              onClick={() => setSortColumn('unread')}
             >
               Read
             </HeaderButton>
           </TableHead>
           <TableHead>
             <HeaderButton
-              sorted={sortColumn === "unarchived"}
-              onClick={() => setSortColumn("unarchived")}
+              sorted={sortColumn === 'unarchived'}
+              onClick={() => setSortColumn('unarchived')}
             >
               Archived
             </HeaderButton>
@@ -94,7 +94,7 @@ export function BulkUnsubscribeRowDesktop({
   return (
     <TableRow
       key={item.name}
-      className={selected ? "bg-blue-50 dark:bg-muted/50" : undefined}
+      className={selected ? 'bg-blue-50 dark:bg-muted/50' : undefined}
       aria-selected={selected || undefined}
       data-selected={selected || undefined}
       onMouseEnter={onSelectRow}

@@ -1,9 +1,9 @@
-import { experimental_createMCPClient } from "ai";
-import { getIntegration } from "@/utils/mcp/integrations";
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import { getAuthToken } from "@/utils/mcp/oauth";
-import { createMcpTransport } from "@/utils/mcp/transport";
+import { experimental_createMCPClient } from 'ai';
+import { createScopedLogger } from '@/utils/logger';
+import { getIntegration } from '@/utils/mcp/integrations';
+import { getAuthToken } from '@/utils/mcp/oauth';
+import { createMcpTransport } from '@/utils/mcp/transport';
+import prisma from '@/utils/prisma';
 
 type MCPClient = Awaited<ReturnType<typeof experimental_createMCPClient>>;
 
@@ -13,9 +13,9 @@ export type MCPToolsResult = {
 };
 
 export async function createMcpToolsForAgent(
-  emailAccountId: string,
+  emailAccountId: string
 ): Promise<MCPToolsResult> {
-  const logger = createScopedLogger("ai-mcp-tools").with({ emailAccountId });
+  const logger = createScopedLogger('ai-mcp-tools').with({ emailAccountId });
 
   try {
     const connections = await prisma.mcpConnection.findMany({
@@ -65,7 +65,7 @@ export async function createMcpToolsForAgent(
       const integrationConfig = getIntegration(integration.name);
 
       if (!integrationConfig) {
-        logger.warn("Integration config not found", {
+        logger.warn('Integration config not found', {
           integration: integration.name,
         });
         continue;
@@ -75,7 +75,7 @@ export async function createMcpToolsForAgent(
       const serverUrl =
         integration.registeredServerUrl ?? integrationConfig.serverUrl;
       if (!serverUrl) {
-        logger.warn("No server URL available", {
+        logger.warn('No server URL available', {
           integration: integration.name,
         });
         continue;
@@ -98,8 +98,8 @@ export async function createMcpToolsForAgent(
         const enabledToolNames = connection.tools.map((tool) => tool.name);
         const filteredTools = Object.fromEntries(
           Object.entries(mcpTools).filter(([toolName]) =>
-            enabledToolNames.includes(toolName),
-          ),
+            enabledToolNames.includes(toolName)
+          )
         );
 
         toolsByIntegration.set(integration.id, {
@@ -107,7 +107,7 @@ export async function createMcpToolsForAgent(
           tools: filteredTools,
         });
       } catch (error) {
-        logger.error("Failed to create MCP client for integration", {
+        logger.error('Failed to create MCP client for integration', {
           error: error instanceof Error ? error.message : String(error),
           integration: integration.name,
         });
@@ -125,14 +125,14 @@ export async function createMcpToolsForAgent(
             try {
               await client.close();
             } catch (error) {
-              logger.warn("Error closing MCP client", { error });
+              logger.warn('Error closing MCP client', { error });
             }
-          }),
+          })
         );
       },
     };
   } catch (error) {
-    logger.error("Failed to create MCP tools for agent", { error });
+    logger.error('Failed to create MCP tools for agent', { error });
     return {
       tools: {},
       cleanup: async () => {},
@@ -150,7 +150,7 @@ function mergeToolsWithConflictResolution(
   toolsByIntegration: Map<
     string,
     { integrationName: string; tools: Record<string, unknown> }
-  >,
+  >
 ): Record<string, unknown> {
   const allTools: Record<string, unknown> = {};
   const toolNameToIntegrations = new Map<string, string[]>();

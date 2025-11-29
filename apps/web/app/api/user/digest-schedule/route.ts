@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { withEmailAccount } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type GetDigestScheduleResponse = Awaited<
   ReturnType<typeof getDigestSchedule>
 >;
 
-export const GET = withEmailAccount("user/digest-schedule", async (request) => {
+export const GET = withEmailAccount('user/digest-schedule', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
 
   const result = await getDigestSchedule({ emailAccountId });

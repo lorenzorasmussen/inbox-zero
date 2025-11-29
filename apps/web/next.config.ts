@@ -1,160 +1,160 @@
-import { withSentryConfig } from "@sentry/nextjs";
-import { withAxiom } from "next-axiom";
-import nextMdx from "@next/mdx";
-import withSerwistInit from "@serwist/next";
-import { env } from "./env";
-import type { NextConfig } from "next";
+import nextMdx from '@next/mdx';
+import { withSentryConfig } from '@sentry/nextjs';
+import withSerwistInit from '@serwist/next';
+import type { NextConfig } from 'next';
+import { withAxiom } from 'next-axiom';
+import { env } from './env';
 
 const withMDX = nextMdx({
   options: {
-    remarkPlugins: [[require.resolve("remark-gfm")]],
+    remarkPlugins: [[require.resolve('remark-gfm')]],
   },
 });
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  output: process.env.DOCKER_BUILD === "true" ? "standalone" : undefined,
+  output: process.env.DOCKER_BUILD === 'true' ? 'standalone' : undefined,
   eslint: { ignoreDuringBuilds: true },
-  serverExternalPackages: ["@sentry/nextjs", "@sentry/node"],
+  serverExternalPackages: ['@sentry/nextjs', '@sentry/node'],
   turbopack: {
     rules: {
-      "*.svg": {
-        loaders: ["@svgr/webpack"],
-        as: "*.js",
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
   },
-  pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
+  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "img.youtube.com",
+        protocol: 'https',
+        hostname: 'img.youtube.com',
       },
       {
-        protocol: "https",
-        hostname: "image.mux.com",
+        protocol: 'https',
+        hostname: 'image.mux.com',
       },
       {
-        protocol: "https",
-        hostname: "ph-avatars.imgix.net",
+        protocol: 'https',
+        hostname: 'ph-avatars.imgix.net',
       },
       {
-        protocol: "https",
-        hostname: "lh3.googleusercontent.com",
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
       },
       {
-        protocol: "https",
-        hostname: "cdn.sanity.io",
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
       },
       {
-        protocol: "https",
-        hostname: "images.getinboxzero.com",
+        protocol: 'https',
+        hostname: 'images.getinboxzero.com',
       },
     ],
   },
   async redirects() {
     return [
       {
-        source: "/",
-        destination: "/automation",
+        source: '/',
+        destination: '/automation',
         has: [
           {
-            type: "cookie",
-            key: "__Secure-better-auth.session_token",
+            type: 'cookie',
+            key: '__Secure-better-auth.session_token',
           },
         ],
         permanent: false,
       },
       {
-        source: "/",
-        destination: "/setup",
+        source: '/',
+        destination: '/setup',
         has: [
           {
-            type: "cookie",
-            key: "__Secure-better-auth.session-token.1",
+            type: 'cookie',
+            key: '__Secure-better-auth.session-token.1',
           },
         ],
         permanent: false,
       },
       {
-        source: "/feature-requests",
-        destination: "https://go.getinboxzero.com/feature-requests",
+        source: '/feature-requests',
+        destination: 'https://go.getinboxzero.com/feature-requests',
         permanent: true,
       },
       {
-        source: "/feedback",
-        destination: "https://go.getinboxzero.com/feedback",
+        source: '/feedback',
+        destination: 'https://go.getinboxzero.com/feedback',
         permanent: true,
       },
       {
-        source: "/changelog",
-        destination: "https://go.getinboxzero.com/changelog",
+        source: '/changelog',
+        destination: 'https://go.getinboxzero.com/changelog',
         permanent: true,
       },
       {
-        source: "/twitter",
-        destination: "https://go.getinboxzero.com/x",
+        source: '/twitter',
+        destination: 'https://go.getinboxzero.com/x',
         permanent: true,
       },
       {
-        source: "/github",
-        destination: "https://go.getinboxzero.com/github",
+        source: '/github',
+        destination: 'https://go.getinboxzero.com/github',
         permanent: true,
       },
       {
-        source: "/discord",
-        destination: "https://go.getinboxzero.com/discord",
+        source: '/discord',
+        destination: 'https://go.getinboxzero.com/discord',
         permanent: true,
       },
       {
-        source: "/linkedin",
-        destination: "https://go.getinboxzero.com/linkedin",
+        source: '/linkedin',
+        destination: 'https://go.getinboxzero.com/linkedin',
         permanent: true,
       },
       {
-        source: "/waitlist",
-        destination: "https://go.getinboxzero.com/waitlist",
+        source: '/waitlist',
+        destination: 'https://go.getinboxzero.com/waitlist',
         permanent: true,
       },
       {
-        source: "/waitlist-other",
-        destination: "https://go.getinboxzero.com/waitlist-other",
+        source: '/waitlist-other',
+        destination: 'https://go.getinboxzero.com/waitlist-other',
         permanent: false,
       },
       {
-        source: "/affiliates",
-        destination: "https://go.getinboxzero.com/affiliate",
+        source: '/affiliates',
+        destination: 'https://go.getinboxzero.com/affiliate',
         permanent: true,
       },
       {
-        source: "/newsletters",
-        destination: "/bulk-unsubscribe",
+        source: '/newsletters',
+        destination: '/bulk-unsubscribe',
         permanent: false,
       },
       {
-        source: "/request-access",
-        destination: "/early-access",
+        source: '/request-access',
+        destination: '/early-access',
         permanent: true,
       },
       {
-        source: "/reply-tracker",
-        destination: "/reply-zero",
+        source: '/reply-tracker',
+        destination: '/reply-zero',
         permanent: false,
       },
       {
-        source: "/game",
-        destination: "https://go.getinboxzero.com/game",
+        source: '/game',
+        destination: 'https://go.getinboxzero.com/game',
         permanent: false,
       },
       {
-        source: "/soc2",
-        destination: "https://go.getinboxzero.com/soc2",
+        source: '/soc2',
+        destination: 'https://go.getinboxzero.com/soc2',
         permanent: true,
       },
       {
-        source: "/sales",
-        destination: "https://go.getinboxzero.com/sales",
+        source: '/sales',
+        destination: 'https://go.getinboxzero.com/sales',
         permanent: false,
       },
     ];
@@ -162,20 +162,20 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/ingest/:path*",
-        destination: "https://app.posthog.com/:path*",
+        source: '/ingest/:path*',
+        destination: 'https://app.posthog.com/:path*',
       },
       {
-        source: "/vendor/lemon/affiliate.js",
-        destination: "https://lmsqueezy.com/affiliate.js",
+        source: '/vendor/lemon/affiliate.js',
+        destination: 'https://lmsqueezy.com/affiliate.js',
       },
       {
-        source: "/_proxy/dub/track/:path",
-        destination: "https://api.dub.co/track/:path",
+        source: '/_proxy/dub/track/:path',
+        destination: 'https://api.dub.co/track/:path',
       },
       {
-        source: "/_proxy/dub/script.js",
-        destination: "https://www.dubcdn.com/analytics/script.js",
+        source: '/_proxy/dub/script.js',
+        destination: 'https://www.dubcdn.com/analytics/script.js',
       },
     ];
   },
@@ -183,26 +183,26 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: '/(.*)',
         headers: [
           {
-            key: "X-Frame-Options",
-            value: "DENY",
+            key: 'X-Frame-Options',
+            value: 'DENY',
           },
           {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
           },
           {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
           },
           {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
           },
           {
-            key: "Content-Security-Policy",
+            key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
               // Next.js needs these
@@ -223,35 +223,35 @@ const nextConfig: NextConfig = {
               "frame-src 'self' https:",
               // Prevent embedding in iframes
               "frame-ancestors 'none'",
-            ].join("; "),
+            ].join('; '),
           },
           {
-            key: "Strict-Transport-Security",
-            value: "max-age=31536000",
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000',
           },
           {
-            key: "Access-Control-Allow-Origin",
+            key: 'Access-Control-Allow-Origin',
             value: env.NEXT_PUBLIC_BASE_URL,
           },
           {
-            key: "Access-Control-Allow-Methods",
-            value: "GET, POST, PUT, DELETE, OPTIONS",
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
           },
         ],
       },
       {
-        source: "/sw.js",
+        source: '/sw.js',
         headers: [
           {
-            key: "Content-Type",
-            value: "application/javascript; charset=utf-8",
+            key: 'Content-Type',
+            value: 'application/javascript; charset=utf-8',
           },
           {
-            key: "Cache-Control",
-            value: "no-cache, no-store, must-revalidate",
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
           },
           {
-            key: "Content-Security-Policy",
+            key: 'Content-Security-Policy',
             value: "default-src 'self'; script-src 'self' 'unsafe-eval'",
           },
         ],
@@ -281,7 +281,7 @@ const sentryConfig = {
   transpileClientSDK: true,
 
   // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-  tunnelRoute: "/monitoring",
+  tunnelRoute: '/monitoring',
 
   // Hides source maps from generated client bundles
   hideSourceMaps: true,
@@ -310,20 +310,20 @@ const exportConfig = useSentry
 // NEXTAUTH_SECRET is deprecated but kept as an option to not break the build. At least one must be set.
 if (!env.AUTH_SECRET && !env.NEXTAUTH_SECRET) {
   throw new Error(
-    "Either AUTH_SECRET or NEXTAUTH_SECRET environment variable must be defined",
+    'Either AUTH_SECRET or NEXTAUTH_SECRET environment variable must be defined'
   );
 }
 
 if (env.MICROSOFT_CLIENT_ID && !env.MICROSOFT_WEBHOOK_CLIENT_STATE) {
   throw new Error(
-    "MICROSOFT_WEBHOOK_CLIENT_STATE environment variable must be defined",
+    'MICROSOFT_WEBHOOK_CLIENT_STATE environment variable must be defined'
   );
 }
 
 const withSerwist = withSerwistInit({
-  swSrc: "app/sw.ts",
-  swDest: "public/sw.js",
-  disable: env.NODE_ENV !== "production",
+  swSrc: 'app/sw.ts',
+  swDest: 'public/sw.js',
+  disable: env.NODE_ENV !== 'production',
   maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
 });
 

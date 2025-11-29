@@ -1,13 +1,13 @@
-import json5 from "json5";
-import { createScopedLogger } from "@/utils/logger";
+import json5 from 'json5';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("json");
+const logger = createScopedLogger('json');
 
 export const parseJSON = (text: string) => {
   try {
     return json5.parse(text);
   } catch (error) {
-    logger.error("Error parsing JSON", { error, text });
+    logger.error('Error parsing JSON', { error, text });
     throw error;
   }
 };
@@ -19,14 +19,14 @@ export function parseJSONWithMultilines(text: string) {
       .split('"')
       .map((s, i) => {
         const inQuotes = i % 2 === 1;
-        if (inQuotes) return s.replaceAll("\n", "\\n");
+        if (inQuotes) return s.replaceAll('\n', '\\n');
         return s;
       })
       .join('"');
 
     return JSON.parse(escapedNewlines);
   } catch (error) {
-    logger.error("Error parsing JSON with multiline", { error, text });
+    logger.error('Error parsing JSON with multiline', { error, text });
     throw error;
   }
 }

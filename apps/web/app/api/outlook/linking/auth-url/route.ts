@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { withAuth } from "@/utils/middleware";
-import { getLinkingOAuth2Url } from "@/utils/outlook/client";
-import { OUTLOOK_LINKING_STATE_COOKIE_NAME } from "@/utils/outlook/constants";
+import { NextResponse } from 'next/server';
+import { withAuth } from '@/utils/middleware';
 import {
   generateOAuthState,
   oauthStateCookieOptions,
-} from "@/utils/oauth/state";
+} from '@/utils/oauth/state';
+import { getLinkingOAuth2Url } from '@/utils/outlook/client';
+import { OUTLOOK_LINKING_STATE_COOKIE_NAME } from '@/utils/outlook/constants';
 
 export type GetOutlookAuthLinkUrlResponse = { url: string };
 
@@ -18,7 +18,7 @@ const getAuthUrl = ({ userId }: { userId: string }) => {
   return { url, state };
 };
 
-export const GET = withAuth("outlook/linking/auth-url", async (request) => {
+export const GET = withAuth('outlook/linking/auth-url', async (request) => {
   const userId = request.auth.userId;
   const { url: authUrl, state } = getAuthUrl({ userId });
 
@@ -27,7 +27,7 @@ export const GET = withAuth("outlook/linking/auth-url", async (request) => {
   response.cookies.set(
     OUTLOOK_LINKING_STATE_COOKIE_NAME,
     state,
-    oauthStateCookieOptions,
+    oauthStateCookieOptions
   );
 
   return response;

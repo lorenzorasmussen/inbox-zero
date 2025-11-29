@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { CrownIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { hasAiAccess, hasUnsubscribeAccess, isPremium } from "@/utils/premium";
-import { Tooltip } from "@/components/Tooltip";
-import { usePremiumModal } from "@/app/(app)/premium/PremiumModal";
-import type { PremiumTier } from "@/generated/prisma/enums";
-import { businessTierName } from "@/app/(app)/premium/config";
-import { useUser } from "@/hooks/useUser";
-import { ActionCard } from "@/components/ui/card";
-import { env } from "@/env";
+import { CrownIcon } from 'lucide-react';
+import Link from 'next/link';
+import { businessTierName } from '@/app/(app)/premium/config';
+import { usePremiumModal } from '@/app/(app)/premium/PremiumModal';
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/ui/button';
+import { ActionCard } from '@/components/ui/card';
+import { env } from '@/env';
+import type { PremiumTier } from '@/generated/prisma/enums';
+import { useUser } from '@/hooks/useUser';
+import { hasAiAccess, hasUnsubscribeAccess, isPremium } from '@/utils/premium';
 
 export function usePremium() {
   const swrResponse = useUser();
@@ -27,7 +27,7 @@ export function usePremium() {
       hasUnsubscribeAccess: true,
       hasAiAccess: true,
       isProPlanWithoutApiKey: false,
-      tier: "BUSINESS_PLUS_ANNUALLY" as const,
+      tier: 'BUSINESS_PLUS_ANNUALLY' as const,
     };
   }
 
@@ -37,7 +37,7 @@ export function usePremium() {
   );
 
   const isProPlanWithoutApiKey =
-    (premium?.tier === "PRO_MONTHLY" || premium?.tier === "PRO_ANNUALLY") &&
+    (premium?.tier === 'PRO_MONTHLY' || premium?.tier === 'PRO_ANNUALLY') &&
     !aiApiKey;
 
   return {
@@ -68,10 +68,10 @@ export function PremiumAiAssistantAlert({
 }) {
   const { PremiumModal, openModal } = usePremiumModal();
 
-  const isBasicPlan = tier === "BASIC_MONTHLY" || tier === "BASIC_ANNUALLY";
+  const isBasicPlan = tier === 'BASIC_MONTHLY' || tier === 'BASIC_ANNUALLY';
 
   const isStripeTrialing =
-    stripeSubscriptionStatus && stripeSubscriptionStatus !== "active";
+    stripeSubscriptionStatus && stripeSubscriptionStatus !== 'active';
 
   if (activeOnly && isStripeTrialing) {
     return (

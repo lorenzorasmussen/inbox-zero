@@ -1,29 +1,29 @@
-import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
-import { z } from "zod";
-import { NextResponse } from "next/server";
-import { withError, type RequestWithLogger } from "@/utils/middleware";
-import { publishToQstash } from "@/utils/upstash";
-import { getThreadMessages } from "@/utils/gmail/thread";
-import { getGmailClientWithRefresh } from "@/utils/gmail/client";
-import type { CleanGmailBody } from "@/app/api/clean/gmail/route";
-import { SafeError } from "@/utils/error";
-import type { Logger } from "@/utils/logger";
-import { aiClean } from "@/utils/ai/clean/ai-clean";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
+import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import type { CleanGmailBody } from '@/app/api/clean/gmail/route';
+import { CleanAction } from '@/generated/prisma/enums';
+import { aiClean } from '@/utils/ai/clean/ai-clean';
+import { isNewsletterSender } from '@/utils/ai/group/find-newsletters';
+import { isMaybeReceipt, isReceipt } from '@/utils/ai/group/find-receipts';
+import { internalDateToDate } from '@/utils/date';
+import { SafeError } from '@/utils/error';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import { getGmailClientWithRefresh } from '@/utils/gmail/client';
+import { GmailLabel } from '@/utils/gmail/label';
+import { getThreadMessages } from '@/utils/gmail/thread';
+import type { Logger } from '@/utils/logger';
+import { type RequestWithLogger, withError } from '@/utils/middleware';
+import { getCalendarEventStatus } from '@/utils/parse/calender-event';
+import { findUnsubscribeLink } from '@/utils/parse/parseHtml.server';
+import { isActivePremium } from '@/utils/premium';
+import { saveThread, updateThread } from '@/utils/redis/clean';
+import type { ParsedMessage } from '@/utils/types';
+import { publishToQstash } from '@/utils/upstash';
 import {
   getEmailAccountWithAiAndTokens,
   getUserPremium,
-} from "@/utils/user/get";
-import { findUnsubscribeLink } from "@/utils/parse/parseHtml.server";
-import { getCalendarEventStatus } from "@/utils/parse/calender-event";
-import { GmailLabel } from "@/utils/gmail/label";
-import { isNewsletterSender } from "@/utils/ai/group/find-newsletters";
-import { isMaybeReceipt, isReceipt } from "@/utils/ai/group/find-receipts";
-import { saveThread, updateThread } from "@/utils/redis/clean";
-import { internalDateToDate } from "@/utils/date";
-import { CleanAction } from "@/generated/prisma/enums";
-import type { ParsedMessage } from "@/utils/types";
-import { isActivePremium } from "@/utils/premium";
+} from '@/utils/user/get';
 
 const cleanThreadBody = z.object({
   emailAccountId: z.string(),
@@ -64,15 +64,15 @@ async function cleanThread({
     emailAccountId,
   });
 
-  if (!emailAccount) throw new SafeError("User not found", 404);
+  if (!emailAccount) throw new SafeError('User not found', 404);
 
-  if (!emailAccount.tokens) throw new SafeError("No Gmail account found", 404);
+  if (!emailAccount.tokens) throw new SafeError('No Gmail account found', 404);
   if (!emailAccount.tokens.access_token || !emailAccount.tokens.refresh_token)
-    throw new SafeError("No Gmail account found", 404);
+    throw new SafeError('No Gmail account found', 404);
 
   const premium = await getUserPremium({ userId: emailAccount.userId });
-  if (!premium) throw new SafeError("User not premium");
-  if (!isActivePremium(premium)) throw new SafeError("Premium not active");
+  if (!premium) throw new SafeError('User not premium');
+  if (!isActivePremium(premium)) throw new SafeError('Premium not active');
 
   const gmail = await getGmailClientWithRefresh({
     accessToken: emailAccount.tokens.access_token,
@@ -83,7 +83,7 @@ async function cleanThread({
 
   const messages = await getThreadMessages(threadId, gmail);
 
-  logger.info("Fetched messages", {
+  logger.info('Fetched messages', {
     emailAccountId,
     threadId,
     messageCount: messages.length,
@@ -129,7 +129,7 @@ async function cleanThread({
   function hasUnsubscribeLink(message: ParsedMessage) {
     return (
       findUnsubscribeLink(message.textHtml) ||
-      message.headers["list-unsubscribe"]
+      message.headers['list-unsubscribe']
     );
   }
 
@@ -176,12 +176,12 @@ async function cleanThread({
     // calendar invite
     const calendarEventStatus = getCalendarEventStatus(message);
     if (skips.calendar && calendarEventStatus.isEvent) {
-      if (calendarEventStatus.timing === "past") {
+      if (calendarEventStatus.timing === 'past') {
         await publish({ markDone: true });
         return;
       }
 
-      if (calendarEventStatus.timing === "future") {
+      if (calendarEventStatus.timing === 'future') {
         await publish({ markDone: false });
         return;
       }
@@ -208,7 +208,7 @@ async function cleanThread({
         label === GmailLabel.SOCIAL ||
         label === GmailLabel.PROMOTIONS ||
         label === GmailLabel.UPDATES ||
-        label === GmailLabel.FORUMS,
+        label === GmailLabel.FORUMS
     )
   ) {
     await publish({ markDone: true });
@@ -265,7 +265,7 @@ function getPublish({
       jobId,
     };
 
-    logger.info("Publishing to Qstash", {
+    logger.info('Publishing to Qstash', {
       emailAccountId,
       threadId,
       maxRatePerSecond,
@@ -273,7 +273,7 @@ function getPublish({
     });
 
     await Promise.all([
-      publishToQstash("/api/clean/gmail", cleanGmailBody, {
+      publishToQstash('/api/clean/gmail', cleanGmailBody, {
         key: `gmail-action-${emailAccountId}`,
         ratePerSecond: maxRatePerSecond,
       }),
@@ -283,13 +283,13 @@ function getPublish({
         threadId,
         update: {
           archive: markDone,
-          status: "applying",
+          status: 'applying',
           // label: "",
         },
       }),
     ]);
 
-    logger.info("Published to Qstash", { emailAccountId, threadId });
+    logger.info('Published to Qstash', { emailAccountId, threadId });
   };
 }
 
@@ -304,5 +304,5 @@ export const POST = withError(
     });
 
     return NextResponse.json({ success: true });
-  }),
+  })
 );

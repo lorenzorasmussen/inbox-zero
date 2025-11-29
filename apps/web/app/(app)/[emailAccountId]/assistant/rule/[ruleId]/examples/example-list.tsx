@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import clsx from "clsx";
-import type { Dictionary } from "lodash";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { deleteGroupItemAction } from "@/utils/actions/group";
-import type { MessageWithGroupItem } from "@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/types";
-import { toastError } from "@/components/Toast";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import clsx from 'clsx';
+import type { Dictionary } from 'lodash';
+import { useState } from 'react';
+import type { MessageWithGroupItem } from '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/types';
+import { toastError } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { deleteGroupItemAction } from '@/utils/actions/group';
 
 export function ExampleList({
   groupedBySenders,
@@ -32,14 +32,14 @@ export function ExampleList({
             <CardHeader>
               <CardTitle
                 className="break-words text-lg sm:text-2xl"
-                style={{ overflowWrap: "anywhere" }}
+                style={{ overflowWrap: 'anywhere' }}
               >
                 {from}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul
-                className={clsx(threads.length > 1 && "list-inside list-disc")}
+                className={clsx(threads.length > 1 && 'list-inside list-disc')}
               >
                 {threads.map((t) => (
                   <li key={t[0]?.id}>{t[0]?.headers.subject}</li>
@@ -56,7 +56,7 @@ export function ExampleList({
                     });
                     if (result?.serverError) {
                       toastError({
-                        description: `Failed to remove ${matchingGroupItem.value} from group. ${result.serverError || ""}`,
+                        description: `Failed to remove ${matchingGroupItem.value} from group. ${result.serverError || ''}`,
                       });
                     } else {
                       setRemoved([...removed, firstThreadId]);

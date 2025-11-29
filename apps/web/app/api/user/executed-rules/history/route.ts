@@ -1,29 +1,29 @@
-import { NextResponse } from "next/server";
-import groupBy from "lodash/groupBy";
-import { withEmailProvider } from "@/utils/middleware";
-import { isDefined } from "@/utils/types";
-import prisma from "@/utils/prisma";
-import { ExecutedRuleStatus } from "@/generated/prisma/enums";
-import type { Prisma } from "@/generated/prisma/client";
-import type { EmailProvider } from "@/utils/email/types";
-import type { Logger } from "@/utils/logger";
+import groupBy from 'lodash/groupBy';
+import { NextResponse } from 'next/server';
+import type { Prisma } from '@/generated/prisma/client';
+import { ExecutedRuleStatus } from '@/generated/prisma/enums';
+import type { EmailProvider } from '@/utils/email/types';
+import type { Logger } from '@/utils/logger';
+import { withEmailProvider } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { isDefined } from '@/utils/types';
 
 const LIMIT = 50;
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export type GetExecutedRulesResponse = Awaited<
   ReturnType<typeof getExecutedRules>
 >;
 
 export const GET = withEmailProvider(
-  "user/executed-rules/history",
+  'user/executed-rules/history',
   async (request) => {
     const emailAccountId = request.auth.emailAccountId;
 
     const url = new URL(request.url);
-    const page = Number.parseInt(url.searchParams.get("page") || "1");
-    const ruleId = url.searchParams.get("ruleId") || "all";
+    const page = Number.parseInt(url.searchParams.get('page') || '1');
+    const ruleId = url.searchParams.get('ruleId') || 'all';
 
     const result = await getExecutedRules({
       page,
@@ -34,7 +34,7 @@ export const GET = withEmailProvider(
     });
 
     return NextResponse.json(result);
-  },
+  }
 );
 
 async function getExecutedRules({
@@ -53,11 +53,11 @@ async function getExecutedRules({
   const where: Prisma.ExecutedRuleWhereInput = {
     emailAccountId,
     status:
-      ruleId === "skipped"
+      ruleId === 'skipped'
         ? ExecutedRuleStatus.SKIPPED
         : ExecutedRuleStatus.APPLIED,
-    rule: ruleId === "skipped" ? undefined : { isNot: null },
-    ruleId: ruleId === "all" || ruleId === "skipped" ? undefined : ruleId,
+    rule: ruleId === 'skipped' ? undefined : { isNot: null },
+    ruleId: ruleId === 'all' || ruleId === 'skipped' ? undefined : ruleId,
   };
 
   const [executedRules, total] = await Promise.all([
@@ -65,7 +65,7 @@ async function getExecutedRules({
       where,
       take: LIMIT,
       skip: (page - 1) * LIMIT,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         messageId: true,
@@ -105,13 +105,13 @@ async function getExecutedRules({
             executedRules,
           };
         } catch (error) {
-          logger.error("Error getting message", {
+          logger.error('Error getting message', {
             error,
             messageId,
           });
         }
-      },
-    ),
+      }
+    )
   );
 
   return {

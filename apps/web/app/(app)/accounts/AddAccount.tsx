@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { toastError } from "@/components/Toast";
-import Image from "next/image";
-import type { GetAuthLinkUrlResponse } from "@/app/api/google/linking/auth-url/route";
-import type { GetOutlookAuthLinkUrlResponse } from "@/app/api/outlook/linking/auth-url/route";
-import { TypographyP } from "@/components/Typography";
+import Image from 'next/image';
+import { useState } from 'react';
+import type { GetAuthLinkUrlResponse } from '@/app/api/google/linking/auth-url/route';
+import type { GetOutlookAuthLinkUrlResponse } from '@/app/api/outlook/linking/auth-url/route';
+import { toastError } from '@/components/Toast';
+import { TypographyP } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export function AddAccount() {
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [isLoadingMicrosoft, setIsLoadingMicrosoft] = useState(false);
 
-  const handleAddAccount = async (provider: "google" | "outlook") => {
+  const handleAddAccount = async (provider: 'google' | 'outlook') => {
     const setLoading =
-      provider === "google" ? setIsLoadingGoogle : setIsLoadingMicrosoft;
+      provider === 'google' ? setIsLoadingGoogle : setIsLoadingMicrosoft;
     setLoading(true);
 
     try {
       const response = await fetch(`/api/${provider}/linking/auth-url`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (!response.ok) {
         toastError({
-          title: `Error initiating ${provider === "google" ? "Google" : "Microsoft"} link`,
-          description: "Please try again or contact support",
+          title: `Error initiating ${provider === 'google' ? 'Google' : 'Microsoft'} link`,
+          description: 'Please try again or contact support',
         });
         setLoading(false);
         return;
@@ -40,8 +40,8 @@ export function AddAccount() {
     } catch (error) {
       console.error(`Error initiating ${provider} link:`, error);
       toastError({
-        title: `Error initiating ${provider === "google" ? "Google" : "Microsoft"} link`,
-        description: "Please try again or contact support",
+        title: `Error initiating ${provider === 'google' ? 'Google' : 'Microsoft'} link`,
+        description: 'Please try again or contact support',
       });
       setLoading(false);
     }
@@ -53,7 +53,7 @@ export function AddAccount() {
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => handleAddAccount("google")}
+          onClick={() => handleAddAccount('google')}
           loading={isLoadingGoogle}
           disabled={isLoadingGoogle || isLoadingMicrosoft}
         >
@@ -69,7 +69,7 @@ export function AddAccount() {
         <Button
           variant="outline"
           className="w-full"
-          onClick={() => handleAddAccount("outlook")}
+          onClick={() => handleAddAccount('outlook')}
           loading={isLoadingMicrosoft}
           disabled={isLoadingGoogle || isLoadingMicrosoft}
         >

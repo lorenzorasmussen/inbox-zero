@@ -1,5 +1,5 @@
-import prisma from "@/utils/prisma";
-import type { Logger } from "@/utils/logger";
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
 /**
  * Cleans up invalid tokens when authentication fails permanently.
@@ -13,10 +13,10 @@ export async function cleanupInvalidTokens({
   logger,
 }: {
   emailAccountId: string;
-  reason: "invalid_grant" | "insufficient_permissions";
+  reason: 'invalid_grant' | 'insufficient_permissions';
   logger: Logger;
 }) {
-  logger.info("Cleaning up invalid tokens", { reason });
+  logger.info('Cleaning up invalid tokens', { reason });
 
   const emailAccount = await prisma.emailAccount.findUnique({
     where: { id: emailAccountId },
@@ -24,7 +24,7 @@ export async function cleanupInvalidTokens({
   });
 
   if (!emailAccount) {
-    logger.warn("Email account not found");
+    logger.warn('Email account not found');
     return;
   }
 
@@ -37,5 +37,5 @@ export async function cleanupInvalidTokens({
     },
   });
 
-  logger.info("Tokens cleared - user must re-authenticate", { reason });
+  logger.info('Tokens cleared - user must re-authenticate', { reason });
 }

@@ -1,38 +1,38 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { type SubmitHandler, useFieldArray, useForm } from "react-hook-form";
-import { useSession } from "@/utils/auth-client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import useSWR from "swr";
-import { usePostHog } from "posthog-js/react";
-import { CrownIcon } from "lucide-react";
-import { capitalCase } from "capital-case";
-import { Button } from "@/components/ui/button";
-import { FormSection, FormSectionLeft } from "@/components/Form";
-import { Input } from "@/components/Input";
-import { LoadingContent } from "@/components/LoadingContent";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { capitalCase } from 'capital-case';
+import { CrownIcon } from 'lucide-react';
+import { useAction } from 'next-safe-action/hooks';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback } from 'react';
+import { type SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import useSWR from 'swr';
+import { usePremiumModal } from '@/app/(app)/premium/PremiumModal';
+import type { MultiAccountEmailsResponse } from '@/app/api/user/settings/multi-account/route';
 import {
-  saveMultiAccountPremiumBody,
   type SaveMultiAccountPremiumBody,
-} from "@/app/api/user/settings/multi-account/validation";
+  saveMultiAccountPremiumBody,
+} from '@/app/api/user/settings/multi-account/validation';
+import { AlertBasic, AlertWithButton } from '@/components/Alert';
+import { FormSection, FormSectionLeft } from '@/components/Form';
+import { Input } from '@/components/Input';
+import { LoadingContent } from '@/components/LoadingContent';
+import { usePremium } from '@/components/PremiumAlert';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import type { PremiumTier } from '@/generated/prisma/enums';
 import {
   claimPremiumAdminAction,
   updateMultiAccountPremiumAction,
-} from "@/utils/actions/premium";
-import type { MultiAccountEmailsResponse } from "@/app/api/user/settings/multi-account/route";
-import { AlertBasic, AlertWithButton } from "@/components/Alert";
-import { usePremium } from "@/components/PremiumAlert";
-import type { PremiumTier } from "@/generated/prisma/enums";
-import { getUserTier, isAdminForPremium } from "@/utils/premium";
-import { usePremiumModal } from "@/app/(app)/premium/PremiumModal";
-import { useAction } from "next-safe-action/hooks";
-import { toastError, toastSuccess } from "@/components/Toast";
+} from '@/utils/actions/premium';
+import { useSession } from '@/utils/auth-client';
+import { getUserTier, isAdminForPremium } from '@/utils/premium';
 
 export function MultiAccountSection() {
   const { data: session } = useSession();
   const { data, isLoading, error, mutate } = useSWR<MultiAccountEmailsResponse>(
-    "/api/user/settings/multi-account",
+    '/api/user/settings/multi-account'
   );
   const {
     isPremium,
@@ -47,20 +47,20 @@ export function MultiAccountSection() {
 
   const { execute: claimPremiumAdmin } = useAction(claimPremiumAdminAction, {
     onSuccess: () => {
-      toastSuccess({ description: "Admin claimed!" });
+      toastSuccess({ description: 'Admin claimed!' });
       mutate();
     },
     onError: (error) => {
       toastError({
         description:
-          `Failed to claim premium admin. ${error.error.serverError || ""}`.trim(),
+          `Failed to claim premium admin. ${error.error.serverError || ''}`.trim(),
       });
     },
   });
 
   if (
     isPremium &&
-    !isAdminForPremium(data?.admins || [], session?.user.id || "")
+    !isAdminForPremium(data?.admins || [], session?.user.id || '')
   )
     return null;
 
@@ -95,7 +95,7 @@ export function MultiAccountSection() {
                 <div className="mt-4">
                   <MultiAccountForm
                     emailAddresses={data.users as { email: string }[]}
-                    isLifetime={premium?.tier === "LIFETIME"}
+                    isLifetime={premium?.tier === 'LIFETIME'}
                     emailAccountsAccess={premium?.emailAccountsAccess || 0}
                     pendingInvites={premium?.pendingInvites || []}
                     onUpdate={mutate}
@@ -146,19 +146,19 @@ function MultiAccountForm({
             // Deduplicate to prevent showing the same email twice
             const existingEmails = new Set(emailAddresses.map((e) => e.email));
             const uniquePendingInvites = pendingInvites.filter(
-              (email) => !existingEmails.has(email),
+              (email) => !existingEmails.has(email)
             );
             return [
               ...emailAddresses,
               ...uniquePendingInvites.map((email) => ({ email })),
             ];
           })()
-        : [{ email: "" }],
+        : [{ email: '' }],
     },
   });
 
   const { fields, append, remove } = useFieldArray({
-    name: "emailAddresses",
+    name: 'emailAddresses',
     control,
   });
   const posthog = usePostHog();
@@ -170,16 +170,16 @@ function MultiAccountForm({
     updateMultiAccountPremiumAction,
     {
       onSuccess: () => {
-        toastSuccess({ description: "Users updated!" });
+        toastSuccess({ description: 'Users updated!' });
         onUpdate?.();
       },
       onError: (error) => {
         toastError({
           description:
-            `Failed to update users. ${error.error.serverError || ""}`.trim(),
+            `Failed to update users. ${error.error.serverError || ''}`.trim(),
         });
       },
-    },
+    }
   );
 
   const onSubmit: SubmitHandler<SaveMultiAccountPremiumBody> = useCallback(
@@ -193,7 +193,7 @@ function MultiAccountForm({
         .filter((email) => email.length > 0);
       updateMultiAccountPremium({ emails });
     },
-    [needsToPurchaseMoreSeats, updateMultiAccountPremium],
+    [needsToPurchaseMoreSeats, updateMultiAccountPremium]
   );
 
   return (
@@ -208,15 +208,15 @@ function MultiAccountForm({
                 registerProps={register(`emailAddresses.${i}.email`)}
                 error={errors.emailAddresses?.[i]?.email}
                 onClickAdd={() => {
-                  append({ email: "" });
-                  posthog.capture("Clicked Add User");
+                  append({ email: '' });
+                  posthog.capture('Clicked Add User');
                 }}
                 onClickRemove={() => {
                   remove(i);
-                  posthog.capture("Clicked Remove User");
+                  posthog.capture('Clicked Remove User');
                   // If this was the last field, add an empty one so the form isn't completely empty
                   if (fields.length === 1) {
-                    append({ email: "" });
+                    append({ email: '' });
                   }
                 }}
               />
@@ -255,7 +255,7 @@ function ExtraSeatsAlert({
     <AlertBasic
       title="Additional team member pricing"
       description={`You are on the ${capitalCase(
-        premiumTier,
+        premiumTier
       )} plan. You will be billed for each additional team member you add to your account.`}
       icon={<CrownIcon className="h-4 w-4" />}
     />

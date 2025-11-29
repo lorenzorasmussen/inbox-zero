@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePostHog } from "posthog-js/react";
-import { cn } from "@/utils";
-import { Logo } from "@/components/new-landing/common/Logo";
-import { Button } from "@/components/new-landing/common/Button";
-import { HeaderLinks } from "@/components/new-landing/HeaderLinks";
-import { landingPageAnalytics } from "@/hooks/useAnalytics";
+import Link from 'next/link';
+import { usePostHog } from 'posthog-js/react';
+import { Button } from '@/components/new-landing/common/Button';
+import { Logo } from '@/components/new-landing/common/Logo';
+import { HeaderLinks } from '@/components/new-landing/HeaderLinks';
+import { landingPageAnalytics } from '@/hooks/useAnalytics';
+import { cn } from '@/utils';
 
 interface HeaderProps {
   className: string;
@@ -18,8 +18,8 @@ export function Header({ className }: HeaderProps) {
   return (
     <header
       className={cn(
-        "bg-white mx-auto flex items-center justify-between h-16",
-        className,
+        'bg-white mx-auto flex items-center justify-between h-16',
+        className
       )}
     >
       <div className="hidden md:block">

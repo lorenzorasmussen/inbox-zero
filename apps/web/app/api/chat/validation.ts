@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 const parsedMessageSchema = z.object({
   id: z.string(),
@@ -12,20 +12,20 @@ const parsedMessageSchema = z.object({
     subject: z.string(),
     cc: z.string().optional(),
     date: z.string(),
-    "reply-to": z.string().optional(),
+    'reply-to': z.string().optional(),
   }),
   internalDate: z.string().optional().nullable(),
 });
 
 export const messageContextSchema = z.object({
-  type: z.literal("fix-rule"),
+  type: z.literal('fix-rule'),
   message: parsedMessageSchema,
   results: z.array(
-    z.object({ ruleName: z.string().nullable(), reason: z.string() }),
+    z.object({ ruleName: z.string().nullable(), reason: z.string() })
   ),
   expected: z.union([
-    z.literal("new"),
-    z.literal("none"),
+    z.literal('new'),
+    z.literal('none'),
     z.object({ name: z.string() }),
   ]),
 });

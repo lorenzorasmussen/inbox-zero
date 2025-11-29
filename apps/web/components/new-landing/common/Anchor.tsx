@@ -1,5 +1,5 @@
-import { cx } from "class-variance-authority";
-import Link from "next/link";
+import { cx } from 'class-variance-authority';
+import Link from 'next/link';
 
 interface AnchorProps {
   href: string;
@@ -12,8 +12,8 @@ export function Anchor({ href, newTab, className, children }: AnchorProps) {
   return (
     <Link
       href={href}
-      target={newTab ? "_blank" : undefined}
-      className={cx("underline", className)}
+      target={newTab ? '_blank' : undefined}
+      className={cx('underline', className)}
     >
       {children}
     </Link>

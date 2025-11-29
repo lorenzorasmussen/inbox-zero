@@ -1,18 +1,18 @@
-import type { NextRequest, NextResponse } from "next/server";
-import { env } from "@/env";
-import type { Logger } from "@/utils/logger";
-import type { CalendarOAuthProvider } from "./oauth-types";
+import type { NextRequest, NextResponse } from 'next/server';
+import { env } from '@/env';
+import type { Logger } from '@/utils/logger';
 import {
-  validateOAuthCallback,
-  parseAndValidateCalendarState,
   buildCalendarRedirectUrl,
-  verifyEmailAccountAccess,
   checkExistingConnection,
   createCalendarConnection,
-  redirectWithMessage,
-  redirectWithError,
+  parseAndValidateCalendarState,
   RedirectError,
-} from "./oauth-callback-helpers";
+  redirectWithError,
+  redirectWithMessage,
+  validateOAuthCallback,
+  verifyEmailAccountAccess,
+} from './oauth-callback-helpers';
+import type { CalendarOAuthProvider } from './oauth-types';
 
 /**
  * Unified handler for calendar OAuth callbacks
@@ -20,7 +20,7 @@ import {
 export async function handleCalendarCallback(
   request: NextRequest,
   provider: CalendarOAuthProvider,
-  logger: Logger,
+  logger: Logger
 ): Promise<NextResponse> {
   let redirectHeaders = new Headers();
 
@@ -28,14 +28,14 @@ export async function handleCalendarCallback(
     // Step 1: Validate OAuth callback parameters
     const { code, redirectUrl, response } = await validateOAuthCallback(
       request,
-      logger,
+      logger
     );
     redirectHeaders = response.headers;
 
     // The validated state is in the request query params (already validated by validateOAuthCallback)
-    const receivedState = request.nextUrl.searchParams.get("state");
+    const receivedState = request.nextUrl.searchParams.get('state');
     if (!receivedState) {
-      throw new Error("Missing validated state");
+      throw new Error('Missing validated state');
     }
 
     // Step 2: Parse and validate the OAuth state
@@ -43,7 +43,7 @@ export async function handleCalendarCallback(
       receivedState,
       logger,
       redirectUrl,
-      response.headers,
+      response.headers
     );
 
     const { emailAccountId } = decodedState;
@@ -56,7 +56,7 @@ export async function handleCalendarCallback(
       emailAccountId,
       logger,
       finalRedirectUrl,
-      response.headers,
+      response.headers
     );
 
     // Step 5: Exchange code for tokens and get email
@@ -67,19 +67,19 @@ export async function handleCalendarCallback(
     const existingConnection = await checkExistingConnection(
       emailAccountId,
       provider.name,
-      email,
+      email
     );
 
     if (existingConnection) {
-      logger.info("Calendar connection already exists", {
+      logger.info('Calendar connection already exists', {
         emailAccountId,
         email,
         provider: provider.name,
       });
       return redirectWithMessage(
         finalRedirectUrl,
-        "calendar_already_connected",
-        redirectHeaders,
+        'calendar_already_connected',
+        redirectHeaders
       );
     }
 
@@ -99,10 +99,10 @@ export async function handleCalendarCallback(
       accessToken,
       refreshToken,
       emailAccountId,
-      expiresAt,
+      expiresAt
     );
 
-    logger.info("Calendar connected successfully", {
+    logger.info('Calendar connected successfully', {
       emailAccountId,
       email,
       provider: provider.name,
@@ -111,28 +111,28 @@ export async function handleCalendarCallback(
 
     return redirectWithMessage(
       finalRedirectUrl,
-      "calendar_connected",
-      redirectHeaders,
+      'calendar_connected',
+      redirectHeaders
     );
   } catch (error) {
     // Handle redirect errors
     if (error instanceof RedirectError) {
       return redirectWithError(
         error.redirectUrl,
-        "connection_failed",
-        error.responseHeaders,
+        'connection_failed',
+        error.responseHeaders
       );
     }
 
     // Handle all other errors
-    logger.error("Error in calendar callback", { error });
+    logger.error('Error in calendar callback', { error });
 
     // Try to build a redirect URL, fallback to /calendars
-    const errorRedirectUrl = new URL("/calendars", env.NEXT_PUBLIC_BASE_URL);
+    const errorRedirectUrl = new URL('/calendars', env.NEXT_PUBLIC_BASE_URL);
     return redirectWithError(
       errorRedirectUrl,
-      "connection_failed",
-      redirectHeaders,
+      'connection_failed',
+      redirectHeaders
     );
   }
 }

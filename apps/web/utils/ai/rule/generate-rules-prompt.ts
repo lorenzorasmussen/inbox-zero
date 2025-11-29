@@ -1,29 +1,29 @@
-import { z } from "zod";
-import { createGenerateObject } from "@/utils/llms";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { getModel } from "@/utils/llms/model";
-import { getUserInfoPrompt } from "@/utils/ai/helpers";
+import { z } from 'zod';
+import { getUserInfoPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
 
 const parameters = z.object({
   rules: z
     .array(z.string())
-    .describe("List of generated rules for email management"),
+    .describe('List of generated rules for email management'),
 });
 
 const parametersSnippets = z.object({
   rules: z
     .array(
       z.object({
-        rule: z.string().describe("The rule to apply to the email"),
+        rule: z.string().describe('The rule to apply to the email'),
         snippet: z
           .string()
           .optional()
           .describe(
-            "Optional: Include ONLY if this is a snippet-based rule. The exact snippet text this rule is based on.",
+            'Optional: Include ONLY if this is a snippet-based rule. The exact snippet text this rule is based on.'
           ),
-      }),
+      })
     )
-    .describe("List of generated rules for email management"),
+    .describe('List of generated rules for email management'),
 });
 
 export async function aiGenerateRulesPrompt({
@@ -38,8 +38,8 @@ export async function aiGenerateRulesPrompt({
   snippets: string[];
 }): Promise<string[] | undefined> {
   const labelsList = userLabels
-    ? userLabels.map((label) => `<label>${label}</label>`).join("\n")
-    : "No labels found";
+    ? userLabels.map((label) => `<label>${label}</label>`).join('\n')
+    : 'No labels found';
 
   const hasSnippets = snippets.length > 0;
 
@@ -47,7 +47,7 @@ export async function aiGenerateRulesPrompt({
   const lastSentEmailsCount = hasSnippets ? 20 : 50;
 
   const system =
-    "You are an AI assistant that helps people manage their emails by generating rules based on their email behavior and existing labels. Generate a JSON response with the rule details.";
+    'You are an AI assistant that helps people manage their emails by generating rules based on their email behavior and existing labels. Generate a JSON response with the rule details.';
 
   const prompt = `Analyze the user's email behavior and suggest general rules for managing their inbox effectively. Here's the context:
 
@@ -57,14 +57,14 @@ ${getUserInfoPrompt({ emailAccount })}
 ${lastSentEmails
   .slice(0, lastSentEmailsCount)
   .map((email) => `<email>\n${email}\n</email>`)
-  .join("\n")}
+  .join('\n')}
 </last_sent_emails>
 ${
   hasSnippets
     ? `<user_snippets>\n${snippets
         .map((snippet) => `<snippet>\n${snippet}\n</snippet>`)
-        .join("\n")}\n</user_snippets>`
-    : ""
+        .join('\n')}\n</user_snippets>`
+    : ''
 }
 <user_labels>
 ${labelsList}
@@ -93,8 +93,8 @@ Focus on creating rules that will help the user organize their inbox more effici
 6. Dealing with newsletters, marketing emails, and potential spam
 ${
   hasSnippets
-    ? "7. Add a rule for each snippet. IMPORTANT: Include the full text of the snippet in your output. The output can be multiple paragraphs long when using snippets."
-    : ""
+    ? '7. Add a rule for each snippet. IMPORTANT: Include the full text of the snippet in your output. The output can be multiple paragraphs long when using snippets.'
+    : ''
 }
 
 IMPORTANT: Our system can only perform email management actions (labeling, archiving, forwarding, drafting responses). We cannot add events to calendars or create todo list items. Do not suggest rules that include these actions.
@@ -103,11 +103,11 @@ Your response should only include the list of general rules. Aim for 3-10 broadl
 
 IMPORTANT: Do not create overly specific rules that only occur on a one off basis.`;
 
-  const modelOptions = getModel(emailAccount.user, "chat");
+  const modelOptions = getModel(emailAccount.user, 'chat');
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Generate rules prompt",
+    label: 'Generate rules prompt',
     modelOptions,
   });
 
@@ -127,7 +127,7 @@ IMPORTANT: Do not create overly specific rules that only occur on a one off basi
 
 function parseRulesResponse(
   result: z.infer<typeof parameters> | z.infer<typeof parametersSnippets>,
-  hasSnippets: boolean,
+  hasSnippets: boolean
 ): string[] {
   if (hasSnippets) {
     const parsedRules = result as z.infer<typeof parametersSnippets>;
@@ -144,7 +144,7 @@ function parseRulesResponse(
 
 function formatSnippet(snippet: string) {
   return snippet
-    .split("\n")
+    .split('\n')
     .map((line) => `> ${line}`)
-    .join("\n");
+    .join('\n');
 }

@@ -1,8 +1,8 @@
-import type { ParsedMessage } from "@/utils/types";
-import type { InboxZeroLabel } from "@/utils/label";
-import type { ThreadsQuery } from "@/app/api/threads/validation";
-import type { OutlookFolder } from "@/utils/outlook/folders";
-import type { Logger } from "@/utils/logger";
+import type { ThreadsQuery } from '@/app/api/threads/validation';
+import type { InboxZeroLabel } from '@/utils/label';
+import type { Logger } from '@/utils/logger';
+import type { OutlookFolder } from '@/utils/outlook/folders';
+import type { ParsedMessage } from '@/utils/types';
 
 export interface EmailThread {
   id: string;
@@ -43,7 +43,7 @@ export interface EmailSignature {
 }
 
 export interface EmailProvider {
-  readonly name: "google" | "microsoft";
+  readonly name: 'google' | 'microsoft';
   toJSON(): { name: string; type: string };
   getThreads(folderId?: string): Promise<EmailThread[]>;
   getThread(threadId: string): Promise<EmailThread>;
@@ -53,7 +53,7 @@ export interface EmailProvider {
   getFolders(): Promise<OutlookFolder[]>;
   getMessage(messageId: string): Promise<ParsedMessage>;
   getMessageByRfc822MessageId(
-    rfc822MessageId: string,
+    rfc822MessageId: string
   ): Promise<ParsedMessage | null>;
   getMessagesByFields(options: {
     froms?: string[];
@@ -61,7 +61,7 @@ export interface EmailProvider {
     subjects?: string[];
     before?: Date;
     after?: Date;
-    type?: "inbox" | "sent" | "all";
+    type?: 'inbox' | 'sent' | 'all';
     excludeSent?: boolean;
     excludeInbox?: boolean;
     maxResults?: number;
@@ -80,29 +80,29 @@ export interface EmailProvider {
   getThreadMessages(threadId: string): Promise<ParsedMessage[]>;
   getThreadMessagesInInbox(threadId: string): Promise<ParsedMessage[]>;
   getPreviousConversationMessages(
-    messageIds: string[],
+    messageIds: string[]
   ): Promise<ParsedMessage[]>;
   archiveThread(threadId: string, ownerEmail: string): Promise<void>;
   archiveThreadWithLabel(
     threadId: string,
     ownerEmail: string,
-    labelId?: string,
+    labelId?: string
   ): Promise<void>;
   archiveMessage(messageId: string): Promise<void>;
   bulkArchiveFromSenders(
     fromEmails: string[],
     ownerEmail: string,
-    emailAccountId: string,
+    emailAccountId: string
   ): Promise<void>;
   bulkTrashFromSenders(
     fromEmails: string[],
     ownerEmail: string,
-    emailAccountId: string,
+    emailAccountId: string
   ): Promise<void>;
   trashThread(
     threadId: string,
     ownerEmail: string,
-    actionSource: "user" | "automation",
+    actionSource: 'user' | 'automation'
   ): Promise<void>;
   labelMessage(options: {
     messageId: string;
@@ -115,7 +115,7 @@ export interface EmailProvider {
     email: ParsedMessage,
     args: { to?: string; subject?: string; content: string },
     userEmail: string,
-    executedRule?: { id: string; threadId: string; emailAccountId: string },
+    executedRule?: { id: string; threadId: string; emailAccountId: string }
   ): Promise<{ draftId: string }>;
   replyToEmail(email: ParsedMessage, content: string): Promise<void>;
   sendEmail(args: {
@@ -148,7 +148,7 @@ export interface EmailProvider {
   }>;
   forwardEmail(
     email: ParsedMessage,
-    args: { to: string; cc?: string; bcc?: string; content?: string },
+    args: { to: string; cc?: string; bcc?: string; content?: string }
   ): Promise<void>;
   markSpam(threadId: string): Promise<void>;
   markRead(threadId: string): Promise<void>;
@@ -160,7 +160,7 @@ export interface EmailProvider {
   getOrCreateInboxZeroLabel(key: InboxZeroLabel): Promise<EmailLabel>;
   blockUnsubscribedEmail(messageId: string): Promise<void>;
   getOriginalMessage(
-    originalMessageId: string | undefined,
+    originalMessageId: string | undefined
   ): Promise<ParsedMessage | null>;
   getFiltersList(): Promise<EmailFilter[]>;
   createFilter(options: {
@@ -199,11 +199,11 @@ export interface EmailProvider {
   checkIfReplySent(senderEmail: string): Promise<boolean>;
   countReceivedMessages(
     senderEmail: string,
-    threshold: number,
+    threshold: number
   ): Promise<number>;
   getAttachment(
     messageId: string,
-    attachmentId: string,
+    attachmentId: string
   ): Promise<{ data: string; size: number }>;
   getThreadsWithQuery(options: {
     query?: ThreadsQuery;
@@ -220,7 +220,7 @@ export interface EmailProvider {
   }): Promise<boolean>;
   getThreadsFromSenderWithSubject(
     sender: string,
-    limit: number,
+    limit: number
   ): Promise<Array<{ id: string; snippet: string; subject: string }>>;
   processHistory(options: {
     emailAddress: string;
@@ -243,7 +243,7 @@ export interface EmailProvider {
   moveThreadToFolder(
     threadId: string,
     ownerEmail: string,
-    folderName: string,
+    folderName: string
   ): Promise<void>;
   getOrCreateOutlookFolderIdByName(folderName: string): Promise<string>;
   getSignatures(): Promise<EmailSignature[]>;

@@ -1,28 +1,28 @@
-import { stepCountIs, tool } from "ai";
-import { z } from "zod";
-import type { gmail_v1 } from "@googleapis/gmail";
-import { createGenerateText } from "@/utils/llms";
-import type { Group } from "@/generated/prisma/client";
-import { queryBatchMessages } from "@/utils/gmail/message";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { createScopedLogger } from "@/utils/logger";
-import { getModel } from "@/utils/llms/model";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { stepCountIs, tool } from 'ai';
+import { z } from 'zod';
+import type { Group } from '@/generated/prisma/client';
+import { queryBatchMessages } from '@/utils/gmail/message';
+import { createGenerateText } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("aiCreateGroup");
+const logger = createScopedLogger('aiCreateGroup');
 
-const GENERATE_GROUP_ITEMS = "generateGroupItems";
-const VERIFY_GROUP_ITEMS = "verifyGroupItems";
+const GENERATE_GROUP_ITEMS = 'generateGroupItems';
+const VERIFY_GROUP_ITEMS = 'verifyGroupItems';
 
 const generateGroupItemsSchema = z.object({
   senders: z
     .array(z.string())
     .describe(
-      "The senders in the group. Can also be part of the sender name like 'John Smith' or 'Acme Corp' or '@acme.com'.",
+      "The senders in the group. Can also be part of the sender name like 'John Smith' or 'Acme Corp' or '@acme.com'."
     ),
   subjects: z
     .array(z.string())
     .describe(
-      "The subjects in the group. Can also be part of the subject line like 'meeting' or 'reminder' or 'invoice #'.",
+      "The subjects in the group. Can also be part of the subject line like 'meeting' or 'reminder' or 'invoice #'."
     ),
 });
 
@@ -33,13 +33,13 @@ const verifyGroupItemsSchema = z.object({
 });
 
 const listEmailsTool = (gmail: gmail_v1.Gmail) => ({
-  description: "List email messages. Returns max 20 results.",
+  description: 'List email messages. Returns max 20 results.',
   inputSchema: z.object({
-    query: z.string().optional().describe("Optional Gmail search query."),
+    query: z.string().optional().describe('Optional Gmail search query.'),
   }),
   execute: async ({ query }: { query: string | undefined }) => {
     const { messages } = await queryBatchMessages(gmail, {
-      query: `${query || ""} -label:sent`.trim(),
+      query: `${query || ''} -label:sent`.trim(),
       maxResults: 20,
     });
 
@@ -56,7 +56,7 @@ const listEmailsTool = (gmail: gmail_v1.Gmail) => ({
 export async function aiGenerateGroupItems(
   emailAccount: EmailAccountWithAI,
   gmail: gmail_v1.Gmail,
-  group: Pick<Group, "name" | "prompt">,
+  group: Pick<Group, 'name' | 'prompt'>
 ): Promise<z.infer<typeof generateGroupItemsSchema>> {
   const system = `You are an AI assistant specializing in email management and organization.
 Your task is to create highly specific email groups based on user prompts and their actual email history.
@@ -85,7 +85,7 @@ Key guidelines:
 
   const generateText = createGenerateText({
     emailAccount,
-    label: "Create group",
+    label: 'Create group',
     modelOptions,
   });
 
@@ -97,14 +97,14 @@ Key guidelines:
     tools: {
       listEmails: listEmailsTool(gmail),
       [GENERATE_GROUP_ITEMS]: tool({
-        description: "Create a group",
+        description: 'Create a group',
         inputSchema: generateGroupItemsSchema,
       }),
     },
   });
 
   const generateGroupItemsToolCalls = aiResponse.toolCalls.filter(
-    ({ toolName }) => toolName === GENERATE_GROUP_ITEMS,
+    ({ toolName }) => toolName === GENERATE_GROUP_ITEMS
   );
 
   const combinedArgs = generateGroupItemsToolCalls.reduce<
@@ -117,7 +117,7 @@ Key guidelines:
         subjects: [...acc.subjects, ...typedArgs.subjects],
       };
     },
-    { senders: [], subjects: [] },
+    { senders: [], subjects: [] }
   );
 
   return await verifyGroupItems(emailAccount, gmail, group, combinedArgs);
@@ -126,8 +126,8 @@ Key guidelines:
 async function verifyGroupItems(
   emailAccount: EmailAccountWithAI,
   gmail: gmail_v1.Gmail,
-  group: Pick<Group, "name" | "prompt">,
-  initialItems: z.infer<typeof generateGroupItemsSchema>,
+  group: Pick<Group, 'name' | 'prompt'>,
+  initialItems: z.infer<typeof generateGroupItemsSchema>
 ): Promise<z.infer<typeof generateGroupItemsSchema>> {
   const system = `You are an AI assistant specializing in email management and organization.
 Your task is to identify and remove any incorrect or overly broad criteria from the generated email group.
@@ -155,7 +155,7 @@ Guidelines:
 
   const generateText = createGenerateText({
     emailAccount,
-    label: "Verify group criteria",
+    label: 'Verify group criteria',
     modelOptions,
   });
 
@@ -167,18 +167,18 @@ Guidelines:
     tools: {
       listEmails: listEmailsTool(gmail),
       [VERIFY_GROUP_ITEMS]: tool({
-        description: "Remove incorrect or overly broad group criteria",
+        description: 'Remove incorrect or overly broad group criteria',
         inputSchema: verifyGroupItemsSchema,
       }),
     },
   });
 
   const verifyGroupItemsToolCalls = aiResponse.toolCalls.filter(
-    ({ toolName }) => toolName === VERIFY_GROUP_ITEMS,
+    ({ toolName }) => toolName === VERIFY_GROUP_ITEMS
   );
 
   if (verifyGroupItemsToolCalls.length === 0) {
-    logger.warn("No verification results found. Returning initial items.");
+    logger.warn('No verification results found. Returning initial items.');
     return initialItems;
   }
 
@@ -192,10 +192,10 @@ Guidelines:
   // Remove the identified items from the initial lists
   const verifiedItems = {
     senders: initialItems.senders.filter(
-      (sender) => !verificationResult.removedSenders.includes(sender),
+      (sender) => !verificationResult.removedSenders.includes(sender)
     ),
     subjects: initialItems.subjects.filter(
-      (subject) => !verificationResult.removedSubjects.includes(subject),
+      (subject) => !verificationResult.removedSubjects.includes(subject)
     ),
   };
 

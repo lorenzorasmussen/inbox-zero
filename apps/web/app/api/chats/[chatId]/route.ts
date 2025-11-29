@@ -1,26 +1,26 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type GetChatResponse = Awaited<ReturnType<typeof getChat>>;
 
 export const GET = withEmailAccount(
-  "chats/detail",
+  'chats/detail',
   async (request, { params }) => {
     const { emailAccountId } = request.auth;
     const { chatId } = await params;
 
     if (!chatId) {
       return NextResponse.json(
-        { error: "Chat ID is required." },
-        { status: 400 },
+        { error: 'Chat ID is required.' },
+        { status: 400 }
       );
     }
 
     const chat = await getChat({ chatId, emailAccountId });
 
     return NextResponse.json(chat);
-  },
+  }
 );
 
 async function getChat({
@@ -38,7 +38,7 @@ async function getChat({
     include: {
       messages: {
         orderBy: {
-          createdAt: "asc",
+          createdAt: 'asc',
         },
       },
     },

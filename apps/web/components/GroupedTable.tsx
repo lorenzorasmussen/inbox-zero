@@ -1,60 +1,60 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Fragment, useMemo } from "react";
-import { useQueryState } from "nuqs";
-import groupBy from "lodash/groupBy";
 import {
-  useReactTable,
-  getCoreRowModel,
-  getExpandedRowModel,
   type ColumnDef,
   flexRender,
-} from "@tanstack/react-table";
+  getCoreRowModel,
+  getExpandedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import groupBy from 'lodash/groupBy';
 import {
   ArchiveIcon,
+  BookmarkXIcon,
   ChevronRight,
   MoreVerticalIcon,
   PencilIcon,
-  BookmarkXIcon,
-} from "lucide-react";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { EmailCell } from "@/components/EmailCell";
-import { useThreads } from "@/hooks/useThreads";
-import { Skeleton } from "@/components/ui/skeleton";
-import { decodeSnippet } from "@/utils/gmail/decode";
-import { formatShortDate } from "@/utils/date";
-import { cn } from "@/utils";
+} from 'lucide-react';
+import Link from 'next/link';
+import { useQueryState } from 'nuqs';
+import { Fragment, useMemo } from 'react';
+import { CreateCategoryDialog } from '@/app/(app)/[emailAccountId]/smart-categories/CreateCategoryButton';
+import { CategorySelect } from '@/components/CategorySelect';
+import { EmailCell } from '@/components/EmailCell';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { MessageText } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  changeSenderCategoryAction,
-  removeAllFromCategoryAction,
-} from "@/utils/actions/categorize";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { ViewEmailButton } from '@/components/ViewEmailButton';
+import { useThreads } from '@/hooks/useThreads';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
   addToArchiveSenderQueue,
   useArchiveSenderStatus,
-} from "@/store/archive-sender-queue";
-import { getEmailUrl, getGmailSearchUrl } from "@/utils/url";
-import { MessageText } from "@/components/Typography";
-import { CreateCategoryDialog } from "@/app/(app)/[emailAccountId]/smart-categories/CreateCategoryButton";
+} from '@/store/archive-sender-queue';
+import { cn } from '@/utils';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { CategoryWithRules } from "@/utils/category.server";
-import { ViewEmailButton } from "@/components/ViewEmailButton";
-import { CategorySelect } from "@/components/CategorySelect";
-import { useAccount } from "@/providers/EmailAccountProvider";
+  changeSenderCategoryAction,
+  removeAllFromCategoryAction,
+} from '@/utils/actions/categorize';
+import type { CategoryWithRules } from '@/utils/category.server';
+import { formatShortDate } from '@/utils/date';
+import { decodeSnippet } from '@/utils/gmail/decode';
+import { getEmailUrl, getGmailSearchUrl } from '@/utils/url';
 
 const COLUMNS = 4;
 
@@ -79,7 +79,7 @@ export function GroupedTable({
         acc[category.name] = category;
         return acc;
       },
-      {},
+      {}
     );
   }, [categories]);
 
@@ -87,7 +87,7 @@ export function GroupedTable({
     const grouped = groupBy(
       emailGroups,
       (group) =>
-        categoryMap[group.category?.name || ""]?.name || "Uncategorized",
+        categoryMap[group.category?.name || '']?.name || 'Uncategorized'
     );
 
     // Add empty arrays for categories without any emails
@@ -100,15 +100,15 @@ export function GroupedTable({
     return grouped;
   }, [emailGroups, categories, categoryMap]);
 
-  const [expanded, setExpanded] = useQueryState("expanded", {
-    parse: (value) => value.split(","),
-    serialize: (value) => value.join(","),
+  const [expanded, setExpanded] = useQueryState('expanded', {
+    parse: (value) => value.split(','),
+    serialize: (value) => value.join(','),
   });
 
   const columns: ColumnDef<EmailGroup>[] = useMemo(
     () => [
       {
-        id: "expander",
+        id: 'expander',
         cell: ({ row }) => {
           return row.getCanExpand() ? (
             <button
@@ -118,17 +118,17 @@ export function GroupedTable({
             >
               <ChevronRight
                 className={cn(
-                  "h-4 w-4 transform transition-all duration-300 ease-in-out",
-                  row.getIsExpanded() ? "rotate-90" : "rotate-0",
+                  'h-4 w-4 transform transition-all duration-300 ease-in-out',
+                  row.getIsExpanded() ? 'rotate-90' : 'rotate-0'
                 )}
               />
             </button>
           ) : null;
         },
-        meta: { size: "20px" },
+        meta: { size: '20px' },
       },
       {
-        accessorKey: "address",
+        accessorKey: 'address',
         cell: ({ row }) => (
           <Link
             href={getGmailSearchUrl(row.original.address, userEmail)}
@@ -145,16 +145,16 @@ export function GroupedTable({
         ),
       },
       {
-        accessorKey: "preview",
+        accessorKey: 'preview',
         cell: ({ row }) => {
           return <ArchiveStatusCell sender={row.original.address} />;
         },
       },
       {
-        accessorKey: "date",
+        accessorKey: 'date',
         cell: ({ row }) => (
           <Select
-            defaultValue={row.original.category?.id || ""}
+            defaultValue={row.original.category?.id || ''}
             onValueChange={async (value) => {
               const result = await changeSenderCategoryAction(emailAccountId, {
                 sender: row.original.address,
@@ -164,7 +164,7 @@ export function GroupedTable({
               if (result?.serverError) {
                 toastError({ description: result.serverError });
               } else {
-                toastSuccess({ description: "Category changed" });
+                toastSuccess({ description: 'Category changed' });
               }
             }}
           >
@@ -182,7 +182,7 @@ export function GroupedTable({
         ),
       },
     ],
-    [categories, userEmail, emailAccountId],
+    [categories, userEmail, emailAccountId]
   );
 
   const table = useReactTable({
@@ -194,7 +194,7 @@ export function GroupedTable({
   });
 
   const [selectedCategoryName, setSelectedCategoryName] =
-    useQueryState("categoryName");
+    useQueryState('categoryName');
 
   return (
     <>
@@ -218,7 +218,7 @@ export function GroupedTable({
 
             const onRemoveAllFromCategory = async () => {
               const yes = confirm(
-                "This will remove all emails from this category. You can re-categorize them later. Do you want to continue?",
+                'This will remove all emails from this category. You can re-categorize them later. Do you want to continue?'
               );
               if (!yes) return;
               const result = await removeAllFromCategoryAction(emailAccountId, {
@@ -229,7 +229,7 @@ export function GroupedTable({
                 toastError({ description: result.serverError });
               } else {
                 toastSuccess({
-                  description: "All emails removed from category",
+                  description: 'All emails removed from category',
                 });
               }
             };
@@ -250,7 +250,7 @@ export function GroupedTable({
                     setExpanded((prev) =>
                       isCategoryExpanded
                         ? (prev || []).filter((c) => c !== categoryName)
-                        : [...(prev || []), categoryName],
+                        : [...(prev || []), categoryName]
                     );
                   }}
                   onArchiveAll={onArchiveAll}
@@ -298,7 +298,7 @@ export function SendersTable({
   const columns: ColumnDef<EmailGroup>[] = useMemo(
     () => [
       {
-        id: "expander",
+        id: 'expander',
         cell: ({ row }) => {
           return row.getCanExpand() ? (
             <button
@@ -308,17 +308,17 @@ export function SendersTable({
             >
               <ChevronRight
                 className={cn(
-                  "h-4 w-4 transform transition-all duration-300 ease-in-out",
-                  row.getIsExpanded() ? "rotate-90" : "rotate-0",
+                  'h-4 w-4 transform transition-all duration-300 ease-in-out',
+                  row.getIsExpanded() ? 'rotate-90' : 'rotate-0'
                 )}
               />
             </button>
           ) : null;
         },
-        meta: { size: "20px" },
+        meta: { size: '20px' },
       },
       {
-        accessorKey: "address",
+        accessorKey: 'address',
         cell: ({ row }) => (
           <div className="flex items-center justify-between">
             <EmailCell
@@ -329,10 +329,10 @@ export function SendersTable({
         ),
       },
       {
-        accessorKey: "preview",
+        accessorKey: 'preview',
       },
       {
-        accessorKey: "category",
+        accessorKey: 'category',
         cell: ({ row }) => {
           return (
             <CategorySelect
@@ -345,7 +345,7 @@ export function SendersTable({
         },
       },
     ],
-    [categories, emailAccountId],
+    [categories, emailAccountId]
   );
 
   const table = useReactTable({
@@ -392,8 +392,8 @@ function GroupRow({
         <div className="flex items-center">
           <ChevronRight
             className={cn(
-              "mr-2 size-4 transform transition-all duration-300 ease-in-out",
-              isExpanded ? "rotate-90" : "rotate-0",
+              'mr-2 size-4 transform transition-all duration-300 ease-in-out',
+              isExpanded ? 'rotate-90' : 'rotate-0'
             )}
           />
           {category.name}
@@ -460,7 +460,7 @@ function SenderRows({
             <TableCell
               key={cell.id}
               style={{
-                width: (cell.column.columnDef.meta as any)?.size || "auto",
+                width: (cell.column.columnDef.meta as any)?.size || 'auto',
               }}
               className="py-1"
             >
@@ -488,7 +488,7 @@ function ExpandedRows({
   const { data, isLoading, error } = useThreads({
     fromEmail: sender,
     limit: 5,
-    type: "all",
+    type: 'all',
   });
 
   if (isLoading) {
@@ -555,7 +555,7 @@ function ArchiveStatusCell({ sender }: { sender: string }) {
   const status = useArchiveSenderStatus(sender);
 
   switch (status?.status) {
-    case "completed":
+    case 'completed':
       if (status.threadsTotal) {
         return (
           <span className="text-green-500">
@@ -564,14 +564,14 @@ function ArchiveStatusCell({ sender }: { sender: string }) {
         );
       }
       return <span className="text-muted-foreground">Archived</span>;
-    case "processing":
+    case 'processing':
       return (
         <span className="text-blue-500">
-          Archiving... {status.threadsTotal - status.threadIds.length} /{" "}
+          Archiving... {status.threadsTotal - status.threadIds.length} /{' '}
           {status.threadsTotal}
         </span>
       );
-    case "pending":
+    case 'pending':
       return <span className="text-muted-foreground">Pending...</span>;
     default:
       return null;

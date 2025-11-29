@@ -1,14 +1,14 @@
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { getAuthToken } from "@/utils/mcp/oauth";
-import { getIntegration, type IntegrationKey } from "@/utils/mcp/integrations";
-import { createMcpTransport } from "@/utils/mcp/transport";
-import { createScopedLogger } from "@/utils/logger";
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { createScopedLogger } from '@/utils/logger';
+import { getIntegration, type IntegrationKey } from '@/utils/mcp/integrations';
+import { getAuthToken } from '@/utils/mcp/oauth';
+import { createMcpTransport } from '@/utils/mcp/transport';
 
-const logger = createScopedLogger("mcp-list-tools");
+const logger = createScopedLogger('mcp-list-tools');
 
 export async function listMcpTools(
   integration: IntegrationKey,
-  emailAccountId: string,
+  emailAccountId: string
 ): Promise<
   Array<{ name: string; description?: string; inputSchema?: unknown }>
 > {
@@ -24,14 +24,14 @@ export async function listMcpTools(
 
   const client = new Client({
     name: `inbox-zero-${integration}`,
-    version: "1.0.0",
+    version: '1.0.0',
   });
 
   try {
     await client.connect(transport);
     const result = await client.listTools();
 
-    logger.info("Listed MCP tools", {
+    logger.info('Listed MCP tools', {
       integration,
       toolCount: result.tools.length,
     });
@@ -42,9 +42,9 @@ export async function listMcpTools(
       inputSchema: tool.inputSchema,
     }));
   } catch (error) {
-    logger.error("Failed to list MCP tools", { error, integration });
+    logger.error('Failed to list MCP tools', { error, integration });
     throw new Error(
-      `Failed to list tools: ${error instanceof Error ? error.message : "Unknown error"}`,
+      `Failed to list tools: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   } finally {
     await client.close();

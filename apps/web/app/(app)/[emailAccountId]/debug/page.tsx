@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { PageHeading } from "@/components/Typography";
-import { Button } from "@/components/ui/button";
-import { prefixPath } from "@/utils/path";
+import Link from 'next/link';
+import { PageHeading } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { prefixPath } from '@/utils/path';
 
 export default async function DebugPage(props: {
   params: Promise<{ emailAccountId: string }>;
@@ -14,15 +14,15 @@ export default async function DebugPage(props: {
 
       <div className="mt-4 flex gap-2">
         <Button variant="outline" asChild>
-          <Link href={prefixPath(emailAccountId, "/debug/drafts")}>Drafts</Link>
+          <Link href={prefixPath(emailAccountId, '/debug/drafts')}>Drafts</Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link href={prefixPath(emailAccountId, "/debug/rule-history")}>
+          <Link href={prefixPath(emailAccountId, '/debug/rule-history')}>
             Rule History
           </Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link href={prefixPath(emailAccountId, "/debug/report")}>Report</Link>
+          <Link href={prefixPath(emailAccountId, '/debug/report')}>Report</Link>
         </Button>
       </div>
     </div>

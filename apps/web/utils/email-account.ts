@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/utils/auth";
-import prisma from "@/utils/prisma";
+import { redirect } from 'next/navigation';
+import { auth } from '@/utils/auth';
+import prisma from '@/utils/prisma';
 
 export async function checkUserOwnsEmailAccount({
   emailAccountId,
@@ -9,7 +9,7 @@ export async function checkUserOwnsEmailAccount({
 }) {
   const session = await auth();
   const userId = session?.user.id;
-  if (!userId) throw new Error("Not authenticated");
+  if (!userId) throw new Error('Not authenticated');
 
   const emailAccount = await prisma.emailAccount.findUnique({
     where: { id: emailAccountId, userId },
@@ -17,6 +17,6 @@ export async function checkUserOwnsEmailAccount({
   });
 
   if (!emailAccount) {
-    redirect("/no-access");
+    redirect('/no-access');
   }
 }

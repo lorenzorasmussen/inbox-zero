@@ -1,26 +1,26 @@
-import { tool } from "ai";
-import { z } from "zod";
-import { describe, expect, test, vi, beforeEach } from "vitest";
-import { mcpAgent } from "@/utils/ai/mcp/mcp-agent";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { getEmailAccount, getEmail } from "@/__tests__/helpers";
+import { tool } from 'ai';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { z } from 'zod';
+import { getEmail, getEmailAccount } from '@/__tests__/helpers';
+import { mcpAgent } from '@/utils/ai/mcp/mcp-agent';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
 
 // Run with: pnpm test-ai ai-mcp-agent
 
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
 // Mock the MCP tools creation to return actual tools for testing
-vi.mock("@/utils/ai/mcp/mcp-tools", () => ({
+vi.mock('@/utils/ai/mcp/mcp-tools', () => ({
   createMcpToolsForAgent: vi.fn(),
 }));
 
 const TIMEOUT = 30_000; // Longer timeout for LLM calls
 
 // Skip tests unless explicitly running AI tests
-const isAiTest = process.env.RUN_AI_TESTS === "true";
+const isAiTest = process.env.RUN_AI_TESTS === 'true';
 
 describe.runIf(isAiTest)(
-  "mcpAgent",
+  'mcpAgent',
   () => {
     beforeEach(async () => {
       vi.clearAllMocks();
@@ -28,11 +28,11 @@ describe.runIf(isAiTest)(
 
     function getTestEmailAccount(): EmailAccountWithAI {
       return getEmailAccount({
-        id: "test-account-id",
-        userId: "test-user-id",
-        about: "Test user working on email automation",
+        id: 'test-account-id',
+        userId: 'test-user-id',
+        about: 'Test user working on email automation',
         account: {
-          provider: "gmail",
+          provider: 'gmail',
         },
       });
     }
@@ -40,57 +40,57 @@ describe.runIf(isAiTest)(
     // Mock HubSpot tools for CRM research
     function getMockHubSpotTools() {
       return {
-        "hubspot-search-contacts": {
-          description: "Search for contacts in HubSpot CRM",
+        'hubspot-search-contacts': {
+          description: 'Search for contacts in HubSpot CRM',
           parameters: {
-            type: "object",
+            type: 'object',
             properties: {
               query: {
-                type: "string",
-                description: "Search query for contacts",
+                type: 'string',
+                description: 'Search query for contacts',
               },
               email: {
-                type: "string",
-                description: "Email address to search for",
+                type: 'string',
+                description: 'Email address to search for',
               },
             },
-            required: ["query"],
+            required: ['query'],
           },
           execute: vi.fn().mockImplementation(async () => {
             return JSON.stringify({
               contacts: [
                 {
-                  id: "12345",
-                  email: "customer@acmecorp.com",
-                  firstName: "John",
-                  lastName: "Smith",
-                  company: "ACME Corp",
-                  jobTitle: "CEO",
-                  phone: "+1-555-0123",
-                  dealStage: "customer",
-                  lifeCycleStage: "customer",
-                  lastContactDate: "2024-01-10",
+                  id: '12345',
+                  email: 'customer@acmecorp.com',
+                  firstName: 'John',
+                  lastName: 'Smith',
+                  company: 'ACME Corp',
+                  jobTitle: 'CEO',
+                  phone: '+1-555-0123',
+                  dealStage: 'customer',
+                  lifeCycleStage: 'customer',
+                  lastContactDate: '2024-01-10',
                   notes:
-                    "Enterprise customer, subscribed to Pro plan. Previous billing issues resolved in December 2023.",
-                  tags: ["VIP", "Enterprise", "Pro Plan"],
+                    'Enterprise customer, subscribed to Pro plan. Previous billing issues resolved in December 2023.',
+                  tags: ['VIP', 'Enterprise', 'Pro Plan'],
                 },
               ],
               totalResults: 1,
             });
           }),
         },
-        "hubspot-search-deals": {
-          description: "Search for deals in HubSpot CRM",
+        'hubspot-search-deals': {
+          description: 'Search for deals in HubSpot CRM',
           parameters: {
-            type: "object",
+            type: 'object',
             properties: {
               contactEmail: {
-                type: "string",
-                description: "Contact email to find deals for",
+                type: 'string',
+                description: 'Contact email to find deals for',
               },
               companyName: {
-                type: "string",
-                description: "Company name to search deals for",
+                type: 'string',
+                description: 'Company name to search deals for',
               },
             },
           },
@@ -98,15 +98,15 @@ describe.runIf(isAiTest)(
             return JSON.stringify({
               deals: [
                 {
-                  id: "deal-456",
-                  dealName: "ACME Corp - Enterprise Upgrade",
+                  id: 'deal-456',
+                  dealName: 'ACME Corp - Enterprise Upgrade',
                   amount: 50_000,
-                  stage: "proposal",
-                  closeDate: "2024-02-15",
+                  stage: 'proposal',
+                  closeDate: '2024-02-15',
                   probability: 75,
-                  contactId: "12345",
+                  contactId: '12345',
                   notes:
-                    "Interested in upgrading from Pro to Enterprise plan. Discussed advanced features and dedicated support.",
+                    'Interested in upgrading from Pro to Enterprise plan. Discussed advanced features and dedicated support.',
                 },
               ],
               totalResults: 1,
@@ -119,21 +119,21 @@ describe.runIf(isAiTest)(
     // Mock real Notion tools using AI SDK format
     function getMockNotionTools() {
       return {
-        "notion-search": tool({
+        'notion-search': tool({
           description:
-            "Perform a search over your entire Notion workspace and connected sources",
+            'Perform a search over your entire Notion workspace and connected sources',
           inputSchema: z.object({
             query: z
               .string()
               .min(1)
               .describe(
-                "Semantic search query over your entire Notion workspace",
+                'Semantic search query over your entire Notion workspace'
               ),
             query_type: z
-              .enum(["internal", "user"])
+              .enum(['internal', 'user'])
               .optional()
               .describe(
-                "Specify type of the query as either 'internal' or 'user'",
+                "Specify type of the query as either 'internal' or 'user'"
               ),
             filters: z
               .object({
@@ -149,15 +149,15 @@ describe.runIf(isAiTest)(
             page_url: z
               .string()
               .optional()
-              .describe("URL or ID of a page to search within"),
+              .describe('URL or ID of a page to search within'),
             teamspace_id: z
               .string()
               .optional()
-              .describe("ID of a teamspace to restrict search results to"),
+              .describe('ID of a teamspace to restrict search results to'),
             data_source_url: z
               .string()
               .optional()
-              .describe("URL of a Data source to search"),
+              .describe('URL of a Data source to search'),
           }),
           execute: async ({ query }: { query: string }) => {
             return `# API Documentation Search Results
@@ -188,18 +188,18 @@ When you exceed rate limits, you'll receive a 429 status code. The response incl
 For API key issues or rate limit increases, contact: api-support@company.com`;
           },
         }),
-        "notion-fetch": tool({
+        'notion-fetch': tool({
           description:
-            "Retrieves details about a Notion entity by its URL or ID",
+            'Retrieves details about a Notion entity by its URL or ID',
           inputSchema: z.object({
             id: z
               .string()
-              .describe("The ID or URL of the Notion page to fetch"),
+              .describe('The ID or URL of the Notion page to fetch'),
           }),
           execute: async ({ id }: { id: string }) => {
             if (
-              id.includes("api-troubleshooting") ||
-              id.includes("12345678-90ab-cdef")
+              id.includes('api-troubleshooting') ||
+              id.includes('12345678-90ab-cdef')
             ) {
               return `# API Troubleshooting Guide
 
@@ -225,7 +225,7 @@ For API key issues or rate limit increases, contact: api-support@company.com`;
 - Documentation: https://docs.company.com/api`;
             }
 
-            if (id.includes("billing") || id.includes("fedcba09-8765")) {
+            if (id.includes('billing') || id.includes('fedcba09-8765')) {
               return `# Billing Management Guide
 
 **Page ID:** fedcba09-8765-4321-fedc-ba0987654321
@@ -264,15 +264,15 @@ The requested page "${id}" could not be found or you don't have access to it.`;
     }
 
     test(
-      "researches customer context using HubSpot CRM for billing inquiry",
+      'researches customer context using HubSpot CRM for billing inquiry',
       async () => {
         const emailAccount = getTestEmailAccount();
         const messages = [
           getEmail({
-            id: "email-1",
-            from: "customer@acmecorp.com",
-            to: "support@test.com",
-            subject: "Billing issue with subscription",
+            id: 'email-1',
+            from: 'customer@acmecorp.com',
+            to: 'support@test.com',
+            subject: 'Billing issue with subscription',
             content:
               "Hi, I'm John Smith from ACME Corp. We're having issues with our Pro subscription billing. It seems we were charged twice this month. Our account ID is ACME-12345.",
           }),
@@ -280,7 +280,7 @@ The requested page "${id}" could not be found or you don't have access to it.`;
 
         // Mock MCP tools to return HubSpot tools
         const { createMcpToolsForAgent } = await import(
-          "@/utils/ai/mcp/mcp-tools"
+          '@/utils/ai/mcp/mcp-tools'
         );
         vi.mocked(createMcpToolsForAgent).mockResolvedValue({
           tools: getMockHubSpotTools(),
@@ -298,21 +298,21 @@ The requested page "${id}" could not be found or you don't have access to it.`;
         const toolCalls = result?.getToolCalls();
         expect(toolCalls?.length).toBeGreaterThan(0);
         const toolNames = toolCalls?.map((tc) => tc.toolName);
-        expect(toolNames?.some((name) => name.includes("hubspot"))).toBe(true);
+        expect(toolNames?.some((name) => name.includes('hubspot'))).toBe(true);
       },
-      TIMEOUT,
+      TIMEOUT
     );
 
     test(
-      "searches knowledge base using Notion for technical support inquiry",
+      'searches knowledge base using Notion for technical support inquiry',
       async () => {
         const emailAccount = getTestEmailAccount();
         const messages = [
           getEmail({
-            id: "email-1",
-            from: "developer@startup.com",
-            to: "api-support@test.com",
-            subject: "API integration issues",
+            id: 'email-1',
+            from: 'developer@startup.com',
+            to: 'api-support@test.com',
+            subject: 'API integration issues',
             content:
               "Hello, I'm Sarah from DevStartup Inc. We're integrating your REST API but getting 429 rate limit errors on the /users endpoint. Our API key is dev-12345. This is blocking our product launch next week.",
           }),
@@ -320,7 +320,7 @@ The requested page "${id}" could not be found or you don't have access to it.`;
 
         // Mock MCP tools to return Notion tools
         const { createMcpToolsForAgent } = await import(
-          "@/utils/ai/mcp/mcp-tools"
+          '@/utils/ai/mcp/mcp-tools'
         );
         vi.mocked(createMcpToolsForAgent).mockResolvedValue({
           tools: getMockNotionTools(),
@@ -341,21 +341,21 @@ The requested page "${id}" could not be found or you don't have access to it.`;
         const toolCalls = result?.getToolCalls();
         expect(toolCalls?.length).toBeGreaterThan(0);
         const toolNames = toolCalls?.map((tc) => tc.toolName);
-        expect(toolNames?.some((name) => name.includes("notion"))).toBe(true);
+        expect(toolNames?.some((name) => name.includes('notion'))).toBe(true);
       },
-      TIMEOUT,
+      TIMEOUT
     );
 
     test(
-      "combines multiple MCP tools for comprehensive research",
+      'combines multiple MCP tools for comprehensive research',
       async () => {
         const emailAccount = getTestEmailAccount();
         const messages = [
           getEmail({
-            id: "email-1",
-            from: "customer@acmecorp.com",
-            to: "support@test.com",
-            subject: "Enterprise upgrade questions",
+            id: 'email-1',
+            from: 'customer@acmecorp.com',
+            to: 'support@test.com',
+            subject: 'Enterprise upgrade questions',
             content:
               "Hi, this is John from ACME Corp again. We're interested in upgrading to your Enterprise plan. Can you provide details about the features and pricing? We're particularly interested in API rate limits and dedicated support.",
           }),
@@ -363,7 +363,7 @@ The requested page "${id}" could not be found or you don't have access to it.`;
 
         // Mock MCP tools to return both HubSpot and Notion tools
         const { createMcpToolsForAgent } = await import(
-          "@/utils/ai/mcp/mcp-tools"
+          '@/utils/ai/mcp/mcp-tools'
         );
         vi.mocked(createMcpToolsForAgent).mockResolvedValue({
           tools: {
@@ -386,28 +386,28 @@ The requested page "${id}" could not be found or you don't have access to it.`;
         const toolNames = toolCalls?.map((tc) => tc.toolName) ?? [];
 
         // Should use multiple types of tools for comprehensive research
-        const hasHubSpot = toolNames.some((name) => name.includes("hubspot"));
-        const hasNotion = toolNames.some((name) => name.includes("notion"));
+        const hasHubSpot = toolNames.some((name) => name.includes('hubspot'));
+        const hasNotion = toolNames.some((name) => name.includes('notion'));
         expect(hasHubSpot && hasNotion).toBe(true);
       },
-      TIMEOUT,
+      TIMEOUT
     );
 
     test(
-      "returns null when no MCP tools are available",
+      'returns null when no MCP tools are available',
       async () => {
         const emailAccount = getTestEmailAccount();
         const messages = [
           getEmail({
-            from: "test@example.com",
-            subject: "Test inquiry",
-            content: "This is a test message.",
+            from: 'test@example.com',
+            subject: 'Test inquiry',
+            content: 'This is a test message.',
           }),
         ];
 
         // Mock MCP tools to return empty object (no tools available)
         const { createMcpToolsForAgent } = await import(
-          "@/utils/ai/mcp/mcp-tools"
+          '@/utils/ai/mcp/mcp-tools'
         );
         vi.mocked(createMcpToolsForAgent).mockResolvedValue({
           tools: {},
@@ -421,11 +421,11 @@ The requested page "${id}" could not be found or you don't have access to it.`;
 
         expect(result).toBeNull();
       },
-      TIMEOUT,
+      TIMEOUT
     );
 
     test(
-      "returns null for empty messages",
+      'returns null for empty messages',
       async () => {
         const emailAccount = getTestEmailAccount();
 
@@ -436,8 +436,8 @@ The requested page "${id}" could not be found or you don't have access to it.`;
 
         expect(result).toBeNull();
       },
-      TIMEOUT,
+      TIMEOUT
     );
   },
-  TIMEOUT,
+  TIMEOUT
 );

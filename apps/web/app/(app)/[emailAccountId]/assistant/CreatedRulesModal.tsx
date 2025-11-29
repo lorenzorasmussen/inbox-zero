@@ -1,5 +1,11 @@
-"use client";
+'use client';
 
+import { CheckCircle2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { RuleDialog } from '@/app/(app)/[emailAccountId]/assistant/RuleDialog';
+import { ActionBadges } from '@/app/(app)/[emailAccountId]/assistant/Rules';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -7,19 +13,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { ActionBadges } from "@/app/(app)/[emailAccountId]/assistant/Rules";
-import { conditionsToString } from "@/utils/condition";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { RuleDialog } from "@/app/(app)/[emailAccountId]/assistant/RuleDialog";
-import { useDialogState } from "@/hooks/useDialogState";
-import { CheckCircle2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { prefixPath } from "@/utils/path";
-import type { CreateRuleResult } from "@/utils/rule/types";
-import { useLabels } from "@/hooks/useLabels";
+} from '@/components/ui/dialog';
+import { useDialogState } from '@/hooks/useDialogState';
+import { useLabels } from '@/hooks/useLabels';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { conditionsToString } from '@/utils/condition';
+import { prefixPath } from '@/utils/path';
+import type { CreateRuleResult } from '@/utils/rule/types';
 
 export function CreatedRulesModal({
   open,
@@ -52,7 +52,7 @@ export function CreatedRulesContent({
 
   const handleTestRules = () => {
     onOpenChange(false);
-    router.push(prefixPath(emailAccountId, "/automation?tab=test"));
+    router.push(prefixPath(emailAccountId, '/automation?tab=test'));
   };
 
   const { userLabels } = useLabels();
@@ -66,7 +66,7 @@ export function CreatedRulesContent({
         </DialogTitle>
         <DialogDescription>
           {rules.length === 1
-            ? "Your rule has been created. You can now test it or view the details below."
+            ? 'Your rule has been created. You can now test it or view the details below.'
             : `${rules.length} rules have been created. You can now test them or view the details below.`}
         </DialogDescription>
       </DialogHeader>
@@ -87,7 +87,7 @@ export function CreatedRulesContent({
                 </div>
 
                 <div className="text-sm">
-                  <span className="font-medium">Condition:</span>{" "}
+                  <span className="font-medium">Condition:</span>{' '}
                   {conditionsToString(rule)}
                 </div>
 

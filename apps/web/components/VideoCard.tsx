@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import type { ComponentProps } from "react";
-import Image from "next/image";
-import MuxPlayer from "@mux/mux-player-react";
-import { PlayIcon, X } from "lucide-react";
-import { CardGreen } from "@/components/ui/card";
+import MuxPlayer from '@mux/mux-player-react';
+import { PlayIcon, X } from 'lucide-react';
+import Image from 'next/image';
+import type { ComponentProps } from 'react';
+import React, { useEffect, useState } from 'react';
+import { ClientOnly } from '@/components/ClientOnly';
+import { Button } from '@/components/ui/button';
+import { CardGreen } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ClientOnly } from "@/components/ClientOnly";
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 type VideoCardProps = ComponentProps<typeof VideoCard> & {
   storageKey: string;
@@ -24,14 +24,14 @@ export function DismissibleVideoCard({ storageKey, ...props }: VideoCardProps) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const isDismissed = localStorage.getItem(storageKey) === "true";
+    const isDismissed = localStorage.getItem(storageKey) === 'true';
     setIsVisible(!isDismissed);
     setIsLoaded(true);
   }, [storageKey]);
 
   const handleClose = () => {
     setIsVisible(false);
-    localStorage.setItem(storageKey, "true");
+    localStorage.setItem(storageKey, 'true');
   };
 
   if (!isLoaded || !isVisible) {
@@ -65,7 +65,7 @@ const VideoCard = React.forwardRef<
       onClose,
       ...props
     },
-    ref,
+    ref
   ) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -120,7 +120,7 @@ const VideoCard = React.forwardRef<
                           muxPlaybackId
                             ? `https://image.mux.com/${muxPlaybackId}/thumbnail.jpg`
                             : thumbnailSrc ||
-                              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII="
+                              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII='
                         }
                         alt={title}
                         fill
@@ -145,13 +145,13 @@ const VideoCard = React.forwardRef<
                           metadata={{ video_title: title }}
                           accentColor="#3b82f6"
                           className="size-full rounded-lg"
-                          style={{ overflow: "hidden" }}
+                          style={{ overflow: 'hidden' }}
                           autoPlay
                         />
                       </ClientOnly>
                     ) : (
                       <iframe
-                        src={`${videoSrc}${videoSrc?.includes("?") ? "&" : "?"}autoplay=1&rel=0`}
+                        src={`${videoSrc}${videoSrc?.includes('?') ? '&' : '?'}autoplay=1&rel=0`}
                         className="size-full rounded-lg"
                         title={`Video: ${title}`}
                         allowFullScreen
@@ -166,8 +166,8 @@ const VideoCard = React.forwardRef<
         </div>
       </CardGreen>
     );
-  },
+  }
 );
-VideoCard.displayName = "ActionCard";
+VideoCard.displayName = 'ActionCard';
 
 export { VideoCard };

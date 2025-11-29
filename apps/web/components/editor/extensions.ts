@@ -1,15 +1,15 @@
-import { Extension } from "@tiptap/react";
-import { Plugin } from "@tiptap/pm/state";
+import { Plugin } from '@tiptap/pm/state';
+import { Extension } from '@tiptap/react';
 
 export const EnterHandler = Extension.create({
-  name: "enterHandler",
+  name: 'enterHandler',
   addProseMirrorPlugins() {
     return [
       new Plugin({
         props: {
           handleKeyDown: (_view, event) => {
             // Check for Cmd/Ctrl + Enter
-            if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+            if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
               return true; // Prevent default behavior
             }
             return false;

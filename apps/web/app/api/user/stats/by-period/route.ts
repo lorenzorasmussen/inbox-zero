@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import format from "date-fns/format";
-import { z } from "zod";
-import sumBy from "lodash/sumBy";
-import { zodPeriod } from "@inboxzero/tinybird";
-import { withEmailAccount } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
-import { Prisma } from "@/generated/prisma/client";
+import { zodPeriod } from '@inboxzero/tinybird';
+import format from 'date-fns/format';
+import sumBy from 'lodash/sumBy';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { Prisma } from '@/generated/prisma/client';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 const statsByWeekParams = z.object({
   period: zodPeriod,
@@ -16,7 +16,7 @@ export type StatsByWeekParams = z.infer<typeof statsByWeekParams>;
 export type StatsByWeekResponse = Awaited<ReturnType<typeof getStatsByPeriod>>;
 
 async function getEmailStatsByPeriod(
-  options: StatsByWeekParams & { emailAccountId: string },
+  options: StatsByWeekParams & { emailAccountId: string }
 ) {
   const { period, fromDate, toDate, emailAccountId } = options;
 
@@ -30,13 +30,13 @@ async function getEmailStatsByPeriod(
   }
 
   const dateFormat =
-    period === "day"
-      ? "YYYY-MM-DD"
-      : period === "week"
-        ? "YYYY-WW"
-        : period === "month"
-          ? "YYYY-MM"
-          : "YYYY";
+    period === 'day'
+      ? 'YYYY-MM-DD'
+      : period === 'week'
+        ? 'YYYY-WW'
+        : period === 'month'
+          ? 'YYYY-MM'
+          : 'YYYY';
 
   // Using raw query with properly typed parameters
   type StatsResult = {
@@ -54,7 +54,7 @@ async function getEmailStatsByPeriod(
   const whereClause = Prisma.sql`WHERE "emailAccountId" = ${emailAccountId}`;
   const dateClause =
     dateConditions.length > 0
-      ? Prisma.sql` AND ${Prisma.join(dateConditions, " AND ")}`
+      ? Prisma.sql` AND ${Prisma.join(dateConditions, ' AND ')}`
       : Prisma.sql``;
 
   // Convert period and dateFormat to string literals in PostgreSQL
@@ -90,14 +90,14 @@ async function getEmailStatsByPeriod(
 async function getStatsByPeriod(
   options: StatsByWeekParams & {
     emailAccountId: string;
-  },
+  }
 ) {
   // Get all stats in a single query
   const stats = await getEmailStatsByPeriod(options);
 
   // Transform stats to match the expected format
   const formattedStats = stats.map((stat) => {
-    const startOfPeriodFormatted = format(stat.startOfPeriod, "LLL dd, y");
+    const startOfPeriodFormatted = format(stat.startOfPeriod, 'LLL dd, y');
 
     return {
       startOfPeriod: startOfPeriodFormatted,
@@ -131,9 +131,9 @@ export const GET = withEmailAccount(
 
     const { searchParams } = new URL(request.url);
     const params = statsByWeekParams.parse({
-      period: searchParams.get("period") || "week",
-      fromDate: searchParams.get("fromDate"),
-      toDate: searchParams.get("toDate"),
+      period: searchParams.get('period') || 'week',
+      fromDate: searchParams.get('fromDate'),
+      toDate: searchParams.get('toDate'),
     });
 
     const result = await getStatsByPeriod({
@@ -143,5 +143,5 @@ export const GET = withEmailAccount(
 
     return NextResponse.json(result);
   },
-  { allowOrgAdmins: true },
+  { allowOrgAdmins: true }
 );

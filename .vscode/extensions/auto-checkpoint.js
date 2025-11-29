@@ -1,20 +1,20 @@
-const vscode = require("vscode");
-const { execSync } = require("child_process");
+const vscode = require('vscode');
+const { execSync } = require('child_process');
 
 function activate(context) {
-  let disposable = vscode.commands.registerCommand(
-    "extension.autoCheckpoint",
+  const disposable = vscode.commands.registerCommand(
+    'extension.autoCheckpoint',
     () => {
       try {
         execSync(
           'echo "Auto-checkpoint triggered at $(date)" >> .checkpoint.log',
-          { stdio: "inherit" },
+          { stdio: 'inherit' }
         );
-        vscode.window.showInformationMessage("Auto-checkpoint completed!");
+        vscode.window.showInformationMessage('Auto-checkpoint completed!');
       } catch (error) {
         vscode.window.showErrorMessage(`Checkpoint failed: ${error.message}`);
       }
-    },
+    }
   );
 
   // Auto-checkpoint on file save
@@ -25,7 +25,7 @@ function activate(context) {
       // 5 minutes
       execSync(
         'echo "Auto-checkpoint triggered at $(date)" >> .checkpoint.log',
-        { stdio: "ignore" },
+        { stdio: 'ignore' }
       );
       lastCheckpoint = now;
     }

@@ -1,13 +1,13 @@
-import { env } from "@/env";
 import {
+  activateLicense,
+  getCustomer,
   lemonSqueezySetup,
   updateSubscriptionItem,
-  getCustomer,
-  activateLicense,
-} from "@lemonsqueezy/lemonsqueezy.js";
-import { createScopedLogger } from "@/utils/logger";
+} from '@lemonsqueezy/lemonsqueezy.js';
+import { env } from '@/env';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("Lemon Squeezy");
+const logger = createScopedLogger('Lemon Squeezy');
 
 let isSetUp = false;
 
@@ -23,7 +23,7 @@ export async function updateSubscriptionItemQuantity(options: {
   quantity: number;
 }) {
   setUpLemon();
-  logger.info("Updating subscription item quantity", options);
+  logger.info('Updating subscription item quantity', options);
   return updateSubscriptionItem(options.id, {
     quantity: options.quantity,
     invoiceImmediately: true,
@@ -32,15 +32,15 @@ export async function updateSubscriptionItemQuantity(options: {
 
 export async function getLemonCustomer(customerId: string) {
   setUpLemon();
-  return getCustomer(customerId, { include: ["subscriptions", "orders"] });
+  return getCustomer(customerId, { include: ['subscriptions', 'orders'] });
 }
 
 export async function activateLemonLicenseKey(
   licenseKey: string,
-  name: string,
+  name: string
 ) {
   setUpLemon();
-  logger.info("Activating license key", { licenseKey, name });
+  logger.info('Activating license key', { licenseKey, name });
   return activateLicense(licenseKey, name);
 }
 

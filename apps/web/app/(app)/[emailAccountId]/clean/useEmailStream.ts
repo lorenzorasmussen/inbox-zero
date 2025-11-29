@@ -1,24 +1,24 @@
 /** biome-ignore-all lint/suspicious/noConsole: helpful for debugging till feature is fully live */
-"use client";
+'use client';
 
-import keyBy from "lodash/keyBy";
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import type { CleanThread } from "@/utils/redis/clean.types";
+import keyBy from 'lodash/keyBy';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { CleanThread } from '@/utils/redis/clean.types';
 
 export function useEmailStream(
   emailAccountId: string,
   initialPaused = false,
   initialThreads: CleanThread[] = [],
-  filter?: string | null,
+  filter?: string | null
 ) {
   // Initialize emailsMap with sorted threads and proper dates
   const [emailsMap, setEmailsMap] = useState<Record<string, CleanThread>>(() =>
-    createEmailMap(initialThreads),
+    createEmailMap(initialThreads)
   );
 
   // Initialize emailOrder sorted by date (newest first)
   const [emailOrder, setEmailOrder] = useState<string[]>(() =>
-    getSortedThreadIds(initialThreads),
+    getSortedThreadIds(initialThreads)
   );
 
   const [isPaused, setIsPaused] = useState(initialPaused);
@@ -28,7 +28,7 @@ export function useEmailStream(
   const connectToSSE = useCallback(() => {
     try {
       if (isPaused) {
-        console.log("SSE paused - closing connection if exists");
+        console.log('SSE paused - closing connection if exists');
         if (eventSourceRef.current) {
           eventSourceRef.current.close();
           eventSourceRef.current = null;
@@ -39,7 +39,7 @@ export function useEmailStream(
       if (eventSourceRef.current) return;
 
       if (!emailAccountId) {
-        console.error("Email account ID is missing, cannot connect to SSE.");
+        console.error('Email account ID is missing, cannot connect to SSE.');
         return;
       }
 
@@ -50,7 +50,7 @@ export function useEmailStream(
       eventSourceRef.current = eventSource;
 
       // Handle thread events
-      eventSource.addEventListener("thread", (event) => {
+      eventSource.addEventListener('thread', (event) => {
         try {
           const threadData: CleanThread = JSON.parse(event.data);
           const thread = {
@@ -85,12 +85,12 @@ export function useEmailStream(
             return prev;
           });
         } catch (error) {
-          console.error("Error processing thread:", error);
+          console.error('Error processing thread:', error);
         }
       });
 
       eventSource.onerror = (error) => {
-        console.error("SSE connection error:", error);
+        console.error('SSE connection error:', error);
         if (eventSourceRef.current) {
           eventSourceRef.current.close();
           eventSourceRef.current = null;
@@ -98,23 +98,23 @@ export function useEmailStream(
 
         // Attempt to reconnect after a short delay if not paused
         if (!isPaused) {
-          console.log("Attempting to reconnect in 2 seconds...");
+          console.log('Attempting to reconnect in 2 seconds...');
           setTimeout(connectToSSE, 2000);
         }
       };
     } catch (error) {
-      console.error("Error establishing SSE connection:", error);
+      console.error('Error establishing SSE connection:', error);
     }
   }, [isPaused, emailOrder, emailAccountId]);
 
   // Connect or disconnect based on pause state
   useEffect(() => {
-    console.log("SSE effect triggered, isPaused:", isPaused);
+    console.log('SSE effect triggered, isPaused:', isPaused);
     connectToSSE();
 
     // Cleanup
     return () => {
-      console.log("Cleaning up SSE connection");
+      console.log('Cleaning up SSE connection');
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
@@ -136,9 +136,9 @@ export function useEmailStream(
         return acc;
       }
 
-      if (filter === "keep" && !email.archive && !email.label) {
+      if (filter === 'keep' && !email.archive && !email.label) {
         acc.push(email);
-      } else if (filter === "archived" && email.archive === true) {
+      } else if (filter === 'archived' && email.archive === true) {
         acc.push(email);
       }
 
@@ -162,7 +162,7 @@ function createEmailMap(threads: CleanThread[]): Record<string, CleanThread> {
     ...thread,
     date: new Date(thread.date),
   }));
-  return keyBy(threadsWithDates, "threadId");
+  return keyBy(threadsWithDates, 'threadId');
 }
 
 function getSortedThreadIds(threads: CleanThread[]): string[] {

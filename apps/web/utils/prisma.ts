@@ -1,7 +1,7 @@
-import { PrismaPg } from "@prisma/adapter-pg";
-import { env } from "@/env";
-import { PrismaClient } from "@/generated/prisma/client";
-import { encryptedTokens } from "@/utils/prisma-extensions";
+import { PrismaPg } from '@prisma/adapter-pg';
+import { env } from '@/env';
+import { PrismaClient } from '@/generated/prisma/client';
+import { encryptedTokens } from '@/utils/prisma-extensions';
 
 declare global {
   var prisma: PrismaClient | undefined;
@@ -14,6 +14,6 @@ const _prisma =
     adapter: new PrismaPg({ connectionString: env.DATABASE_URL }),
   }).$extends(encryptedTokens) as unknown as PrismaClient);
 
-if (env.NODE_ENV === "development") global.prisma = _prisma;
+if (env.NODE_ENV === 'development') global.prisma = _prisma;
 
 export default _prisma;

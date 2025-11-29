@@ -1,15 +1,15 @@
-import { z } from "zod";
-import { createGenerateObject } from "@/utils/llms";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
+import { z } from 'zod';
 import {
   type CreateRuleSchema,
   createRuleSchema,
-} from "@/utils/ai/rule/create-rule-schema";
-import { createScopedLogger } from "@/utils/logger";
-import { convertMentionsToLabels } from "@/utils/mention";
-import { getModel } from "@/utils/llms/model";
+} from '@/utils/ai/rule/create-rule-schema';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import { convertMentionsToLabels } from '@/utils/mention';
 
-const logger = createScopedLogger("ai-prompt-to-rules");
+const logger = createScopedLogger('ai-prompt-to-rules');
 
 export async function aiPromptToRules({
   emailAccount,
@@ -28,11 +28,11 @@ export async function aiPromptToRules({
 ${cleanedPromptFile}
 </prompt>`;
 
-  const modelOptions = getModel(emailAccount.user, "chat");
+  const modelOptions = getModel(emailAccount.user, 'chat');
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Prompt to rules",
+    label: 'Prompt to rules',
     modelOptions,
   });
 
@@ -46,8 +46,8 @@ ${cleanedPromptFile}
   });
 
   if (!aiResponse.object) {
-    logger.error("No rules found in AI response", { aiResponse });
-    throw new Error("No rules found in AI response");
+    logger.error('No rules found in AI response', { aiResponse });
+    throw new Error('No rules found in AI response');
   }
 
   const rules = aiResponse.object.rules;

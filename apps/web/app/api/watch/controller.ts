@@ -1,12 +1,12 @@
-import prisma from "@/utils/prisma";
-import { captureException } from "@/utils/error";
-import { createScopedLogger } from "@/utils/logger";
-import { cleanupInvalidTokens } from "@/utils/auth/cleanup-invalid-tokens";
-import type { EmailProvider } from "@/utils/email/types";
-import { createManagedOutlookSubscription } from "@/utils/outlook/subscription-manager";
-import { isMicrosoftProvider } from "@/utils/email/provider-types";
+import { cleanupInvalidTokens } from '@/utils/auth/cleanup-invalid-tokens';
+import { isMicrosoftProvider } from '@/utils/email/provider-types';
+import type { EmailProvider } from '@/utils/email/types';
+import { captureException } from '@/utils/error';
+import { createScopedLogger } from '@/utils/logger';
+import { createManagedOutlookSubscription } from '@/utils/outlook/subscription-manager';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("watch/controller");
+const logger = createScopedLogger('watch/controller');
 
 export async function watchEmails({
   emailAccountId,
@@ -17,7 +17,7 @@ export async function watchEmails({
 }): Promise<
   { success: true; expirationDate: Date } | { success: false; error: string }
 > {
-  logger.info("Watching emails", {
+  logger.info('Watching emails', {
     emailAccountId,
     providerName: provider.name,
   });
@@ -39,8 +39,8 @@ export async function watchEmails({
       }
     }
 
-    const errorMessage = "Provider returned no result for watch setup";
-    logger.error("Error watching inbox", {
+    const errorMessage = 'Provider returned no result for watch setup';
+    logger.error('Error watching inbox', {
       emailAccountId,
       providerName: provider.name,
       error: errorMessage,
@@ -51,22 +51,22 @@ export async function watchEmails({
 
     // Minimal centralized handling of permanent auth failures (exact checks only)
     const isInsufficientPermissions =
-      errorMessage === "Request had insufficient authentication scopes.";
-    const isInvalidGrant = errorMessage === "invalid_grant";
+      errorMessage === 'Request had insufficient authentication scopes.';
+    const isInvalidGrant = errorMessage === 'invalid_grant';
 
     if (isInsufficientPermissions || isInvalidGrant) {
-      logger.warn("Auth failure while watching inbox - cleaning up tokens", {
+      logger.warn('Auth failure while watching inbox - cleaning up tokens', {
         emailAccountId,
         providerName: provider.name,
         error: errorMessage,
       });
       await cleanupInvalidTokens({
         emailAccountId,
-        reason: isInvalidGrant ? "invalid_grant" : "insufficient_permissions",
+        reason: isInvalidGrant ? 'invalid_grant' : 'insufficient_permissions',
         logger,
       });
     } else {
-      logger.error("Error watching inbox", {
+      logger.error('Error watching inbox', {
         emailAccountId,
         providerName: provider.name,
         error,
@@ -88,22 +88,22 @@ export async function unwatchEmails({
   subscriptionId?: string | null;
 }) {
   try {
-    logger.info("Unwatching emails", {
+    logger.info('Unwatching emails', {
       emailAccountId,
       providerName: provider.name,
     });
 
     await provider.unwatchEmails(subscriptionId || undefined);
   } catch (error) {
-    if (error instanceof Error && error.message.includes("invalid_grant")) {
-      logger.warn("Error unwatching emails, invalid grant", {
+    if (error instanceof Error && error.message.includes('invalid_grant')) {
+      logger.warn('Error unwatching emails, invalid grant', {
         emailAccountId,
         providerName: provider.name,
       });
       return;
     }
 
-    logger.error("Error unwatching emails", {
+    logger.error('Error unwatching emails', {
       emailAccountId,
       providerName: provider.name,
       error,

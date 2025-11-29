@@ -1,10 +1,11 @@
 /** biome-ignore-all lint/suspicious/noConsole: not used in production yet */
-import { chromium } from "playwright";
-import type { Page, Locator } from "playwright";
-import { z } from "zod";
-import { generateText } from "ai";
-import { env } from "./env";
-import { getModel } from "./llm";
+
+import { generateText } from 'ai';
+import type { Locator, Page } from 'playwright';
+import { chromium } from 'playwright';
+import { z } from 'zod';
+import { env } from './env';
+import { getModel } from './llm';
 
 const MAX_CONTENT_LENGTH = 20_000; // Adjust based on API limitations
 const AI_TIMEOUT = 30_000;
@@ -18,10 +19,10 @@ const ACTION_DELAY = 2000; // Delay between actions in milliseconds
 const pageAnalysisSchema = z.object({
   actions: z.array(
     z.object({
-      type: z.enum(["click", "fill", "select", "submit"]),
+      type: z.enum(['click', 'fill', 'select', 'submit']),
       selector: z.string(),
       value: z.string().optional(),
-    }),
+    })
   ),
   confirmationIndicator: z.string().nullable(),
 });
@@ -32,11 +33,11 @@ async function analyzePageWithAI(pageContent: string): Promise<PageAnalysis> {
   const contentToAnalyze = pageContent.slice(0, MAX_CONTENT_LENGTH);
   if (contentToAnalyze.length < pageContent.length) {
     console.warn(
-      `Page content exceeds ${MAX_CONTENT_LENGTH} characters. Truncated.`,
+      `Page content exceeds ${MAX_CONTENT_LENGTH} characters. Truncated.`
     );
   }
 
-  const model = getModel("google");
+  const model = getModel('google');
 
   const prompt = `
     Analyze the following HTML content and determine the actions needed to unsubscribe from an email newsletter.
@@ -57,26 +58,26 @@ async function analyzePageWithAI(pageContent: string): Promise<PageAnalysis> {
     const { text: analysisText } = await Promise.race([
       generateText({ model, prompt }),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("AI analysis timeout")), AI_TIMEOUT),
+        setTimeout(() => reject(new Error('AI analysis timeout')), AI_TIMEOUT)
       ),
     ]);
 
-    const cleanedText = analysisText.replace(/```json\n?|\n?```/g, "").trim();
+    const cleanedText = analysisText.replace(/```json\n?|\n?```/g, '').trim();
     const parsedAnalysis = JSON.parse(cleanedText);
     return pageAnalysisSchema.parse(parsedAnalysis);
   } catch (error) {
-    console.error("Error in AI analysis:", error);
+    console.error('Error in AI analysis:', error);
     console.error(
-      "Raw AI response:",
-      error instanceof Error ? error.message : String(error),
+      'Raw AI response:',
+      error instanceof Error ? error.message : String(error)
     );
-    throw new Error("Failed to generate or parse AI analysis");
+    throw new Error('Failed to generate or parse AI analysis');
   }
 }
 
 async function performUnsubscribeActions(
   page: Page,
-  actions: PageAnalysis["actions"],
+  actions: PageAnalysis['actions']
 ) {
   for (const action of actions) {
     let retries = 0;
@@ -107,12 +108,12 @@ async function performUnsubscribeActions(
         console.warn(
           `Failed to perform action: ${action.type} on ${action.selector}. Retry ${
             retries + 1
-          }/${MAX_RETRIES}. Error: ${error instanceof Error ? error.message : String(error)}`,
+          }/${MAX_RETRIES}. Error: ${error instanceof Error ? error.message : String(error)}`
         );
         retries++;
         if (retries >= MAX_RETRIES) {
           console.error(
-            `Max retries reached for action: ${action.type} on ${action.selector}`,
+            `Max retries reached for action: ${action.type} on ${action.selector}`
           );
         } else {
           await page.waitForTimeout(RETRY_DELAY);
@@ -127,19 +128,19 @@ async function performUnsubscribeActions(
 
 async function performAction(
   locator: Locator,
-  action: PageAnalysis["actions"][number],
+  action: PageAnalysis['actions'][number]
 ) {
   switch (action.type) {
-    case "click":
-    case "submit":
+    case 'click':
+    case 'submit':
       await locator.click({ timeout: ACTION_TIMEOUT });
       break;
-    case "fill":
+    case 'fill':
       if (action.value) {
         await locator.fill(action.value, { timeout: ACTION_TIMEOUT });
       }
       break;
-    case "select":
+    case 'select':
       if (action.value) {
         await locator.selectOption(action.value, { timeout: ACTION_TIMEOUT });
       }
@@ -151,19 +152,19 @@ async function performAction(
 
 async function performFallbackUnsubscribe(page: Page): Promise<boolean> {
   const unsubscribeKeywords = [
-    "unsubscribe", // English
-    "désabonner", // French
-    "abbestellen", // German
-    "cancelar suscripción", // Spanish
-    "annulla iscrizione", // Italian
-    "退订", // Chinese (Simplified)
-    "退訂", // Chinese (Traditional)
-    "退会", // Japanese
-    "отписаться", // Russian
-    "se désabonner", // Alternative French
-    "désinscription", // Another French alternative
-    "abmelden", // Alternative German
-    "darse de baja", // Alternative Spanish
+    'unsubscribe', // English
+    'désabonner', // French
+    'abbestellen', // German
+    'cancelar suscripción', // Spanish
+    'annulla iscrizione', // Italian
+    '退订', // Chinese (Simplified)
+    '退訂', // Chinese (Traditional)
+    '退会', // Japanese
+    'отписаться', // Russian
+    'se désabonner', // Alternative French
+    'désinscription', // Another French alternative
+    'abmelden', // Alternative German
+    'darse de baja', // Alternative Spanish
   ];
 
   const generateSelectors = (keyword: string) => [
@@ -195,46 +196,46 @@ async function performFallbackUnsubscribe(page: Page): Promise<boolean> {
     } catch (error) {
       console.warn(
         `Error trying to click ${selector}:`,
-        error instanceof Error ? error.message : String(error),
+        error instanceof Error ? error.message : String(error)
       );
     }
   }
 
-  console.log("No unsubscribe element found or clicked in fallback strategy");
+  console.log('No unsubscribe element found or clicked in fallback strategy');
   return false;
 }
 
 export async function autoUnsubscribe(url: string): Promise<boolean> {
   if (!isValidUrl(url)) {
-    console.error("Invalid URL provided:", url);
+    console.error('Invalid URL provided:', url);
     return false;
   }
 
-  const isProduction = env.NODE_ENV === "production";
+  const isProduction = env.NODE_ENV === 'production';
   const browser = await chromium.launch({ headless: isProduction });
   const page = await browser.newPage();
 
   try {
     console.log(`Navigating to ${url}`);
-    await page.goto(url, { timeout: 30_000, waitUntil: "networkidle" });
+    await page.goto(url, { timeout: 30_000, waitUntil: 'networkidle' });
 
     const initialContent = await page.content();
     const truncatedContent = initialContent.slice(0, MAX_CONTENT_LENGTH);
 
     const analysis = await analyzePageWithAI(truncatedContent);
-    console.log("AI analysis result:", JSON.stringify(analysis, null, 2));
+    console.log('AI analysis result:', JSON.stringify(analysis, null, 2));
 
     let unsubscribeSuccess = false;
     if (analysis.actions.length > 0) {
       await performUnsubscribeActions(page, analysis.actions);
       unsubscribeSuccess = true;
     } else {
-      console.log("No actions determined by AI. Attempting fallback strategy.");
+      console.log('No actions determined by AI. Attempting fallback strategy.');
       unsubscribeSuccess = await performFallbackUnsubscribe(page);
     }
 
     if (!unsubscribeSuccess) {
-      console.log("Failed to perform unsubscribe action.");
+      console.log('Failed to perform unsubscribe action.');
       return false;
     }
 
@@ -242,27 +243,27 @@ export async function autoUnsubscribe(url: string): Promise<boolean> {
 
     const confirmationFound = await checkConfirmation(
       page,
-      analysis.confirmationIndicator,
+      analysis.confirmationIndicator
     );
 
     if (confirmationFound) {
-      console.log("Unsubscribe confirmation found.");
+      console.log('Unsubscribe confirmation found.');
       return true;
     }
 
-    console.log("Unsubscribe action performed, but confirmation not found.");
+    console.log('Unsubscribe action performed, but confirmation not found.');
     await takeScreenshotIfNotProduction(
       page,
       isProduction,
-      "final-state-screenshot.png",
+      'final-state-screenshot.png'
     );
     return false;
   } catch (error) {
-    console.error("Error during unsubscribe process:", error);
+    console.error('Error during unsubscribe process:', error);
     await takeScreenshotIfNotProduction(
       page,
       isProduction,
-      "error-screenshot.png",
+      'error-screenshot.png'
     );
     return false;
   } finally {
@@ -281,17 +282,17 @@ function isValidUrl(url: string): boolean {
 
 async function waitForNetworkIdle(page: Page) {
   try {
-    await page.waitForLoadState("networkidle", {
+    await page.waitForLoadState('networkidle', {
       timeout: NETWORK_IDLE_TIMEOUT,
     });
   } catch (error) {
-    console.warn("Error waiting for network idle state after actions:", error);
+    console.warn('Error waiting for network idle state after actions:', error);
   }
 }
 
 async function checkConfirmation(
   page: Page,
-  confirmationIndicator: string | null,
+  confirmationIndicator: string | null
 ): Promise<boolean> {
   if (confirmationIndicator)
     return page.locator(confirmationIndicator).isVisible();
@@ -299,15 +300,15 @@ async function checkConfirmation(
   const finalContent = await page.content();
   const lowercaseContent = finalContent.toLowerCase();
   return (
-    lowercaseContent.includes("unsubscribed") ||
-    lowercaseContent.includes("successfully")
+    lowercaseContent.includes('unsubscribed') ||
+    lowercaseContent.includes('successfully')
   );
 }
 
 async function takeScreenshotIfNotProduction(
   page: Page,
   isProduction: boolean,
-  filename: string,
+  filename: string
 ) {
   if (!isProduction) await page.screenshot({ path: filename, fullPage: true });
 }

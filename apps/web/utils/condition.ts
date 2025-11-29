@@ -1,37 +1,37 @@
-import { LogicalOperator } from "@/generated/prisma/enums";
-import type { Rule } from "@/generated/prisma/client";
-import { ConditionType, type CoreConditionType } from "@/utils/config";
+import type { Rule } from '@/generated/prisma/client';
+import { LogicalOperator } from '@/generated/prisma/enums';
 import type {
   CreateRuleBody,
   ZodCondition,
-} from "@/utils/actions/rule.validation";
-import { createScopedLogger } from "@/utils/logger";
+} from '@/utils/actions/rule.validation';
+import { ConditionType, type CoreConditionType } from '@/utils/config';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("condition");
+const logger = createScopedLogger('condition');
 
 export type RuleConditions = Partial<
   Pick<
     Rule,
-    | "groupId"
-    | "instructions"
-    | "from"
-    | "to"
-    | "subject"
-    | "body"
-    | "conditionalOperator"
+    | 'groupId'
+    | 'instructions'
+    | 'from'
+    | 'to'
+    | 'subject'
+    | 'body'
+    | 'conditionalOperator'
   > & {
     group?: { name: string } | null;
   }
 >;
 
 export function isAIRule<T extends RuleConditions>(
-  rule: T,
+  rule: T
 ): rule is T & { instructions: string } {
   return !!rule.instructions;
 }
 
 export function isGroupRule<T extends RuleConditions>(
-  rule: T,
+  rule: T
 ): rule is T & { groupId: string } {
   return !!rule.groupId;
 }
@@ -41,7 +41,7 @@ export function isStaticRule(rule: RuleConditions) {
 }
 
 export function getConditions(rule: RuleConditions) {
-  const conditions: CreateRuleBody["conditions"] = [];
+  const conditions: CreateRuleBody['conditions'] = [];
 
   if (isAIRule(rule)) {
     conditions.push({
@@ -64,14 +64,14 @@ export function getConditions(rule: RuleConditions) {
 }
 
 export function getConditionTypes(
-  rule: RuleConditions,
+  rule: RuleConditions
 ): Record<CoreConditionType, boolean> {
   return getConditions(rule).reduce(
     (acc, condition) => {
       acc[condition.type] = true;
       return acc;
     },
-    {} as Record<CoreConditionType, boolean>,
+    {} as Record<CoreConditionType, boolean>
   );
 }
 
@@ -80,7 +80,7 @@ export function getEmptyCondition(type: CoreConditionType): ZodCondition {
     case ConditionType.AI:
       return {
         type: ConditionType.AI,
-        instructions: "",
+        instructions: '',
       };
     case ConditionType.STATIC:
       return {
@@ -106,7 +106,7 @@ type FlattenedConditions = {
 };
 
 export const flattenConditions = (
-  conditions: ZodCondition[],
+  conditions: ZodCondition[]
 ): FlattenedConditions => {
   return conditions.reduce((acc, condition) => {
     switch (condition.type) {
@@ -120,7 +120,7 @@ export const flattenConditions = (
         acc.body = condition.body;
         break;
       default:
-        logger.warn("Unknown condition type", { condition });
+        logger.warn('Unknown condition type', { condition });
         // biome-ignore lint/correctness/noSwitchDeclarations: intentional exhaustive check
         const exhaustiveCheck: never = condition.type;
         return exhaustiveCheck;
@@ -136,19 +136,19 @@ export const flattenConditions = (
 export function conditionTypesToString(rule: RuleConditions) {
   return getConditions(rule)
     .map((condition) => conditionTypeToString(condition.type))
-    .join(", ");
+    .join(', ');
 }
 
 function conditionTypeToString(conditionType: ConditionType): string {
   switch (conditionType) {
     case ConditionType.AI:
-      return "AI";
+      return 'AI';
     case ConditionType.STATIC:
-      return "Static";
+      return 'Static';
     case ConditionType.LEARNED_PATTERN:
-      return "Group";
+      return 'Group';
     case ConditionType.PRESET:
-      return "Preset";
+      return 'Preset';
     default:
       // biome-ignore lint/correctness/noSwitchDeclarations: intentional exhaustive check
       const exhaustiveCheck: never = conditionType;
@@ -159,7 +159,7 @@ function conditionTypeToString(conditionType: ConditionType): string {
 export function conditionsToString(rule: RuleConditions) {
   const conditions: string[] = [];
   const connector =
-    rule.conditionalOperator === LogicalOperator.AND ? " AND " : " OR ";
+    rule.conditionalOperator === LogicalOperator.AND ? ' AND ' : ' OR ';
 
   // Static conditions - grouped with commas
   const staticConditions: string[] = [];
@@ -167,7 +167,7 @@ export function conditionsToString(rule: RuleConditions) {
   if (rule.subject) staticConditions.push(`Subject: "${rule.subject}"`);
   if (rule.to) staticConditions.push(`To: ${rule.to}`);
   if (rule.body) staticConditions.push(`Body: "${rule.body}"`);
-  if (staticConditions.length) conditions.push(staticConditions.join(", "));
+  if (staticConditions.length) conditions.push(staticConditions.join(', '));
 
   // AI condition
   if (rule.instructions) conditions.push(rule.instructions);

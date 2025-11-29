@@ -1,9 +1,9 @@
-import type { gmail_v1 } from "@googleapis/gmail";
-import type { Prisma } from "@/generated/prisma/client";
+import type { gmail_v1 } from '@googleapis/gmail';
 import type {
-  Recipient,
   NullableOption,
-} from "@microsoft/microsoft-graph-types";
+  Recipient,
+} from '@microsoft/microsoft-graph-types';
+import type { Prisma } from '@/generated/prisma/client';
 
 // https://stackoverflow.com/a/53276873/2602771
 export type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>;
@@ -27,7 +27,7 @@ export type BatchError = {
 };
 
 export function isBatchError(
-  message: MessageWithPayload | BatchError,
+  message: MessageWithPayload | BatchError
 ): message is BatchError {
   return (message as BatchError).error !== undefined;
 }
@@ -63,7 +63,7 @@ export interface ParsedMessage {
   date: string;
   conversationIndex?: string | null;
   internalDate?: string | null;
-  bodyContentType?: "text" | "html"; // For Outlook: indicates which format the body was originally in
+  bodyContentType?: 'text' | 'html'; // For Outlook: indicates which format the body was originally in
   // For Outlook: store raw recipient data to avoid double conversion
   rawRecipients?: {
     from?: NullableOption<Recipient>;
@@ -81,10 +81,10 @@ export interface Attachment {
 }
 
 interface Headers {
-  "content-type": string;
-  "content-description": string;
-  "content-transfer-encoding": string;
-  "content-id": string;
+  'content-type': string;
+  'content-description': string;
+  'content-transfer-encoding': string;
+  'content-id': string;
 }
 
 interface Inline {
@@ -96,10 +96,10 @@ interface Inline {
 }
 
 interface Headers2 {
-  "content-type": string;
-  "content-description": string;
-  "content-transfer-encoding": string;
-  "content-id": string;
+  'content-type': string;
+  'content-description': string;
+  'content-transfer-encoding': string;
+  'content-id': string;
 }
 
 export interface ParsedMessageHeaders {
@@ -109,11 +109,11 @@ export interface ParsedMessageHeaders {
   cc?: string;
   bcc?: string;
   date: string; // the date supplied by the email. internally we rely on message.internalDate provided by the gmail api
-  "message-id"?: string;
-  "reply-to"?: string;
-  "in-reply-to"?: string;
+  'message-id'?: string;
+  'reply-to'?: string;
+  'in-reply-to'?: string;
   references?: string;
-  "list-unsubscribe"?: string;
+  'list-unsubscribe'?: string;
 }
 
 // Note: use `getEmailForLLM(message)` to convert a `ParsedMessage` to an `EmailForLLM`

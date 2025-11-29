@@ -1,20 +1,20 @@
-import { z } from "zod";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { ColdEmail, Rule } from "@/generated/prisma/client";
-import { ColdEmailStatus } from "@/generated/prisma/enums";
-import prisma from "@/utils/prisma";
-import { DEFAULT_COLD_EMAIL_PROMPT } from "@/utils/cold-email/prompt";
-import { stringifyEmail } from "@/utils/stringify-email";
-import { createScopedLogger } from "@/utils/logger";
-import type { EmailForLLM } from "@/utils/types";
-import type { EmailProvider } from "@/utils/email/types";
-import { getModel, type ModelType } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
-import { extractEmailAddress } from "@/utils/email";
+import { z } from 'zod';
+import type { ColdEmail, Rule } from '@/generated/prisma/client';
+import { ColdEmailStatus } from '@/generated/prisma/enums';
+import { DEFAULT_COLD_EMAIL_PROMPT } from '@/utils/cold-email/prompt';
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel, type ModelType } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { stringifyEmail } from '@/utils/stringify-email';
+import type { EmailForLLM } from '@/utils/types';
 
-export const COLD_EMAIL_FOLDER_NAME = "Cold Emails";
+export const COLD_EMAIL_FOLDER_NAME = 'Cold Emails';
 
-type ColdEmailBlockerReason = "hasPreviousEmail" | "ai" | "ai-already-labeled";
+type ColdEmailBlockerReason = 'hasPreviousEmail' | 'ai' | 'ai-already-labeled';
 
 export async function isColdEmail({
   email,
@@ -27,20 +27,20 @@ export async function isColdEmail({
   emailAccount: EmailAccountWithAI;
   provider: EmailProvider;
   modelType?: ModelType;
-  coldEmailRule: Pick<Rule, "instructions"> | null;
+  coldEmailRule: Pick<Rule, 'instructions'> | null;
 }): Promise<{
   isColdEmail: boolean;
   reason: ColdEmailBlockerReason;
   aiReason?: string | null;
 }> {
-  const logger = createScopedLogger("ai-cold-email").with({
+  const logger = createScopedLogger('ai-cold-email').with({
     emailAccountId: emailAccount.id,
     email: emailAccount.email,
     threadId: email.threadId,
     messageId: email.id,
   });
 
-  logger.info("Checking is cold email");
+  logger.info('Checking is cold email');
 
   // Check if we marked it as a cold email already
   const isColdEmailer = await isKnownColdEmailSender({
@@ -49,10 +49,10 @@ export async function isColdEmail({
   });
 
   if (isColdEmailer) {
-    logger.info("Known cold email sender", {
+    logger.info('Known cold email sender', {
       from: email.from,
     });
-    return { isColdEmail: true, reason: "ai-already-labeled" };
+    return { isColdEmail: true, reason: 'ai-already-labeled' };
   }
 
   const hasPreviousEmail =
@@ -65,8 +65,8 @@ export async function isColdEmail({
       : false;
 
   if (hasPreviousEmail) {
-    logger.info("Has previous email");
-    return { isColdEmail: false, reason: "hasPreviousEmail" };
+    logger.info('Has previous email');
+    return { isColdEmail: false, reason: 'hasPreviousEmail' };
   }
 
   // run through ai to see if it's a cold email
@@ -74,16 +74,16 @@ export async function isColdEmail({
     email,
     emailAccount,
     coldEmailRule?.instructions || DEFAULT_COLD_EMAIL_PROMPT,
-    modelType,
+    modelType
   );
 
-  logger.info("AI is cold email?", {
+  logger.info('AI is cold email?', {
     coldEmail: res.coldEmail,
   });
 
   return {
     isColdEmail: !!res.coldEmail,
-    reason: "ai",
+    reason: 'ai',
     aiReason: res.reason,
   };
 }
@@ -114,7 +114,7 @@ async function aiIsColdEmail(
   email: EmailForLLM,
   emailAccount: EmailAccountWithAI,
   coldEmailPrompt: string,
-  modelType?: ModelType,
+  modelType?: ModelType
 ) {
   const system = `You are an assistant that decides if an email is a cold email or not.
 
@@ -145,7 +145,7 @@ ${stringifyEmail(email, 500)}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Cold email check",
+    label: 'Cold email check',
     modelOptions,
   });
 

@@ -1,25 +1,27 @@
-"use client";
+'use client';
 
 import {
-  useCallback,
-  useState,
   createContext,
-  useMemo,
+  useCallback,
   useEffect,
+  useMemo,
   useRef,
-} from "react";
-import { SWRConfig, mutate } from "swr";
-import { captureException } from "@/utils/error";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { EMAIL_ACCOUNT_HEADER } from "@/utils/config";
-import { prefixPath } from "@/utils/path";
-import { NO_REFRESH_TOKEN_ERROR_CODE } from "@/utils/config";
+  useState,
+} from 'react';
+import { mutate, SWRConfig } from 'swr';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import {
+  EMAIL_ACCOUNT_HEADER,
+  NO_REFRESH_TOKEN_ERROR_CODE,
+} from '@/utils/config';
+import { captureException } from '@/utils/error';
+import { prefixPath } from '@/utils/path';
 
 // https://swr.vercel.app/docs/error-handling#status-code-and-error-object
 const fetcher = async (
   url: string,
   init?: RequestInit | undefined,
-  emailAccountId?: string | null,
+  emailAccountId?: string | null
 ) => {
   const headers = new Headers(init?.headers);
 
@@ -36,7 +38,7 @@ const fetcher = async (
 
     if (errorData.errorCode === NO_REFRESH_TOKEN_ERROR_CODE) {
       if (emailAccountId) {
-        captureException(new Error("Refresh token missing"), {
+        captureException(new Error('Refresh token missing'), {
           extra: {
             url,
             status: res.status,
@@ -46,17 +48,17 @@ const fetcher = async (
           },
         });
 
-        console.log("Refresh token missing, redirecting to consent page...");
-        const redirectUrl = prefixPath(emailAccountId, "/permissions/consent");
+        console.log('Refresh token missing, redirecting to consent page...');
+        const redirectUrl = prefixPath(emailAccountId, '/permissions/consent');
         window.location.href = redirectUrl;
         return;
       }
     }
 
     const errorMessage =
-      errorData.message || "An error occurred while fetching the data.";
+      errorData.message || 'An error occurred while fetching the data.';
     const error: Error & { info?: any; status?: number } = new Error(
-      errorMessage,
+      errorMessage
     );
 
     // Attach extra info to the error object.
@@ -72,7 +74,7 @@ const fetcher = async (
           status: res.status,
           statusText: res.statusText,
           responseBody: error.info,
-          extraMessage: "SWR fetch error",
+          extraMessage: 'SWR fetch error',
         },
       });
     }
@@ -122,7 +124,7 @@ export const SWRProvider = (props: { children: React.ReactNode }) => {
     async (url: string, init?: RequestInit) => {
       return fetcher(url, init, emailAccountId);
     },
-    [emailAccountId],
+    [emailAccountId]
   );
 
   const value = useMemo(() => ({ resetCache }), [resetCache]);
@@ -134,7 +136,7 @@ export const SWRProvider = (props: { children: React.ReactNode }) => {
           fetcher: enhancedFetcher,
           provider: () => provider,
           // TODO: Send to Sentry
-          onError: (error) => console.log("SWR error:", error),
+          onError: (error) => console.log('SWR error:', error),
         }}
       >
         {props.children}

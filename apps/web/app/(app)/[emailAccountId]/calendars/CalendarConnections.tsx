@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { LoadingContent } from "@/components/LoadingContent";
-import { useCalendars } from "@/hooks/useCalendars";
-import { CalendarConnectionCard } from "./CalendarConnectionCard";
+import { LoadingContent } from '@/components/LoadingContent';
+import { useCalendars } from '@/hooks/useCalendars';
+import { CalendarConnectionCard } from './CalendarConnectionCard';
 
 export function CalendarConnections() {
   const { data, isLoading, error } = useCalendars();

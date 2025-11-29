@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { withEmailAccount } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
-import { ActionType, SystemType } from "@/generated/prisma/enums";
+import { NextResponse } from 'next/server';
+import { ActionType, SystemType } from '@/generated/prisma/enums';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 // Define supported system types for digest settings
 const SUPPORTED_SYSTEM_TYPES = [
@@ -21,7 +21,7 @@ export type GetDigestSettingsResponse = Awaited<
   ReturnType<typeof getDigestSettings>
 >;
 
-export const GET = withEmailAccount("user/digest-settings", async (request) => {
+export const GET = withEmailAccount('user/digest-settings', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
 
   const result = await getDigestSettings({ emailAccountId });
@@ -82,23 +82,23 @@ async function getDigestSettings({
 
   // Map system types to digest settings
   const systemTypeToKey: Record<SystemType, keyof typeof digestSettings> = {
-    [SystemType.TO_REPLY]: "toReply",
-    [SystemType.AWAITING_REPLY]: "awaitingReply",
-    [SystemType.FYI]: "fyi",
-    [SystemType.ACTIONED]: "actioned",
-    [SystemType.NEWSLETTER]: "newsletter",
-    [SystemType.MARKETING]: "marketing",
-    [SystemType.CALENDAR]: "calendar",
-    [SystemType.RECEIPT]: "receipt",
-    [SystemType.NOTIFICATION]: "notification",
-    [SystemType.COLD_EMAIL]: "coldEmail",
+    [SystemType.TO_REPLY]: 'toReply',
+    [SystemType.AWAITING_REPLY]: 'awaitingReply',
+    [SystemType.FYI]: 'fyi',
+    [SystemType.ACTIONED]: 'actioned',
+    [SystemType.NEWSLETTER]: 'newsletter',
+    [SystemType.MARKETING]: 'marketing',
+    [SystemType.CALENDAR]: 'calendar',
+    [SystemType.RECEIPT]: 'receipt',
+    [SystemType.NOTIFICATION]: 'notification',
+    [SystemType.COLD_EMAIL]: 'coldEmail',
   };
 
   // Verify all supported system types are mapped
   SUPPORTED_SYSTEM_TYPES.forEach((systemType) => {
     if (!(systemType in systemTypeToKey)) {
       throw new Error(
-        `SystemType ${systemType} is not mapped in systemTypeToKey`,
+        `SystemType ${systemType} is not mapped in systemTypeToKey`
       );
     }
   });

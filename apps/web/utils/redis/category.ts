@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { redis } from "@/utils/redis";
+import { z } from 'zod';
+import { redis } from '@/utils/redis';
 
 const categorySchema = z.object({
   category: z.string(),

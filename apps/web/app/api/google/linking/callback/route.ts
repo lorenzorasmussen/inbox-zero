@@ -1,32 +1,32 @@
-import { NextResponse } from "next/server";
-import { env } from "@/env";
-import prisma from "@/utils/prisma";
-import { getLinkingOAuth2Client } from "@/utils/gmail/client";
-import { GOOGLE_LINKING_STATE_COOKIE_NAME } from "@/utils/gmail/constants";
-import { withError } from "@/utils/middleware";
-import { validateOAuthCallback } from "@/utils/oauth/callback-validation";
-import { handleAccountLinking } from "@/utils/oauth/account-linking";
-import { mergeAccount } from "@/utils/user/merge-account";
-import { handleOAuthCallbackError } from "@/utils/oauth/error-handler";
+import { NextResponse } from 'next/server';
+import { env } from '@/env';
+import { getLinkingOAuth2Client } from '@/utils/gmail/client';
+import { GOOGLE_LINKING_STATE_COOKIE_NAME } from '@/utils/gmail/constants';
+import { withError } from '@/utils/middleware';
+import { handleAccountLinking } from '@/utils/oauth/account-linking';
+import { validateOAuthCallback } from '@/utils/oauth/callback-validation';
+import { handleOAuthCallbackError } from '@/utils/oauth/error-handler';
+import prisma from '@/utils/prisma';
+import { isDuplicateError } from '@/utils/prisma-helpers';
 import {
   acquireOAuthCodeLock,
+  clearOAuthCode,
   getOAuthCodeResult,
   setOAuthCodeResult,
-  clearOAuthCode,
-} from "@/utils/redis/oauth-code";
-import { isDuplicateError } from "@/utils/prisma-helpers";
+} from '@/utils/redis/oauth-code';
+import { mergeAccount } from '@/utils/user/merge-account';
 
-export const GET = withError("google/linking/callback", async (request) => {
+export const GET = withError('google/linking/callback', async (request) => {
   const logger = request.logger;
 
   const searchParams = request.nextUrl.searchParams;
   const storedState = request.cookies.get(
-    GOOGLE_LINKING_STATE_COOKIE_NAME,
+    GOOGLE_LINKING_STATE_COOKIE_NAME
   )?.value;
 
   const validation = validateOAuthCallback({
-    code: searchParams.get("code"),
-    receivedState: searchParams.get("state"),
+    code: searchParams.get('code'),
+    receivedState: searchParams.get('state'),
     storedState,
     stateCookieName: GOOGLE_LINKING_STATE_COOKIE_NAME,
     logger,
@@ -40,10 +40,10 @@ export const GET = withError("google/linking/callback", async (request) => {
 
   const cachedResult = await getOAuthCodeResult(code);
   if (cachedResult) {
-    logger.info("OAuth code already processed, returning cached result", {
+    logger.info('OAuth code already processed, returning cached result', {
       targetUserId,
     });
-    const redirectUrl = new URL("/accounts", env.NEXT_PUBLIC_BASE_URL);
+    const redirectUrl = new URL('/accounts', env.NEXT_PUBLIC_BASE_URL);
     for (const [key, value] of Object.entries(cachedResult.params)) {
       redirectUrl.searchParams.set(key, value);
     }
@@ -54,10 +54,10 @@ export const GET = withError("google/linking/callback", async (request) => {
 
   const acquiredLock = await acquireOAuthCodeLock(code);
   if (!acquiredLock) {
-    logger.info("OAuth code is being processed by another request", {
+    logger.info('OAuth code is being processed by another request', {
       targetUserId,
     });
-    const redirectUrl = new URL("/accounts", env.NEXT_PUBLIC_BASE_URL);
+    const redirectUrl = new URL('/accounts', env.NEXT_PUBLIC_BASE_URL);
     const response = NextResponse.redirect(redirectUrl);
     response.cookies.delete(GOOGLE_LINKING_STATE_COOKIE_NAME);
     return response;
@@ -70,7 +70,7 @@ export const GET = withError("google/linking/callback", async (request) => {
     const { id_token } = tokens;
 
     if (!id_token) {
-      throw new Error("Missing id_token from Google response");
+      throw new Error('Missing id_token from Google response');
     }
 
     let payload: {
@@ -86,12 +86,12 @@ export const GET = withError("google/linking/callback", async (request) => {
       });
       const verifiedPayload = ticket.getPayload();
       if (!verifiedPayload) {
-        throw new Error("Could not get payload from verified ID token ticket.");
+        throw new Error('Could not get payload from verified ID token ticket.');
       }
       payload = verifiedPayload;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      logger.error("ID token verification failed using googleAuth:", {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      logger.error('ID token verification failed using googleAuth:', {
         error: err,
       });
       throw new Error(`ID token verification failed: ${message}`);
@@ -102,13 +102,13 @@ export const GET = withError("google/linking/callback", async (request) => {
 
     if (!providerAccountId || !providerEmail) {
       throw new Error(
-        "ID token missing required subject (sub) or email claim.",
+        'ID token missing required subject (sub) or email claim.'
       );
     }
 
     const existingAccount = await prisma.account.findUnique({
       where: {
-        provider_providerAccountId: { provider: "google", providerAccountId },
+        provider_providerAccountId: { provider: 'google', providerAccountId },
       },
       select: {
         id: true,
@@ -123,18 +123,18 @@ export const GET = withError("google/linking/callback", async (request) => {
       hasEmailAccount: !!existingAccount?.emailAccount,
       existingUserId: existingAccount?.userId || null,
       targetUserId,
-      provider: "google",
+      provider: 'google',
       providerEmail,
       logger,
     });
 
-    if (linkingResult.type === "redirect") {
+    if (linkingResult.type === 'redirect') {
       linkingResult.response.cookies.delete(GOOGLE_LINKING_STATE_COOKIE_NAME);
       return linkingResult.response;
     }
 
-    if (linkingResult.type === "continue_create") {
-      logger.info("Creating new Google account and linking to current user", {
+    if (linkingResult.type === 'continue_create') {
+      logger.info('Creating new Google account and linking to current user', {
         email: providerEmail,
         targetUserId,
       });
@@ -143,8 +143,8 @@ export const GET = withError("google/linking/callback", async (request) => {
         const newAccount = await prisma.account.create({
           data: {
             userId: targetUserId,
-            type: "oidc",
-            provider: "google",
+            type: 'oidc',
+            provider: 'google',
             providerAccountId,
             access_token: tokens.access_token,
             refresh_token: tokens.refresh_token,
@@ -165,7 +165,7 @@ export const GET = withError("google/linking/callback", async (request) => {
           },
         });
 
-        logger.info("Successfully created and linked new Google account", {
+        logger.info('Successfully created and linked new Google account', {
           email: providerEmail,
           targetUserId,
           accountId: newAccount.id,
@@ -175,7 +175,7 @@ export const GET = withError("google/linking/callback", async (request) => {
           const accountNow = await prisma.account.findUnique({
             where: {
               provider_providerAccountId: {
-                provider: "google",
+                provider: 'google',
                 providerAccountId,
               },
             },
@@ -184,11 +184,11 @@ export const GET = withError("google/linking/callback", async (request) => {
 
           if (accountNow?.userId === targetUserId) {
             logger.info(
-              "Account was created by concurrent request, continuing",
+              'Account was created by concurrent request, continuing',
               {
                 targetUserId,
                 providerAccountId,
-              },
+              }
             );
           } else {
             throw createError;
@@ -198,17 +198,17 @@ export const GET = withError("google/linking/callback", async (request) => {
         }
       }
 
-      await setOAuthCodeResult(code, { success: "account_created_and_linked" });
+      await setOAuthCodeResult(code, { success: 'account_created_and_linked' });
 
-      const successUrl = new URL("/accounts", env.NEXT_PUBLIC_BASE_URL);
-      successUrl.searchParams.set("success", "account_created_and_linked");
+      const successUrl = new URL('/accounts', env.NEXT_PUBLIC_BASE_URL);
+      successUrl.searchParams.set('success', 'account_created_and_linked');
       const successResponse = NextResponse.redirect(successUrl);
       successResponse.cookies.delete(GOOGLE_LINKING_STATE_COOKIE_NAME);
 
       return successResponse;
     }
 
-    logger.info("Merging Google account (user confirmed).", {
+    logger.info('Merging Google account (user confirmed).', {
       email: providerEmail,
       providerAccountId,
       existingUserId: linkingResult.sourceUserId,
@@ -225,11 +225,11 @@ export const GET = withError("google/linking/callback", async (request) => {
     });
 
     const successMessage =
-      mergeType === "full_merge"
-        ? "account_merged"
-        : "account_created_and_linked";
+      mergeType === 'full_merge'
+        ? 'account_merged'
+        : 'account_created_and_linked';
 
-    logger.info("Account re-assigned to user. Original user was different.", {
+    logger.info('Account re-assigned to user. Original user was different.', {
       providerAccountId,
       targetUserId,
       originalUserId: linkingResult.sourceUserId,
@@ -238,8 +238,8 @@ export const GET = withError("google/linking/callback", async (request) => {
 
     await setOAuthCodeResult(code, { success: successMessage });
 
-    const successUrl = new URL("/accounts", env.NEXT_PUBLIC_BASE_URL);
-    successUrl.searchParams.set("success", successMessage);
+    const successUrl = new URL('/accounts', env.NEXT_PUBLIC_BASE_URL);
+    successUrl.searchParams.set('success', successMessage);
     const successResponse = NextResponse.redirect(successUrl);
     successResponse.cookies.delete(GOOGLE_LINKING_STATE_COOKIE_NAME);
 
@@ -247,7 +247,7 @@ export const GET = withError("google/linking/callback", async (request) => {
   } catch (error) {
     await clearOAuthCode(code);
 
-    const errorUrl = new URL("/accounts", env.NEXT_PUBLIC_BASE_URL);
+    const errorUrl = new URL('/accounts', env.NEXT_PUBLIC_BASE_URL);
     return handleOAuthCallbackError({
       error,
       redirectUrl: errorUrl,

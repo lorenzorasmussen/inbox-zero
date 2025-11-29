@@ -1,5 +1,5 @@
-import { ArrowRightIcon } from "lucide-react";
-import { Button, type ButtonProps } from "@/components/ui/button";
+import { ArrowRightIcon } from 'lucide-react';
+import { Button, type ButtonProps } from '@/components/ui/button';
 
 export function ContinueButton(props: ButtonProps) {
   return (

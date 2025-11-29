@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAction } from "next-safe-action/hooks";
-import { Badge } from "@/components/ui/badge";
 import {
-  Mail,
-  TrendingUp,
-  Target,
-  Zap,
   CheckCircle,
   Clock,
-} from "lucide-react";
-import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { LoadingContent } from "@/components/LoadingContent";
+  Mail,
+  Target,
+  TrendingUp,
+  Zap,
+} from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useAction } from 'next-safe-action/hooks';
+import { useState } from 'react';
+import { LoadingContent } from '@/components/LoadingContent';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   type EmailReportData,
   generateReportAction,
-} from "@/utils/actions/report";
-import { useState } from "react";
-import { toastError, toastSuccess } from "@/components/Toast";
+} from '@/utils/actions/report';
 
 export default function EmailReportPage() {
   const params = useParams();
   const emailAccountId = params.emailAccountId;
 
-  if (typeof emailAccountId !== "string")
-    throw new Error("Email account ID is required");
+  if (typeof emailAccountId !== 'string')
+    throw new Error('Email account ID is required');
 
   const [report, setReport] = useState<EmailReportData | null>(null);
 
@@ -36,18 +36,18 @@ export default function EmailReportPage() {
       onSuccess: () => {
         if (result?.data) {
           setReport(result.data);
-          toastSuccess({ description: "Report generated successfully" });
+          toastSuccess({ description: 'Report generated successfully' });
         } else {
-          toastError({ description: "Failed to generate report" });
+          toastError({ description: 'Failed to generate report' });
         }
       },
       onError: (result) => {
         toastError({
-          title: "Failed to generate report",
-          description: result.error.serverError || "Unknown error",
+          title: 'Failed to generate report',
+          description: result.error.serverError || 'Unknown error',
         });
       },
-    },
+    }
   );
 
   return (
@@ -96,7 +96,7 @@ export default function EmailReportPage() {
                           {report.executiveSummary?.userProfile.persona}
                         </p>
                         <p className="text-sm text-gray-500">
-                          Confidence:{" "}
+                          Confidence:{' '}
                           {report.executiveSummary?.userProfile.confidence}%
                         </p>
                       </div>
@@ -142,7 +142,7 @@ export default function EmailReportPage() {
                               >
                                 <Badge
                                   className={getDifficultyColor(
-                                    action.difficulty,
+                                    action.difficulty
                                   )}
                                 >
                                   {action.difficulty}
@@ -172,7 +172,7 @@ export default function EmailReportPage() {
                                 <div className="flex items-center gap-2 mb-1">
                                   <Badge
                                     className={getPriorityColor(
-                                      insight.priority,
+                                      insight.priority
                                     )}
                                   >
                                     {insight.priority}
@@ -183,7 +183,7 @@ export default function EmailReportPage() {
                                 </p>
                               </div>
                             </div>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -216,7 +216,7 @@ export default function EmailReportPage() {
                               <CheckCircle className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                               {evidence}
                             </p>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -231,7 +231,7 @@ export default function EmailReportPage() {
                             <Badge key={index} variant="secondary">
                               {priority}
                             </Badge>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -253,20 +253,20 @@ export default function EmailReportPage() {
                           Timing Patterns
                         </h5>
                         <p className="text-sm text-gray-600">
-                          Peak hours:{" "}
+                          Peak hours:{' '}
                           {report.emailBehavior?.timingPatterns.peakHours.join(
-                            ", ",
+                            ', '
                           )}
                         </p>
                         <p className="text-sm text-gray-600">
-                          Response preference:{" "}
+                          Response preference:{' '}
                           {
                             report.emailBehavior?.timingPatterns
                               .responsePreference
                           }
                         </p>
                         <p className="text-sm text-gray-600">
-                          Frequency:{" "}
+                          Frequency:{' '}
                           {report.emailBehavior?.timingPatterns.frequency}
                         </p>
                       </div>
@@ -275,15 +275,15 @@ export default function EmailReportPage() {
                           Content Preferences
                         </h5>
                         <p className="text-sm text-gray-600">
-                          Preferred:{" "}
+                          Preferred:{' '}
                           {report.emailBehavior?.contentPreferences.preferred.join(
-                            ", ",
+                            ', '
                           )}
                         </p>
                         <p className="text-sm text-gray-600">
-                          Avoided:{" "}
+                          Avoided:{' '}
                           {report.emailBehavior?.contentPreferences.avoided.join(
-                            ", ",
+                            ', '
                           )}
                         </p>
                       </div>
@@ -297,7 +297,7 @@ export default function EmailReportPage() {
                               <p key={index} className="text-sm text-gray-600">
                                 • {trigger}
                               </p>
-                            ),
+                            )
                           )}
                         </div>
                       </div>
@@ -346,11 +346,11 @@ export default function EmailReportPage() {
                                     >
                                       {trigger}
                                     </Badge>
-                                  ),
+                                  )
                                 )}
                               </div>
                             </div>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -372,7 +372,7 @@ export default function EmailReportPage() {
                                 </h5>
                                 <Badge
                                   className={getPriorityColor(
-                                    category.priority,
+                                    category.priority
                                   )}
                                 >
                                   {category.priority}
@@ -385,7 +385,7 @@ export default function EmailReportPage() {
                                 {category.emailCount} emails
                               </p>
                             </div>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -425,7 +425,7 @@ export default function EmailReportPage() {
                                 {label.threadCount} threads
                               </p>
                             </div>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -463,7 +463,7 @@ export default function EmailReportPage() {
                                 {suggestion.impact} impact
                               </Badge>
                             </div>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -501,7 +501,7 @@ export default function EmailReportPage() {
                               <div className="flex gap-2">
                                 <Badge
                                   className={getDifficultyColor(
-                                    action.difficulty,
+                                    action.difficulty
                                   )}
                                 >
                                   {action.difficulty}
@@ -513,7 +513,7 @@ export default function EmailReportPage() {
                                 </Badge>
                               </div>
                             </div>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -539,7 +539,7 @@ export default function EmailReportPage() {
                                 {improvement.expectedBenefit}
                               </p>
                             </div>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -571,11 +571,11 @@ export default function EmailReportPage() {
                                     >
                                       {metric}
                                     </Badge>
-                                  ),
+                                  )
                                 )}
                               </div>
                             </div>
-                          ),
+                          )
                         )}
                       </div>
                     </div>
@@ -590,35 +590,35 @@ export default function EmailReportPage() {
   );
 }
 
-const getPriorityColor = (priority: "high" | "medium" | "low") => {
+const getPriorityColor = (priority: 'high' | 'medium' | 'low') => {
   switch (priority) {
-    case "high":
-      return "bg-red-100 text-red-800";
-    case "medium":
-      return "bg-yellow-100 text-yellow-800";
-    case "low":
-      return "bg-green-100 text-green-800";
+    case 'high':
+      return 'bg-red-100 text-red-800';
+    case 'medium':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'low':
+      return 'bg-green-100 text-green-800';
   }
 };
 
-const getDifficultyColor = (difficulty: "easy" | "medium" | "hard") => {
+const getDifficultyColor = (difficulty: 'easy' | 'medium' | 'hard') => {
   switch (difficulty) {
-    case "easy":
-      return "bg-green-100 text-green-800";
-    case "medium":
-      return "bg-yellow-100 text-yellow-800";
-    case "hard":
-      return "bg-red-100 text-red-800";
+    case 'easy':
+      return 'bg-green-100 text-green-800';
+    case 'medium':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'hard':
+      return 'bg-red-100 text-red-800';
   }
 };
 
-const getImpactColor = (impact: "high" | "medium" | "low") => {
+const getImpactColor = (impact: 'high' | 'medium' | 'low') => {
   switch (impact) {
-    case "high":
-      return "bg-blue-100 text-blue-800";
-    case "medium":
-      return "bg-purple-100 text-purple-800";
-    case "low":
-      return "bg-gray-100 text-gray-800";
+    case 'high':
+      return 'bg-blue-100 text-blue-800';
+    case 'medium':
+      return 'bg-purple-100 text-purple-800';
+    case 'low':
+      return 'bg-gray-100 text-gray-800';
   }
 };

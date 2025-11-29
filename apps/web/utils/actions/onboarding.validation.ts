@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const saveOnboardingAnswersBody = z.object({
   surveyId: z.string().optional(),
@@ -7,7 +7,7 @@ export const saveOnboardingAnswersBody = z.object({
 });
 
 export const stepWhoSchema = z.object({
-  role: z.string().min(1, "Please select your role."),
+  role: z.string().min(1, 'Please select your role.'),
 });
 
 export type StepWhoSchema = z.infer<typeof stepWhoSchema>;

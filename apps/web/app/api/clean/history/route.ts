@@ -1,19 +1,19 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type CleanHistoryResponse = Awaited<ReturnType<typeof getCleanHistory>>;
 
 async function getCleanHistory({ emailAccountId }: { emailAccountId: string }) {
   const result = await prisma.cleanupJob.findMany({
     where: { emailAccountId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
     include: { _count: { select: { threads: true } } },
   });
   return { result };
 }
 
-export const GET = withEmailAccount("clean/history", async (request) => {
+export const GET = withEmailAccount('clean/history', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
 
   const result = await getCleanHistory({ emailAccountId });

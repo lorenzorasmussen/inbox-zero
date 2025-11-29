@@ -1,4 +1,4 @@
-import { cn } from "@/utils";
+import { cn } from '@/utils';
 
 export function PageWrapper({
   children,
@@ -10,8 +10,8 @@ export function PageWrapper({
   return (
     <div
       className={cn(
-        "mx-auto max-w-screen-xl w-full px-4 mb-12 md:mb-4",
-        className,
+        'mx-auto max-w-screen-xl w-full px-4 mb-12 md:mb-4',
+        className
       )}
     >
       {children}

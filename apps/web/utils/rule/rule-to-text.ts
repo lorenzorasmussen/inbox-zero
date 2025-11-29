@@ -1,5 +1,5 @@
-import type { Rule, Action } from "@/generated/prisma/client";
-import { ActionType, LogicalOperator } from "@/generated/prisma/enums";
+import type { Action, Rule } from '@/generated/prisma/client';
+import { ActionType, LogicalOperator } from '@/generated/prisma/enums';
 
 export interface RuleWithActions extends Rule {
   actions: Action[];
@@ -35,7 +35,7 @@ export function ruleToText(rule: RuleWithActions): string {
   rule.actions.forEach((action) => {
     switch (action.type) {
       case ActionType.ARCHIVE:
-        actions.push("Archive");
+        actions.push('Archive');
         break;
       case ActionType.LABEL:
         if (action.label) {
@@ -46,7 +46,7 @@ export function ruleToText(rule: RuleWithActions): string {
         if (action.content) {
           actions.push(`Reply with: "${action.content}"`);
         } else {
-          actions.push("Send reply");
+          actions.push('Send reply');
         }
         break;
       case ActionType.FORWARD:
@@ -55,16 +55,16 @@ export function ruleToText(rule: RuleWithActions): string {
         }
         break;
       case ActionType.SEND_EMAIL:
-        actions.push(`Send email${action.to ? ` to ${action.to}` : ""}`);
+        actions.push(`Send email${action.to ? ` to ${action.to}` : ''}`);
         break;
       case ActionType.DRAFT_EMAIL:
-        actions.push("Draft a reply");
+        actions.push('Draft a reply');
         break;
       case ActionType.MARK_SPAM:
-        actions.push("Mark as spam");
+        actions.push('Mark as spam');
         break;
       case ActionType.MARK_READ:
-        actions.push("Mark as read");
+        actions.push('Mark as read');
         break;
       case ActionType.CALL_WEBHOOK:
         if (action.url) {
@@ -72,7 +72,7 @@ export function ruleToText(rule: RuleWithActions): string {
         }
         break;
       case ActionType.DIGEST:
-        actions.push("Add to digest");
+        actions.push('Add to digest');
         break;
       case ActionType.MOVE_FOLDER:
         if (action.folderName) {
@@ -84,17 +84,17 @@ export function ruleToText(rule: RuleWithActions): string {
 
   // Combine conditions with operator
   const operator =
-    rule.conditionalOperator === LogicalOperator.OR ? " OR " : " AND ";
+    rule.conditionalOperator === LogicalOperator.OR ? ' OR ' : ' AND ';
   const conditionText =
     conditions.length > 0
       ? conditions.join(operator)
-      : "No conditions specified";
+      : 'No conditions specified';
 
   // Format the output with actions as bullet list
   const actionsText =
     actions.length > 0
-      ? actions.map((action) => `- ${action}`).join("\n")
-      : "- No actions specified";
+      ? actions.map((action) => `- ${action}`).join('\n')
+      : '- No actions specified';
 
   return `**When:**\n\n${conditionText}\n\n**Then:**\n${actionsText}`;
 }

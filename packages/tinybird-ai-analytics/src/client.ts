@@ -1,4 +1,4 @@
-import { Tinybird } from "@chronark/zod-bird";
+import { Tinybird } from '@chronark/zod-bird';
 
 let tb: Tinybird;
 

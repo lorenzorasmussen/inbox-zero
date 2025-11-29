@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const disconnectCalendarBody = z.object({
   connectionId: z.string(),
@@ -12,15 +12,15 @@ export const toggleCalendarBody = z.object({
 export type ToggleCalendarBody = z.infer<typeof toggleCalendarBody>;
 
 export const updateTimezoneBody = z.object({
-  timezone: z.string().min(1, "Timezone is required"),
+  timezone: z.string().min(1, 'Timezone is required'),
 });
 export type UpdateTimezoneBody = z.infer<typeof updateTimezoneBody>;
 
 export const updateBookingLinkBody = z.object({
   bookingLink: z
     .string()
-    .url("Must be a valid URL")
+    .url('Must be a valid URL')
     .optional()
-    .or(z.literal("")),
+    .or(z.literal('')),
 });
 export type UpdateBookingLinkBody = z.infer<typeof updateBookingLinkBody>;

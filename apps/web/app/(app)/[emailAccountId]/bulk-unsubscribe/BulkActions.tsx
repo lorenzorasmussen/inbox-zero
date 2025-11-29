@@ -1,21 +1,21 @@
-import { usePostHog } from "posthog-js/react";
 import {
   ArchiveIcon,
   BadgeCheckIcon,
   MailMinusIcon,
   TrashIcon,
-} from "lucide-react";
+} from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
 import {
-  useBulkUnsubscribe,
   useBulkApprove,
-  useBulkAutoArchive,
   useBulkArchive,
+  useBulkAutoArchive,
   useBulkDelete,
-} from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/hooks";
-import { PremiumTooltip, usePremium } from "@/components/PremiumAlert";
-import { Button } from "@/components/ui/button";
-import { usePremiumModal } from "@/app/(app)/premium/PremiumModal";
-import { useAccount } from "@/providers/EmailAccountProvider";
+  useBulkUnsubscribe,
+} from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/hooks';
+import { usePremiumModal } from '@/app/(app)/premium/PremiumModal';
+import { PremiumTooltip, usePremium } from '@/components/PremiumAlert';
+import { Button } from '@/components/ui/button';
+import { useAccount } from '@/providers/EmailAccountProvider';
 
 export function BulkActions({
   selected,
@@ -91,7 +91,7 @@ export function BulkActions({
               variant="outline"
               onClick={() => {
                 const yes = confirm(
-                  "Automatically archive all current and future emails from these senders?",
+                  'Automatically archive all current and future emails from these senders?'
                 );
                 if (yes) {
                   onBulkAutoArchive(getSelectedValues());

@@ -1,12 +1,12 @@
-import { XIcon } from "lucide-react";
-import { ActionButtons } from "@/components/ActionButtons";
-import { Tooltip } from "@/components/Tooltip";
-import type { Thread } from "@/components/email-list/types";
-import { Button } from "@/components/ui/button";
-import { PlanExplanation } from "@/components/email-list/PlanExplanation";
-import { useIsInAiQueue } from "@/store/ai-queue";
-import { EmailThread } from "@/components/email-list/EmailThread";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import { XIcon } from 'lucide-react';
+import { ActionButtons } from '@/components/ActionButtons';
+import { EmailThread } from '@/components/email-list/EmailThread';
+import { PlanExplanation } from '@/components/email-list/PlanExplanation';
+import type { Thread } from '@/components/email-list/types';
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/ui/button';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { useIsInAiQueue } from '@/store/ai-queue';
 
 export function EmailPanel({
   row,

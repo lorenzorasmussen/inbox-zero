@@ -1,7 +1,7 @@
-import prisma from "@/utils/prisma";
-import type { RuleWithRelations } from "@/utils/rule/types";
+import prisma from '@/utils/prisma';
+import type { RuleWithRelations } from '@/utils/rule/types';
 
-export type RuleHistoryTrigger = "created" | "updated";
+export type RuleHistoryTrigger = 'created' | 'updated';
 
 /**
  * Creates a complete snapshot of a rule in the RuleHistory table
@@ -16,7 +16,7 @@ export async function createRuleHistory({
   // Get the current version number for this rule
   const lastHistory = await prisma.ruleHistory.findFirst({
     where: { ruleId: rule.id },
-    orderBy: { version: "desc" },
+    orderBy: { version: 'desc' },
     select: { version: true },
   });
 

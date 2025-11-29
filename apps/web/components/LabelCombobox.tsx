@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Combobox } from "@/components/Combobox";
-import { createLabelAction } from "@/utils/actions/mail";
-import type { EmailLabel } from "@/providers/EmailProvider";
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Combobox } from '@/components/Combobox';
+import { Button } from '@/components/ui/button';
+import type { EmailLabel } from '@/providers/EmailProvider';
+import { createLabelAction } from '@/utils/actions/mail';
 
 export function LabelCombobox({
   value,
@@ -25,23 +25,23 @@ export function LabelCombobox({
   mutate: () => Promise<unknown>;
   emailAccountId: string;
 }) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   const selectedLabel = userLabels.find(
-    (label) => label.id === value.id || label.name === value.name,
+    (label) => label.id === value.id || label.name === value.name
   );
 
   return (
     <Combobox
       options={userLabels.map((label) => ({
-        value: label.id || "",
-        label: label.name || "",
+        value: label.id || '',
+        label: label.name || '',
       }))}
-      value={value.id || ""}
+      value={value.id || ''}
       onChangeValue={onChangeValue}
       search={search}
       onSearch={setSearch}
-      placeholder={selectedLabel?.name || "Select a label"}
+      placeholder={selectedLabel?.name || 'Select a label'}
       emptyText={
         <div>
           <div>No labels</div>
@@ -61,7 +61,7 @@ export function LabelCombobox({
 
                     await mutate();
 
-                    setSearch("");
+                    setSearch('');
 
                     // Auto-select the newly created label
                     if (res?.data?.id) {
@@ -75,7 +75,7 @@ export function LabelCombobox({
                     success: `Created label "${searchValue}"`,
                     error: (errorMessage) =>
                       `Error creating label "${searchValue}": ${errorMessage}`,
-                  },
+                  }
                 );
               }}
             >

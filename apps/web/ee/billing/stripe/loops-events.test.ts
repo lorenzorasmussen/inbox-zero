@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { handleLoopsEvents } from "./loops-events";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { handleLoopsEvents } from './loops-events';
 
 // Mock the Loops functions
-vi.mock("@inboxzero/loops", () => ({
+vi.mock('@inboxzero/loops', () => ({
   createContact: vi.fn(),
   completedTrial: vi.fn(),
   startedTrial: vi.fn(),
@@ -10,7 +10,7 @@ vi.mock("@inboxzero/loops", () => ({
 }));
 
 // Mock the logger
-vi.mock("@/utils/logger", () => ({
+vi.mock('@/utils/logger', () => ({
   createScopedLogger: () => ({
     info: vi.fn(),
     warn: vi.fn(),
@@ -19,13 +19,13 @@ vi.mock("@/utils/logger", () => ({
 }));
 
 import {
-  createContact,
-  completedTrial,
-  startedTrial,
   cancelledPremium,
-} from "@inboxzero/loops";
+  completedTrial,
+  createContact,
+  startedTrial,
+} from '@inboxzero/loops';
 
-describe("handleLoopsEvents", () => {
+describe('handleLoopsEvents', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -34,17 +34,17 @@ describe("handleLoopsEvents", () => {
     stripeSubscriptionStatus: null,
     stripeTrialEnd: null,
     tier: null,
-    users: [{ email: "user@example.com", name: "John Doe" }],
+    users: [{ email: 'user@example.com', name: 'John Doe' }],
     admins: [],
   };
 
   const mockNewSubscription = {
-    status: "active",
+    status: 'active',
     trial_end: null,
   };
 
-  describe("Trial started scenarios", () => {
-    it("should create contact when trial starts for new user", async () => {
+  describe('Trial started scenarios', () => {
+    it('should create contact when trial starts for new user', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
         stripeSubscriptionStatus: null, // No previous subscription
@@ -58,13 +58,13 @@ describe("handleLoopsEvents", () => {
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
-      expect(createContact).toHaveBeenCalledWith("user@example.com", "John");
+      expect(createContact).toHaveBeenCalledWith('user@example.com', 'John');
     });
 
-    it("should not create contact when trial_end is in the past", async () => {
+    it('should not create contact when trial_end is in the past', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
         stripeSubscriptionStatus: null,
@@ -78,16 +78,16 @@ describe("handleLoopsEvents", () => {
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       expect(createContact).not.toHaveBeenCalled();
     });
 
-    it("should not create contact when user already has subscription status", async () => {
+    it('should not create contact when user already has subscription status', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        stripeSubscriptionStatus: "active", // Already has subscription
+        stripeSubscriptionStatus: 'active', // Already has subscription
       };
 
       const newSubscription = {
@@ -98,16 +98,16 @@ describe("handleLoopsEvents", () => {
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       expect(createContact).not.toHaveBeenCalled();
     });
 
-    it("should handle user with no name", async () => {
+    it('should handle user with no name', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        users: [{ email: "user@example.com", name: null }],
+        users: [{ email: 'user@example.com', name: null }],
         stripeSubscriptionStatus: null,
       };
 
@@ -119,48 +119,48 @@ describe("handleLoopsEvents", () => {
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
-      expect(createContact).toHaveBeenCalledWith("user@example.com", undefined);
+      expect(createContact).toHaveBeenCalledWith('user@example.com', undefined);
     });
   });
 
-  describe("Trial completion scenarios", () => {
-    it("should call completedTrial when trial ends and subscription becomes active", async () => {
+  describe('Trial completion scenarios', () => {
+    it('should call completedTrial when trial ends and subscription becomes active', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        stripeSubscriptionStatus: "trialing",
+        stripeSubscriptionStatus: 'trialing',
         stripeTrialEnd: new Date(Date.now() + 1000 * 60 * 60), // 1 hour in future (was in trial)
       };
 
       const newSubscription = {
-        status: "active",
+        status: 'active',
         trial_end: Math.floor(Date.now() / 1000) - 1000, // Trial ended
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       expect(completedTrial).toHaveBeenCalledWith(
-        "user@example.com",
-        "BUSINESS_MONTHLY",
+        'user@example.com',
+        'BUSINESS_MONTHLY'
       );
       expect(startedTrial).not.toHaveBeenCalled(); // Should not call direct upgrade
     });
 
-    it("should not call completedTrial when tier is null", async () => {
+    it('should not call completedTrial when tier is null', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        stripeSubscriptionStatus: "trialing",
+        stripeSubscriptionStatus: 'trialing',
         stripeTrialEnd: new Date(Date.now() + 1000 * 60 * 60),
       };
 
       const newSubscription = {
-        status: "active",
+        status: 'active',
         trial_end: Math.floor(Date.now() / 1000) - 1000,
       };
 
@@ -174,8 +174,8 @@ describe("handleLoopsEvents", () => {
     });
   });
 
-  describe("Direct upgrade scenarios", () => {
-    it("should call startedTrial for first subscription (no previous status, no trial)", async () => {
+  describe('Direct upgrade scenarios', () => {
+    it('should call startedTrial for first subscription (no previous status, no trial)', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
         stripeSubscriptionStatus: null, // First subscription
@@ -183,56 +183,56 @@ describe("handleLoopsEvents", () => {
       };
 
       const newSubscription = {
-        status: "active",
+        status: 'active',
         trial_end: null,
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       expect(startedTrial).toHaveBeenCalledWith(
-        "user@example.com",
-        "BUSINESS_MONTHLY",
+        'user@example.com',
+        'BUSINESS_MONTHLY'
       );
       expect(completedTrial).not.toHaveBeenCalled(); // Should not call trial completion
     });
 
-    it("should call startedTrial when transitioning from incomplete", async () => {
+    it('should call startedTrial when transitioning from incomplete', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        stripeSubscriptionStatus: "incomplete",
+        stripeSubscriptionStatus: 'incomplete',
         stripeTrialEnd: null, // No trial
       };
 
       const newSubscription = {
-        status: "active",
+        status: 'active',
         trial_end: null,
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       expect(startedTrial).toHaveBeenCalledWith(
-        "user@example.com",
-        "BUSINESS_MONTHLY",
+        'user@example.com',
+        'BUSINESS_MONTHLY'
       );
       expect(completedTrial).not.toHaveBeenCalled();
     });
 
-    it("should not call startedTrial when tier is null", async () => {
+    it('should not call startedTrial when tier is null', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
         stripeSubscriptionStatus: null,
       };
 
       const newSubscription = {
-        status: "active",
+        status: 'active',
         trial_end: null,
       };
 
@@ -245,42 +245,42 @@ describe("handleLoopsEvents", () => {
       expect(startedTrial).not.toHaveBeenCalled();
     });
 
-    it("should not call startedTrial when subscription is not active", async () => {
+    it('should not call startedTrial when subscription is not active', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
         stripeSubscriptionStatus: null,
       };
 
       const newSubscription = {
-        status: "trialing", // Not active
+        status: 'trialing', // Not active
         trial_end: null,
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       expect(startedTrial).not.toHaveBeenCalled();
     });
 
-    it("should not call startedTrial for users who were in trial", async () => {
+    it('should not call startedTrial for users who were in trial', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        stripeSubscriptionStatus: "trialing",
+        stripeSubscriptionStatus: 'trialing',
         stripeTrialEnd: new Date(Date.now() + 1000 * 60 * 60), // Was in trial
       };
 
       const newSubscription = {
-        status: "active",
+        status: 'active',
         trial_end: null,
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       // Should call completedTrial, not startedTrial
@@ -289,94 +289,94 @@ describe("handleLoopsEvents", () => {
     });
   });
 
-  describe("Subscription cancelled scenarios", () => {
-    it("should call cancelledPremium when subscription is canceled", async () => {
+  describe('Subscription cancelled scenarios', () => {
+    it('should call cancelledPremium when subscription is canceled', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        stripeSubscriptionStatus: "active",
+        stripeSubscriptionStatus: 'active',
       };
 
       const newSubscription = {
-        status: "canceled",
+        status: 'canceled',
         trial_end: null,
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
-      expect(cancelledPremium).toHaveBeenCalledWith("user@example.com");
+      expect(cancelledPremium).toHaveBeenCalledWith('user@example.com');
     });
 
-    it("should call cancelledPremium when subscription is unpaid", async () => {
+    it('should call cancelledPremium when subscription is unpaid', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        stripeSubscriptionStatus: "active",
+        stripeSubscriptionStatus: 'active',
       };
 
       const newSubscription = {
-        status: "unpaid",
+        status: 'unpaid',
         trial_end: null,
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
-      expect(cancelledPremium).toHaveBeenCalledWith("user@example.com");
+      expect(cancelledPremium).toHaveBeenCalledWith('user@example.com');
     });
 
-    it("should call cancelledPremium when subscription is incomplete_expired", async () => {
+    it('should call cancelledPremium when subscription is incomplete_expired', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        stripeSubscriptionStatus: "active",
+        stripeSubscriptionStatus: 'active',
       };
 
       const newSubscription = {
-        status: "incomplete_expired",
+        status: 'incomplete_expired',
         trial_end: null,
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
-      expect(cancelledPremium).toHaveBeenCalledWith("user@example.com");
+      expect(cancelledPremium).toHaveBeenCalledWith('user@example.com');
     });
 
     it("should not call cancelledPremium when status hasn't changed", async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        stripeSubscriptionStatus: "canceled", // Already canceled
+        stripeSubscriptionStatus: 'canceled', // Already canceled
       };
 
       const newSubscription = {
-        status: "canceled", // Same status
+        status: 'canceled', // Same status
         trial_end: null,
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       expect(cancelledPremium).not.toHaveBeenCalled();
     });
   });
 
-  describe("Edge cases", () => {
-    it("should return early when currentPremium is null", async () => {
+  describe('Edge cases', () => {
+    it('should return early when currentPremium is null', async () => {
       await handleLoopsEvents({
         currentPremium: null,
         newSubscription: mockNewSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       expect(createContact).not.toHaveBeenCalled();
@@ -385,17 +385,17 @@ describe("handleLoopsEvents", () => {
       expect(cancelledPremium).not.toHaveBeenCalled();
     });
 
-    it("should return early when no email found", async () => {
+    it('should return early when no email found', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        users: [{ email: "", name: "John Doe" }], // Empty email
+        users: [{ email: '', name: 'John Doe' }], // Empty email
         admins: [],
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription: mockNewSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       expect(createContact).not.toHaveBeenCalled();
@@ -404,11 +404,11 @@ describe("handleLoopsEvents", () => {
       expect(cancelledPremium).not.toHaveBeenCalled();
     });
 
-    it("should use admin email when user email is not available", async () => {
+    it('should use admin email when user email is not available', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
         users: [],
-        admins: [{ email: "admin@example.com", name: "Admin User" }],
+        admins: [{ email: 'admin@example.com', name: 'Admin User' }],
         stripeSubscriptionStatus: null,
       };
 
@@ -420,13 +420,13 @@ describe("handleLoopsEvents", () => {
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
-      expect(createContact).toHaveBeenCalledWith("admin@example.com", "Admin");
+      expect(createContact).toHaveBeenCalledWith('admin@example.com', 'Admin');
     });
 
-    it("should handle Loops function errors gracefully", async () => {
+    it('should handle Loops function errors gracefully', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
         stripeSubscriptionStatus: null,
@@ -439,7 +439,7 @@ describe("handleLoopsEvents", () => {
 
       // Mock createContact to throw an error
       vi.mocked(createContact).mockRejectedValueOnce(
-        new Error("Loops API error"),
+        new Error('Loops API error')
       );
 
       // Should not throw
@@ -447,41 +447,41 @@ describe("handleLoopsEvents", () => {
         handleLoopsEvents({
           currentPremium,
           newSubscription,
-          newTier: "BUSINESS_MONTHLY",
-        }),
+          newTier: 'BUSINESS_MONTHLY',
+        })
       ).resolves.not.toThrow();
     });
   });
 
-  describe("Complex scenarios", () => {
-    it("should handle trial start and not trigger payment events", async () => {
+  describe('Complex scenarios', () => {
+    it('should handle trial start and not trigger payment events', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
         stripeSubscriptionStatus: null,
       };
 
       const newSubscription = {
-        status: "trialing", // Still in trial
+        status: 'trialing', // Still in trial
         trial_end: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60, // Future trial end
       };
 
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
       // Should create contact for trial start
-      expect(createContact).toHaveBeenCalledWith("user@example.com", "John");
+      expect(createContact).toHaveBeenCalledWith('user@example.com', 'John');
       // Should NOT trigger payment events since still trialing
       expect(completedTrial).not.toHaveBeenCalled();
       expect(startedTrial).not.toHaveBeenCalled();
     });
 
-    it("should handle user with multiple spaces in name", async () => {
+    it('should handle user with multiple spaces in name', async () => {
       const currentPremium = {
         ...mockCurrentPremium,
-        users: [{ email: "user@example.com", name: "John Middle Doe" }],
+        users: [{ email: 'user@example.com', name: 'John Middle Doe' }],
         stripeSubscriptionStatus: null,
       };
 
@@ -493,10 +493,10 @@ describe("handleLoopsEvents", () => {
       await handleLoopsEvents({
         currentPremium,
         newSubscription,
-        newTier: "BUSINESS_MONTHLY",
+        newTier: 'BUSINESS_MONTHLY',
       });
 
-      expect(createContact).toHaveBeenCalledWith("user@example.com", "John");
+      expect(createContact).toHaveBeenCalledWith('user@example.com', 'John');
     });
   });
 });

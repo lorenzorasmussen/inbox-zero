@@ -1,20 +1,20 @@
-import { describe, it, expect, vi } from "vitest";
-import { aiPromptToRulesOld as aiPromptToRules } from "@/utils/ai/rule/prompt-to-rules-old";
-import { createRuleSchema } from "@/utils/ai/rule/create-rule-schema";
-import { ActionType } from "@/generated/prisma/enums";
-import { getEmailAccount } from "@/__tests__/helpers";
+import { describe, expect, it, vi } from 'vitest';
+import { getEmailAccount } from '@/__tests__/helpers';
+import { ActionType } from '@/generated/prisma/enums';
+import { createRuleSchema } from '@/utils/ai/rule/create-rule-schema';
+import { aiPromptToRulesOld as aiPromptToRules } from '@/utils/ai/rule/prompt-to-rules-old';
 
 // pnpm test-ai ai-prompt-to-rules
 
-const isAiTest = process.env.RUN_AI_TESTS === "true";
+const isAiTest = process.env.RUN_AI_TESTS === 'true';
 
 const TIMEOUT = 15_000;
 
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
-describe.runIf(isAiTest)("aiPromptToRules", () => {
+describe.runIf(isAiTest)('aiPromptToRules', () => {
   it(
-    "should convert prompt file to rules",
+    'should convert prompt file to rules',
     async () => {
       const emailAccount = getEmailAccount();
 
@@ -25,7 +25,7 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
         `* Label all emails from mycompany.com as "Internal"`,
       ];
 
-      const promptFile = prompts.join("\n");
+      const promptFile = prompts.join('\n');
 
       const result = await aiPromptToRules({
         emailAccount,
@@ -42,12 +42,12 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
       expect(result[0]).toMatchObject({
         name: expect.any(String),
         condition: {
-          group: "Receipts",
+          group: 'Receipts',
         },
         actions: [
           {
             type: ActionType.LABEL,
-            label: "Receipt",
+            label: 'Receipt',
           },
         ],
       });
@@ -56,7 +56,7 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
       expect(result[1]).toMatchObject({
         name: expect.any(String),
         condition: {
-          group: "Newsletters",
+          group: 'Newsletters',
         },
         actions: [
           {
@@ -64,7 +64,7 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
           },
           {
             type: ActionType.LABEL,
-            label: "Newsletter",
+            label: 'Newsletter',
           },
         ],
       });
@@ -81,7 +81,7 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
           },
           {
             type: ActionType.LABEL,
-            label: "Marketing",
+            label: 'Marketing',
           },
         ],
       });
@@ -91,13 +91,13 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
         name: expect.any(String),
         condition: {
           static: {
-            from: "mycompany.com",
+            from: 'mycompany.com',
           },
         },
         actions: [
           {
             type: ActionType.LABEL,
-            label: "Internal",
+            label: 'Internal',
           },
         ],
       });
@@ -105,32 +105,32 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
       // Validate each rule against the schema
       for (const rule of result) {
         expect(() =>
-          createRuleSchema(emailAccount.account.provider).parse(rule),
+          createRuleSchema(emailAccount.account.provider).parse(rule)
         ).not.toThrow();
       }
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
-  it("should handle errors gracefully", async () => {
+  it('should handle errors gracefully', async () => {
     const emailAccount = {
       ...getEmailAccount(),
-      user: { ...getEmailAccount().user, aiApiKey: "invalid-api-key" },
+      user: { ...getEmailAccount().user, aiApiKey: 'invalid-api-key' },
     };
 
-    const promptFile = "Some prompt";
+    const promptFile = 'Some prompt';
 
     await expect(
       aiPromptToRules({
         emailAccount,
         promptFile,
         isEditing: false,
-      }),
+      })
     ).rejects.toThrow();
   });
 
   it(
-    "should handle complex email forwarding rules",
+    'should handle complex email forwarding rules',
     async () => {
       const emailAccount = getEmailAccount();
 
@@ -157,11 +157,11 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
         actions: [
           {
             type: ActionType.FORWARD,
-            to: "urgent@company.com",
+            to: 'urgent@company.com',
           },
           {
             type: ActionType.LABEL,
-            label: "Urgent",
+            label: 'Urgent',
           },
         ],
       });
@@ -175,11 +175,11 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
         actions: [
           {
             type: ActionType.FORWARD,
-            to: "sales@company.com",
+            to: 'sales@company.com',
           },
           {
             type: ActionType.LABEL,
-            label: "Sales Lead",
+            label: 'Sales Lead',
           },
         ],
       });
@@ -189,22 +189,22 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
         name: expect.any(String),
         condition: {
           static: {
-            from: "@bigclient.com",
+            from: '@bigclient.com',
           },
         },
         actions: [
           {
             type: ActionType.FORWARD,
-            to: "vip-support@company.com",
+            to: 'vip-support@company.com',
           },
         ],
       });
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   it(
-    "should handle reply templates with smart categories",
+    'should handle reply templates with smart categories',
     async () => {
       const emailAccount = getEmailAccount();
 
@@ -221,7 +221,7 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
         emailAccount,
         promptFile,
         isEditing: false,
-        availableCategories: ["Job Applications", "HR", "Recruiting"],
+        availableCategories: ['Job Applications', 'HR', 'Recruiting'],
       });
 
       expect(result.length).toBe(1);
@@ -229,8 +229,8 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
         name: expect.any(String),
         condition: {
           categories: {
-            categoryFilterType: "INCLUDE",
-            categoryFilters: ["Job Applications"],
+            categoryFilterType: 'INCLUDE',
+            categoryFilters: ['Job Applications'],
           },
         },
         actions: [
@@ -241,11 +241,11 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
         ],
       });
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   it(
-    "should handle multiple conditions in a single rule",
+    'should handle multiple conditions in a single rule',
     async () => {
       const emailAccount = getEmailAccount();
 
@@ -264,29 +264,29 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
       expect(result[0]).toMatchObject({
         name: expect.any(String),
         condition: {
-          conditionalOperator: "AND",
+          conditionalOperator: 'AND',
           static: {
-            from: "support@company.com",
+            from: 'support@company.com',
           },
           aiInstructions: expect.stringMatching(/urgent|escalation/i),
         },
         actions: [
           {
             type: ActionType.FORWARD,
-            to: "manager@company.com",
+            to: 'manager@company.com',
           },
           {
             type: ActionType.LABEL,
-            label: "Escalation",
+            label: 'Escalation',
           },
         ],
       });
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   it(
-    "should handle template variables in replies",
+    'should handle template variables in replies',
     async () => {
       const emailAccount = getEmailAccount();
 
@@ -324,10 +324,10 @@ describe.runIf(isAiTest)("aiPromptToRules", () => {
 
       // Verify template variable is preserved in the content
       const replyAction = result[0].actions.find(
-        (a) => a.type === ActionType.REPLY,
+        (a) => a.type === ActionType.REPLY
       );
-      expect(replyAction?.fields?.content).toContain("{{firstName}}");
+      expect(replyAction?.fields?.content).toContain('{{firstName}}');
     },
-    TIMEOUT,
+    TIMEOUT
   );
 });

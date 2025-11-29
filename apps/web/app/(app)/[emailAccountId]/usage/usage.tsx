@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { BotIcon, CoinsIcon, CpuIcon } from "lucide-react";
-import { formatStat } from "@/utils/stats";
-import { StatsCards } from "@/components/StatsCards";
-import { usePremium } from "@/components/PremiumAlert";
-import { LoadingContent } from "@/components/LoadingContent";
-import { env } from "@/env";
-import { isPremium } from "@/utils/premium";
-import type { RedisUsage } from "@/utils/redis/usage";
+import { BotIcon, CoinsIcon, CpuIcon } from 'lucide-react';
+import { LoadingContent } from '@/components/LoadingContent';
+import { usePremium } from '@/components/PremiumAlert';
+import { StatsCards } from '@/components/StatsCards';
+import { env } from '@/env';
+import { isPremium } from '@/utils/premium';
+import type { RedisUsage } from '@/utils/redis/usage';
+import { formatStat } from '@/utils/stats';
 
 export function Usage(props: { usage: RedisUsage | null }) {
   const { premium, isLoading, error } = usePremium();
@@ -17,29 +17,29 @@ export function Usage(props: { usage: RedisUsage | null }) {
       <StatsCards
         stats={[
           {
-            name: "Unsubscribe Credits",
+            name: 'Unsubscribe Credits',
             value: isPremium(
               premium?.lemonSqueezyRenewsAt || null,
-              premium?.stripeSubscriptionStatus || null,
+              premium?.stripeSubscriptionStatus || null
             )
-              ? "Unlimited"
+              ? 'Unlimited'
               : formatStat(
                   premium?.unsubscribeCredits ??
-                    env.NEXT_PUBLIC_FREE_UNSUBSCRIBE_CREDITS,
+                    env.NEXT_PUBLIC_FREE_UNSUBSCRIBE_CREDITS
                 ),
-            subvalue: "credits",
+            subvalue: 'credits',
             icon: <CoinsIcon className="h-4 w-4" />,
           },
           {
-            name: "LLM API Calls",
+            name: 'LLM API Calls',
             value: formatStat(props.usage?.openaiCalls),
-            subvalue: "calls",
+            subvalue: 'calls',
             icon: <BotIcon className="h-4 w-4" />,
           },
           {
-            name: "LLM Tokens Used",
+            name: 'LLM Tokens Used',
             value: formatStat(props.usage?.openaiTokensUsed),
-            subvalue: "tokens",
+            subvalue: 'tokens',
             icon: <CpuIcon className="h-4 w-4" />,
           },
         ]}

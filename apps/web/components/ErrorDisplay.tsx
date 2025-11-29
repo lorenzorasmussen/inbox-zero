@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AlertCircle } from 'lucide-react';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 import {
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
-import { logOut } from "@/utils/user";
-import { env } from "@/env";
+} from '@/components/ui/empty';
+import { env } from '@/env';
+import { logOut } from '@/utils/user';
 
 // TODO would be better to have a consistent definition here. didn't want to break things.
 export function ErrorDisplay(props: {
@@ -44,10 +44,10 @@ export function ErrorDisplay(props: {
           </EmptyMedia>
           <EmptyTitle>There was an error</EmptyTitle>
           <EmptyDescription>
-            Please refresh or contact support at{" "}
+            Please refresh or contact support at{' '}
             <a href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}>
               {env.NEXT_PUBLIC_SUPPORT_EMAIL}
-            </a>{" "}
+            </a>{' '}
             if the error persists.
           </EmptyDescription>
         </EmptyHeader>
@@ -65,7 +65,7 @@ export const NotLoggedIn = () => {
       <Button
         variant="outline"
         className="mt-2"
-        onClick={() => logOut("/login")}
+        onClick={() => logOut('/login')}
       >
         Sign in
       </Button>
@@ -84,22 +84,22 @@ export const NotLoggedIn = () => {
 };
 
 const safeErrorToString = (
-  error: string | object | undefined,
+  error: string | object | undefined
 ): string | null => {
   if (!error) return null;
-  if (typeof error === "string") return error;
-  if (typeof error === "object") {
+  if (typeof error === 'string') return error;
+  if (typeof error === 'object') {
     // Handle Zod validation errors with issues array
-    if ("issues" in error && Array.isArray(error.issues)) {
+    if ('issues' in error && Array.isArray(error.issues)) {
       return error.issues
-        .map((issue) => issue.message || "Validation error")
-        .join(", ");
+        .map((issue) => issue.message || 'Validation error')
+        .join(', ');
     }
     // For other objects, try to stringify safely
     try {
       return JSON.stringify(error);
     } catch {
-      return "Invalid data format";
+      return 'Invalid data format';
     }
   }
   return String(error);

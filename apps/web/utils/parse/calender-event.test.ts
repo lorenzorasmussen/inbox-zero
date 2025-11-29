@@ -1,29 +1,29 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { analyzeCalendarEvent, isCalendarEventInPast } from "./calender-event";
-import type { ParsedMessage } from "@/utils/types";
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ParsedMessage } from '@/utils/types';
+import { analyzeCalendarEvent, isCalendarEventInPast } from './calender-event';
 
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
-describe("Calendar Event Detection", () => {
+describe('Calendar Event Detection', () => {
   beforeEach(() => {
     // Set fixed date to March 15, 2024
     vi.useFakeTimers();
-    vi.setSystemTime(new Date("2024-03-15T12:00:00Z"));
+    vi.setSystemTime(new Date('2024-03-15T12:00:00Z'));
   });
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  describe("analyzeCalendarEvent", () => {
-    it("should detect calendar events from Google Calendar invites", () => {
+  describe('analyzeCalendarEvent', () => {
+    it('should detect calendar events from Google Calendar invites', () => {
       const email = createTestEmail({
         headers: {
           subject:
-            "Updated invitation: Team Meeting @ Weekly from 10:00 to 11:00",
-          from: "calendar-notification@google.com",
-          to: "user@example.com",
-          date: "2024-03-06T00:26:01Z",
+            'Updated invitation: Team Meeting @ Weekly from 10:00 to 11:00',
+          from: 'calendar-notification@google.com',
+          to: 'user@example.com',
+          date: '2024-03-06T00:26:01Z',
         },
         textHtml: `
           BEGIN:VCALENDAR
@@ -32,22 +32,22 @@ describe("Calendar Event Detection", () => {
           RRULE:FREQ=WEEKLY;WKST=MO;UNTIL=20250303T045959Z;INTERVAL=1;BYDAY=MO
           ORGANIZER;CN=organizer@example.com:mailto:organizer@example.com
         `,
-        textPlain: "Team weekly sync meeting",
+        textPlain: 'Team weekly sync meeting',
       });
 
       const result = analyzeCalendarEvent(email);
       expect(result.isCalendarEvent).toBe(true);
       expect(result.recurringEvent).toBe(true);
-      expect(result.eventTitle).toBe("Team Meeting");
+      expect(result.eventTitle).toBe('Team Meeting');
     });
 
-    it("should detect calendar events from plain text with calendar keywords", () => {
+    it('should detect calendar events from plain text with calendar keywords', () => {
       const email = createTestEmail({
         headers: {
-          subject: "Meeting Invitation: Project Review",
-          from: "sender@example.com",
-          to: "user@example.com",
-          date: "2024-03-06T00:26:01Z",
+          subject: 'Meeting Invitation: Project Review',
+          from: 'sender@example.com',
+          to: 'user@example.com',
+          date: '2024-03-06T00:26:01Z',
         },
         textHtml: `
           Please join us for a project review meeting
@@ -56,24 +56,24 @@ describe("Calendar Event Detection", () => {
           
           Yes | No | Maybe
         `,
-        textPlain: "Project review meeting invitation",
+        textPlain: 'Project review meeting invitation',
       });
 
       const result = analyzeCalendarEvent(email);
       expect(result.isCalendarEvent).toBe(true);
-      expect(result.eventTitle).toBe("Meeting Invitation: Project Review");
+      expect(result.eventTitle).toBe('Meeting Invitation: Project Review');
     });
 
-    it("should not detect regular emails as calendar events", () => {
+    it('should not detect regular emails as calendar events', () => {
       const email = createTestEmail({
         headers: {
-          subject: "Hello there",
-          from: "friend@example.com",
-          to: "user@example.com",
-          date: "2024-03-06T00:26:01Z",
+          subject: 'Hello there',
+          from: 'friend@example.com',
+          to: 'user@example.com',
+          date: '2024-03-06T00:26:01Z',
         },
-        textHtml: "Just wanted to say hi!",
-        textPlain: "Just wanted to say hi!",
+        textHtml: 'Just wanted to say hi!',
+        textPlain: 'Just wanted to say hi!',
       });
 
       const result = analyzeCalendarEvent(email);
@@ -81,13 +81,13 @@ describe("Calendar Event Detection", () => {
       expect(result.eventDate).toBeUndefined();
     });
 
-    it("should extract event dates from iCalendar data", () => {
+    it('should extract event dates from iCalendar data', () => {
       const email = createTestEmail({
         headers: {
-          subject: "Calendar Event",
-          from: "organizer@example.com",
-          to: "user@example.com",
-          date: "2024-03-06T00:26:01Z",
+          subject: 'Calendar Event',
+          from: 'organizer@example.com',
+          to: 'user@example.com',
+          date: '2024-03-06T00:26:01Z',
         },
         textHtml: `
           BEGIN:VCALENDAR
@@ -95,7 +95,7 @@ describe("Calendar Event Detection", () => {
           DTEND:20240315T150000Z
           ORGANIZER:mailto:organizer@example.com
         `,
-        textPlain: "Calendar event details",
+        textPlain: 'Calendar event details',
       });
 
       const result = analyzeCalendarEvent(email);
@@ -106,14 +106,14 @@ describe("Calendar Event Detection", () => {
     });
   });
 
-  describe("isCalendarEventInPast", () => {
-    it("should return true for events in the past", () => {
+  describe('isCalendarEventInPast', () => {
+    it('should return true for events in the past', () => {
       const pastEvent = createTestEmail({
         headers: {
-          subject: "Team Meeting",
-          from: "organizer@example.com",
-          to: "attendee@example.com",
-          date: "",
+          subject: 'Team Meeting',
+          from: 'organizer@example.com',
+          to: 'attendee@example.com',
+          date: '',
         },
         textHtml: `
           BEGIN:VCALENDAR
@@ -126,13 +126,13 @@ describe("Calendar Event Detection", () => {
       expect(isCalendarEventInPast(pastEvent)).toBe(true);
     });
 
-    it("should return false for events in the future", () => {
+    it('should return false for events in the future', () => {
       const futureEvent = createTestEmail({
         headers: {
-          subject: "Team Meeting",
-          from: "organizer@example.com",
-          to: "attendee@example.com",
-          date: "",
+          subject: 'Team Meeting',
+          from: 'organizer@example.com',
+          to: 'attendee@example.com',
+          date: '',
         },
         textHtml: `
           BEGIN:VCALENDAR
@@ -145,15 +145,15 @@ describe("Calendar Event Detection", () => {
       expect(isCalendarEventInPast(futureEvent)).toBe(false);
     });
 
-    it("should return false for non-calendar events", () => {
+    it('should return false for non-calendar events', () => {
       const regularEmail = createTestEmail({
         headers: {
-          subject: "Regular Email",
-          from: "sender@example.com",
-          to: "recipient@example.com",
-          date: "",
+          subject: 'Regular Email',
+          from: 'sender@example.com',
+          to: 'recipient@example.com',
+          date: '',
         },
-        textHtml: "This is a regular email without calendar information",
+        textHtml: 'This is a regular email without calendar information',
       });
 
       expect(isCalendarEventInPast(regularEmail)).toBe(false);
@@ -162,19 +162,19 @@ describe("Calendar Event Detection", () => {
 });
 
 const createTestEmail = (
-  overrides: Partial<ParsedMessage> = {},
+  overrides: Partial<ParsedMessage> = {}
 ): ParsedMessage => ({
-  id: "test-id",
-  threadId: "test-thread-id",
-  historyId: "test-history-id",
-  snippet: "",
+  id: 'test-id',
+  threadId: 'test-thread-id',
+  historyId: 'test-history-id',
+  snippet: '',
   headers: {
-    subject: "",
-    from: "",
-    to: "",
-    date: "",
+    subject: '',
+    from: '',
+    to: '',
+    date: '',
   },
-  textHtml: "",
+  textHtml: '',
   inline: [],
   ...overrides,
 });

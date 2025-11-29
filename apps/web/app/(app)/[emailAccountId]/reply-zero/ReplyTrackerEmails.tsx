@@ -1,14 +1,6 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import sortBy from "lodash/sortBy";
-import { useState, useCallback, type RefCallback } from "react";
-import type { ParsedMessage } from "@/utils/types";
-import { ThreadTrackerType } from "@/generated/prisma/enums";
-import type { ThreadTracker } from "@/generated/prisma/client";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { EmailMessageCell } from "@/components/EmailMessageCell";
-import { Button } from "@/components/ui/button";
+import sortBy from 'lodash/sortBy';
 import {
   CheckCircleIcon,
   CircleXIcon,
@@ -16,25 +8,33 @@ import {
   RefreshCwIcon,
   ReplyIcon,
   XIcon,
-} from "lucide-react";
-import { useThreadsByIds } from "@/hooks/useThreadsByIds";
-import { resolveThreadTrackerAction } from "@/utils/actions/reply-tracking";
-import { toastError, toastSuccess, toastInfo } from "@/components/Toast";
-import { Loading } from "@/components/Loading";
-import { TablePagination } from "@/components/TablePagination";
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { type RefCallback, useCallback, useState } from 'react';
+import { EmailMessageCell } from '@/components/EmailMessageCell';
+import { ThreadContent } from '@/components/EmailViewer';
+import { Loading } from '@/components/Loading';
+import { TablePagination } from '@/components/TablePagination';
+import { toastError, toastInfo, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { CommandShortcut } from '@/components/ui/command';
 import {
   ResizableHandle,
-  ResizablePanelGroup,
   ResizablePanel,
-} from "@/components/ui/resizable";
-import { ThreadContent } from "@/components/EmailViewer";
-import { formatShortDate, internalDateToDate } from "@/utils/date";
-import { cn } from "@/utils";
-import { CommandShortcut } from "@/components/ui/command";
-import { useTableKeyboardNavigation } from "@/hooks/useTableKeyboardNavigation";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { isGoogleProvider } from "@/utils/email/provider-types";
+  ResizablePanelGroup,
+} from '@/components/ui/resizable';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import type { ThreadTracker } from '@/generated/prisma/client';
+import { ThreadTrackerType } from '@/generated/prisma/enums';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useTableKeyboardNavigation } from '@/hooks/useTableKeyboardNavigation';
+import { useThreadsByIds } from '@/hooks/useThreadsByIds';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { cn } from '@/utils';
+import { resolveThreadTrackerAction } from '@/utils/actions/reply-tracking';
+import { formatShortDate, internalDateToDate } from '@/utils/date';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import type { ParsedMessage } from '@/utils/types';
 
 export function ReplyTrackerEmails({
   trackers,
@@ -61,24 +61,24 @@ export function ReplyTrackerEmails({
     messageId: string;
   } | null>(null);
   const [resolvingThreads, setResolvingThreads] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   // When we send an email, it takes some time to process so we want to hide those from the "To Reply" UI
   // This will reshow on page refresh, but it's good enough for now.
   const [recentlySentThreads, setRecentlySentThreads] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
   const { data, isLoading } = useThreadsByIds(
     {
       threadIds: trackers.map((t) => t.threadId),
     },
-    { keepPreviousData: true },
+    { keepPreviousData: true }
   );
 
   const sortedThreads = sortBy(
     data?.threads.filter((t) => !recentlySentThreads.has(t.id)),
-    (t) => -internalDateToDate(t.messages.at(-1)?.internalDate),
+    (t) => -internalDateToDate(t.messages.at(-1)?.internalDate)
   );
 
   const handleResolve = useCallback(
@@ -98,13 +98,13 @@ export function ReplyTrackerEmails({
 
       if (result?.serverError) {
         toastError({
-          title: "Error",
+          title: 'Error',
           description: result.serverError,
         });
       } else {
         toastSuccess({
-          title: "Success",
-          description: resolved ? "Marked as done!" : "Marked as not done!",
+          title: 'Success',
+          description: resolved ? 'Marked as done!' : 'Marked as not done!',
         });
       }
 
@@ -118,29 +118,29 @@ export function ReplyTrackerEmails({
         setSelectedEmail(null);
       }
     },
-    [resolvingThreads, selectedEmail, emailAccountId],
+    [resolvingThreads, selectedEmail, emailAccountId]
   );
 
   const handleAction = useCallback(
-    async (index: number, action: "reply" | "resolve" | "unresolve") => {
+    async (index: number, action: 'reply' | 'resolve' | 'unresolve') => {
       const thread = sortedThreads[index];
       if (!thread) return;
 
       const message = thread.messages.at(-1)!;
 
-      if (action === "reply") {
+      if (action === 'reply') {
         if (!isGmail) {
           showReplyNotSupportedToast();
           return;
         }
         setSelectedEmail({ threadId: thread.id, messageId: message.id });
-      } else if (action === "resolve") {
+      } else if (action === 'resolve') {
         await handleResolve(thread.id, true);
-      } else if (action === "unresolve") {
+      } else if (action === 'unresolve') {
         await handleResolve(thread.id, false);
       }
     },
-    [sortedThreads, handleResolve, isGmail],
+    [sortedThreads, handleResolve, isGmail]
   );
 
   const { selectedIndex, setSelectedIndex, getRefCallback } =
@@ -168,7 +168,7 @@ export function ReplyTrackerEmails({
         }, timeout);
       }
     },
-    [type],
+    [type]
   );
 
   const isMobile = useIsMobile();
@@ -223,7 +223,7 @@ export function ReplyTrackerEmails({
     // hacky. this will break if other parts of the layout change
     <div className="h-[calc(100vh-7.5rem)]">
       <ResizablePanelGroup
-        direction={isMobile ? "vertical" : "horizontal"}
+        direction={isMobile ? 'vertical' : 'horizontal'}
         className="h-full"
       >
         <ResizablePanel defaultSize={35} minSize={0}>
@@ -312,9 +312,9 @@ function Row({
     <TableRow
       ref={rowRef}
       className={cn(
-        "transition-colors duration-100 hover:bg-background",
+        'transition-colors duration-100 hover:bg-background',
         isSelected &&
-          "bg-blue-50 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-800",
+          'bg-blue-50 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-800'
       )}
       onMouseEnter={onSelect}
     >
@@ -322,7 +322,7 @@ function Row({
         <div className="flex items-center justify-between">
           <EmailMessageCell
             sender={
-              message.labelIds?.includes("SENT")
+              message.labelIds?.includes('SENT')
                 ? message.headers.to
                 : message.headers.from
             }
@@ -339,8 +339,8 @@ function Row({
           {/* biome-ignore lint/a11y/useKeyWithClickEvents: buttons inside handle keyboard events */}
           <div
             className={cn(
-              "ml-4 flex items-center gap-1.5",
-              isSplitViewOpen && "flex-col",
+              'ml-4 flex items-center gap-1.5',
+              isSplitViewOpen && 'flex-col'
             )}
             onClick={(e) => e.stopPropagation()}
           >
@@ -398,7 +398,7 @@ function NudgeButton({
       Icon={showNudge ? HandIcon : ReplyIcon}
       onClick={handleClick}
     >
-      {showNudge ? "Nudge" : "Reply"}
+      {showNudge ? 'Nudge' : 'Reply'}
       <CommandShortcut className="ml-2">R</CommandShortcut>
     </Button>
   );
@@ -499,16 +499,16 @@ function useReplyTrackerKeyboardNav(
   items: { id: string }[],
   onAction: (
     index: number,
-    action: "reply" | "resolve" | "unresolve",
-  ) => Promise<void>,
+    action: 'reply' | 'resolve' | 'unresolve'
+  ) => Promise<void>
 ) {
   const handleKeyAction = useCallback(
     (index: number, key: string) => {
-      if (key === "r") onAction(index, "reply");
-      else if (key === "d") onAction(index, "resolve");
-      else if (key === "n") onAction(index, "unresolve");
+      if (key === 'r') onAction(index, 'reply');
+      else if (key === 'd') onAction(index, 'resolve');
+      else if (key === 'n') onAction(index, 'unresolve');
     },
-    [onAction],
+    [onAction]
   );
 
   const { selectedIndex, setSelectedIndex, getRefCallback } =
@@ -522,9 +522,9 @@ function useReplyTrackerKeyboardNav(
 
 function showReplyNotSupportedToast() {
   toastInfo({
-    title: "Reply in your email client",
+    title: 'Reply in your email client',
     description:
-      "Please use your email client to reply. Replying from within Inbox Zero not yet supported for Microsoft accounts.",
+      'Please use your email client to reply. Replying from within Inbox Zero not yet supported for Microsoft accounts.',
     duration: 5000,
   });
 }

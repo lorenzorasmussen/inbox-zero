@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import useSWR from "swr";
-import type { DateRange } from "react-day-picker";
-import { useExpanded } from "@/app/(app)/[emailAccountId]/stats/useExpanded";
-import type { RecipientsResponse } from "@/app/api/user/stats/recipients/route";
-import type { SendersResponse } from "@/app/api/user/stats/senders/route";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import { BarList } from "@/components/charts/BarList";
-import { getDateRangeParams } from "@/app/(app)/[emailAccountId]/stats/params";
-import { getGmailSearchUrl } from "@/utils/url";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import type { DateRange } from 'react-day-picker';
+import useSWR from 'swr';
+import { getDateRangeParams } from '@/app/(app)/[emailAccountId]/stats/params';
+import { useExpanded } from '@/app/(app)/[emailAccountId]/stats/useExpanded';
+import type { RecipientsResponse } from '@/app/api/user/stats/recipients/route';
+import type { SendersResponse } from '@/app/api/user/stats/senders/route';
+import { BarList } from '@/components/charts/BarList';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { getGmailSearchUrl } from '@/utils/url';
 
 export function EmailAnalytics(props: {
   dateRange?: DateRange | undefined;
@@ -24,7 +24,7 @@ export function EmailAnalytics(props: {
     `/api/user/stats/senders?${new URLSearchParams(params as any)}`,
     {
       refreshInterval: props.refreshInterval,
-    },
+    }
   );
 
   const {
@@ -35,7 +35,7 @@ export function EmailAnalytics(props: {
     `/api/user/stats/recipients?${new URLSearchParams(params as any)}`,
     {
       refreshInterval: props.refreshInterval,
-    },
+    }
   );
 
   const { expanded, extra } = useExpanded();
@@ -57,7 +57,7 @@ export function EmailAnalytics(props: {
               .map((d) => ({
                 ...d,
                 href: getGmailSearchUrl(d.name, userEmail),
-                target: "_blank",
+                target: '_blank',
               }))}
             extra={extra}
           />
@@ -78,7 +78,7 @@ export function EmailAnalytics(props: {
               .map((d) => ({
                 ...d,
                 href: getGmailSearchUrl(d.name, userEmail),
-                target: "_blank",
+                target: '_blank',
               }))}
             extra={extra}
           />
@@ -100,7 +100,7 @@ export function EmailAnalytics(props: {
                 .map((d) => ({
                   ...d,
                   href: getGmailSearchUrl(d.name, userEmail),
-                  target: "_blank",
+                  target: '_blank',
                 })) || []
             }
             extra={extra}

@@ -1,13 +1,13 @@
-import type { EmailProvider, EmailLabel } from "@/utils/email/types";
-import type { Logger } from "@/utils/logger";
-import prisma from "@/utils/prisma";
-import { ActionType } from "@/generated/prisma/enums";
+import { ActionType } from '@/generated/prisma/enums';
+import type { EmailLabel, EmailProvider } from '@/utils/email/types';
+import { labelMessageAndSync } from '@/utils/label.server';
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { getRuleLabel } from '@/utils/rule/consts';
 import {
   CONVERSATION_STATUS_TYPES,
   type ConversationStatus,
-} from "./conversation-status-config";
-import { getRuleLabel } from "@/utils/rule/consts";
-import { labelMessageAndSync } from "@/utils/label.server";
+} from './conversation-status-config';
 
 type LabelIds = Record<
   ConversationStatus,
@@ -62,18 +62,18 @@ export async function removeConflictingThreadStatusLabels({
   }
 
   if (removeLabelIds.length === 0) {
-    logger.info("No conflicting labels to remove");
+    logger.info('No conflicting labels to remove');
     return;
   }
 
   await provider.removeThreadLabels(threadId, removeLabelIds).catch((error) =>
-    logger.error("Failed to remove conflicting thread labels", {
+    logger.error('Failed to remove conflicting thread labels', {
       removeLabelIds,
       error,
-    }),
+    })
   );
 
-  logger.info("Removed conflicting thread status labels", {
+  logger.info('Removed conflicting thread status labels', {
     removedCount: removeLabelIds.length,
   });
 }
@@ -123,7 +123,7 @@ export async function applyThreadStatusLabel({
 
     // Must have labelId to proceed
     if (!targetLabel.labelId) {
-      logger.error("Failed to get or create target label", {
+      logger.error('Failed to get or create target label', {
         systemType,
         labelName: getRuleLabel(systemType),
       });
@@ -138,11 +138,11 @@ export async function applyThreadStatusLabel({
       emailAccountId,
       logger,
     }).catch((error) =>
-      logger.error("Failed to apply thread status label", {
+      logger.error('Failed to apply thread status label', {
         labelId: targetLabel.labelId,
         labelName: targetLabel.label,
         error,
-      }),
+      })
     );
   };
 
@@ -159,7 +159,7 @@ export async function applyThreadStatusLabel({
     addLabel(),
   ]);
 
-  logger.info("Thread status label applied successfully");
+  logger.info('Thread status label applied successfully');
 }
 
 async function getLabelsFromDb(emailAccountId: string): Promise<LabelIds> {

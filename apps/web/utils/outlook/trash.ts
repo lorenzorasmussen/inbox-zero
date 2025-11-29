@@ -1,15 +1,15 @@
-import type { OutlookClient } from "@/utils/outlook/client";
-import { publishDelete, type TinybirdEmailAction } from "@inboxzero/tinybird";
-import { createScopedLogger } from "@/utils/logger";
-import { withOutlookRetry } from "@/utils/outlook/retry";
+import { publishDelete, type TinybirdEmailAction } from '@inboxzero/tinybird';
+import { createScopedLogger } from '@/utils/logger';
+import type { OutlookClient } from '@/utils/outlook/client';
+import { withOutlookRetry } from '@/utils/outlook/retry';
 
-const logger = createScopedLogger("outlook/trash");
+const logger = createScopedLogger('outlook/trash');
 
 export async function trashThread(options: {
   client: OutlookClient;
   threadId: string;
   ownerEmail: string;
-  actionSource: TinybirdEmailAction["actionSource"];
+  actionSource: TinybirdEmailAction['actionSource'];
 }) {
   const { client, threadId, ownerEmail, actionSource } = options;
 
@@ -20,7 +20,7 @@ export async function trashThread(options: {
     const escapedThreadId = threadId.replace(/'/g, "''");
     const messages = await client
       .getClient()
-      .api("/me/messages")
+      .api('/me/messages')
       .filter(`conversationId eq '${escapedThreadId}'`)
       .get();
 
@@ -29,19 +29,19 @@ export async function trashThread(options: {
         try {
           return await withOutlookRetry(() =>
             client.getClient().api(`/me/messages/${message.id}/move`).post({
-              destinationId: "deleteditems",
-            }),
+              destinationId: 'deleteditems',
+            })
           );
         } catch (error) {
           // Log the error but don't fail the entire operation
-          logger.warn("Failed to move message to trash", {
+          logger.warn('Failed to move message to trash', {
             messageId: message.id,
             threadId,
             error: error instanceof Error ? error.message : error,
           });
           return null;
         }
-      }),
+      })
     );
 
     const publishPromise = publishDelete({
@@ -56,28 +56,27 @@ export async function trashThread(options: {
       publishPromise,
     ]);
 
-    if (trashResult.status === "rejected") {
+    if (trashResult.status === 'rejected') {
       const error = trashResult.reason as Error;
-      if (error.message?.includes("Requested entity was not found")) {
+      if (error.message?.includes('Requested entity was not found')) {
         // thread doesn't exist, so it's already been deleted
-        logger.warn("Failed to trash non-existent thread", {
+        logger.warn('Failed to trash non-existent thread', {
           email: ownerEmail,
           threadId,
           error,
         });
         return { status: 200 };
-      } else {
-        logger.error("Failed to trash thread", {
-          email: ownerEmail,
-          threadId,
-          error,
-        });
-        throw error;
       }
+      logger.error('Failed to trash thread', {
+        email: ownerEmail,
+        threadId,
+        error,
+      });
+      throw error;
     }
 
-    if (publishResult.status === "rejected") {
-      logger.error("Failed to publish delete action", {
+    if (publishResult.status === 'rejected') {
+      logger.error('Failed to publish delete action', {
         email: ownerEmail,
         threadId,
         error: publishResult.reason,
@@ -87,7 +86,7 @@ export async function trashThread(options: {
     return { status: 200 };
   } catch (error) {
     // If the filter fails, try a different approach
-    logger.warn("Filter failed, trying alternative approach", {
+    logger.warn('Filter failed, trying alternative approach', {
       threadId,
       error,
     });
@@ -96,14 +95,14 @@ export async function trashThread(options: {
       // Try to get messages by conversationId using a different endpoint
       const messages = await client
         .getClient()
-        .api("/me/messages")
-        .select("id")
+        .api('/me/messages')
+        .select('id')
         .get();
 
       // Filter messages by conversationId manually
       const threadMessages = messages.value.filter(
         (message: { conversationId: string }) =>
-          message.conversationId === threadId,
+          message.conversationId === threadId
       );
 
       if (threadMessages.length > 0) {
@@ -113,12 +112,12 @@ export async function trashThread(options: {
             try {
               return await withOutlookRetry(() =>
                 client.getClient().api(`/me/messages/${message.id}/move`).post({
-                  destinationId: "deleteditems",
-                }),
+                  destinationId: 'deleteditems',
+                })
               );
             } catch (moveError) {
               // Log the error but don't fail the entire operation
-              logger.warn("Failed to move message to trash", {
+              logger.warn('Failed to move message to trash', {
                 messageId: message.id,
                 threadId,
                 error:
@@ -126,7 +125,7 @@ export async function trashThread(options: {
               });
               return null;
             }
-          },
+          }
         );
 
         await Promise.allSettled(movePromises);
@@ -134,8 +133,8 @@ export async function trashThread(options: {
         // If no messages found, try treating threadId as a messageId
         await withOutlookRetry(() =>
           client.getClient().api(`/me/messages/${threadId}/move`).post({
-            destinationId: "deleteditems",
-          }),
+            destinationId: 'deleteditems',
+          })
         );
       }
 
@@ -148,7 +147,7 @@ export async function trashThread(options: {
           timestamp: Date.now(),
         });
       } catch (publishError) {
-        logger.error("Failed to publish delete action", {
+        logger.error('Failed to publish delete action', {
           email: ownerEmail,
           threadId,
           error: publishError,
@@ -157,7 +156,7 @@ export async function trashThread(options: {
 
       return { status: 200 };
     } catch (directError) {
-      logger.error("Failed to trash thread", {
+      logger.error('Failed to trash thread', {
         threadId,
         error: directError,
       });

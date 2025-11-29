@@ -1,13 +1,13 @@
-import { isDefined, type ParsedMessage } from "@/utils/types";
-import { createScopedLogger, type Logger } from "@/utils/logger";
-import { processUserRequest } from "@/utils/ai/assistant/process-user-request";
-import { extractEmailAddress } from "@/utils/email";
-import prisma from "@/utils/prisma";
-import { emailToContent } from "@/utils/mail";
-import { isAssistantEmail } from "@/utils/assistant/is-assistant-email";
-import { internalDateToDate } from "@/utils/date";
-import type { EmailProvider } from "@/utils/email/types";
-import { labelMessageAndSync } from "@/utils/label.server";
+import { processUserRequest } from '@/utils/ai/assistant/process-user-request';
+import { isAssistantEmail } from '@/utils/assistant/is-assistant-email';
+import { internalDateToDate } from '@/utils/date';
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
+import { labelMessageAndSync } from '@/utils/label.server';
+import { createScopedLogger, type Logger } from '@/utils/logger';
+import { emailToContent } from '@/utils/mail';
+import prisma from '@/utils/prisma';
+import { isDefined, type ParsedMessage } from '@/utils/types';
 
 type ProcessAssistantEmailArgs = {
   emailAccountId: string;
@@ -22,7 +22,7 @@ export async function processAssistantEmail({
   message,
   provider,
 }: ProcessAssistantEmailArgs) {
-  const logger = createScopedLogger("process-assistant-email").with({
+  const logger = createScopedLogger('process-assistant-email').with({
     emailAccountId,
     threadId: message.threadId,
     messageId: message.id,
@@ -40,7 +40,7 @@ export async function processAssistantEmail({
         provider,
         logger,
       }),
-    logger,
+    logger
   );
 }
 
@@ -52,15 +52,15 @@ async function processAssistantEmailInternal({
   logger,
 }: ProcessAssistantEmailArgs & { logger: Logger }) {
   if (!verifyUserSentEmail({ message, userEmail })) {
-    logger.error("Unauthorized assistant access attempt", {
+    logger.error('Unauthorized assistant access attempt', {
       email: userEmail,
       from: message.headers.from,
       to: message.headers.to,
     });
-    throw new Error("Unauthorized assistant access attempt");
+    throw new Error('Unauthorized assistant access attempt');
   }
 
-  logger.info("Processing assistant email");
+  logger.info('Processing assistant email');
 
   // 1. get thread
   // 2. get first message in thread to the personal assistant
@@ -69,10 +69,10 @@ async function processAssistantEmailInternal({
   const threadMessages = await provider.getThreadMessages(message.threadId);
 
   if (!threadMessages?.length) {
-    logger.error("No thread messages found");
+    logger.error('No thread messages found');
     await provider.replyToEmail(
       message,
-      "Something went wrong. I couldn't read any messages.",
+      "Something went wrong. I couldn't read any messages."
     );
     return;
   }
@@ -81,21 +81,21 @@ async function processAssistantEmailInternal({
     isAssistantEmail({
       userEmail,
       emailToCheck: m.headers.to,
-    }),
+    })
   );
 
   if (!firstMessageToAssistant) {
-    logger.error("No first message to assistant found", {
+    logger.error('No first message to assistant found', {
       messageId: message.id,
     });
     await provider.replyToEmail(
       message,
-      "Something went wrong. I couldn't find the first message to the personal assistant.",
+      "Something went wrong. I couldn't find the first message to the personal assistant."
     );
     return;
   }
 
-  const originalMessageId = firstMessageToAssistant.headers["in-reply-to"];
+  const originalMessageId = firstMessageToAssistant.headers['in-reply-to'];
   const originalMessage = await provider.getOriginalMessage(originalMessageId);
 
   const [emailAccount, executedRules] = await Promise.all([
@@ -144,7 +144,7 @@ async function processAssistantEmailInternal({
             threadId: originalMessage.threadId,
             messageId: originalMessage.id,
           },
-          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
           select: {
             rule: {
               include: {
@@ -158,17 +158,17 @@ async function processAssistantEmailInternal({
   ]);
 
   if (!emailAccount) {
-    logger.error("User not found");
+    logger.error('User not found');
     return;
   }
 
   const firstMessageToAssistantDate = internalDateToDate(
-    firstMessageToAssistant.internalDate,
+    firstMessageToAssistant.internalDate
   );
 
   const messages = threadMessages
     .filter(
-      (m) => internalDateToDate(m.internalDate) >= firstMessageToAssistantDate,
+      (m) => internalDateToDate(m.internalDate) >= firstMessageToAssistantDate
     )
     .map((m) => {
       const isAssistant = isAssistantEmail({
@@ -177,7 +177,7 @@ async function processAssistantEmailInternal({
       });
       const isFirstMessageToAssistant = m.id === firstMessageToAssistant.id;
 
-      let content = "";
+      let content = '';
 
       // use subject if first message
       if (isFirstMessageToAssistant && !originalMessage) {
@@ -190,13 +190,13 @@ async function processAssistantEmailInternal({
       });
 
       return {
-        role: isAssistant ? "assistant" : "user",
+        role: isAssistant ? 'assistant' : 'user',
         content,
       } as const;
     });
 
-  if (messages[messages.length - 1].role === "assistant") {
-    logger.error("Assistant message cannot be last");
+  if (messages[messages.length - 1].role === 'assistant') {
+    logger.error('Assistant message cannot be last');
     return;
   }
 
@@ -211,9 +211,9 @@ async function processAssistantEmailInternal({
   const toolCalls = result.steps.flatMap((step) => step.toolCalls);
   const lastToolCall = toolCalls[toolCalls.length - 1];
 
-  if (lastToolCall?.toolName === "reply") {
+  if (lastToolCall?.toolName === 'reply') {
     const input = lastToolCall.input as { content: string } | undefined;
-    await provider.replyToEmail(message, input?.content || "");
+    await provider.replyToEmail(message, input?.content || '');
   }
 }
 
@@ -236,30 +236,30 @@ async function withProcessingLabels<T>(
   provider: EmailProvider,
   emailAccountId: string,
   fn: () => Promise<T>,
-  logger: Logger,
+  logger: Logger
 ): Promise<T> {
   // Get labels first so we can reuse them
   const results = await Promise.allSettled([
-    provider.getOrCreateInboxZeroLabel("processing"),
-    provider.getOrCreateInboxZeroLabel("assistant"),
+    provider.getOrCreateInboxZeroLabel('processing'),
+    provider.getOrCreateInboxZeroLabel('assistant'),
   ]);
 
   const [processingLabelResult, assistantLabelResult] = results;
 
-  if (processingLabelResult.status === "rejected") {
-    logger.error("Error getting processing label", {
+  if (processingLabelResult.status === 'rejected') {
+    logger.error('Error getting processing label', {
       error: processingLabelResult.reason,
     });
   }
 
-  if (assistantLabelResult.status === "rejected") {
-    logger.error("Error getting assistant label", {
+  if (assistantLabelResult.status === 'rejected') {
+    logger.error('Error getting assistant label', {
       error: assistantLabelResult.reason,
     });
   }
 
   const labels = results
-    .map((result) => (result.status === "fulfilled" ? result.value : undefined))
+    .map((result) => (result.status === 'fulfilled' ? result.value : undefined))
     .filter(isDefined);
 
   if (labels.length) {
@@ -272,7 +272,7 @@ async function withProcessingLabels<T>(
       emailAccountId,
       logger,
     }).catch((error) => {
-      logger.error("Error labeling message", { error });
+      logger.error('Error labeling message', { error });
     });
   }
 
@@ -281,14 +281,14 @@ async function withProcessingLabels<T>(
   } finally {
     const processingLabel = results[0];
     const processingLabelId =
-      processingLabel.status === "fulfilled"
+      processingLabel.status === 'fulfilled'
         ? processingLabel.value?.id
         : undefined;
     if (processingLabelId) {
       await provider
         .removeThreadLabel(messageId, processingLabelId)
         .catch((error) => {
-          logger.error("Error removing processing label", { error });
+          logger.error('Error removing processing label', { error });
         });
     }
   }

@@ -10,8 +10,8 @@ import {
   Section,
   Tailwind,
   Text,
-} from "@react-email/components";
-import type { FC } from "react";
+} from '@react-email/components';
+import type { FC } from 'react';
 
 export type InvitationEmailProps = {
   baseUrl: string;
@@ -26,7 +26,7 @@ type InvitationEmailComponent = FC<InvitationEmailProps> & {
 };
 
 const InvitationEmail: InvitationEmailComponent = ({
-  baseUrl = "https://www.getinboxzero.com",
+  baseUrl = 'https://www.getinboxzero.com',
   organizationName,
   inviterName,
   invitationId,
@@ -44,7 +44,7 @@ const InvitationEmail: InvitationEmailComponent = ({
             <Section className="p-4 text-center">
               <Link href={baseUrl} className="text-[15px]">
                 <Img
-                  src={"https://www.getinboxzero.com/icon.png"}
+                  src={'https://www.getinboxzero.com/icon.png'}
                   width="40"
                   height="40"
                   alt="Inbox Zero"
@@ -131,9 +131,9 @@ function Footer({
 }
 
 InvitationEmail.PreviewProps = {
-  baseUrl: "https://www.getinboxzero.com",
-  organizationName: "Apple Inc.",
-  inviterName: "Eduardo Lelis",
-  invitationId: "cmf5pzul7000lf1zrlatybrr7",
-  unsubscribeToken: "preview-token-123",
+  baseUrl: 'https://www.getinboxzero.com',
+  organizationName: 'Apple Inc.',
+  inviterName: 'Eduardo Lelis',
+  invitationId: 'cmf5pzul7000lf1zrlatybrr7',
+  unsubscribeToken: 'preview-token-123',
 };

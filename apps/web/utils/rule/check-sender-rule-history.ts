@@ -1,9 +1,9 @@
-import sumBy from "lodash/sumBy";
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import type { EmailProvider } from "@/utils/email/types";
-import { extractEmailAddress } from "@/utils/email";
-import { ExecutedRuleStatus } from "@/generated/prisma/enums";
+import sumBy from 'lodash/sumBy';
+import { ExecutedRuleStatus } from '@/generated/prisma/enums';
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
 export interface SenderRuleHistory {
   totalEmails: number;
@@ -25,20 +25,20 @@ export async function checkSenderRuleHistory({
   from: string;
   provider: EmailProvider;
 }): Promise<SenderRuleHistory> {
-  const logger = createScopedLogger("checkSenderRuleHistory").with({
+  const logger = createScopedLogger('checkSenderRuleHistory').with({
     emailAccountId,
     from,
   });
   const senderEmail = extractEmailAddress(from);
 
-  logger.info("Checking sender rule history");
+  logger.info('Checking sender rule history');
 
   const { messages } = await provider.getMessagesFromSender({
     senderEmail,
     maxResults: 50,
   });
 
-  logger.info("Found messages from sender", { totalMessages: messages.length });
+  logger.info('Found messages from sender', { totalMessages: messages.length });
 
   if (messages.length === 0) {
     return {
@@ -64,7 +64,7 @@ export async function checkSenderRuleHistory({
     },
   });
 
-  logger.info("Found executed rules for sender messages", {
+  logger.info('Found executed rules for sender messages', {
     totalExecutedRules: executedRules.length,
   });
 
@@ -95,7 +95,7 @@ export async function checkSenderRuleHistory({
   const totalEmailsFromSender = messages.length;
   const totalRuleMatches = sumBy(
     Array.from(ruleMatches.values()),
-    (rule) => rule.count,
+    (rule) => rule.count
   );
 
   // Check if there's a consistent rule
@@ -109,7 +109,7 @@ export async function checkSenderRuleHistory({
     consistentRuleName = ruleInfo.ruleName;
   }
 
-  logger.info("Sender rule history analysis complete", {
+  logger.info('Sender rule history analysis complete', {
     totalEmailsFromSender,
     totalRuleMatches,
     uniqueRulesMatched: ruleMatches.size,

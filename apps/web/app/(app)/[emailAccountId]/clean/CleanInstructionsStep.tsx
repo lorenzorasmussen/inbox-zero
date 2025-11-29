@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryState, parseAsString } from "nuqs";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { TypographyH3 } from "@/components/Typography";
-import { Input } from "@/components/Input";
-import { useStep } from "@/app/(app)/[emailAccountId]/clean/useStep";
-import { Toggle } from "@/components/Toggle";
-import { useSkipSettings } from "@/app/(app)/[emailAccountId]/clean/useSkipSettings";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { parseAsString, useQueryState } from 'nuqs';
+import { useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { useSkipSettings } from '@/app/(app)/[emailAccountId]/clean/useSkipSettings';
+import { useStep } from '@/app/(app)/[emailAccountId]/clean/useStep';
+import { Input } from '@/components/Input';
+import { Toggle } from '@/components/Toggle';
+import { TypographyH3 } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
 
 const schema = z.object({ instructions: z.string().optional() });
 
@@ -25,13 +25,13 @@ export function CleanInstructionsStep() {
   } = useForm<Inputs>({
     resolver: zodResolver(schema),
   });
-  const [_, setInstructions] = useQueryState("instructions", parseAsString);
+  const [_, setInstructions] = useQueryState('instructions', parseAsString);
   const [showCustom, setShowCustom] = useState(false);
   const [skipStates, setSkipStates] = useSkipSettings();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (showCustom) {
-      setInstructions(data.instructions || "");
+      setInstructions(data.instructions || '');
     }
     onNext();
   };
@@ -93,7 +93,7 @@ export function CleanInstructionsStep() {
             autosizeTextarea
             rows={3}
             name="instructions"
-            registerProps={register("instructions")}
+            registerProps={register('instructions')}
             placeholder={`Example:
 
 I work as a freelance designer. Don't archive emails from clients.

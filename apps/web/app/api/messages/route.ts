@@ -1,20 +1,20 @@
-import { NextResponse } from "next/server";
-import { withEmailProvider } from "@/utils/middleware";
-import { messageQuerySchema } from "@/app/api/messages/validation";
-import { isAssistantEmail } from "@/utils/assistant/is-assistant-email";
-import { GmailLabel } from "@/utils/gmail/label";
-import type { EmailProvider } from "@/utils/email/types";
-import { isGoogleProvider } from "@/utils/email/provider-types";
+import { NextResponse } from 'next/server';
+import { messageQuerySchema } from '@/app/api/messages/validation';
+import { isAssistantEmail } from '@/utils/assistant/is-assistant-email';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import type { EmailProvider } from '@/utils/email/types';
+import { GmailLabel } from '@/utils/gmail/label';
+import { withEmailProvider } from '@/utils/middleware';
 
 export type MessagesResponse = Awaited<ReturnType<typeof getMessages>>;
 
-export const GET = withEmailProvider("messages", async (request) => {
+export const GET = withEmailProvider('messages', async (request) => {
   const { emailProvider } = request;
   const { emailAccountId, email } = request.auth;
 
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get("q");
-  const pageToken = searchParams.get("pageToken");
+  const query = searchParams.get('q');
+  const pageToken = searchParams.get('pageToken');
   const r = messageQuerySchema.parse({ q: query, pageToken });
 
   const result = await getMessages({
@@ -83,7 +83,7 @@ async function getMessages({
           // Only show sent message that are in the inbox
           return isInbox;
         }
-      } else if (emailProvider.name === "microsoft") {
+      } else if (emailProvider.name === 'microsoft') {
         // For Outlook, we already filter out drafts in the message fetching
         // No additional filtering needed here
       }
@@ -94,7 +94,7 @@ async function getMessages({
 
     return { messages: incomingMessages, nextPageToken };
   } catch (error) {
-    logger.error("Error getting messages", {
+    logger.error('Error getting messages', {
       emailAccountId,
       query,
       pageToken,

@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { withEmailProvider } from "@/utils/middleware";
-import { createScopedLogger } from "@/utils/logger";
-import prisma from "@/utils/prisma";
-import { unwatchEmails } from "../controller";
+import { NextResponse } from 'next/server';
+import { createScopedLogger } from '@/utils/logger';
+import { withEmailProvider } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { unwatchEmails } from '../controller';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-const logger = createScopedLogger("api/watch/unwatch");
+const logger = createScopedLogger('api/watch/unwatch');
 
 export const POST = withEmailProvider(async (request) => {
   const emailAccountId = request.auth.emailAccountId;
@@ -27,21 +27,21 @@ export const POST = withEmailProvider(async (request) => {
     });
 
     return NextResponse.json({
-      status: "success",
-      message: "Successfully unwatched emails for this account.",
+      status: 'success',
+      message: 'Successfully unwatched emails for this account.',
     });
   } catch (error) {
-    logger.error("Exception while unwatching emails for account", {
+    logger.error('Exception while unwatching emails for account', {
       emailAccountId,
       error,
     });
     return NextResponse.json(
       {
-        status: "error",
-        message: "An unexpected error occurred while unwatching this account.",
+        status: 'error',
+        message: 'An unexpected error occurred while unwatching this account.',
         errorDetails: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 });

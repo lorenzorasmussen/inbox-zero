@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
-import { Provider } from "@/utils/llms/config";
+import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
+import { Provider } from '@/utils/llms/config';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type OpenAiModelsResponse = Awaited<ReturnType<typeof getOpenAiModels>>;
 
@@ -14,7 +14,7 @@ async function getOpenAiModels({ apiKey }: { apiKey: string }) {
   return models.data;
 }
 
-export const GET = withEmailAccount("api/ai/models", async (req) => {
+export const GET = withEmailAccount('api/ai/models', async (req) => {
   const { emailAccountId } = req.auth;
 
   const emailAccount = await prisma.emailAccount.findUnique({
@@ -35,7 +35,7 @@ export const GET = withEmailAccount("api/ai/models", async (req) => {
     });
     return NextResponse.json(result);
   } catch (error) {
-    req.logger.error("Failed to get OpenAI models", { error });
+    req.logger.error('Failed to get OpenAI models', { error });
     return NextResponse.json([]);
   }
 });

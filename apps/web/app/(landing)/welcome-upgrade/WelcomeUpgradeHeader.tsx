@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { CheckCircleIcon } from "lucide-react";
-import { userCount } from "@/utils/config";
+import { CheckCircleIcon } from 'lucide-react';
+import { userCount } from '@/utils/config';
 
 export function WelcomeUpgradeHeader() {
   return (

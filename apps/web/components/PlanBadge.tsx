@@ -1,18 +1,18 @@
-import { CheckCircleIcon } from "lucide-react";
-import { capitalCase } from "capital-case";
-import { Badge, type Color } from "@/components/Badge";
-import { HoverCard } from "@/components/HoverCard";
-import { ActionType, ExecutedRuleStatus } from "@/generated/prisma/enums";
+import { capitalCase } from 'capital-case';
+import { CheckCircleIcon } from 'lucide-react';
+import { Badge, type Color } from '@/components/Badge';
+import { HoverCard } from '@/components/HoverCard';
 import type {
-  ExecutedRule,
   ExecutedAction,
+  ExecutedRule,
   Rule,
-} from "@/generated/prisma/client";
-import { truncate } from "@/utils/string";
-import { getEmailTerminology } from "@/utils/terminology";
-import { sortActionsByPriority } from "@/utils/action-sort";
+} from '@/generated/prisma/client';
+import { ActionType, ExecutedRuleStatus } from '@/generated/prisma/enums';
+import { sortActionsByPriority } from '@/utils/action-sort';
+import { truncate } from '@/utils/string';
+import { getEmailTerminology } from '@/utils/terminology';
 
-type Plan = Pick<ExecutedRule, "reason" | "status"> & {
+type Plan = Pick<ExecutedRule, 'reason' | 'status'> & {
   rule: Rule | null;
   actionItems: ExecutedAction[];
 };
@@ -164,21 +164,21 @@ function getActionLabel(type: ActionType, provider: string) {
     case ActionType.LABEL:
       return terminology.label.action;
     case ActionType.ARCHIVE:
-      return "Archive";
+      return 'Archive';
     case ActionType.FORWARD:
-      return "Forward";
+      return 'Forward';
     case ActionType.REPLY:
-      return "Reply";
+      return 'Reply';
     case ActionType.SEND_EMAIL:
-      return "Send";
+      return 'Send';
     case ActionType.DRAFT_EMAIL:
-      return "Draft";
+      return 'Draft';
     case ActionType.CALL_WEBHOOK:
-      return "Webhook";
+      return 'Webhook';
     case ActionType.MARK_SPAM:
-      return "Mark as spam";
+      return 'Mark as spam';
     case ActionType.MARK_READ:
-      return "Mark as read";
+      return 'Mark as read';
     default:
       return capitalCase(type);
   }
@@ -198,7 +198,7 @@ function getActionMessage(action: ExecutedAction, provider: string): string {
     case ActionType.FORWARD:
       if (action.to)
         return `${getActionLabel(action.type, provider)} to ${action.to}${
-          action.content ? `:\n${action.content}` : ""
+          action.content ? `:\n${action.content}` : ''
         }`;
     default:
       return getActionLabel(action.type, provider);
@@ -211,18 +211,18 @@ export function getActionColor(actionType: ActionType): Color {
     case ActionType.FORWARD:
     case ActionType.SEND_EMAIL:
     case ActionType.DRAFT_EMAIL:
-      return "green";
+      return 'green';
     case ActionType.ARCHIVE:
     case ActionType.MARK_READ:
-      return "yellow";
+      return 'yellow';
     case ActionType.LABEL:
     case ActionType.MOVE_FOLDER:
-      return "blue";
+      return 'blue';
     case ActionType.MARK_SPAM:
-      return "red";
+      return 'red';
     case ActionType.CALL_WEBHOOK:
     case ActionType.DIGEST:
-      return "purple";
+      return 'purple';
     default: {
       const exhaustiveCheck: never = actionType;
       return exhaustiveCheck;
@@ -231,7 +231,7 @@ export function getActionColor(actionType: ActionType): Color {
 }
 
 function getPlanColor(plan: Plan | null, executed: boolean): Color {
-  if (executed) return "green";
+  if (executed) return 'green';
 
   const firstAction = plan?.actionItems?.[0];
 
@@ -240,12 +240,12 @@ function getPlanColor(plan: Plan | null, executed: boolean): Color {
     case ActionType.FORWARD:
     case ActionType.SEND_EMAIL:
     case ActionType.DRAFT_EMAIL:
-      return "blue";
+      return 'blue';
     case ActionType.ARCHIVE:
-      return "yellow";
+      return 'yellow';
     case ActionType.LABEL:
-      return "purple";
+      return 'purple';
     default:
-      return "indigo";
+      return 'indigo';
   }
 }

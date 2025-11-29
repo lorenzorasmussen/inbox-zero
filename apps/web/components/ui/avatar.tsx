@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import * as AvatarPrimitive from "@radix-ui/react-avatar";
+import * as AvatarPrimitive from '@radix-ui/react-avatar';
+import * as React from 'react';
 
-import { cn } from "@/utils";
+import { cn } from '@/utils';
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
@@ -12,8 +12,8 @@ const Avatar = React.forwardRef<
   <AvatarPrimitive.Root
     ref={ref}
     className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className,
+      'relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full',
+      className
     )}
     {...props}
   />
@@ -26,7 +26,7 @@ const AvatarImage = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
-    className={cn("aspect-square h-full w-full", className)}
+    className={cn('aspect-square h-full w-full', className)}
     {...props}
   />
 ));
@@ -39,8 +39,8 @@ const AvatarFallback = React.forwardRef<
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800",
-      className,
+      'flex h-full w-full items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800',
+      className
     )}
     {...props}
   />
@@ -58,13 +58,13 @@ const AvatarFallbackColor = React.forwardRef<
 >(({ content, className, ...props }, ref) => {
   const colors = [
     // "bg-gray-50 text-gray-600 ring-gray-500/10",
-    "bg-red-50 text-red-700 ring-red-600/10",
-    "bg-yellow-50 text-yellow-800 ring-yellow-600/20",
-    "bg-green-50 text-green-700 ring-green-600/10",
-    "bg-blue-50 text-blue-700 ring-blue-600/10",
-    "bg-indigo-50 text-indigo-700 ring-indigo-600/10",
-    "bg-purple-50 text-purple-700 ring-purple-600/10",
-    "bg-pink-50 text-pink-700 ring-pink-600/10",
+    'bg-red-50 text-red-700 ring-red-600/10',
+    'bg-yellow-50 text-yellow-800 ring-yellow-600/20',
+    'bg-green-50 text-green-700 ring-green-600/10',
+    'bg-blue-50 text-blue-700 ring-blue-600/10',
+    'bg-indigo-50 text-indigo-700 ring-indigo-600/10',
+    'bg-purple-50 text-purple-700 ring-purple-600/10',
+    'bg-pink-50 text-pink-700 ring-pink-600/10',
   ];
 
   const charCode = content.toUpperCase().charCodeAt(0);

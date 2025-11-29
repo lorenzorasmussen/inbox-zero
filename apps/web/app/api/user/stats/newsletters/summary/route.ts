@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type NewsletterSummaryResponse = Awaited<
   ReturnType<typeof getNewsletterSummary>
@@ -13,12 +13,12 @@ async function getNewsletterSummary({
 }) {
   const result = await prisma.newsletter.groupBy({
     where: { emailAccountId },
-    by: ["status"],
+    by: ['status'],
     _count: true,
   });
 
   const resultObject = Object.fromEntries(
-    result.map((item) => [item.status, item._count]),
+    result.map((item) => [item.status, item._count])
   );
 
   return { result: resultObject };
@@ -32,5 +32,5 @@ export const GET = withEmailAccount(
 
     return NextResponse.json(result);
   },
-  { allowOrgAdmins: true },
+  { allowOrgAdmins: true }
 );

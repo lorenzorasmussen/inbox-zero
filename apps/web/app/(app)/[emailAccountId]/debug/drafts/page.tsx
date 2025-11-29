@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import useSWR from "swr";
-import { Card, CardContent } from "@/components/ui/card";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { LoadingContent } from "@/components/LoadingContent";
-import type { DraftActionsResponse } from "@/app/api/user/draft-actions/route";
+import Link from 'next/link';
+import useSWR from 'swr';
+import type { DraftActionsResponse } from '@/app/api/user/draft-actions/route';
+import { LoadingMiniSpinner } from '@/components/Loading';
+import { LoadingContent } from '@/components/LoadingContent';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { formatShortDate } from "@/utils/date";
-import { getGmailUrl } from "@/utils/url";
-import { Badge } from "@/components/ui/badge";
-import { useMessagesBatch } from "@/hooks/useMessagesBatch";
-import { LoadingMiniSpinner } from "@/components/Loading";
-import { isDefined } from "@/utils/types";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from '@/components/ui/table';
+import { useMessagesBatch } from '@/hooks/useMessagesBatch';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { formatShortDate } from '@/utils/date';
+import { isDefined } from '@/utils/types';
+import { getGmailUrl } from '@/utils/url';
 
 export default function DebugDraftsPage() {
   const { data, isLoading, error } = useSWR<DraftActionsResponse>(
-    "/api/user/draft-actions",
+    '/api/user/draft-actions'
   );
 
   const {
@@ -67,10 +67,10 @@ export default function DebugDraftsPage() {
                     <TableCell>
                       <Badge
                         variant={
-                          executedAction.wasDraftSent ? "default" : "secondary"
+                          executedAction.wasDraftSent ? 'default' : 'secondary'
                         }
                       >
-                        {executedAction.wasDraftSent ? "Sent" : "Not Sent"}
+                        {executedAction.wasDraftSent ? 'Sent' : 'Not Sent'}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -79,7 +79,7 @@ export default function DebugDraftsPage() {
                         <Link
                           href={getGmailUrl(
                             executedAction.draftSendLog.sentMessageId,
-                            emailAccountId,
+                            emailAccountId
                           )}
                           target="_blank"
                           className="text-blue-500 hover:text-blue-600"
@@ -90,7 +90,7 @@ export default function DebugDraftsPage() {
                         <Link
                           href={getGmailUrl(
                             executedAction.draftId,
-                            emailAccountId,
+                            emailAccountId
                           )}
                           target="_blank"
                           className="text-blue-500 hover:text-blue-600"
@@ -114,17 +114,17 @@ export default function DebugDraftsPage() {
                           {messagesData?.messages.find(
                             (message) =>
                               message.id ===
-                              executedAction.draftSendLog?.sentMessageId,
-                          )?.textPlain || "-"}
+                              executedAction.draftSendLog?.sentMessageId
+                          )?.textPlain || '-'}
                         </TypographyP>
                       </LoadingContent>
                     </TableCell>
                     <TableCell>
                       {executedAction.draftSendLog?.similarityScore !== null
                         ? executedAction.draftSendLog?.similarityScore.toFixed(
-                            2,
+                            2
                           )
-                        : "N/A"}
+                        : 'N/A'}
                     </TableCell>
                     <TableCell>
                       {formatShortDate(new Date(executedAction.createdAt))}

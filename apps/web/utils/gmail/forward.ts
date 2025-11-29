@@ -1,5 +1,5 @@
-import { formatEmailDate } from "@/utils/gmail/reply";
-import type { ParsedMessage } from "@/utils/types";
+import { formatEmailDate } from '@/utils/gmail/reply';
+import type { ParsedMessage } from '@/utils/types';
 
 export const forwardEmailSubject = (subject: string) => {
   return `Fwd: ${subject}`;
@@ -46,7 +46,7 @@ ${message.textPlain}`;
 
 const formatFromEmailWithName = (emailHeader: string) => {
   const match = emailHeader?.match(/(.*?)\s*<([^>]+)>/);
-  if (!match) return emailHeader || "";
+  if (!match) return emailHeader || '';
 
   const [, name, email] = match;
   const trimmedName = name.trim();
@@ -56,7 +56,7 @@ const formatFromEmailWithName = (emailHeader: string) => {
 
 const formatToEmailWithName = (emailHeader: string) => {
   const match = emailHeader?.match(/(.*?)\s*<([^>]+)>/);
-  if (!match) return emailHeader || "";
+  if (!match) return emailHeader || '';
 
   const [, name, email] = match;
   const trimmedName = name.trim();

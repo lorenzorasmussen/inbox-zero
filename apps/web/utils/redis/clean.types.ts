@@ -2,7 +2,7 @@ export type CleanThread = {
   emailAccountId: string;
   threadId: string;
   jobId: string;
-  status: "processing" | "applying" | "completed";
+  status: 'processing' | 'applying' | 'completed';
   createdAt: string;
   from: string;
   subject: string;

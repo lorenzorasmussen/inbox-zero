@@ -1,8 +1,8 @@
-import { createGenerateText } from "@/utils/llms";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
-import { getEmailListPrompt, getTodayForLLM } from "@/utils/ai/helpers";
-import { getModel } from "@/utils/llms/model";
+import { getEmailListPrompt, getTodayForLLM } from '@/utils/ai/helpers';
+import { createGenerateText } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { EmailForLLM } from '@/utils/types';
 
 export async function aiGenerateNudge({
   messages,
@@ -28,10 +28,10 @@ Write a brief follow-up email to politely nudge for a response.
 ${getTodayForLLM()}
 IMPORTANT: The person you're writing an email for is: ${messages.at(-1)?.from}.`;
 
-  const modelOptions = getModel(emailAccount.user, "chat");
+  const modelOptions = getModel(emailAccount.user, 'chat');
 
   const generateText = createGenerateText({
-    label: "Reply",
+    label: 'Reply',
     emailAccount,
     modelOptions,
   });

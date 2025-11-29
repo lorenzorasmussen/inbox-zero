@@ -29,28 +29,28 @@
  * ✅ Type-only import from client (always safe)
  */
 
-const { execSync } = require("node:child_process");
-const fs = require("node:fs");
+const { execSync } = require('node:child_process');
+const fs = require('node:fs');
 
 // All Prisma enums that should be imported from @/generated/prisma/enums
 const PRISMA_ENUMS = [
-  "ActionType",
-  "LogicalOperator",
-  "SystemType",
-  "ExecutedRuleStatus",
-  "PremiumTier",
-  "NewsletterStatus",
-  "ColdEmailStatus",
-  "GroupItemType",
-  "ReferralStatus",
-  "ScheduledActionStatus",
-  "DigestStatus",
-  "Frequency",
-  "CleanAction",
-  "ThreadTrackerType",
+  'ActionType',
+  'LogicalOperator',
+  'SystemType',
+  'ExecutedRuleStatus',
+  'PremiumTier',
+  'NewsletterStatus',
+  'ColdEmailStatus',
+  'GroupItemType',
+  'ReferralStatus',
+  'ScheduledActionStatus',
+  'DigestStatus',
+  'Frequency',
+  'CleanAction',
+  'ThreadTrackerType',
 ];
 
-console.log("🔍 Checking for problematic Prisma enum imports...\n");
+console.log('🔍 Checking for problematic Prisma enum imports...\n');
 
 try {
   // Search for files importing from @/generated/prisma/client (from current directory)
@@ -59,26 +59,26 @@ try {
 
   let files;
   try {
-    files = execSync(grepCommand, { encoding: "utf-8" })
+    files = execSync(grepCommand, { encoding: 'utf-8' })
       .trim()
-      .split("\n")
+      .split('\n')
       .filter(Boolean);
   } catch {
-    console.log("✅ No imports from @/generated/prisma/client found!");
+    console.log('✅ No imports from @/generated/prisma/client found!');
     process.exit(0);
   }
 
   const problematicFiles = [];
 
   for (const file of files) {
-    const content = fs.readFileSync(file, "utf-8");
+    const content = fs.readFileSync(file, 'utf-8');
 
     // Normalize multiline imports to single line for easier parsing
     const normalizedContent = content.replace(
       /import\s+\{[\s\S]*?\}\s+from\s+"[^"]+"/g,
       (match) => {
-        return match.replace(/\s+/g, " ");
-      },
+        return match.replace(/\s+/g, ' ');
+      }
     );
 
     // Find all imports from @/generated/prisma/client
@@ -91,7 +91,7 @@ try {
       const importedItems = match[1];
 
       // Skip pure type imports: import type { ... }
-      if (importStatement.startsWith("import type")) {
+      if (importStatement.startsWith('import type')) {
         continue;
       }
 
@@ -101,19 +101,19 @@ try {
         // Positive cases: { EnumName }, { foo, EnumName }, { EnumName, bar }
         // Negative cases: { type EnumName }, { type EnumName, ... }
         const valueImportPattern = new RegExp(
-          `(?<!type\\s)\\b${enumName}\\b(?!\\s*:)`,
+          `(?<!type\\s)\\b${enumName}\\b(?!\\s*:)`
         );
 
         if (valueImportPattern.test(importedItems)) {
           // Find the line number in original content
           const lineNumber = content
             .substring(0, match.index)
-            .split("\n").length;
+            .split('\n').length;
 
           problematicFiles.push({
-            file: file.replace("./", ""),
+            file: file.replace('./', ''),
             line: lineNumber,
-            content: importStatement.replace(/\s+/g, " "),
+            content: importStatement.replace(/\s+/g, ' '),
             enum: enumName,
           });
           break;
@@ -124,29 +124,29 @@ try {
 
   if (problematicFiles.length === 0) {
     console.log(
-      "✅ All enum imports are correctly using @/generated/prisma/enums!\n",
+      '✅ All enum imports are correctly using @/generated/prisma/enums!\n'
     );
     process.exit(0);
   }
 
   console.log(
-    `❌ Found ${problematicFiles.length} problematic enum import(s):\n`,
+    `❌ Found ${problematicFiles.length} problematic enum import(s):\n`
   );
 
   for (const { file, line, content, enum: enumName } of problematicFiles) {
     console.log(`${file}:${line}`);
     console.log(`  Enum: ${enumName}`);
     console.log(`  ${content}`);
-    console.log("  ⚠️  Should import from @/generated/prisma/enums instead\n");
+    console.log('  ⚠️  Should import from @/generated/prisma/enums instead\n');
   }
 
-  console.log("\n💡 Fix: Change enum imports to use @/generated/prisma/enums");
+  console.log('\n💡 Fix: Change enum imports to use @/generated/prisma/enums');
   console.log(
-    '   Example: import { ActionType } from "@/generated/prisma/enums";\n',
+    '   Example: import { ActionType } from "@/generated/prisma/enums";\n'
   );
 
   process.exit(1);
 } catch (error) {
-  console.error("Error running check:", error.message);
+  console.error('Error running check:', error.message);
   process.exit(1);
 }

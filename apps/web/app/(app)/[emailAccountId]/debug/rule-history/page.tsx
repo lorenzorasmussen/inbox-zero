@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useRules } from "@/hooks/useRules";
-import { PageHeading } from "@/components/Typography";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { prefixPath } from "@/utils/path";
+import { AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { LoadingContent } from '@/components/LoadingContent';
+import { PageHeading } from '@/components/Typography';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { LoadingContent } from "@/components/LoadingContent";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from '@/components/ui/card';
+import { useRules } from '@/hooks/useRules';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { prefixPath } from '@/utils/path';
 
 export default function RuleHistorySelectPage() {
   const { emailAccountId } = useAccount();
@@ -35,7 +35,7 @@ export default function RuleHistorySelectPage() {
         <Alert variant="destructive" className="mt-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Error loading rules: {error.error || "Unknown error"}
+            Error loading rules: {error.error || 'Unknown error'}
           </AlertDescription>
         </Alert>
       </div>
@@ -75,7 +75,7 @@ export default function RuleHistorySelectPage() {
                   <Link
                     href={prefixPath(
                       emailAccountId,
-                      `/debug/rule-history/${rule.id}`,
+                      `/debug/rule-history/${rule.id}`
                     )}
                   >
                     View History

@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { parseAsBoolean, useQueryState } from "nuqs";
-import { toastError } from "@/components/Toast";
-import { Button } from "@/components/ui/button";
+import { parseAsBoolean, useQueryState } from 'nuqs';
+import { useState } from 'react';
+import { PREVIEW_RUN_COUNT } from '@/app/(app)/[emailAccountId]/clean/consts';
+import { toastError } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
-  CardGreen,
   CardContent,
   CardDescription,
+  CardGreen,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { cleanInboxAction } from "@/utils/actions/clean";
-import { CleanAction } from "@/generated/prisma/enums";
-import type { CleanupJob } from "@/generated/prisma/client";
-import { PREVIEW_RUN_COUNT } from "@/app/(app)/[emailAccountId]/clean/consts";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from '@/components/ui/card';
+import type { CleanupJob } from '@/generated/prisma/client';
+import { CleanAction } from '@/generated/prisma/enums';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { cleanInboxAction } from '@/utils/actions/clean';
 
 export function PreviewBatch({ job }: { job: CleanupJob }) {
   const { emailAccountId } = useAccount();
-  const [, setIsPreviewBatch] = useQueryState("isPreviewBatch", parseAsBoolean);
+  const [, setIsPreviewBatch] = useQueryState('isPreviewBatch', parseAsBoolean);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRunOnFullInbox = async () => {
@@ -27,7 +27,7 @@ export function PreviewBatch({ job }: { job: CleanupJob }) {
     setIsPreviewBatch(false);
     const result = await cleanInboxAction(emailAccountId, {
       daysOld: job.daysOld,
-      instructions: job.instructions || "",
+      instructions: job.instructions || '',
       action: job.action,
       skips: {
         reply: job.skipReply,
@@ -61,7 +61,7 @@ export function PreviewBatch({ job }: { job: CleanupJob }) {
         </CardDescription>
         <CardDescription>
           To undo any, hover over the "
-          {job.action === CleanAction.ARCHIVE ? "Archive" : "Mark as read"}"
+          {job.action === CleanAction.ARCHIVE ? 'Archive' : 'Mark as read'}"
           badge and click undo.
         </CardDescription>
       </CardHeader>

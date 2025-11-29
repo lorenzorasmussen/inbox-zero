@@ -1,22 +1,22 @@
-import { z } from "zod";
-import { tool } from "ai";
-import { createScopedLogger } from "@/utils/logger";
-import { createGenerateText } from "@/utils/llms";
-import { getModel } from "@/utils/llms/model";
-import { getUnifiedCalendarAvailability } from "@/utils/calendar/unified-availability";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
-import prisma from "@/utils/prisma";
-import { getUserInfoPrompt } from "@/utils/ai/helpers";
+import { tool } from 'ai';
+import { z } from 'zod';
+import { getUserInfoPrompt } from '@/utils/ai/helpers';
+import { getUnifiedCalendarAvailability } from '@/utils/calendar/unified-availability';
+import { createGenerateText } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import type { EmailForLLM } from '@/utils/types';
 
-const logger = createScopedLogger("calendar-availability");
+const logger = createScopedLogger('calendar-availability');
 
 const timeSlotSchema = z.object({
-  start: z.string().describe("Start time in format YYYY-MM-DD HH:MM"),
+  start: z.string().describe('Start time in format YYYY-MM-DD HH:MM'),
   end: z
     .string()
     .describe(
-      "End time in format YYYY-MM-DD HH:MM - infer meeting duration from email context",
+      'End time in format YYYY-MM-DD HH:MM - infer meeting duration from email context'
     ),
 });
 
@@ -26,7 +26,7 @@ const schema = z.object({
     .boolean()
     .optional()
     .describe(
-      "Set to true if the user has no availability in the requested timeframe",
+      'Set to true if the user has no availability in the requested timeframe'
     ),
 });
 
@@ -40,20 +40,20 @@ export async function aiGetCalendarAvailability({
   messages: EmailForLLM[];
 }): Promise<CalendarAvailabilityContext | null> {
   if (!messages?.length) {
-    logger.warn("No messages provided for calendar availability check");
+    logger.warn('No messages provided for calendar availability check');
     return null;
   }
 
   const threadContent = messages
     .map((msg, index) => {
-      const content = `${msg.subject || ""} ${msg.content || ""}`.trim();
+      const content = `${msg.subject || ''} ${msg.content || ''}`.trim();
       return content ? `Message ${index + 1}: ${content}` : null;
     })
     .filter(Boolean)
-    .join("\n\n");
+    .join('\n\n');
 
   if (!threadContent) {
-    logger.info("No content in thread messages, skipping calendar check");
+    logger.info('No content in thread messages, skipping calendar check');
     return null;
   }
 
@@ -76,7 +76,7 @@ export async function aiGetCalendarAvailability({
 
   const userTimezone = getUserTimezone(emailAccount, calendarConnections);
 
-  logger.trace("Determined user timezone", { userTimezone });
+  logger.trace('Determined user timezone', { userTimezone });
 
   const system = `You are an AI assistant that analyzes email threads to determine if they contain meeting or scheduling requests, and returns available meeting time slots.
 
@@ -112,7 +112,7 @@ ${threadContent}
 
   const generateText = createGenerateText({
     emailAccount,
-    label: "Calendar availability analysis",
+    label: 'Calendar availability analysis',
     modelOptions,
   });
 
@@ -124,21 +124,19 @@ ${threadContent}
     prompt,
     stopWhen: (result) =>
       result.steps.some((step) =>
-        step.toolCalls?.some(
-          (call) => call.toolName === "returnSuggestedTimes",
-        ),
+        step.toolCalls?.some((call) => call.toolName === 'returnSuggestedTimes')
       ) || result.steps.length > 5,
     tools: {
       checkCalendarAvailability: tool({
         description:
-          "Check calendar availability across all connected calendars (Google and Microsoft) for meeting requests",
+          'Check calendar availability across all connected calendars (Google and Microsoft) for meeting requests',
         inputSchema: z.object({
           timeMin: z
             .string()
-            .describe("The minimum time to check availability for"),
+            .describe('The minimum time to check availability for'),
           timeMax: z
             .string()
-            .describe("The maximum time to check availability for"),
+            .describe('The maximum time to check availability for'),
         }),
         execute: async ({ timeMin, timeMax }) => {
           const startDate = new Date(timeMin);
@@ -152,19 +150,19 @@ ${threadContent}
               timezone: userTimezone,
             });
 
-            logger.trace("Unified calendar availability data", {
+            logger.trace('Unified calendar availability data', {
               busyPeriods,
             });
 
             return { busyPeriods };
           } catch (error) {
-            logger.error("Error checking calendar availability", { error });
+            logger.error('Error checking calendar availability', { error });
             return { busyPeriods: [] };
           }
         },
       }),
       returnSuggestedTimes: tool({
-        description: "Return suggested times for a meeting",
+        description: 'Return suggested times for a meeting',
         inputSchema: schema,
         execute: async (data) => {
           result = data;
@@ -184,7 +182,7 @@ function getUserTimezone(
       timezone: string | null;
       primary: boolean;
     }>;
-  }>,
+  }>
 ): string {
   // First priority: user's explicitly set timezone
   if (emailAccount.timezone) {
@@ -209,5 +207,5 @@ function getUserTimezone(
   }
 
   // Last resort: UTC
-  return "UTC";
+  return 'UTC';
 }

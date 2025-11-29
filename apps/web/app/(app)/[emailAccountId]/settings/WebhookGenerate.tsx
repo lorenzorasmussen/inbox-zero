@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { regenerateWebhookSecretAction } from "@/utils/actions/webhook";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { useAction } from "next-safe-action/hooks";
+import { useAction } from 'next-safe-action/hooks';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { regenerateWebhookSecretAction } from '@/utils/actions/webhook';
 
 export function RegenerateSecretButton({
   hasSecret,
@@ -15,14 +15,14 @@ export function RegenerateSecretButton({
   const { execute, isExecuting } = useAction(regenerateWebhookSecretAction, {
     onSuccess: () => {
       toastSuccess({
-        description: "Webhook secret regenerated",
+        description: 'Webhook secret regenerated',
       });
     },
     onError: (error) => {
       toastError({
         description:
           error.error.serverError ??
-          "An unknown error occurred while regenerating the webhook secret",
+          'An unknown error occurred while regenerating the webhook secret',
       });
     },
     onSettled: () => {
@@ -37,7 +37,7 @@ export function RegenerateSecretButton({
       loading={isExecuting}
       onClick={() => execute()}
     >
-      {hasSecret ? "Regenerate Secret" : "Generate Secret"}
+      {hasSecret ? 'Regenerate Secret' : 'Generate Secret'}
     </Button>
   );
 }

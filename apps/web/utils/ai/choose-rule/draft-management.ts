@@ -1,10 +1,10 @@
-import prisma from "@/utils/prisma";
-import { ActionType } from "@/generated/prisma/enums";
-import type { ExecutedRule } from "@/generated/prisma/client";
-import type { Logger } from "@/utils/logger";
-import type { EmailProvider } from "@/utils/email/types";
-import { convertEmailHtmlToText } from "@/utils/mail";
-import type { ParsedMessage } from "@/utils/types";
+import type { ExecutedRule } from '@/generated/prisma/client';
+import { ActionType } from '@/generated/prisma/enums';
+import type { EmailProvider } from '@/utils/email/types';
+import type { Logger } from '@/utils/logger';
+import { convertEmailHtmlToText } from '@/utils/mail';
+import prisma from '@/utils/prisma';
+import type { ParsedMessage } from '@/utils/types';
 
 /**
  * Handles finding and potentially deleting a previous AI-generated draft for a thread.
@@ -15,7 +15,7 @@ export async function handlePreviousDraftDeletion({
   logger,
 }: {
   client: EmailProvider;
-  executedRule: Pick<ExecutedRule, "id" | "threadId" | "emailAccountId">;
+  executedRule: Pick<ExecutedRule, 'id' | 'threadId' | 'emailAccountId'>;
   logger: Logger;
 }) {
   try {
@@ -32,7 +32,7 @@ export async function handlePreviousDraftDeletion({
         draftSendLog: null, // Only consider drafts not logged as sent
       },
       orderBy: {
-        createdAt: "desc", // Get the most recent one
+        createdAt: 'desc', // Get the most recent one
       },
       select: {
         id: true,
@@ -42,22 +42,22 @@ export async function handlePreviousDraftDeletion({
     });
 
     if (!previousDraftAction?.draftId) {
-      logger.info("No previous draft found for this thread to delete");
+      logger.info('No previous draft found for this thread to delete');
       return;
     }
 
-    logger.info("Found previous draft", {
+    logger.info('Found previous draft', {
       previousDraftId: previousDraftAction.draftId,
     });
 
     const currentDraftDetails = await client.getDraft(
-      previousDraftAction.draftId,
+      previousDraftAction.draftId
     );
 
     if (!currentDraftDetails?.textPlain) {
       logger.warn(
-        "Could not fetch current draft details or content, skipping deletion.",
-        { previousDraftId: previousDraftAction.draftId },
+        'Could not fetch current draft details or content, skipping deletion.',
+        { previousDraftId: previousDraftAction.draftId }
       );
       return;
     }
@@ -71,7 +71,7 @@ export async function handlePreviousDraftDeletion({
       });
 
     if (isUnmodified) {
-      logger.info("Draft content matches, deleting draft.");
+      logger.info('Draft content matches, deleting draft.');
 
       await Promise.all([
         client.deleteDraft(previousDraftAction.draftId),
@@ -81,12 +81,12 @@ export async function handlePreviousDraftDeletion({
         }),
       ]);
 
-      logger.info("Deleted draft and updated action status.");
+      logger.info('Deleted draft and updated action status.');
     } else {
-      logger.info("Draft content modified by user, skipping deletion.");
+      logger.info('Draft content modified by user, skipping deletion.');
     }
   } catch (error) {
-    logger.error("Error finding or deleting previous draft", {
+    logger.error('Error finding or deleting previous draft', {
       error: (error as Error)?.message || error,
     });
   }
@@ -109,9 +109,9 @@ export async function updateExecutedActionWithDraftId({
       where: { id: actionId },
       data: { draftId },
     });
-    logger.info("Updated executed action with draft ID", { actionId, draftId });
+    logger.info('Updated executed action with draft ID', { actionId, draftId });
   } catch (error) {
-    logger.error("Failed to update executed action with draft ID", {
+    logger.error('Failed to update executed action with draft ID', {
       actionId,
       draftId,
       error,
@@ -123,15 +123,15 @@ export async function updateExecutedActionWithDraftId({
  * Extracts plain text from a draft, handling both Gmail and Outlook formats.
  */
 export function extractDraftPlainText(draft: ParsedMessage): string {
-  if (draft.bodyContentType === "html") {
+  if (draft.bodyContentType === 'html') {
     return draft.textPlain
       ? convertEmailHtmlToText({
           htmlText: draft.textPlain,
           includeLinks: false,
         })
-      : "";
+      : '';
   }
-  return draft.textPlain || "";
+  return draft.textPlain || '';
 }
 
 /**
@@ -172,14 +172,14 @@ export function isDraftUnmodified({
   const currentText = extractDraftPlainText(currentDraft);
   const currentReplyContent = stripQuotedContent(currentText);
 
-  const originalWithBr = originalContent.replace(/\n/g, "<br>");
+  const originalWithBr = originalContent.replace(/\n/g, '<br>');
   const originalContentPlain = convertEmailHtmlToText({
     htmlText: originalWithBr,
     includeLinks: false,
   });
   const originalContentTrimmed = originalContentPlain.trim();
 
-  logger.trace("Comparing draft content", {
+  logger.trace('Comparing draft content', {
     original: originalContentTrimmed,
     current: currentReplyContent,
   });

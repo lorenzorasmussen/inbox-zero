@@ -1,10 +1,10 @@
-import type { gmail_v1 } from "@googleapis/gmail";
-import type { ProcessHistoryOptions } from "@/app/api/google/webhook/types";
-import { HistoryEventType } from "@/app/api/google/webhook/types";
-import { createEmailProvider } from "@/utils/email/provider";
-import { handleLabelRemovedEvent } from "@/app/api/google/webhook/process-label-removed-event";
-import { processHistoryItem as processHistoryItemShared } from "@/utils/webhook/process-history-item";
-import type { Logger } from "@/utils/logger";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { handleLabelRemovedEvent } from '@/app/api/google/webhook/process-label-removed-event';
+import type { ProcessHistoryOptions } from '@/app/api/google/webhook/types';
+import { HistoryEventType } from '@/app/api/google/webhook/types';
+import { createEmailProvider } from '@/utils/email/provider';
+import type { Logger } from '@/utils/logger';
+import { processHistoryItem as processHistoryItemShared } from '@/utils/webhook/process-history-item';
 
 export async function processHistoryItem(
   historyItem: {
@@ -15,7 +15,7 @@ export async function processHistoryItem(
       | gmail_v1.Schema$HistoryLabelRemoved;
   },
   options: ProcessHistoryOptions,
-  logger: Logger,
+  logger: Logger
 ) {
   const { emailAccount, hasAutomationRules, hasAiAccess, rules } = options;
   const { type, item } = historyItem;
@@ -27,23 +27,24 @@ export async function processHistoryItem(
 
   const provider = await createEmailProvider({
     emailAccountId,
-    provider: "google",
+    provider: 'google',
     logger,
   });
 
   // Handle Google-specific label events
   if (type === HistoryEventType.LABEL_REMOVED) {
-    logger.info("Processing label removed event for learning");
+    logger.info('Processing label removed event for learning');
     return handleLabelRemovedEvent(
       item,
       {
         emailAccount,
         provider,
       },
-      logger,
+      logger
     );
-  } else if (type === HistoryEventType.LABEL_ADDED) {
-    logger.info("Processing label added event for learning");
+  }
+  if (type === HistoryEventType.LABEL_ADDED) {
+    logger.info('Processing label added event for learning');
     return;
   }
 
@@ -56,6 +57,6 @@ export async function processHistoryItem(
       hasAiAccess,
       rules,
       logger,
-    },
+    }
   );
 }

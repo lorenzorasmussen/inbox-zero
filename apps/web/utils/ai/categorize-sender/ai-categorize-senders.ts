@@ -1,22 +1,22 @@
-import { z } from "zod";
-import { isDefined } from "@/utils/types";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { Category } from "@/generated/prisma/client";
-import { formatCategoriesForPrompt } from "@/utils/ai/categorize-sender/format-categories";
-import { extractEmailAddress } from "@/utils/email";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
+import { z } from 'zod';
+import type { Category } from '@/generated/prisma/client';
+import { formatCategoriesForPrompt } from '@/utils/ai/categorize-sender/format-categories';
+import { extractEmailAddress } from '@/utils/email';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { isDefined } from '@/utils/types';
 
-export const REQUEST_MORE_INFORMATION_CATEGORY = "RequestMoreInformation";
-export const UNKNOWN_CATEGORY = "Unknown";
+export const REQUEST_MORE_INFORMATION_CATEGORY = 'RequestMoreInformation';
+export const UNKNOWN_CATEGORY = 'Unknown';
 
 const categorizeSendersSchema = z.object({
   senders: z.array(
     z.object({
-      rationale: z.string().describe("Keep it short."),
+      rationale: z.string().describe('Keep it short.'),
       sender: z.string(),
       category: z.string(), // not using enum, because sometimes the ai creates new categories, which throws an error. we prefer to handle this ourselves
-    }),
+    })
   ),
 });
 
@@ -30,7 +30,7 @@ export async function aiCategorizeSenders({
     emailAddress: string;
     emails: { subject: string; snippet: string }[];
   }[];
-  categories: Pick<Category, "name" | "description">[];
+  categories: Pick<Category, 'name' | 'description'>[];
 }): Promise<
   {
     category?: string;
@@ -58,15 +58,15 @@ Provide accurate categorizations to help users efficiently manage their inbox.`;
             <email>
               <subject>${s.subject}</subject>
               <snippet>${s.snippet}</snippet>
-            </email>`,
+            </email>`
             )
-            .join("")}
+            .join('')}
           </recent_emails>`
-      : "<recent_emails>No emails available</recent_emails>"
+      : '<recent_emails>No emails available</recent_emails>'
   }
-</sender>`,
+</sender>`
     )
-    .join("\n")}
+    .join('\n')}
 
 <categories>
 ${formatCategoriesForPrompt(categories)}
@@ -86,11 +86,11 @@ ${formatCategoriesForPrompt(categories)}
 - Return your response in JSON format
 </important>`;
 
-  const modelOptions = getModel(emailAccount.user, "economy");
+  const modelOptions = getModel(emailAccount.user, 'economy');
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Categorize senders bulk",
+    label: 'Categorize senders bulk',
     modelOptions,
   });
 
@@ -103,7 +103,7 @@ ${formatCategoriesForPrompt(categories)}
 
   const matchedSenders = matchSendersWithFullEmail(
     aiResponse.object.senders,
-    senders.map((s) => s.emailAddress),
+    senders.map((s) => s.emailAddress)
   );
 
   // filter out any senders that don't have a valid category
@@ -126,8 +126,8 @@ ${formatCategoriesForPrompt(categories)}
 // and also so that we can match sure the senders it's returning are part of the input (and it didn't hallucinate)
 // NOTE: if there are two senders with the same email address (but different names), it will only return one of them
 function matchSendersWithFullEmail(
-  aiResponseSenders: z.infer<typeof categorizeSendersSchema>["senders"],
-  originalSenders: string[],
+  aiResponseSenders: z.infer<typeof categorizeSendersSchema>['senders'],
+  originalSenders: string[]
 ) {
   const normalizedOriginalSenders: Record<string, string> = {};
   for (const sender of originalSenders) {
@@ -138,7 +138,7 @@ function matchSendersWithFullEmail(
     .map((r) => {
       const normalizedResponseSender = extractEmailAddress(r.sender);
       const sender = originalSenders.find(
-        (s) => normalizedOriginalSenders[s] === normalizedResponseSender,
+        (s) => normalizedOriginalSenders[s] === normalizedResponseSender
       );
 
       if (!sender) return;

@@ -1,5 +1,5 @@
-import type { Schedule } from "@/generated/prisma/client";
-import { addDays } from "date-fns";
+import { addDays } from 'date-fns';
+import type { Schedule } from '@/generated/prisma/client';
 
 /**
  * Creates a canonical timeOfDay Date object using Unix epoch (1970-01-01).
@@ -56,7 +56,7 @@ const maskFor = (jsDay: number) => 1 << (6 - jsDay);
 export function dayOfWeekToBitmask(jsDay: number): number {
   if (jsDay < 0 || jsDay > 6 || !Number.isInteger(jsDay)) {
     throw new Error(
-      `Invalid day of week: ${jsDay}. Must be integer between 0 and 6.`,
+      `Invalid day of week: ${jsDay}. Must be integer between 0 and 6.`
     );
   }
   return maskFor(jsDay);
@@ -124,9 +124,9 @@ export function bitmaskToDaysOfWeek(bitmask: number): number[] {
 export function calculateNextScheduleDate(
   frequency: Pick<
     Schedule,
-    "intervalDays" | "daysOfWeek" | "timeOfDay" | "occurrences"
+    'intervalDays' | 'daysOfWeek' | 'timeOfDay' | 'occurrences'
   > &
-    Partial<Pick<Schedule, "lastOccurrenceAt">>,
+    Partial<Pick<Schedule, 'lastOccurrenceAt'>>
 ): Date | null {
   if (!frequency) return null;
 

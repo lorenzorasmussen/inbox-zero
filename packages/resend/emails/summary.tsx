@@ -1,19 +1,19 @@
 import {
-  Button,
-  Text,
-  Html,
-  Head,
-  Preview,
-  Tailwind,
   Body,
-  Container,
-  Link,
-  Section,
-  Img,
-  Heading,
-  Row,
+  Button,
   Column,
-} from "@react-email/components";
+  Container,
+  Head,
+  Heading,
+  Html,
+  Img,
+  Link,
+  Preview,
+  Row,
+  Section,
+  Tailwind,
+  Text,
+} from '@react-email/components';
 
 type EmailItem = {
   from: string;
@@ -36,7 +36,7 @@ export interface SummaryEmailProps {
 
 export default function SummaryEmail(props: SummaryEmailProps) {
   const {
-    baseUrl = "https://www.getinboxzero.com",
+    baseUrl = 'https://www.getinboxzero.com',
     coldEmailers,
     needsReplyCount,
     awaitingReplyCount,
@@ -59,7 +59,7 @@ export default function SummaryEmail(props: SummaryEmailProps) {
             <Section className="p-8 text-center">
               <Link href={baseUrl} className="text-[15px]">
                 <Img
-                  src={"https://www.getinboxzero.com/icon.png"}
+                  src={'https://www.getinboxzero.com/icon.png'}
                   width="40"
                   height="40"
                   alt="Inbox Zero"
@@ -102,22 +102,22 @@ export default function SummaryEmail(props: SummaryEmailProps) {
 }
 
 SummaryEmail.PreviewProps = {
-  baseUrl: "https://www.getinboxzero.com",
+  baseUrl: 'https://www.getinboxzero.com',
   coldEmailers: [
     {
-      from: "James <james@example.com>",
-      subject: "",
-      sentAt: new Date("2024-03-15"),
+      from: 'James <james@example.com>',
+      subject: '',
+      sentAt: new Date('2024-03-15'),
     },
     {
-      from: "Matt <matt@example.com>",
-      subject: "",
-      sentAt: new Date("2024-03-15"),
+      from: 'Matt <matt@example.com>',
+      subject: '',
+      sentAt: new Date('2024-03-15'),
     },
     {
-      from: "Paul <paul@example.com>",
-      subject: "",
-      sentAt: new Date("2024-03-15"),
+      from: 'Paul <paul@example.com>',
+      subject: '',
+      sentAt: new Date('2024-03-15'),
     },
   ],
   needsReplyCount: 2,
@@ -125,26 +125,26 @@ SummaryEmail.PreviewProps = {
   // needsActionCount: 1,
   needsReply: [
     {
-      from: "Sarah Chen <sarah@company.com>",
-      subject: "Project Timeline Update",
-      sentAt: new Date("2024-03-15"),
+      from: 'Sarah Chen <sarah@company.com>',
+      subject: 'Project Timeline Update',
+      sentAt: new Date('2024-03-15'),
     },
     {
-      from: "Alex Johnson <alex@startup.io>",
-      subject: "Partnership Opportunity",
-      sentAt: new Date("2024-03-18"),
+      from: 'Alex Johnson <alex@startup.io>',
+      subject: 'Partnership Opportunity',
+      sentAt: new Date('2024-03-18'),
     },
   ],
   awaitingReply: [
     {
-      from: "Michael Smith <michael@corp.com>",
-      subject: "Contract Review",
-      sentAt: new Date("2024-03-10"),
+      from: 'Michael Smith <michael@corp.com>',
+      subject: 'Contract Review',
+      sentAt: new Date('2024-03-10'),
     },
     {
-      from: "Emma Davis <emma@tech.co>",
-      subject: "API Integration Questions",
-      sentAt: new Date("2024-03-12"),
+      from: 'Emma Davis <emma@tech.co>',
+      subject: 'API Integration Questions',
+      sentAt: new Date('2024-03-12'),
     },
   ],
   // needsAction: [
@@ -154,7 +154,7 @@ SummaryEmail.PreviewProps = {
   //     sentAt: new Date("2024-03-15"),
   //   },
   // ],
-  unsubscribeToken: "123",
+  unsubscribeToken: '123',
 } satisfies SummaryEmailProps;
 
 function ReplyTracker({
@@ -175,7 +175,7 @@ function ReplyTracker({
   baseUrl: string;
 }) {
   const showNeedsAction = needsActionCount > 0;
-  const columnWidth = showNeedsAction ? "w-1/3" : "w-1/2";
+  const columnWidth = showNeedsAction ? 'w-1/3' : 'w-1/2';
 
   const hasReplyTrackerItems =
     needsReplyCount > 0 || awaitingReplyCount > 0 || needsActionCount > 0;
@@ -234,10 +234,10 @@ function ReplyTracker({
           <Button
             href={`${baseUrl}/reply-tracker`}
             style={{
-              background: "#000",
-              color: "#fff",
-              padding: "12px 20px",
-              borderRadius: "5px",
+              background: '#000',
+              color: '#fff',
+              padding: '12px 20px',
+              borderRadius: '5px',
             }}
           >
             View All
@@ -276,10 +276,10 @@ function ColdEmails({
           <Button
             href={`${baseUrl}/cold-email-blocker`}
             style={{
-              background: "#000",
-              color: "#fff",
-              padding: "12px 20px",
-              borderRadius: "5px",
+              background: '#000',
+              color: '#fff',
+              padding: '12px 20px',
+              borderRadius: '5px',
             }}
           >
             View Cold Emails
@@ -301,7 +301,7 @@ function Footer({
     <Section>
       <Text>
         You're receiving this email because you're subscribed to Inbox Zero
-        stats updates. You can change this in your{" "}
+        stats updates. You can change this in your{' '}
         <Link
           href={`${baseUrl}/settings#email-updates`}
           className="text-[15px]"
@@ -331,7 +331,7 @@ function EmailCard({ email }: { email: EmailItem }) {
         </Column>
         <Column align="right">
           <Text className="m-0 text-sm text-gray-500">
-            {email.sentAt ? new Date(email.sentAt).toLocaleDateString() : ""}
+            {email.sentAt ? new Date(email.sentAt).toLocaleDateString() : ''}
           </Text>
         </Column>
       </Row>

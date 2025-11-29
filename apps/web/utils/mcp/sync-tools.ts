@@ -1,8 +1,8 @@
-import { listMcpTools } from "@/utils/mcp/list-tools";
-import { getIntegration, type IntegrationKey } from "@/utils/mcp/integrations";
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma } from '@/generated/prisma/client';
+import { createScopedLogger } from '@/utils/logger';
+import { getIntegration, type IntegrationKey } from '@/utils/mcp/integrations';
+import { listMcpTools } from '@/utils/mcp/list-tools';
+import prisma from '@/utils/prisma';
 
 /**
  * Syncs tools from an MCP integration server to the database
@@ -12,19 +12,19 @@ import type { Prisma } from "@/generated/prisma/client";
  */
 export async function syncMcpTools(
   integration: IntegrationKey,
-  emailAccountId: string,
+  emailAccountId: string
 ) {
   const integrationConfig = getIntegration(integration);
   if (!integrationConfig) {
     throw new Error(`Unknown integration: ${integration}`);
   }
 
-  const logger = createScopedLogger("mcp-tools-sync").with({
+  const logger = createScopedLogger('mcp-tools-sync').with({
     integration,
     emailAccountId,
   });
 
-  logger.info("Syncing MCP tools");
+  logger.info('Syncing MCP tools');
 
   try {
     const mcpConnection = await prisma.mcpConnection.findFirst({
@@ -52,7 +52,7 @@ export async function syncMcpTools(
       ? allTools.filter((tool) => allowedToolNames.includes(tool.name))
       : allTools;
 
-    logger.info("Fetched and filtered tools from MCP server", {
+    logger.info('Fetched and filtered tools from MCP server', {
       totalToolsAvailable: allTools.length,
       allowedToolsCount: tools.length,
       allowedTools: allowedToolNames,
@@ -78,7 +78,7 @@ export async function syncMcpTools(
         : []),
     ]);
 
-    logger.info("Successfully synced MCP tools", {
+    logger.info('Successfully synced MCP tools', {
       connectionId: mcpConnection.id,
       toolsStored: tools.length,
     });
@@ -92,10 +92,10 @@ export async function syncMcpTools(
       })),
     };
   } catch (error) {
-    logger.error("Failed to sync MCP tools", { error });
+    logger.error('Failed to sync MCP tools', { error });
 
     throw new Error(
-      `Failed to sync tools: ${error instanceof Error ? error.message : "Unknown error"}`,
+      `Failed to sync tools: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

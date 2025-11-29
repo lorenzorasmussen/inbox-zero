@@ -1,12 +1,12 @@
-import type { Client } from "@microsoft/microsoft-graph-client";
-import { createScopedLogger } from "@/utils/logger";
-import { getCalendarClientWithRefresh } from "@/utils/outlook/calendar-client";
+import type { Client } from '@microsoft/microsoft-graph-client';
+import { createScopedLogger } from '@/utils/logger';
+import { getCalendarClientWithRefresh } from '@/utils/outlook/calendar-client';
 import type {
-  CalendarAvailabilityProvider,
   BusyPeriod,
-} from "../availability-types";
+  CalendarAvailabilityProvider,
+} from '../availability-types';
 
-const logger = createScopedLogger("calendar/microsoft-availability");
+const logger = createScopedLogger('calendar/microsoft-availability');
 
 async function fetchMicrosoftCalendarBusyPeriods({
   calendarClient,
@@ -36,7 +36,7 @@ async function fetchMicrosoftCalendarBusyPeriods({
             ? await calendarClient
                 .api(`/me/calendars/${calendarId}/calendarView`)
                 .query({ startDateTime, endDateTime })
-                .select("subject,start,end,showAs,isAllDay")
+                .select('subject,start,end,showAs,isAllDay')
                 .get()
             : await calendarClient.api(nextLink!).get();
 
@@ -45,7 +45,7 @@ async function fetchMicrosoftCalendarBusyPeriods({
           if (response.value) {
             for (const event of response.value) {
               if (
-                event.showAs !== "free" &&
+                event.showAs !== 'free' &&
                 event.start?.dateTime &&
                 event.end?.dateTime
               ) {
@@ -58,10 +58,10 @@ async function fetchMicrosoftCalendarBusyPeriods({
           }
 
           // Check for next page
-          nextLink = response["@odata.nextLink"];
+          nextLink = response['@odata.nextLink'];
         } while (nextLink);
       } catch (calendarError) {
-        logger.error("Error fetching calendar events", {
+        logger.error('Error fetching calendar events', {
           calendarId,
           error: calendarError,
         });
@@ -70,13 +70,13 @@ async function fetchMicrosoftCalendarBusyPeriods({
 
     return allBusyPeriods;
   } catch (error) {
-    logger.error("Error fetching Microsoft Calendar busy periods", { error });
+    logger.error('Error fetching Microsoft Calendar busy periods', { error });
     throw error;
   }
 }
 
 export const microsoftAvailabilityProvider: CalendarAvailabilityProvider = {
-  name: "microsoft",
+  name: 'microsoft',
 
   async fetchBusyPeriods({
     accessToken,

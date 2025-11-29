@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
-import sumBy from "lodash/sumBy";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
-import { Prisma } from "@/generated/prisma/client";
+import sumBy from 'lodash/sumBy';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { Prisma } from '@/generated/prisma/client';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 const ruleStatsQuery = z.object({
   fromDate: z.coerce.number().nullish(),
@@ -26,14 +26,14 @@ async function getRuleStats({
     Prisma.sql`er."emailAccountId" = ${emailAccountId}`,
   ];
 
-  if (typeof fromDate === "number" && Number.isFinite(fromDate)) {
+  if (typeof fromDate === 'number' && Number.isFinite(fromDate)) {
     conditions.push(Prisma.sql`er."createdAt" >= ${new Date(fromDate)}`);
   }
-  if (typeof toDate === "number" && Number.isFinite(toDate)) {
+  if (typeof toDate === 'number' && Number.isFinite(toDate)) {
     conditions.push(Prisma.sql`er."createdAt" <= ${new Date(toDate)}`);
   }
 
-  const whereClause = Prisma.join(conditions, " AND ");
+  const whereClause = Prisma.join(conditions, ' AND ');
 
   const results = await prisma.$queryRaw<
     Array<{ rule_name: string; executed_count: bigint }>
@@ -67,8 +67,8 @@ export const GET = withEmailAccount(
 
     const { searchParams } = new URL(request.url);
     const params = ruleStatsQuery.parse({
-      fromDate: searchParams.get("fromDate"),
-      toDate: searchParams.get("toDate"),
+      fromDate: searchParams.get('fromDate'),
+      toDate: searchParams.get('toDate'),
     });
 
     const result = await getRuleStats({
@@ -79,5 +79,5 @@ export const GET = withEmailAccount(
 
     return NextResponse.json(result);
   },
-  { allowOrgAdmins: true },
+  { allowOrgAdmins: true }
 );

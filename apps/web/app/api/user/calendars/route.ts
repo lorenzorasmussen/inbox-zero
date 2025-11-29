@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type GetCalendarsResponse = Awaited<ReturnType<typeof getData>>;
 
-export const GET = withEmailAccount("user/calendars", async (request) => {
+export const GET = withEmailAccount('user/calendars', async (request) => {
   const { emailAccountId } = request.auth;
 
   const result = await getData({ emailAccountId });
@@ -33,11 +33,11 @@ async function getData({ emailAccountId }: { emailAccountId: string }) {
               timezone: true,
             },
             orderBy: {
-              name: "asc",
+              name: 'asc',
             },
           },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
       },
     },
   });

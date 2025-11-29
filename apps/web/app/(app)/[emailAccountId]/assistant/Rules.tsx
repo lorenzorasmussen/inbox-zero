@@ -1,27 +1,39 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { toast } from "sonner";
 import {
+  CopyIcon,
+  HistoryIcon,
+  InfoIcon,
   MoreHorizontalIcon,
   PenIcon,
   PlusIcon,
-  HistoryIcon,
-  Trash2Icon,
   SparklesIcon,
-  InfoIcon,
-  CopyIcon,
-} from "lucide-react";
-import { useMemo } from "react";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+  Trash2Icon,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useAction } from 'next-safe-action/hooks';
+import { useMemo } from 'react';
+import { toast } from 'sonner';
+import {
+  getStepNumber,
+  STEP_KEYS,
+} from '@/app/(app)/[emailAccountId]/onboarding/OnboardingContent';
+import type { RulesResponse } from '@/app/api/user/rules/route';
+import { Badge } from '@/components/Badge';
+import { ExpandableText } from '@/components/ExpandableText';
+import { LoadingContent } from '@/components/LoadingContent';
+import { getActionColor } from '@/components/PlanBadge';
+import { toastError } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardHeader } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
+import { useSidebar } from '@/components/ui/sidebar';
+import { Switch } from '@/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -29,44 +41,32 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Switch } from "@/components/ui/switch";
+} from '@/components/ui/table';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { deleteRuleAction, toggleRuleAction } from "@/utils/actions/rule";
-import { conditionsToString } from "@/utils/condition";
-import { Badge } from "@/components/Badge";
-import { getActionColor } from "@/components/PlanBadge";
-import { toastError } from "@/components/Toast";
-import { useRules } from "@/hooks/useRules";
-import { LogicalOperator, SystemType } from "@/generated/prisma/enums";
-import type { ActionType } from "@/generated/prisma/client";
-import { useAction } from "next-safe-action/hooks";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { ExpandableText } from "@/components/ExpandableText";
-import type { RulesResponse } from "@/app/api/user/rules/route";
-import { sortActionsByPriority } from "@/utils/action-sort";
-import { getActionDisplay, getActionIcon } from "@/utils/action-display";
-import { RuleDialog } from "./RuleDialog";
-import { useDialogState } from "@/hooks/useDialogState";
-import { useChat } from "@/providers/ChatProvider";
-import { useSidebar } from "@/components/ui/sidebar";
-import { useLabels } from "@/hooks/useLabels";
-import { isConversationStatusType } from "@/utils/reply-tracker/conversation-status-config";
+} from '@/components/ui/tooltip';
+import type { ActionType } from '@/generated/prisma/client';
+import { LogicalOperator, SystemType } from '@/generated/prisma/enums';
+import { useDialogState } from '@/hooks/useDialogState';
+import { useLabels } from '@/hooks/useLabels';
+import { useRules } from '@/hooks/useRules';
+import { useChat } from '@/providers/ChatProvider';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { getActionDisplay, getActionIcon } from '@/utils/action-display';
+import { sortActionsByPriority } from '@/utils/action-sort';
+import { deleteRuleAction, toggleRuleAction } from '@/utils/actions/rule';
+import { DEFAULT_COLD_EMAIL_PROMPT } from '@/utils/cold-email/prompt';
+import { conditionsToString } from '@/utils/condition';
+import { prefixPath } from '@/utils/path';
+import { isConversationStatusType } from '@/utils/reply-tracker/conversation-status-config';
 import {
+  getDefaultActions,
   getRuleConfig,
   SYSTEM_RULE_ORDER,
-  getDefaultActions,
-} from "@/utils/rule/consts";
-import { DEFAULT_COLD_EMAIL_PROMPT } from "@/utils/cold-email/prompt";
-import {
-  STEP_KEYS,
-  getStepNumber,
-} from "@/app/(app)/[emailAccountId]/onboarding/OnboardingContent";
+} from '@/utils/rule/consts';
+import { RuleDialog } from './RuleDialog';
 
 export function Rules({
   showAddRuleButton = true,
@@ -87,13 +87,13 @@ export function Rules({
 
   const { emailAccountId, provider } = useAccount();
   const { executeAsync: toggleRule } = useAction(
-    toggleRuleAction.bind(null, emailAccountId),
+    toggleRuleAction.bind(null, emailAccountId)
   );
   const { executeAsync: deleteRule } = useAction(
     deleteRuleAction.bind(null, emailAccountId),
     {
       onSettled: () => mutate(),
-    },
+    }
   );
 
   const rules: RulesResponse = useMemo(() => {
@@ -101,7 +101,7 @@ export function Rules({
 
     const systemRulePlaceholders = SYSTEM_RULE_ORDER.map((systemType) => {
       const existingRule = existingRules.find(
-        (r) => r.systemType === systemType,
+        (r) => r.systemType === systemType
       );
       if (existingRule) return existingRule;
 
@@ -134,7 +134,7 @@ export function Rules({
     const userRules = existingRules.filter((rule) => !rule.systemType);
 
     return [...systemRulePlaceholders, ...userRules].sort(
-      (a, b) => (b.enabled ? 1 : 0) - (a.enabled ? 1 : 0),
+      (a, b) => (b.enabled ? 1 : 0) - (a.enabled ? 1 : 0)
     );
   }, [data, emailAccountId, provider]);
 
@@ -171,17 +171,17 @@ export function Rules({
               <TableBody>
                 {rules.map((rule) => {
                   const isConversationStatus = isConversationStatusType(
-                    rule.systemType,
+                    rule.systemType
                   );
                   const isColdEmailBlocker =
                     rule.systemType === SystemType.COLD_EMAIL;
-                  const isPlaceholder = rule.id.startsWith("placeholder-");
+                  const isPlaceholder = rule.id.startsWith('placeholder-');
 
                   return (
                     <TableRow
                       key={rule.id}
-                      className={`${!rule.enabled ? "bg-muted opacity-60" : ""} ${
-                        isPlaceholder ? "cursor-default" : "cursor-pointer"
+                      className={`${rule.enabled ? '' : 'bg-muted opacity-60'} ${
+                        isPlaceholder ? 'cursor-default' : 'cursor-pointer'
                       }`}
                       onClick={() => {
                         if (isPlaceholder) return;
@@ -210,9 +210,9 @@ export function Rules({
                                     : r
                                   : r.id === rule.id
                                     ? { ...r, enabled }
-                                    : r,
+                                    : r
                               ),
-                              { revalidate: false },
+                              { revalidate: false }
                             );
 
                             const result = await toggleRule({
@@ -224,8 +224,8 @@ export function Rules({
                             if (result?.serverError) {
                               toastError({
                                 description: `There was an error ${
-                                  enabled ? "enabling" : "disabling"
-                                } your rule. ${result.serverError || ""}`,
+                                  enabled ? 'enabling' : 'disabling'
+                                } your rule. ${result.serverError || ''}`,
                               });
                             }
 
@@ -240,13 +240,13 @@ export function Rules({
                       <TableCell className="hidden sm:table-cell p-2 sm:p-4">
                         {(() => {
                           const systemRuleDesc = getSystemRuleDescription(
-                            rule.systemType,
+                            rule.systemType
                           );
                           if (isConversationStatus) {
                             return (
                               <div className="flex items-center gap-2">
                                 <span className="text-sm text-muted-foreground">
-                                  {systemRuleDesc?.condition || ""}
+                                  {systemRuleDesc?.condition || ''}
                                 </span>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
@@ -313,9 +313,9 @@ export function Rules({
                                 <DropdownMenuItem
                                   onClick={() => {
                                     setInput(
-                                      `I'd like to edit the "${rule.name}" rule:\n`,
+                                      `I'd like to edit the "${rule.name}" rule:\n`
                                     );
-                                    setOpen((arr) => [...arr, "chat-sidebar"]);
+                                    setOpen((arr) => [...arr, 'chat-sidebar']);
                                   }}
                                 >
                                   <SparklesIcon className="mr-2 size-4" />
@@ -338,15 +338,15 @@ export function Rules({
                                     isColdEmailBlocker
                                       ? prefixPath(
                                           emailAccountId,
-                                          "/cold-email-blocker",
+                                          '/cold-email-blocker'
                                         )
                                       : prefixPath(
                                           emailAccountId,
-                                          `/automation?tab=history&ruleId=${rule.id}`,
+                                          `/automation?tab=history&ruleId=${rule.id}`
                                         )
                                   }
                                   target={
-                                    isColdEmailBlocker ? "_blank" : undefined
+                                    isColdEmailBlocker ? '_blank' : undefined
                                   }
                                 >
                                   <HistoryIcon className="mr-2 size-4" />
@@ -357,7 +357,7 @@ export function Rules({
                                 <DropdownMenuItem
                                   onClick={async () => {
                                     const yes = confirm(
-                                      `Are you sure you want to delete the rule "${rule.name}"?`,
+                                      `Are you sure you want to delete the rule "${rule.name}"?`
                                     );
                                     if (yes) {
                                       toast.promise(
@@ -372,21 +372,21 @@ export function Rules({
                                           ) {
                                             throw new Error(
                                               res?.serverError ||
-                                                "There was an error deleting your rule",
+                                                'There was an error deleting your rule'
                                             );
                                           }
 
                                           mutate();
                                         },
                                         {
-                                          loading: "Deleting rule...",
-                                          success: "Rule deleted",
+                                          loading: 'Deleting rule...',
+                                          success: 'Rule deleted',
                                           error: (error) =>
                                             `Error deleting rule. ${error.message}`,
                                           finally: () => {
                                             mutate();
                                           },
-                                        },
+                                        }
                                       );
                                     }
                                   }}
@@ -474,7 +474,7 @@ function NoRules() {
             <Link
               href={prefixPath(
                 emailAccountId,
-                `/onboarding?step=${getStepNumber(STEP_KEYS.LABELS)}`,
+                `/onboarding?step=${getStepNumber(STEP_KEYS.LABELS)}`
               )}
             >
               Set up default rules
@@ -490,7 +490,7 @@ function getSystemRuleDescription(systemType: SystemType | null) {
   switch (systemType) {
     case SystemType.TO_REPLY:
       return {
-        condition: "Emails needing your direct response",
+        condition: 'Emails needing your direct response',
       };
     case SystemType.FYI:
       return {
@@ -502,7 +502,7 @@ function getSystemRuleDescription(systemType: SystemType | null) {
       };
     case SystemType.ACTIONED:
       return {
-        condition: "Resolved email threads",
+        condition: 'Resolved email threads',
       };
     case SystemType.COLD_EMAIL:
       return {

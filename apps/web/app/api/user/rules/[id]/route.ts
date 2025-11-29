@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
-import { getConditions } from "@/utils/condition";
-import { hasVariables } from "@/utils/template";
-import { SafeError } from "@/utils/error";
+import { NextResponse } from 'next/server';
+import { getConditions } from '@/utils/condition';
+import { SafeError } from '@/utils/error';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { hasVariables } from '@/utils/template';
 
 export type RuleResponse = Awaited<ReturnType<typeof getRule>>;
 
@@ -21,7 +21,7 @@ async function getRule({
     },
   });
 
-  if (!rule) throw new SafeError("Rule not found");
+  if (!rule) throw new SafeError('Rule not found');
 
   const ruleWithActions = {
     ...rule,
@@ -48,15 +48,15 @@ async function getRule({
 }
 
 export const GET = withEmailAccount(
-  "user/rules/detail",
+  'user/rules/detail',
   async (request, { params }) => {
     const emailAccountId = request.auth.emailAccountId;
 
     const { id } = await params;
-    if (!id) return NextResponse.json({ error: "Missing rule id" });
+    if (!id) return NextResponse.json({ error: 'Missing rule id' });
 
     const result = await getRule({ ruleId: id, emailAccountId });
 
     return NextResponse.json(result);
-  },
+  }
 );

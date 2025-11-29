@@ -1,0 +1,689 @@
+openapi: 3.1.0
+info:
+  title: Inbox Zero API
+  version: 1.0.0
+  description: Comprehensive email management API for Inbox Zero application
+  contact:
+    name: Inbox Zero Support
+    email: support@inboxzero.ai
+  servers:
+    - url: http://localhost:3001/api
+      description: Development server
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API server
+      tags:
+        - health
+      operationId: getHealth
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                required:
+                  - status
+                  - timestamp
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /user/me:
+    get:
+      summary: Get current user profile
+      description: Retrieves the currently authenticated user's profile information
+      tags:
+        - user
+        - auth
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized - user not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /auth/session:
+    post:
+      summary: Create authentication session
+      description: Initiates an authentication session with supported providers
+      tags:
+        - auth
+      operationId: createAuthSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                  enum: [google, microsoft, apple]
+                  description: Authentication provider to use
+                code:
+                  type: string
+                  description: Authorization code from OAuth provider
+                redirectUri:
+                  type: string
+                  format: uri
+                  description: URI to redirect after authentication
+              required:
+                - provider
+                - code
+                - redirectUri
+      responses:
+        '200':
+          description: Authentication session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                  redirectUrl:
+                    type: string
+                    format: uri
+                required:
+                  - sessionId
+                  - redirectUrl
+        '400':
+          description: Invalid authentication request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /emails:
+    get:
+      summary: Get user emails
+      description: Retrieves emails for the authenticated user with pagination support
+      tags:
+        - emails
+      operationId: getUserEmails
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of emails to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of emails to skip for pagination
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Emails retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  emails:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Email'
+                  total:
+                    type: integer
+                  hasMore:
+                    type: boolean
+                required:
+                  - emails
+                  - total
+                  - hasMore
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /emails/{id}:
+    get:
+      summary: Get specific email
+      description: Retrieves a specific email by its unique ID
+      tags:
+        - emails
+      operationId: getEmailById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier for an email
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Email retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Email'
+        '404':
+          description: Email not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /ai/process:
+    post:
+      summary: Process email with AI
+      description: Processes an email using AI to categorize, extract, or generate responses
+      tags:
+        - ai
+        - emails
+      operationId: processEmailWithAI
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emailId:
+                  type: string
+                  description: ID of email to process
+                action:
+                  type: string
+                  enum: [categorize, extract, generate_reply, summarize]
+                  description: AI action to perform on the email
+                options:
+                  type: object
+                  description: Additional options for AI processing
+              required:
+                - emailId
+                - action
+      responses:
+        '200':
+          description: AI processing completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    description: AI processing result
+                  processingId:
+                    type: string
+                    description: Unique identifier for this processing request
+                required:
+                  - result
+                  - processingId
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /ai/rules:
+    get:
+      summary: Get AI processing rules
+      description: Retrieves configured AI processing rules for the authenticated user
+      tags:
+        - ai
+        - rules
+      operationId: getAIRules
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: AI rules retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rules:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AIRule'
+                  defaultRules:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AIRule'
+                required:
+                  - rules
+                  - defaultRules
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /ai/suggest:
+    post:
+      summary: Get AI suggestions
+      description: Get AI-powered suggestions for email composition and responses
+      tags:
+        - ai
+        - emails
+      operationId: getAISuggestions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  type: string
+                  description: Email context or thread for suggestions
+                type:
+                  type: string
+                  enum: [reply, forward, categorize]
+                  description: Type of suggestion requested
+              required:
+                - context
+                - type
+      responses:
+        '200':
+          description: AI suggestions generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                          description: Suggested text content
+                        confidence:
+                          type: number
+                          minimum: 0
+                          maximum: 1
+                          description: Confidence level of suggestion
+                      required:
+                        - text
+                        - confidence
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+        code:
+          type: string
+          description: Machine-readable error code
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+      required:
+        - error
+        - code
+    
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique user identifier
+        email:
+          type: string
+          format: email
+          description: User's email address
+        name:
+          type: string
+          description: User's display name
+        avatar:
+          type: string
+          format: uri
+          description: URL to user's avatar image
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        preferences:
+          type: object
+          properties:
+            theme:
+              type: string
+              enum: [light, dark, auto]
+              description: User's preferred theme
+            notifications:
+              type: object
+              properties:
+                email:
+                  type: boolean
+                  description: Email notification preferences
+                push:
+                  type: boolean
+                  description: Push notification preferences
+          description: User preferences
+        subscription:
+          type: object
+          properties:
+            plan:
+              type: string
+              enum: [free, pro, enterprise]
+              description: User's subscription plan
+            status:
+              type: string
+              enum: [active, cancelled, expired]
+              description: Subscription status
+            expiresAt:
+              type: string
+              format: date-time
+              description: Subscription expiration date
+          description: User subscription information
+      required:
+        - id
+        - email
+        - name
+        - createdAt
+    
+    Email:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique email identifier
+        subject:
+          type: string
+          description: Email subject line
+        from:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+              description: Sender email address
+            name:
+              type: string
+              description: Sender display name
+          description: Sender information
+        to:
+          type: array
+          items:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+                description: Recipient email address
+              name:
+                type: string
+                description: Recipient display name
+          description: Email recipients
+        date:
+          type: string
+          format: date-time
+          description: Email sent date
+        isRead:
+          type: boolean
+          description: Whether email has been read
+        isStarred:
+          type: boolean
+          description: Whether email is starred
+        category:
+          type: string
+          enum: [primary, social, promotions, spam, updates]
+          description: Email category
+        priority:
+          type: string
+          enum: [high, normal, low]
+          description: Email priority
+        size:
+          type: integer
+          description: Email size in bytes
+        attachments:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Attachment identifier
+              name:
+                type: string
+                description: Attachment filename
+              size:
+                type: integer
+                description: Attachment size in bytes
+              type:
+                type: string
+                enum: [image, document, pdf, other]
+                description: Attachment type
+              url:
+                type: string
+                format: uri
+                description: Attachment URL
+          description: Email attachments
+        body:
+          type: string
+          description: Email body content
+        htmlBody:
+          type: string
+          description: Email body in HTML format
+        preview:
+          type: string
+          description: Email preview text
+        labels:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Label identifier
+              name:
+                type: string
+                description: Label name
+              color:
+                type: string
+                format: color
+                description: Label color hex code
+          description: Email labels
+        threadId:
+          type: string
+          description: Thread identifier for email conversations
+        folderId:
+          type: string
+          description: Folder identifier where email is stored
+      required:
+        - id
+        - subject
+        - from
+        - date
+    
+    AIRule:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique rule identifier
+        name:
+          type: string
+          description: Rule name
+        description:
+          type: string
+          description: Rule description
+        conditions:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                enum: [from, to, subject, body, category]
+                description: Field to apply condition on
+              operator:
+                type: string
+                enum: [equals, contains, starts_with, ends_with, regex]
+                description: Condition operator
+              value:
+                type: string
+                description: Condition value
+          description: Rule conditions
+        actions:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [categorize, label, forward, delete]
+                description: Action to take when conditions are met
+              parameters:
+                type: object
+                description: Action parameters
+          description: Rule actions
+        isActive:
+          type: boolean
+          description: Whether rule is currently active
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: Rule priority (higher number = higher priority)
+        createdAt:
+          type: string
+          format: date-time
+          description: Rule creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+      required:
+        - id
+        - name
+        - conditions
+        - actions
+        - isActive
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication using JWT bearer token
+
+tags:
+  - name: Authentication
+    description: Authentication related endpoints
+  - name: User
+    description: User management endpoints
+  - name: Emails
+    description: Email management endpoints
+  - name: AI
+    description: AI-powered email processing endpoints
+  - name: Rules
+    description: Email rule management endpoints
+  - name: Health
+    description: Health check and monitoring endpoints

@@ -1,6 +1,6 @@
-import type { SWRResponse } from "swr";
-import useSWR from "swr";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import type { SWRResponse } from 'swr';
+import useSWR from 'swr';
+import { useAccount } from '@/providers/EmailAccountProvider';
 
 // Makes sure that we have an email account id before fetching
 // Otherwise the backend will return an error
@@ -23,7 +23,7 @@ export function processSWRResponse<
   TApiError extends { error: string } = { error: string }, // Assume API error shape
   TSWRError = Error, // Assume SWR error type
 >(
-  swrResult: SWRResponse<TData | TApiError, TSWRError>,
+  swrResult: SWRResponse<TData | TApiError, TSWRError>
 ): SWRResponse<TData | null, NormalizedError> {
   const swrError = swrResult.error as TSWRError | undefined; // Cast for type checking
   const data = swrResult.data as TData | TApiError | undefined; // Cast for type checking
@@ -48,9 +48,9 @@ export function processSWRResponse<
   // Handle API error returned within data
   if (
     data &&
-    typeof data === "object" &&
-    "error" in data &&
-    typeof data.error === "string"
+    typeof data === 'object' &&
+    'error' in data &&
+    typeof data.error === 'string'
   ) {
     return {
       ...swrResult,

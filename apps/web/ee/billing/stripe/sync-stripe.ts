@@ -1,15 +1,15 @@
-import { after } from "next/server";
-import sumBy from "lodash/sumBy";
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import { getStripe } from "@/ee/billing/stripe";
-import { getStripeSubscriptionTier } from "@/app/(app)/premium/config";
-import { handleLoopsEvents } from "@/ee/billing/stripe/loops-events";
-import { updateAccountSeatsForPremium } from "@/utils/premium/server";
-import { ensureEmailAccountsWatched } from "@/utils/email/watch-manager";
-import type { Prisma } from "@/generated/prisma/client";
+import sumBy from 'lodash/sumBy';
+import { after } from 'next/server';
+import { getStripeSubscriptionTier } from '@/app/(app)/premium/config';
+import { getStripe } from '@/ee/billing/stripe';
+import { handleLoopsEvents } from '@/ee/billing/stripe/loops-events';
+import type { Prisma } from '@/generated/prisma/client';
+import { ensureEmailAccountsWatched } from '@/utils/email/watch-manager';
+import { createScopedLogger } from '@/utils/logger';
+import { updateAccountSeatsForPremium } from '@/utils/premium/server';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("stripe/syncStripeDataToDb");
+const logger = createScopedLogger('stripe/syncStripeDataToDb');
 
 export async function syncStripeDataToDb({
   customerId,
@@ -35,16 +35,16 @@ export async function syncStripeDataToDb({
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
       limit: 1,
-      status: "all",
+      status: 'all',
       expand: [
-        "data.default_payment_method",
-        "data.items.data.price", // Expand to get product ID
+        'data.default_payment_method',
+        'data.items.data.price', // Expand to get product ID
       ],
     });
 
     // Case: No active or past subscription found for the customer
     if (subscriptions.data.length === 0) {
-      logger.info("No Stripe subscription found for customer", { customerId });
+      logger.info('No Stripe subscription found for customer', { customerId });
       // Update the corresponding Premium record to reflect no active subscription
       await prisma.premium.update({
         where: { stripeCustomerId: customerId },
@@ -60,7 +60,7 @@ export async function syncStripeDataToDb({
           // Keep stripeCanceledAt and stripeEndedAt as they might be relevant if it *was* canceled/ended previously
         },
       });
-      logger.info("Updated Premium record for customer with no subscription", {
+      logger.info('Updated Premium record for customer with no subscription', {
         customerId,
       });
       return;
@@ -70,25 +70,25 @@ export async function syncStripeDataToDb({
     const subscription = subscriptions.data[0];
     const subscriptionItem = subscription.items.data[0];
 
-    if (!subscriptionItem.price || typeof subscriptionItem.price !== "object") {
-      logger.error("Subscription item price data is missing or not an object", {
+    if (!subscriptionItem.price || typeof subscriptionItem.price !== 'object') {
+      logger.error('Subscription item price data is missing or not an object', {
         customerId,
         subscriptionId: subscription.id,
         itemId: subscriptionItem.id,
       });
       throw new Error(
-        "Invalid subscription item price data received from Stripe.",
+        'Invalid subscription item price data received from Stripe.'
       );
     }
     const price = subscriptionItem.price;
 
     if (!price.product) {
-      logger.error("Price product data is missing", {
+      logger.error('Price product data is missing', {
         customerId,
         subscriptionId: subscription.id,
         priceId: price.id,
       });
-      throw new Error("Missing product data in price received from Stripe.");
+      throw new Error('Missing product data in price received from Stripe.');
     }
     const product = price.product;
 
@@ -105,7 +105,7 @@ export async function syncStripeDataToDb({
         stripeSubscriptionId: subscription.id,
         stripeSubscriptionItemId: subscriptionItem.id,
         stripePriceId: price.id,
-        stripeProductId: typeof product === "string" ? product : product.id, // Handle expanded product object
+        stripeProductId: typeof product === 'string' ? product : product.id, // Handle expanded product object
         stripeSubscriptionStatus: subscription.status,
         stripeRenewsAt: subscriptionItem.current_period_end // RenewsAt uses the item's period end
           ? new Date(subscriptionItem.current_period_end * 1000)
@@ -139,7 +139,7 @@ export async function syncStripeDataToDb({
       newTier: tier,
     });
 
-    logger.info("Successfully updated Premium record from Stripe data", {
+    logger.info('Successfully updated Premium record from Stripe data', {
       customerId,
     });
 
@@ -154,7 +154,7 @@ export async function syncStripeDataToDb({
 
       if (userIds.length && (!currentPremium || statusChanged || tierChanged)) {
         ensureEmailAccountsWatched({ userIds }).catch((error) => {
-          logger.error("Failed to ensure email watches after Stripe sync", {
+          logger.error('Failed to ensure email watches after Stripe sync', {
             customerId,
             userIds,
             error,
@@ -163,7 +163,7 @@ export async function syncStripeDataToDb({
       }
     });
   } catch (error) {
-    logger.error("Error syncing Stripe data to DB", { customerId, error });
+    logger.error('Error syncing Stripe data to DB', { customerId, error });
     throw error;
   }
 }
@@ -177,7 +177,7 @@ async function syncSeats(
       pendingInvites: true;
       stripeSubscriptionItemId: true;
     };
-  }>,
+  }>
 ) {
   try {
     // Get all connected user emails
@@ -185,7 +185,7 @@ async function syncSeats(
 
     // Filter out pending invites that are already connected users to avoid double counting
     const uniquePendingInvites = (premium.pendingInvites || []).filter(
-      (email) => !connectedUserEmails.has(email),
+      (email) => !connectedUserEmails.has(email)
     );
 
     // total seats = premium users + unique pending invites (excluding duplicates)
@@ -195,7 +195,7 @@ async function syncSeats(
 
     await updateAccountSeatsForPremium(premium, totalSeats);
   } catch (error) {
-    logger.error("Error updating account seats for premium", {
+    logger.error('Error updating account seats for premium', {
       stripeSubscriptionItemId: premium.stripeSubscriptionItemId,
       error,
     });

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const createApiKeyBody = z.object({ name: z.string().nullish() });
 export type CreateApiKeyBody = z.infer<typeof createApiKeyBody>;

@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type GroupsResponse = Awaited<ReturnType<typeof getGroups>>;
 
@@ -17,7 +17,7 @@ async function getGroups({ emailAccountId }: { emailAccountId: string }) {
   return { groups };
 }
 
-export const GET = withEmailAccount("user/group", async (request) => {
+export const GET = withEmailAccount('user/group', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
   const result = await getGroups({ emailAccountId });
   return NextResponse.json(result);

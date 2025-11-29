@@ -1,12 +1,12 @@
-import { getThreadsByJobId } from "@/utils/redis/clean";
-import prisma from "@/utils/prisma";
-import { CardTitle } from "@/components/ui/card";
+import { CleanRun } from '@/app/(app)/[emailAccountId]/clean/CleanRun';
 import {
   getJobById,
   getLastJob,
-} from "@/app/(app)/[emailAccountId]/clean/helpers";
-import { CleanRun } from "@/app/(app)/[emailAccountId]/clean/CleanRun";
-import { checkUserOwnsEmailAccount } from "@/utils/email-account";
+} from '@/app/(app)/[emailAccountId]/clean/helpers';
+import { CardTitle } from '@/components/ui/card';
+import { checkUserOwnsEmailAccount } from '@/utils/email-account';
+import prisma from '@/utils/prisma';
+import { getThreadsByJobId } from '@/utils/redis/clean';
 
 export default async function CleanRunPage(props: {
   params: Promise<{ emailAccountId: string }>;
@@ -45,7 +45,7 @@ export default async function CleanRunPage(props: {
 
   return (
     <CleanRun
-      isPreviewBatch={isPreviewBatch === "true"}
+      isPreviewBatch={isPreviewBatch === 'true'}
       job={job}
       threads={threads}
       total={total}

@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import uniqBy from "lodash/uniqBy";
-import { useRouter } from "next/navigation";
-import { useQueryState } from "nuqs";
-import { PenIcon, PlusIcon, TagsIcon, TrashIcon } from "lucide-react";
+import uniqBy from 'lodash/uniqBy';
+import { PenIcon, PlusIcon, TagsIcon, TrashIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useQueryState } from 'nuqs';
+import { useEffect, useState } from 'react';
+import {
+  CreateCategoryButton,
+  CreateCategoryDialog,
+} from '@/app/(app)/[emailAccountId]/smart-categories/CreateCategoryButton';
+import { TypographyH4 } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { TypographyH4 } from "@/components/Typography";
-import { Button } from "@/components/ui/button";
-import { defaultCategory } from "@/utils/categories";
+} from '@/components/ui/card';
+import type { Category } from '@/generated/prisma/client';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { cn } from '@/utils';
 import {
-  upsertDefaultCategoriesAction,
   deleteCategoryAction,
-} from "@/utils/actions/categorize";
-import { cn } from "@/utils";
-import {
-  CreateCategoryButton,
-  CreateCategoryDialog,
-} from "@/app/(app)/[emailAccountId]/smart-categories/CreateCategoryButton";
-import type { Category } from "@/generated/prisma/client";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
+  upsertDefaultCategoriesAction,
+} from '@/utils/actions/categorize';
+import { defaultCategory } from '@/utils/categories';
+import { prefixPath } from '@/utils/path';
 
-type CardCategory = Pick<Category, "name" | "description"> & {
+type CardCategory = Pick<Category, 'name' | 'description'> & {
   id?: string;
   enabled?: boolean;
   isDefault?: boolean;
@@ -49,7 +49,7 @@ export function SetUpCategories({
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
   const [selectedCategoryName, setSelectedCategoryName] =
-    useQueryState("category-name");
+    useQueryState('category-name');
 
   const { emailAccountId } = useAccount();
 
@@ -75,13 +75,13 @@ export function SetUpCategories({
       }),
       ...existingCategories,
     ],
-    (c) => c.name,
+    (c) => c.name
   );
 
   const [categories, setCategories] = useState<Map<string, boolean>>(
     new Map(
-      combinedCategories.map((c) => [c.name, !c.isDefault || !!c.enabled]),
-    ),
+      combinedCategories.map((c) => [c.name, !c.isDefault || !!c.enabled])
+    )
   );
 
   // Update categories when existingCategories changes
@@ -133,7 +133,7 @@ export function SetUpCategories({
                   isEnabled={categories.get(category.name) ?? false}
                   onAdd={() =>
                     setCategories(
-                      new Map(categories.entries()).set(category.name, true),
+                      new Map(categories.entries()).set(category.name, true)
                     )
                   }
                   onRemove={async () => {
@@ -143,7 +143,7 @@ export function SetUpCategories({
                       });
                     } else {
                       setCategories(
-                        new Map(categories.entries()).set(category.name, false),
+                        new Map(categories.entries()).set(category.name, false)
                       );
                     }
                   }}
@@ -173,18 +173,18 @@ export function SetUpCategories({
                     id: combinedCategories.find((c) => c.name === name)?.id,
                     name,
                     enabled,
-                  }),
+                  })
                 );
 
                 await upsertDefaultCategoriesAction(emailAccountId, {
                   categories: upsertCategories,
                 });
                 setIsCreating(false);
-                router.push(prefixPath(emailAccountId, "/smart-categories"));
+                router.push(prefixPath(emailAccountId, '/smart-categories'));
               }}
             >
               <TagsIcon className="mr-2 h-4 w-4" />
-              {existingCategories.length > 0 ? "Save" : "Create categories"}
+              {existingCategories.length > 0 ? 'Save' : 'Create categories'}
             </Button>
           </div>
         </CardContent>
@@ -221,8 +221,8 @@ function CategoryCard({
   return (
     <Card
       className={cn(
-        "flex items-center justify-between gap-2 p-4",
-        !isEnabled && "bg-muted/50",
+        'flex items-center justify-between gap-2 p-4',
+        !isEnabled && 'bg-muted/50'
       )}
     >
       <div>

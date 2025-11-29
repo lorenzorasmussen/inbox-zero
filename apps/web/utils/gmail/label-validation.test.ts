@@ -1,28 +1,28 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from 'vitest';
 import {
   validateGmailLabelName,
   validateLabelNameBasic,
-} from "./label-validation";
+} from './label-validation';
 
-describe("validateLabelNameBasic", () => {
-  describe("valid labels", () => {
-    it("should accept valid label names", () => {
+describe('validateLabelNameBasic', () => {
+  describe('valid labels', () => {
+    it('should accept valid label names', () => {
       const validLabels = [
-        "Work",
-        "Personal",
-        "Important Emails",
-        "Project Alpha",
-        "2024 Taxes",
-        "Follow Up",
-        "a".repeat(225), // Max length
+        'Work',
+        'Personal',
+        'Important Emails',
+        'Project Alpha',
+        '2024 Taxes',
+        'Follow Up',
+        'a'.repeat(225), // Max length
         // Nested labels with forward slash are valid
-        "Inbox Zero/Archived",
-        "Work/Projects",
-        "Personal/Family",
+        'Inbox Zero/Archived',
+        'Work/Projects',
+        'Personal/Family',
         // These would be rejected by Gmail-specific validation but are valid at basic level
-        "INBOX",
-        "TRAVEL",
-        "FINANCE",
+        'INBOX',
+        'TRAVEL',
+        'FINANCE',
       ];
 
       validLabels.forEach((label) => {
@@ -33,90 +33,90 @@ describe("validateLabelNameBasic", () => {
     });
   });
 
-  describe("empty or whitespace", () => {
-    it("should reject empty strings", () => {
-      const result = validateLabelNameBasic("");
+  describe('empty or whitespace', () => {
+    it('should reject empty strings', () => {
+      const result = validateLabelNameBasic('');
       expect(result.valid).toBe(false);
-      expect(result.error).toBe("Label name cannot be empty");
+      expect(result.error).toBe('Label name cannot be empty');
     });
 
-    it("should reject whitespace-only strings", () => {
-      const result = validateLabelNameBasic("   ");
+    it('should reject whitespace-only strings', () => {
+      const result = validateLabelNameBasic('   ');
       expect(result.valid).toBe(false);
-      expect(result.error).toBe("Label name cannot be empty");
+      expect(result.error).toBe('Label name cannot be empty');
     });
 
-    it("should reject labels with leading spaces", () => {
-      const result = validateLabelNameBasic(" Work");
+    it('should reject labels with leading spaces', () => {
+      const result = validateLabelNameBasic(' Work');
       expect(result.valid).toBe(false);
       expect(result.error).toBe(
-        "Label name cannot have leading or trailing spaces",
+        'Label name cannot have leading or trailing spaces'
       );
     });
 
-    it("should reject labels with trailing spaces", () => {
-      const result = validateLabelNameBasic("Work ");
+    it('should reject labels with trailing spaces', () => {
+      const result = validateLabelNameBasic('Work ');
       expect(result.valid).toBe(false);
       expect(result.error).toBe(
-        "Label name cannot have leading or trailing spaces",
+        'Label name cannot have leading or trailing spaces'
       );
     });
   });
 
-  describe("length", () => {
-    it("should reject labels longer than 225 characters", () => {
-      const longLabel = "a".repeat(226);
+  describe('length', () => {
+    it('should reject labels longer than 225 characters', () => {
+      const longLabel = 'a'.repeat(226);
       const result = validateLabelNameBasic(longLabel);
       expect(result.valid).toBe(false);
-      expect(result.error).toBe("Label name cannot exceed 225 characters");
+      expect(result.error).toBe('Label name cannot exceed 225 characters');
     });
   });
 
-  describe("double spaces", () => {
-    it("should reject labels with double spaces", () => {
-      const result = validateLabelNameBasic("Work  Items");
+  describe('double spaces', () => {
+    it('should reject labels with double spaces', () => {
+      const result = validateLabelNameBasic('Work  Items');
       expect(result.valid).toBe(false);
-      expect(result.error).toBe("Label name cannot contain double spaces");
+      expect(result.error).toBe('Label name cannot contain double spaces');
     });
   });
 
-  describe("invalid characters", () => {
-    it("should reject labels with backslash", () => {
-      const result = validateLabelNameBasic("Work\\Items");
+  describe('invalid characters', () => {
+    it('should reject labels with backslash', () => {
+      const result = validateLabelNameBasic('Work\\Items');
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("\\");
+      expect(result.error).toContain('\\');
     });
 
-    it("should reject labels with asterisk", () => {
-      const result = validateLabelNameBasic("Work*Items");
+    it('should reject labels with asterisk', () => {
+      const result = validateLabelNameBasic('Work*Items');
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("*");
+      expect(result.error).toContain('*');
     });
 
-    it("should reject labels with plus sign", () => {
-      const result = validateLabelNameBasic("Work+Items");
+    it('should reject labels with plus sign', () => {
+      const result = validateLabelNameBasic('Work+Items');
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("+");
+      expect(result.error).toContain('+');
     });
 
-    it("should reject labels with backtick", () => {
-      const result = validateLabelNameBasic("Work`Items");
+    it('should reject labels with backtick', () => {
+      const result = validateLabelNameBasic('Work`Items');
       expect(result.valid).toBe(false);
-      expect(result.error).toContain("`");
+      expect(result.error).toContain('`');
     });
   });
 });
 
-describe("validateGmailLabelName", () => {
-  describe("valid labels", () => {
-    it("should accept valid label names", () => {
+describe('validateGmailLabelName', () => {
+  describe('valid labels', () => {
+    it('should accept valid label names', () => {
       const validLabels = [
-        "Work",
-        "Important Emails",
-        "Project Alpha",
-        "2024 Taxes",
-        "Follow Up",
-        "CATEGORY_PERSONAL",
+        'Work',
+        'Important Emails',
+        'Project Alpha',
+        '2024 Taxes',
+        'Follow Up',
+        'CATEGORY_PERSONAL',
       ];
 
       validLabels.forEach((label) => {
@@ -127,97 +127,97 @@ describe("validateGmailLabelName", () => {
     });
   });
 
-  describe("reserved system labels", () => {
-    it("should reject standard system labels (case-insensitive)", () => {
+  describe('reserved system labels', () => {
+    it('should reject standard system labels (case-insensitive)', () => {
       const reservedLabels = [
-        "INBOX",
-        "inbox",
-        "Inbox",
-        "SPAM",
-        "spam",
-        "TRASH",
-        "trash",
-        "UNREAD",
-        "STARRED",
-        "IMPORTANT",
-        "SENT",
-        "DRAFT",
-        "ALL_MAIL",
-        "ALLMAIL",
+        'INBOX',
+        'inbox',
+        'Inbox',
+        'SPAM',
+        'spam',
+        'TRASH',
+        'trash',
+        'UNREAD',
+        'STARRED',
+        'IMPORTANT',
+        'SENT',
+        'DRAFT',
+        'ALL_MAIL',
+        'ALLMAIL',
       ];
 
       reservedLabels.forEach((label) => {
         const result = validateGmailLabelName(label);
         expect(result.valid).toBe(false);
-        expect(result.error).toContain("reserved Gmail system label");
+        expect(result.error).toContain('reserved Gmail system label');
       });
     });
 
-    it("should reject standard category names without prefix (case-insensitive)", () => {
+    it('should reject standard category names without prefix (case-insensitive)', () => {
       const categoryLabels = [
-        "PERSONAL",
-        "personal",
-        "SOCIAL",
-        "Promotions",
-        "UPDATES",
-        "FORUMS",
+        'PERSONAL',
+        'personal',
+        'SOCIAL',
+        'Promotions',
+        'UPDATES',
+        'FORUMS',
       ];
 
       categoryLabels.forEach((label) => {
         const result = validateGmailLabelName(label);
         expect(result.valid).toBe(false);
-        expect(result.error).toContain("reserved Gmail system label");
+        expect(result.error).toContain('reserved Gmail system label');
       });
     });
 
-    it("should reject specific reserved label names", () => {
+    it('should reject specific reserved label names', () => {
       const reservedLabels = [
-        "TRAVEL",
-        "travel",
-        "FINANCE",
-        "finance",
-        "CHAT",
-        "chat",
+        'TRAVEL',
+        'travel',
+        'FINANCE',
+        'finance',
+        'CHAT',
+        'chat',
       ];
 
       reservedLabels.forEach((label) => {
         const result = validateGmailLabelName(label);
         expect(result.valid).toBe(false);
-        expect(result.error).toContain("reserved Gmail system label");
+        expect(result.error).toContain('reserved Gmail system label');
       });
     });
 
-    it("should reject other undocumented reserved labels", () => {
+    it('should reject other undocumented reserved labels', () => {
       const undocumentedReserved = [
-        "VOICEMAIL",
-        "voicemail",
-        "SCHEDULED",
-        "scheduled",
-        "MUTED",
-        "muted",
+        'VOICEMAIL',
+        'voicemail',
+        'SCHEDULED',
+        'scheduled',
+        'MUTED',
+        'muted',
       ];
 
       undocumentedReserved.forEach((label) => {
         const result = validateGmailLabelName(label);
         expect(result.valid).toBe(false);
-        expect(result.error).toContain("reserved");
+        expect(result.error).toContain('reserved');
       });
     });
 
-    it("should accept labels that are NOT reserved (common confusion)", () => {
+    it('should accept labels that are NOT reserved (common confusion)', () => {
       const allowedLabels = [
-        "Notes",
-        "NOTES",
-        "notes",
-        "Opened",
-        "OPENED",
-        "opened",
-        "CATEGORY_TRAVEL",
-        "category_travel",
-        "CATEGORY_FINANCE",
-        "category_finance",
-        "CHAT_Something",
-        "chat_meeting",
+        'Notes',
+        'NOTES',
+        'notes',
+        'Opened',
+        'OPENED',
+        'opened',
+        'CATEGORY_TRAVEL',
+        'category_travel',
+        'CATEGORY_FINANCE',
+        'category_finance',
+        'CHAT_Something',
+        'chat_meeting',
       ];
 
       allowedLabels.forEach((label) => {
@@ -228,15 +228,15 @@ describe("validateGmailLabelName", () => {
     });
   });
 
-  describe("category prefix handling", () => {
-    it("should allow standard CATEGORY_ labels", () => {
+  describe('category prefix handling', () => {
+    it('should allow standard CATEGORY_ labels', () => {
       const standardCategories = [
-        "CATEGORY_PERSONAL",
-        "CATEGORY_SOCIAL",
-        "CATEGORY_PROMOTIONS",
-        "CATEGORY_UPDATES",
-        "CATEGORY_FORUMS",
-        "category_personal",
+        'CATEGORY_PERSONAL',
+        'CATEGORY_SOCIAL',
+        'CATEGORY_PROMOTIONS',
+        'CATEGORY_UPDATES',
+        'CATEGORY_FORUMS',
+        'category_personal',
       ];
 
       standardCategories.forEach((label) => {
@@ -246,12 +246,12 @@ describe("validateGmailLabelName", () => {
       });
     });
 
-    it("should allow custom CATEGORY_ labels", () => {
+    it('should allow custom CATEGORY_ labels', () => {
       const customCategories = [
-        "CATEGORY_Custom",
-        "CATEGORY_TRAVEL",
-        "CATEGORY_FINANCE",
-        "category_custom",
+        'CATEGORY_Custom',
+        'CATEGORY_TRAVEL',
+        'CATEGORY_FINANCE',
+        'category_custom',
       ];
 
       customCategories.forEach((label) => {

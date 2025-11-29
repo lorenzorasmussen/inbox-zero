@@ -1,36 +1,36 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { StepWho } from "@/app/(app)/[emailAccountId]/onboarding/StepWho";
-import { StepIntro } from "@/app/(app)/[emailAccountId]/onboarding/StepIntro";
-import { StepLabels } from "@/app/(app)/[emailAccountId]/onboarding/StepLabels";
-import { usePersona } from "@/hooks/usePersona";
-import { analyzePersonaAction } from "@/utils/actions/email-account";
-import { StepFeatures } from "@/app/(app)/[emailAccountId]/onboarding/StepFeatures";
-import { StepDraft } from "@/app/(app)/[emailAccountId]/onboarding/StepDraft";
-import { StepCustomRules } from "@/app/(app)/[emailAccountId]/onboarding/StepCustomRules";
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect } from 'react';
+import { StepCompanySize } from '@/app/(app)/[emailAccountId]/onboarding/StepCompanySize';
+import { StepCustomRules } from '@/app/(app)/[emailAccountId]/onboarding/StepCustomRules';
+import { StepDraft } from '@/app/(app)/[emailAccountId]/onboarding/StepDraft';
+import { StepFeatures } from '@/app/(app)/[emailAccountId]/onboarding/StepFeatures';
+import { StepIntro } from '@/app/(app)/[emailAccountId]/onboarding/StepIntro';
+import { StepLabels } from '@/app/(app)/[emailAccountId]/onboarding/StepLabels';
+import { StepWho } from '@/app/(app)/[emailAccountId]/onboarding/StepWho';
+import { usePremium } from '@/components/PremiumAlert';
+import { useOnboardingAnalytics } from '@/hooks/useAnalytics';
+import { usePersona } from '@/hooks/usePersona';
+import { useSignUpEvent } from '@/hooks/useSignupEvent';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { analyzePersonaAction } from '@/utils/actions/email-account';
+import { completedOnboardingAction } from '@/utils/actions/onboarding';
 import {
   ASSISTANT_ONBOARDING_COOKIE,
   markOnboardingAsCompleted,
-} from "@/utils/cookies";
-import { completedOnboardingAction } from "@/utils/actions/onboarding";
-import { useOnboardingAnalytics } from "@/hooks/useAnalytics";
-import { prefixPath } from "@/utils/path";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { useSignUpEvent } from "@/hooks/useSignupEvent";
-import { isDefined } from "@/utils/types";
-import { StepCompanySize } from "@/app/(app)/[emailAccountId]/onboarding/StepCompanySize";
-import { usePremium } from "@/components/PremiumAlert";
+} from '@/utils/cookies';
+import { prefixPath } from '@/utils/path';
+import { isDefined } from '@/utils/types';
 
 export const STEP_KEYS = {
-  INTRO: "intro",
-  FEATURES: "features",
-  WHO: "who",
-  COMPANY_SIZE: "companySize",
-  LABELS: "labels",
-  DRAFT: "draft",
-  CUSTOM_RULES: "customRules",
+  INTRO: 'intro',
+  FEATURES: 'features',
+  WHO: 'who',
+  COMPANY_SIZE: 'companySize',
+  LABELS: 'labels',
+  DRAFT: 'draft',
+  CUSTOM_RULES: 'customRules',
 } as const;
 
 const STEP_ORDER = [
@@ -44,7 +44,7 @@ const STEP_ORDER = [
 ] as const;
 
 export function getStepNumber(
-  stepKey: (typeof STEP_KEYS)[keyof typeof STEP_KEYS],
+  stepKey: (typeof STEP_KEYS)[keyof typeof STEP_KEYS]
 ): number {
   const index = STEP_ORDER.indexOf(stepKey);
   return index === -1 ? 1 : index + 1;
@@ -96,7 +96,7 @@ export function OnboardingContent({ step }: OnboardingContentProps) {
   const clampedStep = Math.min(Math.max(step, 1), steps.length);
 
   const router = useRouter();
-  const analytics = useOnboardingAnalytics("onboarding");
+  const analytics = useOnboardingAnalytics('onboarding');
 
   useEffect(() => {
     analytics.onStart();
@@ -106,16 +106,16 @@ export function OnboardingContent({ step }: OnboardingContentProps) {
     analytics.onNext(clampedStep);
     if (clampedStep < steps.length) {
       router.push(
-        prefixPath(emailAccountId, `/onboarding?step=${clampedStep + 1}`),
+        prefixPath(emailAccountId, `/onboarding?step=${clampedStep + 1}`)
       );
     } else {
       analytics.onComplete();
       markOnboardingAsCompleted(ASSISTANT_ONBOARDING_COOKIE);
       await completedOnboardingAction();
       if (isPremium) {
-        router.push(prefixPath(emailAccountId, "/setup"));
+        router.push(prefixPath(emailAccountId, '/setup'));
       } else {
-        router.push("/welcome-upgrade");
+        router.push('/welcome-upgrade');
       }
     }
   }, [router, emailAccountId, analytics, clampedStep, steps.length, isPremium]);
@@ -130,7 +130,7 @@ export function OnboardingContent({ step }: OnboardingContentProps) {
         })
         .catch((error) => {
           // Fail silently - persona analysis is optional enhancement
-          console.error("Failed to analyze persona:", error);
+          console.error('Failed to analyze persona:', error);
         });
     }
   }, [clampedStep, emailAccountId, data?.personaAnalysis, mutate]);

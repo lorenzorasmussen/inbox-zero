@@ -1,18 +1,17 @@
-"use client";
+'use client';
 
-import type * as React from "react";
-import format from "date-fns/format";
-import { CalendarIcon } from "lucide-react";
-import type { DateRange } from "react-day-picker";
-
-import { cn } from "@/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import format from 'date-fns/format';
+import { CalendarIcon } from 'lucide-react';
+import type * as React from 'react';
+import type { DateRange } from 'react-day-picker';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
+import { cn } from '@/utils';
 
 export function DatePickerWithRange({
   dateRange,
@@ -28,19 +27,19 @@ export function DatePickerWithRange({
           id="date"
           variant="outline"
           className={cn(
-            "justify-start whitespace-nowrap text-left font-normal",
-            !dateRange && "text-muted-foreground",
+            'justify-start whitespace-nowrap text-left font-normal',
+            !dateRange && 'text-muted-foreground'
           )}
         >
           <CalendarIcon className="mr-2 hidden h-4 w-4 sm:block" />
           {dateRange?.from ? (
             dateRange.to ? (
               <>
-                {format(dateRange.from, "LLL dd, y")} -{" "}
-                {format(dateRange.to, "LLL dd, y")}
+                {format(dateRange.from, 'LLL dd, y')} -{' '}
+                {format(dateRange.to, 'LLL dd, y')}
               </>
             ) : (
-              format(dateRange.from, "LLL dd, y")
+              format(dateRange.from, 'LLL dd, y')
             )
           ) : (
             <span>Pick a date</span>

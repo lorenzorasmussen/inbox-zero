@@ -1,11 +1,11 @@
-import { useCallback, useState } from "react";
-import { useQueryState } from "nuqs";
+import { useQueryState } from 'nuqs';
+import { useCallback, useState } from 'react';
 
 export const useDisplayedEmail = () => {
-  const [threadId, setThreadId] = useQueryState("side-panel-thread-id");
-  const [messageId, setMessageId] = useQueryState("side-panel-message-id");
+  const [threadId, setThreadId] = useQueryState('side-panel-thread-id');
+  const [messageId, setMessageId] = useQueryState('side-panel-message-id');
   const [autoOpenReplyForMessageId, setAutoOpenReplyForMessageId] =
-    useQueryState("auto-open-reply-for-message-id");
+    useQueryState('auto-open-reply-for-message-id');
   const [showReplyButton, setShowReplyButton] = useState(false);
 
   const showEmail = useCallback(
@@ -15,14 +15,14 @@ export const useDisplayedEmail = () => {
         messageId?: string;
         showReplyButton?: boolean;
         autoOpenReplyForMessageId?: string;
-      } | null,
+      } | null
     ) => {
-      setAutoOpenReplyForMessageId(options?.autoOpenReplyForMessageId || "");
+      setAutoOpenReplyForMessageId(options?.autoOpenReplyForMessageId || '');
       setThreadId(options?.threadId ?? null);
       setMessageId(options?.messageId ?? null);
       setShowReplyButton(options?.showReplyButton ?? true);
     },
-    [setMessageId, setThreadId, setAutoOpenReplyForMessageId],
+    [setMessageId, setThreadId, setAutoOpenReplyForMessageId]
   );
 
   return {

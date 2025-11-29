@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useAction } from "next-safe-action/hooks";
-import { BrainIcon } from "lucide-react";
-import { ViewLearnedPatterns } from "@/app/(app)/[emailAccountId]/assistant/group/ViewLearnedPatterns";
+import { BrainIcon } from 'lucide-react';
+import { useAction } from 'next-safe-action/hooks';
+import { useState } from 'react';
+import { ViewLearnedPatterns } from '@/app/(app)/[emailAccountId]/assistant/group/ViewLearnedPatterns';
+import { toastError } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogTitle,
-  DialogHeader,
-  DialogTrigger,
   DialogDescription,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { createGroupAction } from "@/utils/actions/group";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { toastError } from "@/components/Toast";
-import { Skeleton } from "@/components/ui/skeleton";
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { createGroupAction } from '@/utils/actions/group';
 
 export function LearnedPatternsDialog({
   ruleId,
@@ -41,16 +41,16 @@ export function LearnedPatternsDialog({
           setLearnedPatternGroupId(data.data.groupId);
         } else {
           toastError({
-            description: "There was an error setting up learned patterns.",
+            description: 'There was an error setting up learned patterns.',
           });
         }
       },
       onError: (error) => {
         toastError({
-          description: error.error.serverError || "Unknown error",
+          description: error.error.serverError || 'Unknown error',
         });
       },
-    },
+    }
   );
 
   return (

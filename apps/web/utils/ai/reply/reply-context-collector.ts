@@ -1,28 +1,31 @@
-import { tool } from "ai";
-import subMonths from "date-fns/subMonths";
-import { z } from "zod";
-import { createScopedLogger } from "@/utils/logger";
-import { createGenerateText } from "@/utils/llms";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
-import { getTodayForLLM } from "@/utils/ai/helpers";
-import { getModel } from "@/utils/llms/model";
-import type { EmailProvider } from "@/utils/email/types";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
-import { captureException } from "@/utils/error";
-import { getEmailListPrompt, getUserInfoPrompt } from "@/utils/ai/helpers";
+import { tool } from 'ai';
+import subMonths from 'date-fns/subMonths';
+import { z } from 'zod';
+import {
+  getEmailListPrompt,
+  getTodayForLLM,
+  getUserInfoPrompt,
+} from '@/utils/ai/helpers';
+import type { EmailProvider } from '@/utils/email/types';
+import { captureException } from '@/utils/error';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import { createGenerateText } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import type { EmailForLLM } from '@/utils/types';
 
-const logger = createScopedLogger("reply-context-collector");
+const logger = createScopedLogger('reply-context-collector');
 
 const resultSchema = z.object({
   notes: z
     .string()
-    .describe("Any notes about the emails that may be helpful")
+    .describe('Any notes about the emails that may be helpful')
     .nullish(),
   relevantEmails: z
     .array(z.string())
     .describe(
-      "Past email conversations from search results that could help draft the response. Leave empty if no relevant past emails found.",
+      'Past email conversations from search results that could help draft the response. Leave empty if no relevant past emails found.'
     ),
 });
 export type ReplyContextCollectorResult = z.infer<typeof resultSchema>;
@@ -89,11 +92,11 @@ ${getUserInfoPrompt({ emailAccount })}
 
 ${getTodayForLLM()}`;
 
-    const modelOptions = getModel(emailAccount.user, "economy");
+    const modelOptions = getModel(emailAccount.user, 'economy');
 
     const generateText = createGenerateText({
       emailAccount,
-      label: "Reply context collector",
+      label: 'Reply context collector',
       modelOptions,
     });
 
@@ -105,7 +108,7 @@ ${getTodayForLLM()}`;
       prompt,
       stopWhen: (result) =>
         result.steps.some((step) =>
-          step.toolCalls?.some((call) => call.toolName === "finalizeResults"),
+          step.toolCalls?.some((call) => call.toolName === 'finalizeResults')
         ) || result.steps.length > 25,
       tools: {
         searchEmails: tool({
@@ -114,10 +117,10 @@ ${getTodayForLLM()}`;
           inputSchema: z.object({
             query: z
               .string()
-              .describe("Search query to find relevant emails in history"),
+              .describe('Search query to find relevant emails in history'),
           }),
           execute: async ({ query }) => {
-            logger.info("Searching emails", { query });
+            logger.info('Searching emails', { query });
             try {
               const { messages } =
                 await emailProvider.getMessagesWithPagination({
@@ -130,14 +133,14 @@ ${getTodayForLLM()}`;
                 return getEmailForLLM(message, { maxLength: 2000 });
               });
 
-              logger.info("Found emails", { emails: emails.length });
+              logger.info('Found emails', { emails: emails.length });
               // logger.trace("Found emails", { emails });
 
               return emails;
             } catch (error) {
               const errorMessage =
-                error instanceof Error ? error.message : "Unknown error";
-              logger.error("Email search failed", {
+                error instanceof Error ? error.message : 'Unknown error';
+              logger.error('Email search failed', {
                 error,
                 errorMessage,
                 query,
@@ -153,13 +156,13 @@ ${getTodayForLLM()}`;
         }),
         finalizeResults: tool({
           description:
-            "Finalize and return your compiled results for downstream drafting",
+            'Finalize and return your compiled results for downstream drafting',
           inputSchema: resultSchema,
           execute: async (finalResult) => {
-            logger.info("Finalizing results", {
+            logger.info('Finalizing results', {
               relevantEmails: finalResult.relevantEmails.length,
             });
-            logger.trace("Finalizing results", {
+            logger.trace('Finalizing results', {
               notes: finalResult.notes,
               relevantEmails: finalResult.relevantEmails,
             });
@@ -174,13 +177,13 @@ ${getTodayForLLM()}`;
 
     return result;
   } catch (error) {
-    logger.error("Reply context collection failed", {
+    logger.error('Reply context collection failed', {
       email: emailAccount.email,
       error,
     });
     captureException(error, {
       extra: {
-        scope: "reply-context-collector",
+        scope: 'reply-context-collector',
         email: emailAccount.email,
         userId: emailAccount.userId,
       },

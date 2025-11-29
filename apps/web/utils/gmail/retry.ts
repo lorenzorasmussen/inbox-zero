@@ -1,9 +1,9 @@
-import pRetry from "p-retry";
-import { createScopedLogger } from "@/utils/logger";
-import { sleep } from "@/utils/sleep";
-import { isFetchError } from "@/utils/retry/is-fetch-error";
+import pRetry from 'p-retry';
+import { createScopedLogger } from '@/utils/logger';
+import { isFetchError } from '@/utils/retry/is-fetch-error';
+import { sleep } from '@/utils/sleep';
 
-const logger = createScopedLogger("gmail-retry");
+const logger = createScopedLogger('gmail-retry');
 
 interface ErrorInfo {
   status?: number;
@@ -18,7 +18,7 @@ interface ErrorInfo {
  */
 export async function withGmailRetry<T>(
   operation: () => Promise<T>,
-  maxRetries = 5,
+  maxRetries = 5
 ): Promise<T> {
   return pRetry(operation, {
     retries: maxRetries,
@@ -28,7 +28,7 @@ export async function withGmailRetry<T>(
         isRetryableError(errorInfo);
 
       if (!retryable) {
-        logger.warn("Non-retryable error encountered", {
+        logger.warn('Non-retryable error encountered', {
           error,
           status: errorInfo.status,
           reason: errorInfo.reason,
@@ -43,7 +43,7 @@ export async function withGmailRetry<T>(
           string,
           string
         >
-      )?.["retry-after"];
+      )?.['retry-after'];
 
       const delayMs = calculateRetryDelay(
         isRateLimit,
@@ -51,10 +51,10 @@ export async function withGmailRetry<T>(
         isFailedPrecondition,
         error.attemptNumber,
         retryAfterHeader,
-        errorInfo.errorMessage,
+        errorInfo.errorMessage
       );
 
-      logger.warn("Gmail error. Will retry", {
+      logger.warn('Gmail error. Will retry', {
         delaySeconds: Math.ceil(delayMs / 1000),
         attemptNumber: error.attemptNumber,
         maxRetries,
@@ -77,7 +77,7 @@ export async function withGmailRetry<T>(
  * Extracts error information from various error shapes
  */
 export function extractErrorInfo(
-  error: unknown,
+  error: unknown
 ): ErrorInfo & { code?: string } {
   const err = error as Record<string, unknown>;
   const cause = (err?.cause ?? err) as Record<string, unknown>;
@@ -122,7 +122,7 @@ export function extractErrorInfo(
         unknown
       >
     )?.error as string as string) ??
-    "";
+    '';
 
   const errorMessage = String(primaryMessage);
 
@@ -144,8 +144,8 @@ export function isRetryableError(errorInfo: ErrorInfo & { code?: string }): {
   const isRateLimit =
     status === 429 ||
     (status === 403 &&
-      ["rateLimitExceeded", "userRateLimitExceeded", "quotaExceeded"].includes(
-        String(reason),
+      ['rateLimitExceeded', 'userRateLimitExceeded', 'quotaExceeded'].includes(
+        String(reason)
       )) ||
     /(^|[\s-])rate limit exceeded/i.test(errorMessage) ||
     /quota exceeded/i.test(errorMessage);
@@ -159,7 +159,7 @@ export function isRetryableError(errorInfo: ErrorInfo & { code?: string }): {
 
   const isFailedPrecondition =
     status === 400 &&
-    (String(reason).toLowerCase() === "failedprecondition" ||
+    (String(reason).toLowerCase() === 'failedprecondition' ||
       /precondition check failed/i.test(errorMessage));
 
   return {
@@ -183,10 +183,10 @@ export function calculateRetryDelay(
   isFailedPrecondition: boolean,
   attemptNumber: number,
   retryAfterHeader?: string,
-  errorMessage?: string,
+  errorMessage?: string
 ): number {
   // Try to parse retry time from error message
-  const retryTime = parseRetryTime(errorMessage || "");
+  const retryTime = parseRetryTime(errorMessage || '');
   if (retryTime) {
     const delayMs = Math.max(0, retryTime.getTime() - Date.now());
     if (delayMs > 0) {

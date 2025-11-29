@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { MailsIcon } from "lucide-react";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { OnboardingWrapper } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper";
-import { ContinueButton } from "@/app/(app)/[emailAccountId]/onboarding/ContinueButton";
-import { DigestItemsForm } from "@/app/(app)/[emailAccountId]/settings/DigestItemsForm";
-import { DigestScheduleForm } from "@/app/(app)/[emailAccountId]/settings/DigestScheduleForm";
-import { OnboardingImagePreview } from "@/app/(app)/[emailAccountId]/onboarding/ImagePreview";
+import { MailsIcon } from 'lucide-react';
+import { ContinueButton } from '@/app/(app)/[emailAccountId]/onboarding/ContinueButton';
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { OnboardingImagePreview } from '@/app/(app)/[emailAccountId]/onboarding/ImagePreview';
+import { OnboardingWrapper } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper';
+import { DigestItemsForm } from '@/app/(app)/[emailAccountId]/settings/DigestItemsForm';
+import { DigestScheduleForm } from '@/app/(app)/[emailAccountId]/settings/DigestScheduleForm';
+import { PageHeading, TypographyP } from '@/components/Typography';
 
 export function StepDigest({ onNext }: { onNext: () => void }) {
   return (

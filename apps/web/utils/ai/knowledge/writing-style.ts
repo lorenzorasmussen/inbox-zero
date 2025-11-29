@@ -1,14 +1,13 @@
-import { z } from "zod";
-import { createScopedLogger } from "@/utils/logger";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
-import { truncate } from "@/utils/string";
-import { removeExcessiveWhitespace } from "@/utils/string";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
-import { getUserInfoPrompt } from "@/utils/ai/helpers";
+import { z } from 'zod';
+import { getUserInfoPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import { removeExcessiveWhitespace, truncate } from '@/utils/string';
+import type { EmailForLLM } from '@/utils/types';
 
-const logger = createScopedLogger("writing-style-analyzer");
+const logger = createScopedLogger('writing-style-analyzer');
 
 export async function aiAnalyzeWritingStyle(options: {
   emails: EmailForLLM[];
@@ -17,7 +16,7 @@ export async function aiAnalyzeWritingStyle(options: {
   const { emails, emailAccount } = options;
 
   if (!emails.length) {
-    logger.warn("No emails provided for writing style analysis");
+    logger.warn('No emails provided for writing style analysis');
     return null;
   }
 
@@ -58,9 +57,9 @@ ${emails
     (e) => `<email>
   <to>${e.to}</to>
   <body>${truncate(removeExcessiveWhitespace(e.content), 1000)}</body>
-</email>`,
+</email>`
   )
-  .join("\n")}
+  .join('\n')}
 </emails>
 
 ${getUserInfoPrompt({ emailAccount })}`;
@@ -69,7 +68,7 @@ ${getUserInfoPrompt({ emailAccount })}`;
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Writing Style Analysis",
+    label: 'Writing Style Analysis',
     modelOptions,
   });
 
@@ -85,7 +84,7 @@ ${getUserInfoPrompt({ emailAccount })}`;
       examples: z.array(z.string()),
     }),
   });
-  logger.trace("Output", result.object);
+  logger.trace('Output', result.object);
 
   return result.object;
 }

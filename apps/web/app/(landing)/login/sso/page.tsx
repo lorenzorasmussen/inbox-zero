@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useState } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { useRouter } from "next/navigation";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
 import type {
   GetSsoSignInParams,
   GetSsoSignInResponse,
-} from "@/app/api/sso/signin/route";
+} from '@/app/api/sso/signin/route';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { toastError, toastSuccess } from '@/components/Toast';
 
 const ssoLoginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().email('Please enter a valid email address'),
   organizationSlug: z
     .string()
     .regex(
       /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/,
-      "Please enter a valid organization slug",
+      'Please enter a valid organization slug'
     )
-    .max(63, "Organization slug must be 63 characters or fewer"),
+    .max(63, 'Organization slug must be 63 characters or fewer'),
 });
 
 type SsoLoginBody = z.infer<typeof ssoLoginSchema>;
@@ -50,7 +50,7 @@ export default function SSOLoginPage() {
         const paramsString = new URLSearchParams(params).toString();
         const url = new URL(
           `/api/sso/signin?${paramsString}`,
-          window.location.origin,
+          window.location.origin
         );
 
         const response = await fetch(url.toString());
@@ -58,8 +58,8 @@ export default function SSOLoginPage() {
 
         if (!response.ok) {
           toastError({
-            title: "SSO Sign-in Error",
-            description: responseData.error || "Failed to initiate SSO sign-in",
+            title: 'SSO Sign-in Error',
+            description: responseData.error || 'Failed to initiate SSO sign-in',
           });
           return;
         }
@@ -67,19 +67,19 @@ export default function SSOLoginPage() {
         const res: GetSsoSignInResponse = responseData;
 
         if (res.redirectUrl) {
-          toastSuccess({ description: "Redirecting to SSO provider..." });
+          toastSuccess({ description: 'Redirecting to SSO provider...' });
           router.push(res.redirectUrl);
         }
       } catch {
         toastError({
-          title: "SSO Sign-in Error",
-          description: "An unexpected error occurred. Please try again.",
+          title: 'SSO Sign-in Error',
+          description: 'An unexpected error occurred. Please try again.',
         });
       } finally {
         setIsSubmitting(false);
       }
     },
-    [router],
+    [router]
   );
 
   return (
@@ -99,7 +99,7 @@ export default function SSOLoginPage() {
                 type="email"
                 name="email"
                 label="Email"
-                registerProps={register("email")}
+                registerProps={register('email')}
                 error={errors.email}
               />
 
@@ -108,7 +108,7 @@ export default function SSOLoginPage() {
                 name="organizationSlug"
                 label="Organization Slug"
                 placeholder="your-org-slug"
-                registerProps={register("organizationSlug")}
+                registerProps={register('organizationSlug')}
                 error={errors.organizationSlug}
               />
 

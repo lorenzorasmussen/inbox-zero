@@ -1,16 +1,16 @@
-import sumBy from "lodash/sumBy";
-import { after } from "next/server";
-import { updateSubscriptionItemQuantity } from "@/ee/billing/lemon/index";
-import { updateStripeSubscriptionItemQuantity } from "@/ee/billing/stripe/index";
-import prisma from "@/utils/prisma";
-import type { PremiumTier } from "@/generated/prisma/enums";
-import { createScopedLogger } from "@/utils/logger";
-import { ensureEmailAccountsWatched } from "@/utils/email/watch-manager";
-import { hasTierAccess, isPremium } from "@/utils/premium";
-import { SafeError } from "@/utils/error";
-import { env } from "@/env";
+import sumBy from 'lodash/sumBy';
+import { after } from 'next/server';
+import { updateSubscriptionItemQuantity } from '@/ee/billing/lemon/index';
+import { updateStripeSubscriptionItemQuantity } from '@/ee/billing/stripe/index';
+import { env } from '@/env';
+import type { PremiumTier } from '@/generated/prisma/enums';
+import { ensureEmailAccountsWatched } from '@/utils/email/watch-manager';
+import { SafeError } from '@/utils/error';
+import { createScopedLogger } from '@/utils/logger';
+import { hasTierAccess, isPremium } from '@/utils/premium';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("premium");
+const logger = createScopedLogger('premium');
 
 export async function upgradeToPremiumLemon(options: {
   userId: string;
@@ -34,8 +34,8 @@ export async function upgradeToPremiumLemon(options: {
   });
 
   if (!user) {
-    logger.error("User not found", { userId });
-    throw new Error("User not found");
+    logger.error('User not found', { userId });
+    throw new Error('User not found');
   }
 
   const premiumRecord = user.premiumId
@@ -56,7 +56,7 @@ export async function upgradeToPremiumLemon(options: {
   after(() => {
     const userIds = premiumRecord.users.map((premiumUser) => premiumUser.id);
     ensureEmailAccountsWatched({ userIds }).catch((error) => {
-      logger.error("Failed to ensure email watches after premium upgrade", {
+      logger.error('Failed to ensure email watches after premium upgrade', {
         userIds,
         error,
       });
@@ -133,7 +133,7 @@ export async function updateAccountSeats({ userId }: { userId: string }) {
   const { premium } = user;
 
   if (!premium) {
-    logger.warn("User has no premium", { userId });
+    logger.warn('User has no premium', { userId });
     return;
   }
 
@@ -148,7 +148,7 @@ export async function updateAccountSeatsForPremium(
     stripeSubscriptionItemId: string | null;
     lemonSqueezySubscriptionItemId?: number | null;
   },
-  totalSeats: number,
+  totalSeats: number
 ) {
   if (premium.stripeSubscriptionItemId) {
     await updateStripeSubscriptionItemQuantity({
@@ -185,12 +185,12 @@ export async function checkHasAccess({
     },
   });
 
-  if (!user) throw new SafeError("User not found");
+  if (!user) throw new SafeError('User not found');
 
   if (
     !isPremium(
       user?.premium?.lemonSqueezyRenewsAt || null,
-      user?.premium?.stripeSubscriptionStatus || null,
+      user?.premium?.stripeSubscriptionStatus || null
     )
   ) {
     return false;

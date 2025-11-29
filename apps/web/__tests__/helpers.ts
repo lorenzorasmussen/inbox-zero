@@ -1,7 +1,7 @@
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
-import { ActionType, LogicalOperator } from "@/generated/prisma/enums";
-import type { Action, Prisma } from "@/generated/prisma/client";
+import type { Action, Prisma } from '@/generated/prisma/client';
+import { ActionType, LogicalOperator } from '@/generated/prisma/enums';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { EmailForLLM } from '@/utils/types';
 
 type EmailAccountSelect = {
   id: string;
@@ -24,12 +24,12 @@ type AccountWithEmailAccount = {
 };
 
 export function getEmailAccount(
-  overrides: Partial<EmailAccountWithAI> = {},
+  overrides: Partial<EmailAccountWithAI> = {}
 ): EmailAccountWithAI {
   return {
-    id: "email-account-id",
-    userId: "user1",
-    email: overrides.email || "user@test.com",
+    id: 'email-account-id',
+    userId: 'user1',
+    email: overrides.email || 'user@test.com',
     about: null,
     multiRuleSelectionEnabled: overrides.multiRuleSelectionEnabled ?? false,
     timezone: null,
@@ -40,7 +40,7 @@ export function getEmailAccount(
       aiApiKey: null,
     },
     account: {
-      provider: "google",
+      provider: 'google',
     },
   };
 }
@@ -55,7 +55,7 @@ export function getEmailAccount(
 export function generateSequentialDates(
   count: number,
   hoursApart = 1,
-  startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+  startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
 ): Date[] {
   return Array.from({ length: count }, (_, i) => {
     const date = new Date(startDate);
@@ -65,16 +65,16 @@ export function generateSequentialDates(
 }
 
 export function getEmail({
-  from = "user@test.com",
-  to = "user2@test.com",
-  subject = "Test Subject",
-  content = "Test content",
+  from = 'user@test.com',
+  to = 'user2@test.com',
+  subject = 'Test Subject',
+  content = 'Test content',
   replyTo,
   cc,
   date,
 }: Partial<EmailForLLM> = {}): EmailForLLM {
   return {
-    id: "email-id",
+    id: 'email-id',
     from,
     to,
     subject,
@@ -88,15 +88,15 @@ export function getEmail({
 export function getRule(
   instructions: string,
   actions: Action[] = [],
-  name?: string,
+  name?: string
 ) {
   return {
     instructions,
-    name: name || "Joke requests",
+    name: name || 'Joke requests',
     actions,
-    id: "id",
-    userId: "userId",
-    emailAccountId: "emailAccountId",
+    id: 'id',
+    userId: 'userId',
+    emailAccountId: 'emailAccountId',
     createdAt: new Date(),
     updatedAt: new Date(),
     automate: true,
@@ -116,11 +116,11 @@ export function getRule(
 
 export function getAction(overrides: Partial<Action> = {}): Action {
   return {
-    id: "action-id",
+    id: 'action-id',
     createdAt: new Date(),
     updatedAt: new Date(),
     type: overrides.type ?? ActionType.LABEL,
-    ruleId: "rule-id",
+    ruleId: 'rule-id',
     to: null,
     subject: null,
     label: null,
@@ -137,15 +137,15 @@ export function getAction(overrides: Partial<Action> = {}): Action {
 }
 
 export function getMockMessage({
-  id = "msg1",
-  threadId = "thread1",
-  historyId = "12345",
-  from = "test@example.com",
-  to = "user@example.com",
-  subject = "Test",
-  snippet = "Test message",
-  textPlain = "Test content",
-  textHtml = "<p>Test content</p>",
+  id = 'msg1',
+  threadId = 'thread1',
+  historyId = '12345',
+  from = 'test@example.com',
+  to = 'user@example.com',
+  subject = 'Test',
+  snippet = 'Test message',
+  textPlain = 'Test content',
+  textHtml = '<p>Test content</p>',
 }: {
   id?: string;
   threadId?: string;
@@ -179,10 +179,10 @@ export function getMockMessage({
 }
 
 export function getMockExecutedRule({
-  messageId = "msg1",
-  threadId = "thread1",
-  ruleId = "rule1",
-  ruleName = "Test Rule",
+  messageId = 'msg1',
+  threadId = 'thread1',
+  ruleId = 'rule1',
+  ruleName = 'Test Rule',
 }: {
   messageId?: string;
   threadId?: string;
@@ -208,46 +208,46 @@ export function getMockExecutedRule({
 }
 
 export function getMockEmailAccountSelect(
-  overrides: Partial<EmailAccountSelect> = {},
+  overrides: Partial<EmailAccountSelect> = {}
 ): EmailAccountSelect {
   return {
-    id: overrides.id || "email-account-id",
-    email: overrides.email || "test@example.com",
-    accountId: overrides.accountId || "account-id",
-    userId: overrides.userId || "user-id",
-    name: overrides.name !== undefined ? overrides.name : "Test User",
+    id: overrides.id || 'email-account-id',
+    email: overrides.email || 'test@example.com',
+    accountId: overrides.accountId || 'account-id',
+    userId: overrides.userId || 'user-id',
+    name: overrides.name !== undefined ? overrides.name : 'Test User',
   };
 }
 
 export function getMockUserSelect(
-  overrides: Partial<UserSelect> = {},
+  overrides: Partial<UserSelect> = {}
 ): UserSelect {
   return {
-    email: overrides.email || "test@example.com",
-    id: overrides.id || "user-id",
-    name: overrides.name !== undefined ? overrides.name : "Test User",
+    email: overrides.email || 'test@example.com',
+    id: overrides.id || 'user-id',
+    name: overrides.name !== undefined ? overrides.name : 'Test User',
   };
 }
 
 export function getMockAccountWithEmailAccount(
-  overrides: Partial<AccountWithEmailAccount> = {},
+  overrides: Partial<AccountWithEmailAccount> = {}
 ): AccountWithEmailAccount {
   return {
-    id: overrides.id || "account-id",
-    userId: overrides.userId || "user-id",
+    id: overrides.id || 'account-id',
+    userId: overrides.userId || 'user-id',
     emailAccount:
       overrides.emailAccount !== undefined
         ? overrides.emailAccount
-        : { id: "email-account-id" },
+        : { id: 'email-account-id' },
   };
 }
 
 export function getCalendarConnection({
-  provider = "google",
-  calendarIds = ["cal-1"],
-  emailAccountId = "test-account-id",
+  provider = 'google',
+  calendarIds = ['cal-1'],
+  emailAccountId = 'test-account-id',
 }: {
-  provider?: "google" | "microsoft";
+  provider?: 'google' | 'microsoft';
   calendarIds?: string[];
   emailAccountId?: string;
 } = {}): Prisma.CalendarConnectionGetPayload<{
@@ -261,9 +261,9 @@ export function getCalendarConnection({
   return {
     id: `conn-${provider}`,
     provider,
-    email: `test@${provider === "google" ? "gmail" : "outlook"}.com`,
-    accessToken: "token",
-    refreshToken: "refresh",
+    email: `test@${provider === 'google' ? 'gmail' : 'outlook'}.com`,
+    accessToken: 'token',
+    refreshToken: 'refresh',
     expiresAt: new Date(),
     isConnected: true,
     emailAccountId,

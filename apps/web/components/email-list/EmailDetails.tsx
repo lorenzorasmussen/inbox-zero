@@ -1,13 +1,13 @@
-import type { ThreadMessage } from "@/components/email-list/types";
+import type { ThreadMessage } from '@/components/email-list/types';
 
 export function EmailDetails({ message }: { message: ThreadMessage }) {
   const details = [
-    { label: "From", value: message.headers.from },
-    { label: "To", value: message.headers.to },
-    { label: "CC", value: message.headers.cc },
-    { label: "BCC", value: message.headers.bcc },
+    { label: 'From', value: message.headers.from },
+    { label: 'To', value: message.headers.to },
+    { label: 'CC', value: message.headers.cc },
+    { label: 'BCC', value: message.headers.bcc },
     {
-      label: "Date",
+      label: 'Date',
       value: new Date(message.headers.date).toLocaleString(),
     },
     // { label: "Subject", value: message.headers.subject },
@@ -23,7 +23,7 @@ export function EmailDetails({ message }: { message: ThreadMessage }) {
                 <span className="font-medium text-foreground">{label}:</span>
                 <span className="text-muted-foreground">{value}</span>
               </div>
-            ),
+            )
         )}
       </div>
     </div>

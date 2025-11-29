@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon } from "lucide-react";
-import { useModal } from "@/hooks/useModal";
-import { Button, type ButtonProps } from "@/components/ui/button";
-import { Input } from "@/components/Input";
-import { toastSuccess, toastError } from "@/components/Toast";
-import {
-  createCategoryBody,
-  type CreateCategoryBody,
-} from "@/utils/actions/categorize.validation";
-import { createCategoryAction } from "@/utils/actions/categorize";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { PlusIcon } from 'lucide-react';
+import { useCallback } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { Input } from '@/components/Input';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { MessageText } from '@/components/Typography';
+import { Button, type ButtonProps } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import type { Category } from "@/generated/prisma/client";
-import { MessageText } from "@/components/Typography";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from '@/components/ui/dialog';
+import type { Category } from '@/generated/prisma/client';
+import { useModal } from '@/hooks/useModal';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { createCategoryAction } from '@/utils/actions/categorize';
+import {
+  type CreateCategoryBody,
+  createCategoryBody,
+} from '@/utils/actions/categorize.validation';
 
 type ExampleCategory = {
   name: string;
@@ -30,58 +30,58 @@ type ExampleCategory = {
 
 const EXAMPLE_CATEGORIES: ExampleCategory[] = [
   {
-    name: "Team",
+    name: 'Team',
     description:
-      "Internal team members with @company.com email addresses, including employees and colleagues within our organization",
+      'Internal team members with @company.com email addresses, including employees and colleagues within our organization',
   },
   {
-    name: "Customer",
+    name: 'Customer',
     description:
-      "Email addresses belonging to customers, including those reaching out for support or engaging with customer success",
+      'Email addresses belonging to customers, including those reaching out for support or engaging with customer success',
   },
   {
-    name: "Candidate",
+    name: 'Candidate',
     description:
-      "Job applicants, potential hires, and candidates in your interview pipeline",
+      'Job applicants, potential hires, and candidates in your interview pipeline',
   },
   {
-    name: "Job Application",
+    name: 'Job Application',
     description:
       "Companies, hiring platforms, and recruiters you've applied to or are interviewing with for positions",
   },
   {
-    name: "Investor",
+    name: 'Investor',
     description:
-      "Current and potential investors, investment firms, and venture capital contacts",
+      'Current and potential investors, investment firms, and venture capital contacts',
   },
   {
-    name: "Founder",
+    name: 'Founder',
     description:
-      "Startup founders, entrepreneurs, and potential portfolio companies seeking investment or partnerships",
+      'Startup founders, entrepreneurs, and potential portfolio companies seeking investment or partnerships',
   },
   {
-    name: "Vendor",
+    name: 'Vendor',
     description:
-      "Service providers, suppliers, and business partners who provide products or services to your company",
+      'Service providers, suppliers, and business partners who provide products or services to your company',
   },
   {
-    name: "Server Error",
-    description: "Automated monitoring services and error reporting systems",
+    name: 'Server Error',
+    description: 'Automated monitoring services and error reporting systems',
   },
   {
-    name: "Press",
+    name: 'Press',
     description:
-      "Journalists, media outlets, PR agencies, and industry publications seeking interviews or coverage",
+      'Journalists, media outlets, PR agencies, and industry publications seeking interviews or coverage',
   },
   {
-    name: "Conference",
+    name: 'Conference',
     description:
-      "Event organizers, conference coordinators, and speaking opportunity contacts for industry events",
+      'Event organizers, conference coordinators, and speaking opportunity contacts for industry events',
   },
   {
-    name: "Nonprofit",
+    name: 'Nonprofit',
     description:
-      "Charitable organizations, NGOs, social impact organizations, and philanthropic foundations",
+      'Charitable organizations, NGOs, social impact organizations, and philanthropic foundations',
   },
 ];
 
@@ -118,7 +118,7 @@ export function CreateCategoryDialog({
   onOpenChange,
   closeModal,
 }: {
-  category?: Pick<Category, "name" | "description">;
+  category?: Pick<Category, 'name' | 'description'>;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   closeModal: () => void;
@@ -140,7 +140,7 @@ function CreateCategoryForm({
   category,
   closeModal,
 }: {
-  category?: Pick<Category, "name" | "description"> & { id?: string };
+  category?: Pick<Category, 'name' | 'description'> & { id?: string };
   closeModal: () => void;
 }) {
   const { emailAccountId } = useAccount();
@@ -161,10 +161,10 @@ function CreateCategoryForm({
 
   const handleExampleClick = useCallback(
     (category: ExampleCategory) => {
-      setValue("name", category.name);
-      setValue("description", category.description);
+      setValue('name', category.name);
+      setValue('description', category.description);
     },
-    [setValue],
+    [setValue]
   );
 
   const onSubmit: SubmitHandler<CreateCategoryBody> = useCallback(
@@ -173,14 +173,14 @@ function CreateCategoryForm({
 
       if (result?.serverError) {
         toastError({
-          description: `There was an error creating the category. ${result.serverError || ""}`,
+          description: `There was an error creating the category. ${result.serverError || ''}`,
         });
       } else {
-        toastSuccess({ description: "Category created!" });
+        toastSuccess({ description: 'Category created!' });
         closeModal();
       }
     },
-    [closeModal, emailAccountId],
+    [closeModal, emailAccountId]
   );
 
   return (
@@ -189,7 +189,7 @@ function CreateCategoryForm({
         type="text"
         name="name"
         label="Name"
-        registerProps={register("name", { required: true })}
+        registerProps={register('name', { required: true })}
         error={errors.name}
       />
       <Input
@@ -199,7 +199,7 @@ function CreateCategoryForm({
         name="description"
         label="Description (Optional)"
         explainText="Additional information used by the AI to categorize senders"
-        registerProps={register("description")}
+        registerProps={register('description')}
         error={errors.description}
       />
 
@@ -230,7 +230,7 @@ function CreateCategoryForm({
       )}
 
       <Button type="submit" loading={isSubmitting}>
-        {category ? "Update" : "Create"}
+        {category ? 'Update' : 'Create'}
       </Button>
     </form>
   );

@@ -1,97 +1,97 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { validateOAuthCallback } from "./callback-validation";
-import { createScopedLogger } from "@/utils/logger";
-import { parseOAuthState } from "@/utils/oauth/state";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createScopedLogger } from '@/utils/logger';
+import { parseOAuthState } from '@/utils/oauth/state';
+import { validateOAuthCallback } from './callback-validation';
 
-const logger = createScopedLogger("test");
+const logger = createScopedLogger('test');
 
-vi.mock("@/utils/oauth/state");
+vi.mock('@/utils/oauth/state');
 
-describe("validateOAuthCallback", () => {
+describe('validateOAuthCallback', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should return error when state mismatch", () => {
+  it('should return error when state mismatch', () => {
     const result = validateOAuthCallback({
-      code: "valid-code",
-      receivedState: "received-state",
-      storedState: "different-stored-state",
-      stateCookieName: "test_cookie",
-      baseUrl: "http://localhost:3001",
+      code: 'valid-code',
+      receivedState: 'received-state',
+      storedState: 'different-stored-state',
+      stateCookieName: 'test_cookie',
+      baseUrl: 'http://localhost:3001',
       logger,
     });
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      const url = new URL(result.response.headers.get("location") || "");
-      expect(url.searchParams.get("error")).toBe("invalid_state");
+      const url = new URL(result.response.headers.get('location') || '');
+      expect(url.searchParams.get('error')).toBe('invalid_state');
     }
   });
 
-  it("should return error when code is missing", () => {
+  it('should return error when code is missing', () => {
     vi.mocked(parseOAuthState).mockReturnValue({
-      userId: "user-id",
-      nonce: "nonce",
+      userId: 'user-id',
+      nonce: 'nonce',
     });
 
     const result = validateOAuthCallback({
       code: null,
-      receivedState: "state",
-      storedState: "state",
-      stateCookieName: "test_cookie",
-      baseUrl: "http://localhost:3001",
+      receivedState: 'state',
+      storedState: 'state',
+      stateCookieName: 'test_cookie',
+      baseUrl: 'http://localhost:3001',
       logger,
     });
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      const url = new URL(result.response.headers.get("location") || "");
-      expect(url.searchParams.get("error")).toBe("missing_code");
+      const url = new URL(result.response.headers.get('location') || '');
+      expect(url.searchParams.get('error')).toBe('missing_code');
     }
   });
 
-  it("should return error when state decode fails", () => {
+  it('should return error when state decode fails', () => {
     vi.mocked(parseOAuthState).mockImplementation(() => {
-      throw new Error("Invalid state");
+      throw new Error('Invalid state');
     });
 
     const result = validateOAuthCallback({
-      code: "valid-code",
-      receivedState: "state",
-      storedState: "state",
-      stateCookieName: "test_cookie",
-      baseUrl: "http://localhost:3001",
+      code: 'valid-code',
+      receivedState: 'state',
+      storedState: 'state',
+      stateCookieName: 'test_cookie',
+      baseUrl: 'http://localhost:3001',
       logger,
     });
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      const url = new URL(result.response.headers.get("location") || "");
-      expect(url.searchParams.get("error")).toBe("invalid_state_format");
+      const url = new URL(result.response.headers.get('location') || '');
+      expect(url.searchParams.get('error')).toBe('invalid_state_format');
     }
   });
 
-  it("should return success when validation passes", () => {
+  it('should return success when validation passes', () => {
     vi.mocked(parseOAuthState).mockReturnValue({
-      userId: "user-id",
-      action: "auto",
-      nonce: "nonce",
+      userId: 'user-id',
+      action: 'auto',
+      nonce: 'nonce',
     });
 
     const result = validateOAuthCallback({
-      code: "valid-code",
-      receivedState: "state",
-      storedState: "state",
-      stateCookieName: "test_cookie",
-      baseUrl: "http://localhost:3001",
+      code: 'valid-code',
+      receivedState: 'state',
+      storedState: 'state',
+      stateCookieName: 'test_cookie',
+      baseUrl: 'http://localhost:3001',
       logger,
     });
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.targetUserId).toBe("user-id");
-      expect(result.code).toBe("valid-code");
+      expect(result.targetUserId).toBe('user-id');
+      expect(result.code).toBe('valid-code');
     }
   });
 });

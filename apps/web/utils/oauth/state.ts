@@ -1,6 +1,6 @@
-import { env } from "@/env";
-import type { IntegrationKey } from "@/utils/mcp/integrations";
-import crypto from "node:crypto";
+import crypto from 'node:crypto';
+import { env } from '@/env';
+import type { IntegrationKey } from '@/utils/mcp/integrations';
 
 /**
  * Generates a secure OAuth state parameter
@@ -8,13 +8,13 @@ import crypto from "node:crypto";
  * @returns Base64URL encoded state string
  */
 export function generateOAuthState<T extends Record<string, unknown>>(
-  data: T & { nonce?: string },
+  data: T & { nonce?: string }
 ): string {
   const stateObject = {
     ...data,
     nonce: data.nonce || crypto.randomUUID(),
   };
-  return Buffer.from(JSON.stringify(stateObject)).toString("base64url");
+  return Buffer.from(JSON.stringify(stateObject)).toString('base64url');
 }
 
 /**
@@ -23,9 +23,9 @@ export function generateOAuthState<T extends Record<string, unknown>>(
  * @returns The decoded state object
  */
 export function parseOAuthState<T extends Record<string, unknown>>(
-  state: string,
+  state: string
 ): T & { nonce: string } {
-  return JSON.parse(Buffer.from(state, "base64url").toString("utf8"));
+  return JSON.parse(Buffer.from(state, 'base64url').toString('utf8'));
 }
 
 /**
@@ -33,10 +33,10 @@ export function parseOAuthState<T extends Record<string, unknown>>(
  */
 export const oauthStateCookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV !== "development",
+  secure: env.NODE_ENV !== 'development',
   maxAge: 60 * 10, // 10 minutes
-  path: "/",
-  sameSite: "lax",
+  path: '/',
+  sameSite: 'lax',
 } as const;
 
 export const getMcpStateCookieName = (integration: IntegrationKey) =>

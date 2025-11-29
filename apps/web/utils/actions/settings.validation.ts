@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { Frequency } from "@/generated/prisma/enums";
-import { DEFAULT_PROVIDER, Provider } from "@/utils/llms/config";
+import { z } from 'zod';
+import { Frequency } from '@/generated/prisma/enums';
+import { DEFAULT_PROVIDER, Provider } from '@/utils/llms/config';
 
 export const saveDigestScheduleBody = z.object({
   intervalDays: z.number().nullable(),
@@ -41,8 +41,8 @@ export const saveAiSettingsBody = z
     if (!val.aiApiKey && val.aiProvider !== DEFAULT_PROVIDER) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "You must provide an API key for this provider",
-        path: ["aiApiKey"],
+        message: 'You must provide an API key for this provider',
+        path: ['aiApiKey'],
       });
     }
   });

@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Copy, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Check, Copy } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
 export function WebhookDocumentationDialog({
   children,
@@ -38,26 +38,26 @@ export function WebhookPayloadDocumentation() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Failed to copy text: ", err);
+      console.error('Failed to copy text: ', err);
     }
   };
 
   const payloadExample = {
     email: {
-      threadId: "thread_abc123",
-      messageId: "message_xyz789",
-      subject: "Important Contract Document",
-      from: "client@company.com",
-      cc: "team@company.com",
-      bcc: "archive@company.com",
-      headerMessageId: "<CAF=4sK9...@mail.gmail.com>",
+      threadId: 'thread_abc123',
+      messageId: 'message_xyz789',
+      subject: 'Important Contract Document',
+      from: 'client@company.com',
+      cc: 'team@company.com',
+      bcc: 'archive@company.com',
+      headerMessageId: '<CAF=4sK9...@mail.gmail.com>',
     },
     executedRule: {
-      id: "exec_rule_123",
-      ruleId: "rule_456",
-      reason: "Email matched rule: Archive contracts",
+      id: 'exec_rule_123',
+      ruleId: 'rule_456',
+      reason: 'Email matched rule: Archive contracts',
       automated: true,
-      createdAt: "2024-01-15T10:30:00.000Z",
+      createdAt: '2024-01-15T10:30:00.000Z',
     },
   };
 
@@ -139,7 +139,7 @@ export function WebhookPayloadDocumentation() {
 
         <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md">
           <div className="text-sm text-blue-600 dark:text-blue-400">
-            <strong>Authentication:</strong> Each request includes an{" "}
+            <strong>Authentication:</strong> Each request includes an{' '}
             <code>X-Webhook-Secret</code> header with your webhook secret for
             verification.
           </div>

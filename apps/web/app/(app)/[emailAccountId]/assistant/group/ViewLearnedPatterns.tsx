@@ -1,56 +1,56 @@
-"use client";
+'use client';
 
-import useSWR, { type KeyedMutator } from "swr";
-import sortBy from "lodash/sortBy";
-import groupBy from "lodash/groupBy";
-import Link from "next/link";
-import { PlusIcon, ExternalLinkIcon, TrashIcon } from "lucide-react";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { capitalCase } from 'capital-case';
+import groupBy from 'lodash/groupBy';
+import sortBy from 'lodash/sortBy';
+import { ExternalLinkIcon, PlusIcon, TrashIcon } from 'lucide-react';
+import Link from 'next/link';
 import {
-  useState,
-  useCallback,
   type Dispatch,
   type SetStateAction,
-} from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { capitalCase } from "capital-case";
-import { toastSuccess, toastError } from "@/components/Toast";
-import type { GroupItemsResponse } from "@/app/api/user/group/[groupId]/items/route";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+  useCallback,
+  useState,
+} from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import useSWR, { type KeyedMutator } from 'swr';
+import type { GroupItemsResponse } from '@/app/api/user/group/[groupId]/items/route';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { Input } from '@/components/Input';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Select } from '@/components/Select';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Toggle } from '@/components/Toggle';
+import { Tooltip } from '@/components/Tooltip';
+import { MessageText } from '@/components/Typography';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
-  TableRow,
   TableBody,
   TableCell,
-  TableHeader,
   TableHead,
-} from "@/components/ui/table";
-import { MessageText } from "@/components/Typography";
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import type { GroupItem } from '@/generated/prisma/client';
+import { GroupItemType } from '@/generated/prisma/enums';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
   addGroupItemAction,
   deleteGroupItemAction,
-} from "@/utils/actions/group";
-import { GroupItemType } from "@/generated/prisma/enums";
-import type { GroupItem } from "@/generated/prisma/client";
-import { Input } from "@/components/Input";
-import { Select } from "@/components/Select";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@/utils/actions/group';
 import {
   type AddGroupItemBody,
   addGroupItemBody,
-} from "@/utils/actions/group.validation";
-import { Badge } from "@/components/ui/badge";
-import { formatShortDate } from "@/utils/date";
-import { Tooltip } from "@/components/Tooltip";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { Toggle } from "@/components/Toggle";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+} from '@/utils/actions/group.validation';
+import { formatShortDate } from '@/utils/date';
+import { prefixPath } from '@/utils/path';
 
 export function ViewLearnedPatterns({ groupId }: { groupId: string }) {
   return (
-    <ErrorBoundary extra={{ component: "ViewLearnedPatterns", groupId }}>
+    <ErrorBoundary extra={{ component: 'ViewLearnedPatterns', groupId }}>
       <ViewGroupInner groupId={groupId} />
     </ErrorBoundary>
   );
@@ -59,7 +59,7 @@ export function ViewLearnedPatterns({ groupId }: { groupId: string }) {
 function ViewGroupInner({ groupId }: { groupId: string }) {
   const { emailAccountId } = useAccount();
   const { data, isLoading, error, mutate } = useSWR<GroupItemsResponse>(
-    `/api/user/group/${groupId}/items`,
+    `/api/user/group/${groupId}/items`
   );
   const group = data?.group;
 
@@ -102,7 +102,7 @@ function ViewGroupInner({ groupId }: { groupId: string }) {
                   <Link
                     href={prefixPath(
                       emailAccountId,
-                      `/assistant/group/${groupId}/examples`,
+                      `/assistant/group/${groupId}/examples`
                     )}
                     target="_blank"
                   >
@@ -168,26 +168,26 @@ const AddGroupItemForm = ({
       });
       if (result?.serverError) {
         toastError({
-          description: `Failed to add pattern. ${result.serverError || ""}`,
+          description: `Failed to add pattern. ${result.serverError || ''}`,
         });
       } else {
-        toastSuccess({ description: "Pattern added!" });
+        toastSuccess({ description: 'Pattern added!' });
       }
       mutate();
       onClose();
     },
-    [mutate, onClose, emailAccountId, exclude],
+    [mutate, onClose, emailAccountId, exclude]
   );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") {
+      if (e.key === 'Enter') {
         e.preventDefault();
         e.stopPropagation();
         handleSubmit(onSubmit)(e);
       }
     },
-    [handleSubmit, onSubmit],
+    [handleSubmit, onSubmit]
   );
 
   return (
@@ -196,10 +196,10 @@ const AddGroupItemForm = ({
         <Select
           label=""
           options={[
-            { label: "From", value: GroupItemType.FROM },
-            { label: "Subject", value: GroupItemType.SUBJECT },
+            { label: 'From', value: GroupItemType.FROM },
+            { label: 'Subject', value: GroupItemType.SUBJECT },
           ]}
-          {...register("type", { required: true })}
+          {...register('type', { required: true })}
           error={errors.type}
         />
         <div className="flex-1">
@@ -207,7 +207,7 @@ const AddGroupItemForm = ({
             type="text"
             name="value"
             placeholder="e.g. hello@company.com"
-            registerProps={register("value", { required: true })}
+            registerProps={register('value', { required: true })}
             error={errors.value}
           />
         </div>
@@ -249,7 +249,7 @@ function GroupItems({
   mutate: KeyedMutator<GroupItemsResponse>;
 }) {
   const groupedByStatus = groupBy(items, (item) =>
-    item.exclude ? "exclude" : "include",
+    item.exclude ? 'exclude' : 'include'
   );
 
   return (
@@ -313,7 +313,7 @@ function GroupItemList({
                   {isCreatedRecently ||
                     (isUpdatedRecently && (
                       <Badge variant="green" className="mr-1">
-                        {isCreatedRecently ? "New!" : "Updated"}
+                        {isCreatedRecently ? 'New!' : 'Updated'}
                       </Badge>
                     ))}
 
@@ -338,11 +338,11 @@ function GroupItemList({
                     });
                     if (result?.serverError) {
                       toastError({
-                        description: `Failed to remove ${item.value}. ${result.serverError || ""}`,
+                        description: `Failed to remove ${item.value}. ${result.serverError || ''}`,
                       });
                     } else {
                       toastSuccess({
-                        description: "Removed learned pattern!",
+                        description: 'Removed learned pattern!',
                       });
                       mutate();
                     }
@@ -370,7 +370,7 @@ function GroupItemList({
 export function GroupItemDisplay({
   item,
 }: {
-  item: Pick<GroupItem, "type" | "value" | "exclude">;
+  item: Pick<GroupItem, 'type' | 'value' | 'exclude'>;
 }) {
   return (
     <>

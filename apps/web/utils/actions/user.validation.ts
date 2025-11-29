@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const saveAboutBody = z.object({ about: z.string().max(2000) });
 export type SaveAboutBody = z.infer<typeof saveAboutBody>;

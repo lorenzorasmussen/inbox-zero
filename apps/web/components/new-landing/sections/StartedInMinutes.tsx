@@ -1,30 +1,30 @@
-import { Badge } from "@/components/new-landing/common/Badge";
-import { BlurFade } from "@/components/new-landing/common/BlurFade";
-import { Card } from "@/components/new-landing/common/Card";
-import { CardWrapper } from "@/components/new-landing/common/CardWrapper";
-import { DisplayCard } from "@/components/new-landing/common/DisplayCard";
+import Image from 'next/image';
+import { Badge } from '@/components/new-landing/common/Badge';
+import { BlurFade } from '@/components/new-landing/common/BlurFade';
+import { Card } from '@/components/new-landing/common/Card';
+import { CardWrapper } from '@/components/new-landing/common/CardWrapper';
+import { DisplayCard } from '@/components/new-landing/common/DisplayCard';
 import {
   Section,
   SectionContent,
-} from "@/components/new-landing/common/Section";
+} from '@/components/new-landing/common/Section';
 import {
   SectionHeading,
   SectionSubtitle,
-} from "@/components/new-landing/common/Typography";
-import { AutoOrganize } from "@/components/new-landing/icons/AutoOrganize";
-import { Bell } from "@/components/new-landing/icons/Bell";
-import { Calendar } from "@/components/new-landing/icons/Calendar";
-import { Connect } from "@/components/new-landing/icons/Connect";
-import { Envelope } from "@/components/new-landing/icons/Envelope";
-import { Fire } from "@/components/new-landing/icons/Fire";
-import { Gmail } from "@/components/new-landing/icons/Gmail";
-import { Megaphone } from "@/components/new-landing/icons/Megaphone";
-import { Newsletter } from "@/components/new-landing/icons/Newsletter";
-import { Outlook } from "@/components/new-landing/icons/Outlook";
-import { SnowFlake } from "@/components/new-landing/icons/SnowFlake";
-import { SparkleBlue } from "@/components/new-landing/icons/SparkleBlue";
-import { Team } from "@/components/new-landing/icons/Team";
-import Image from "next/image";
+} from '@/components/new-landing/common/Typography';
+import { AutoOrganize } from '@/components/new-landing/icons/AutoOrganize';
+import { Bell } from '@/components/new-landing/icons/Bell';
+import { Calendar } from '@/components/new-landing/icons/Calendar';
+import { Connect } from '@/components/new-landing/icons/Connect';
+import { Envelope } from '@/components/new-landing/icons/Envelope';
+import { Fire } from '@/components/new-landing/icons/Fire';
+import { Gmail } from '@/components/new-landing/icons/Gmail';
+import { Megaphone } from '@/components/new-landing/icons/Megaphone';
+import { Newsletter } from '@/components/new-landing/icons/Newsletter';
+import { Outlook } from '@/components/new-landing/icons/Outlook';
+import { SnowFlake } from '@/components/new-landing/icons/SnowFlake';
+import { SparkleBlue } from '@/components/new-landing/icons/SparkleBlue';
+import { Team } from '@/components/new-landing/icons/Team';
 
 interface StartedInMinutesProps {
   title: React.ReactNode;

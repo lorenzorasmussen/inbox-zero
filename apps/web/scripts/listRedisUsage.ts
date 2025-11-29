@@ -1,17 +1,17 @@
 // eslint-disable no-process-env
 // Run with: `NODE_ENV=development npx tsx scripts/listRedisUsage.ts`
 
-import "dotenv/config";
-import { redis } from "@/utils/redis";
+import 'dotenv/config';
+import { redis } from '@/utils/redis';
 
 async function scanUsageKeys() {
-  let cursor = "0";
+  let cursor = '0';
   let keys: string[] = [];
   do {
-    const reply = await redis.scan(cursor, { match: "usage:*", count: 100 });
+    const reply = await redis.scan(cursor, { match: 'usage:*', count: 100 });
     cursor = reply[0];
     keys = [...keys, ...reply[1]];
-  } while (cursor !== "0");
+  } while (cursor !== '0');
 
   const costs = await Promise.all(
     keys.map(async (key) => {
@@ -23,7 +23,7 @@ async function scanUsageKeys() {
         cost: Number.parseFloat(Number.parseFloat(cost).toFixed(1)),
         data,
       };
-    }),
+    })
   );
 
   const totalCost = costs.reduce((acc, { cost }) => acc + cost, 0);
@@ -34,7 +34,7 @@ async function scanUsageKeys() {
     console.log(email, cost, data);
   }
 
-  console.log("totalCost:", totalCost);
+  console.log('totalCost:', totalCost);
 }
 
 scanUsageKeys().catch(console.error);

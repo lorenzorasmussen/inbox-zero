@@ -1,6 +1,6 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/utils";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/utils';
 
 export function ButtonListSurvey({
   options,
@@ -16,16 +16,15 @@ export function ButtonListSurvey({
   className?: string;
 }) {
   return (
-    <div className={cn("mx-auto flex max-w-lg flex-col gap-3", className)}>
+    <div className={cn('mx-auto flex max-w-lg flex-col gap-3', className)}>
       {options.map((option) => (
         <Button
           key={option.value}
           variant="outline"
           onClick={() => onClick(option.value)}
           className={cn(
-            "relative w-full",
-            option.recommended &&
-              "ring-1 ring-inset ring-black dark:ring-white",
+            'relative w-full',
+            option.recommended && 'ring-1 ring-inset ring-black dark:ring-white'
           )}
         >
           <span className="absolute inset-0 flex items-center justify-center">

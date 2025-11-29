@@ -1,14 +1,14 @@
-import { z } from "zod";
-import { createScopedLogger } from "@/utils/logger";
-import { createGenerateObject } from "@/utils/llms/index";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
-import { getEmailListPrompt, getTodayForLLM } from "@/utils/ai/helpers";
-import { getModel } from "@/utils/llms/model";
-import type { ReplyContextCollectorResult } from "@/utils/ai/reply/reply-context-collector";
-import type { CalendarAvailabilityContext } from "@/utils/ai/calendar/availability";
+import { z } from 'zod';
+import type { CalendarAvailabilityContext } from '@/utils/ai/calendar/availability';
+import { getEmailListPrompt, getTodayForLLM } from '@/utils/ai/helpers';
+import type { ReplyContextCollectorResult } from '@/utils/ai/reply/reply-context-collector';
+import { createGenerateObject } from '@/utils/llms/index';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import type { EmailForLLM } from '@/utils/types';
 
-const logger = createScopedLogger("DraftWithKnowledge");
+const logger = createScopedLogger('DraftWithKnowledge');
 
 const system = `You are an expert assistant that drafts email replies using knowledge base information.
 Write a polite and professional email that follows up on the previous conversation.
@@ -55,7 +55,7 @@ const getUserPrompt = ({
 ${emailAccount.about}
 </userAbout>
 `
-    : "";
+    : '';
 
   const relevantKnowledge = knowledgeBaseContent
     ? `Relevant knowledge base content:
@@ -64,7 +64,7 @@ ${emailAccount.about}
 ${knowledgeBaseContent}
 </knowledge_base>
 `
-    : "";
+    : '';
 
   const historicalContext = emailHistorySummary
     ? `Historical email context with this sender:
@@ -73,7 +73,7 @@ ${knowledgeBaseContent}
 ${emailHistorySummary}
 </sender_history>
 `
-    : "";
+    : '';
 
   const precedentHistoryContext = emailHistoryContext?.relevantEmails.length
     ? `Information from similar email threads that may be relevant to the current conversation to draft a reply.
@@ -83,16 +83,16 @@ ${emailHistoryContext.relevantEmails
   .map(
     (item) => `<item>
 ${item}
-</item>`,
+</item>`
   )
-  .join("\n")}
+  .join('\n')}
 </email_history>
 
 <email_history_notes>
-${emailHistoryContext.notes || "No notes"}
+${emailHistoryContext.notes || 'No notes'}
 </email_history_notes>
 `
-    : "";
+    : '';
 
   const writingStylePrompt = writingStyle
     ? `Writing style:
@@ -101,7 +101,7 @@ ${emailHistoryContext.notes || "No notes"}
 ${writingStyle}
 </writing_style>
 `
-    : "";
+    : '';
 
   const calendarContext = calendarAvailability?.noAvailability
     ? `Calendar availability information:
@@ -117,12 +117,12 @@ IMPORTANT: The user is NOT available. Do NOT suggest specific times. You may ack
     
 <calendar_availability>
 Suggested time slots:
-${calendarAvailability.suggestedTimes.map((slot) => `- ${slot.start} to ${slot.end}`).join("\n")}
+${calendarAvailability.suggestedTimes.map((slot) => `- ${slot.start} to ${slot.end}`).join('\n')}
 </calendar_availability>
 
 IMPORTANT: Use these available time slots when responding to meeting requests. Mention specific times the user is available.
 `
-      : "";
+      : '';
 
   const bookingLinkContext = emailAccount.calendarBookingLink
     ? `Calendar booking link:
@@ -133,7 +133,7 @@ ${emailAccount.calendarBookingLink}
 
 You can suggest this booking link if it helps with scheduling (e.g., "Feel free to book a time: [link]"). Use your judgment on whether to include it.
 `
-    : "";
+    : '';
 
   const mcpToolsContext = mcpContext
     ? `Additional context fetched from external tools (such as CRM systems, task managers, or other integrations) that may help draft a response:
@@ -142,7 +142,7 @@ You can suggest this booking link if it helps with scheduling (e.g., "Feel free 
 ${mcpContext}
 </external_tools_context>
 `
-    : "";
+    : '';
 
   return `${userAbout}
 ${relevantKnowledge}
@@ -165,7 +165,7 @@ const draftSchema = z.object({
   reply: z
     .string()
     .describe(
-      "The complete email reply draft incorporating knowledge base information",
+      'The complete email reply draft incorporating knowledge base information'
     ),
 });
 
@@ -189,7 +189,7 @@ export async function aiDraftWithKnowledge({
   mcpContext: string | null;
 }) {
   try {
-    logger.info("Drafting email with knowledge base", {
+    logger.info('Drafting email with knowledge base', {
       messageCount: messages.length,
       hasKnowledge: !!knowledgeBaseContent,
       hasHistory: !!emailHistorySummary,
@@ -217,7 +217,7 @@ export async function aiDraftWithKnowledge({
 
     const generateObject = createGenerateObject({
       emailAccount,
-      label: "Email draft with knowledge",
+      label: 'Email draft with knowledge',
       modelOptions,
     });
 
@@ -230,9 +230,9 @@ export async function aiDraftWithKnowledge({
 
     return result.object.reply;
   } catch (error) {
-    logger.error("Failed to draft email with knowledge", { error });
+    logger.error('Failed to draft email with knowledge', { error });
     return {
-      error: "Failed to draft email using knowledge base",
+      error: 'Failed to draft email using knowledge base',
     };
   }
 }

@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import type { ThreadMessage } from "@/components/email-list/types";
-import { EmailMessage } from "@/components/email-list/EmailMessage";
+import { useMemo, useState } from 'react';
+import { EmailMessage } from '@/components/email-list/EmailMessage';
+import type { ThreadMessage } from '@/components/email-list/types';
 
 export function EmailThread({
   messages,
@@ -25,11 +25,11 @@ export function EmailThread({
     const regularMessages: ThreadMessage[] = [];
 
     messages?.forEach((message) => {
-      if (message.labelIds?.includes("DRAFT")) {
+      if (message.labelIds?.includes('DRAFT')) {
         // Get the parent message ID from the references or in-reply-to header
         const parentId =
-          message.headers.references?.split(" ").pop() ||
-          message.headers["in-reply-to"];
+          message.headers.references?.split(' ').pop() ||
+          message.headers['in-reply-to'];
         if (parentId) {
           drafts.set(parentId, message);
         }
@@ -40,14 +40,14 @@ export function EmailThread({
 
     return regularMessages.map((message) => ({
       message,
-      draftMessage: drafts.get(message.headers["message-id"] || ""),
+      draftMessage: drafts.get(message.headers['message-id'] || ''),
     }));
   }, [messages]);
 
   const lastMessageId = organizedMessages.at(-1)?.message.id;
 
   const [expandedMessageIds, setExpandedMessageIds] = useState<Set<string>>(
-    new Set(lastMessageId ? [lastMessageId] : []),
+    new Set(lastMessageId ? [lastMessageId] : [])
   );
 
   return (

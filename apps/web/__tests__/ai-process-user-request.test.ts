@@ -1,36 +1,36 @@
-import { describe, expect, test, vi } from "vitest";
-import stripIndent from "strip-indent";
-import { processUserRequest } from "@/utils/ai/assistant/process-user-request";
-import type { ParsedMessage, ParsedMessageHeaders } from "@/utils/types";
-import type { RuleWithRelations } from "@/utils/ai/rule/create-prompt-from-rule";
-import type { Category, GroupItem, Prisma } from "@/generated/prisma/client";
-import { GroupItemType, LogicalOperator } from "@/generated/prisma/enums";
-import { getEmailAccount } from "@/__tests__/helpers";
+import stripIndent from 'strip-indent';
+import { describe, expect, test, vi } from 'vitest';
+import { getEmailAccount } from '@/__tests__/helpers';
+import type { Category, GroupItem, Prisma } from '@/generated/prisma/client';
+import { GroupItemType, LogicalOperator } from '@/generated/prisma/enums';
+import { processUserRequest } from '@/utils/ai/assistant/process-user-request';
+import type { RuleWithRelations } from '@/utils/ai/rule/create-prompt-from-rule';
+import type { ParsedMessage, ParsedMessageHeaders } from '@/utils/types';
 
 // pnpm test-ai ai-process-user-request
 
-const isAiTest = process.env.RUN_AI_TESTS === "true";
+const isAiTest = process.env.RUN_AI_TESTS === 'true';
 
-vi.mock("server-only", () => ({}));
-vi.mock("@/utils/gmail/mail", () => ({ replyToEmail: vi.fn() }));
+vi.mock('server-only', () => ({}));
+vi.mock('@/utils/gmail/mail', () => ({ replyToEmail: vi.fn() }));
 
 describe(
-  "processUserRequest",
+  'processUserRequest',
   {
     timeout: 30_000,
     skip: !isAiTest,
   },
   () => {
-    test("should fix a rule with incorrect AI instructions", async () => {
+    test('should fix a rule with incorrect AI instructions', async () => {
       const rule = getRule({
-        name: "Partnership Rule",
-        instructions: "Match emails discussing business opportunities",
+        name: 'Partnership Rule',
+        instructions: 'Match emails discussing business opportunities',
       });
 
       const originalEmail = getParsedMessage({
         headers: {
-          from: "sales@company.com",
-          subject: "Special Offer for Your Business",
+          from: 'sales@company.com',
+          subject: 'Special Offer for Your Business',
         },
         textPlain: stripIndent(`
         Hi there,
@@ -50,8 +50,8 @@ describe(
         rules: [rule],
         messages: [
           {
-            role: "user",
-            content: "This is a promotional email",
+            role: 'user',
+            content: 'This is a promotional email',
           },
         ],
         originalEmail,
@@ -64,29 +64,29 @@ describe(
 
       const toolCalls = result.steps.flatMap((step) => step.toolCalls);
       const updateInstructionsToolCall = toolCalls.find(
-        (toolCall) => toolCall.toolName === "update_ai_instructions",
+        (toolCall) => toolCall.toolName === 'update_ai_instructions'
       );
 
       expect(updateInstructionsToolCall).toBeDefined();
       expect(updateInstructionsToolCall?.args.ruleName).toBe(
-        "Partnership Rule",
+        'Partnership Rule'
       );
     });
 
-    test("should handle request to refine ai rule instructions", async () => {
+    test('should handle request to refine ai rule instructions', async () => {
       const ruleSupport = getRule({
-        name: "Support Rule",
-        instructions: "Match technical support requests",
+        name: 'Support Rule',
+        instructions: 'Match technical support requests',
       });
       const ruleUrgent = getRule({
-        name: "Urgent Rule",
-        instructions: "Match urgent requests",
+        name: 'Urgent Rule',
+        instructions: 'Match urgent requests',
       });
 
       const originalEmail = getParsedMessage({
         headers: {
-          from: "user@test.com",
-          subject: "Help with Login",
+          from: 'user@test.com',
+          subject: 'Help with Login',
         },
         textPlain: stripIndent(`
         Hello,
@@ -103,7 +103,7 @@ describe(
         rules: [ruleSupport, ruleUrgent],
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: "This isn't urgent.",
           },
         ],
@@ -118,23 +118,23 @@ describe(
       const toolCalls = result.steps.flatMap((step) => step.toolCalls);
 
       const toolCall = toolCalls.find(
-        (toolCall) => toolCall.toolName === "update_ai_instructions",
+        (toolCall) => toolCall.toolName === 'update_ai_instructions'
       );
 
       expect(toolCall).toBeDefined();
     });
 
-    test("should fix static conditions when user indicates incorrect matching", async () => {
+    test('should fix static conditions when user indicates incorrect matching', async () => {
       const rule = getRule({
-        name: "Receipt Rule",
-        from: "@amazon.com",
-        subject: "Order",
+        name: 'Receipt Rule',
+        from: '@amazon.com',
+        subject: 'Order',
       });
 
       const originalEmail = getParsedMessage({
         headers: {
-          from: "shipping@amazon.com",
-          subject: "Order #123 Has Shipped",
+          from: 'shipping@amazon.com',
+          subject: 'Order #123 Has Shipped',
         },
         textPlain: stripIndent(`
           Your order has shipped!
@@ -148,7 +148,7 @@ describe(
         rules: [rule],
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: "This isn't a receipt, it's a shipping notification.",
           },
         ],
@@ -160,49 +160,49 @@ describe(
 
       const toolCalls = result.steps.flatMap((step) => step.toolCalls);
       const updateStaticConditionsToolCall = toolCalls.find(
-        (toolCall) => toolCall.toolName === "update_static_conditions",
+        (toolCall) => toolCall.toolName === 'update_static_conditions'
       );
 
       expect(updateStaticConditionsToolCall).toBeDefined();
       expect(updateStaticConditionsToolCall?.args.ruleName).toBe(
-        "Receipt Rule",
+        'Receipt Rule'
       );
       expect(
         updateStaticConditionsToolCall?.args.staticConditions?.subject?.includes(
-          "shipping",
+          'shipping'
         ) ||
           updateStaticConditionsToolCall?.args.staticConditions?.subject?.includes(
-            "Shipped",
-          ),
+            'Shipped'
+          )
       ).toBe(true);
     });
 
-    test("should fix group conditions when user reports incorrect matching", async () => {
+    test('should fix group conditions when user reports incorrect matching', async () => {
       const group = getGroup({
-        name: "Newsletters",
+        name: 'Newsletters',
         items: [
           getGroupItem({
-            id: "1",
+            id: '1',
             type: GroupItemType.FROM,
-            value: "david@hello.com",
+            value: 'david@hello.com',
           }),
           getGroupItem({
-            id: "2",
+            id: '2',
             type: GroupItemType.FROM,
-            value: "@beehiiv.com",
+            value: '@beehiiv.com',
           }),
         ],
       });
 
       const rule = getRule({
-        name: "Newsletter Rule",
+        name: 'Newsletter Rule',
         group,
       });
 
       const originalEmail = getParsedMessage({
         headers: {
-          from: "david@hello.com",
-          subject: "Question about your latest post",
+          from: 'david@hello.com',
+          subject: 'Question about your latest post',
         },
         textPlain: stripIndent(`
           Hey there,
@@ -223,7 +223,7 @@ describe(
         rules: [rule],
         messages: [
           {
-            role: "user",
+            role: 'user',
             content: "This isn't a newsletter",
           },
         ],
@@ -235,38 +235,38 @@ describe(
 
       const toolCalls = result.steps.flatMap((step) => step.toolCalls);
       const removeFromGroupToolCall = toolCalls.find(
-        (toolCall) => toolCall.toolName === "remove_from_group",
+        (toolCall) => toolCall.toolName === 'remove_from_group'
       );
 
       expect(removeFromGroupToolCall).toBeDefined();
-      expect(removeFromGroupToolCall?.args.value).toBe("david@hello.com");
+      expect(removeFromGroupToolCall?.args.value).toBe('david@hello.com');
     });
 
-    test("should suggest adding sender to group when identified as missing", async () => {
+    test('should suggest adding sender to group when identified as missing', async () => {
       const group = getGroup({
-        name: "Newsletters",
+        name: 'Newsletters',
         items: [
           getGroupItem({
             type: GroupItemType.FROM,
-            value: "ainewsletter@substack.com",
+            value: 'ainewsletter@substack.com',
           }),
           getGroupItem({
             type: GroupItemType.FROM,
-            value: "milkroad@beehiiv.com",
+            value: 'milkroad@beehiiv.com',
           }),
         ],
       });
 
       const rule = getRule({
-        name: "Newsletter Rule",
+        name: 'Newsletter Rule',
         group,
       });
 
       const originalEmail = getParsedMessage({
         headers: {
-          from: "mattsnews@convertkit.com",
-          to: "me@ourcompany.com",
-          subject: "Weekly Developer Digest",
+          from: 'mattsnews@convertkit.com',
+          to: 'me@ourcompany.com',
+          subject: 'Weekly Developer Digest',
         },
         textPlain: stripIndent(`
           This Week's Top Stories:
@@ -285,8 +285,8 @@ describe(
         rules: [rule],
         messages: [
           {
-            role: "user",
-            content: "This is a newsletter",
+            role: 'user',
+            content: 'This is a newsletter',
           },
         ],
         originalEmail,
@@ -297,32 +297,32 @@ describe(
 
       const toolCalls = result.steps.flatMap((step) => step.toolCalls);
       const addToGroupToolCall = toolCalls.find(
-        (toolCall) => toolCall.toolName === "add_to_group",
+        (toolCall) => toolCall.toolName === 'add_to_group'
       );
 
       expect(addToGroupToolCall).toBeDefined();
-      expect(addToGroupToolCall?.args.type).toBe("from");
-      expect(addToGroupToolCall?.args.value).toContain("convertkit.com");
+      expect(addToGroupToolCall?.args.type).toBe('from');
+      expect(addToGroupToolCall?.args.value).toContain('convertkit.com');
     });
 
-    test("should fix category filters when user indicates wrong categorization", async () => {
+    test('should fix category filters when user indicates wrong categorization', async () => {
       const marketingCategory = getCategory({
-        name: "Marketing",
-        description: "Marketing related emails",
+        name: 'Marketing',
+        description: 'Marketing related emails',
       });
 
       const rule = getRule({
-        name: "Marketing Rule",
-        categoryFilterType: "INCLUDE",
+        name: 'Marketing Rule',
+        categoryFilterType: 'INCLUDE',
         categoryFilters: [marketingCategory],
       });
 
       const originalEmail = getParsedMessage({
         headers: {
-          from: "marketing@company.com",
-          subject: "Special Offer",
+          from: 'marketing@company.com',
+          subject: 'Special Offer',
         },
-        textPlain: "Would you like to purchase our enterprise plan?",
+        textPlain: 'Would you like to purchase our enterprise plan?',
       });
 
       const result = await processUserRequest({
@@ -330,50 +330,50 @@ describe(
         rules: [rule],
         messages: [
           {
-            role: "user",
-            content: "This is actually a sales email, not marketing.",
+            role: 'user',
+            content: 'This is actually a sales email, not marketing.',
           },
         ],
         originalEmail,
         matchedRule: rule,
         categories: [
-          { id: "1", name: "Marketing" },
-          { id: "2", name: "Sales" },
-          { id: "3", name: "Newsletter" },
+          { id: '1', name: 'Marketing' },
+          { id: '2', name: 'Sales' },
+          { id: '3', name: 'Newsletter' },
         ],
-        senderCategory: "Marketing",
+        senderCategory: 'Marketing',
       });
 
       const toolCalls = result.steps.flatMap((step) => step.toolCalls);
       const updateSenderCategoryToolCall = toolCalls.find(
-        (toolCall) => toolCall.toolName === "update_sender_category",
+        (toolCall) => toolCall.toolName === 'update_sender_category'
       );
 
       expect(updateSenderCategoryToolCall).toBeDefined();
-      expect(updateSenderCategoryToolCall?.args.category).toBe("Sales");
+      expect(updateSenderCategoryToolCall?.args.category).toBe('Sales');
     });
 
-    test("should handle complex rule fixes with multiple condition types", async () => {
+    test('should handle complex rule fixes with multiple condition types', async () => {
       const salesCategory = getCategory({
-        name: "Sales",
-        description: "Sales related emails",
+        name: 'Sales',
+        description: 'Sales related emails',
       });
 
       const rule = getRule({
-        name: "Sales Rule",
-        instructions: "Match sales opportunities",
-        from: "@enterprise.com",
-        subject: "Business opportunity",
+        name: 'Sales Rule',
+        instructions: 'Match sales opportunities',
+        from: '@enterprise.com',
+        subject: 'Business opportunity',
         categoryFilters: [salesCategory],
-        categoryFilterType: "INCLUDE",
+        categoryFilterType: 'INCLUDE',
       });
 
       const originalEmail = getParsedMessage({
         headers: {
-          from: "contact@enterprise.com",
-          subject: "Business opportunity - Act now!",
+          from: 'contact@enterprise.com',
+          subject: 'Business opportunity - Act now!',
         },
-        textPlain: "Make millions with this amazing opportunity!",
+        textPlain: 'Make millions with this amazing opportunity!',
       });
 
       const result = await processUserRequest({
@@ -381,48 +381,48 @@ describe(
         rules: [rule],
         messages: [
           {
-            role: "user",
+            role: 'user',
             content:
-              "This is a spam email pretending to be a business opportunity.",
+              'This is a spam email pretending to be a business opportunity.',
           },
         ],
         originalEmail,
         matchedRule: rule,
         categories: [
-          { id: "1", name: "Marketing" },
-          { id: "2", name: "Sales" },
-          { id: "3", name: "Newsletter" },
+          { id: '1', name: 'Marketing' },
+          { id: '2', name: 'Sales' },
+          { id: '3', name: 'Newsletter' },
         ],
-        senderCategory: "Marketing",
+        senderCategory: 'Marketing',
       });
 
       const toolCalls = result.steps.flatMap((step) => step.toolCalls);
 
       const updateStaticConditionsToolCall = toolCalls.find(
-        (toolCall) => toolCall.toolName === "update_static_conditions",
+        (toolCall) => toolCall.toolName === 'update_static_conditions'
       );
       const updateAiInstructionsToolCall = toolCalls.find(
-        (toolCall) => toolCall.toolName === "update_ai_instructions",
+        (toolCall) => toolCall.toolName === 'update_ai_instructions'
       );
 
       expect(
-        updateStaticConditionsToolCall || updateAiInstructionsToolCall,
+        updateStaticConditionsToolCall || updateAiInstructionsToolCall
       ).toBeDefined();
       if (updateStaticConditionsToolCall) {
-        expect(updateStaticConditionsToolCall.args.ruleName).toBe("Sales Rule");
+        expect(updateStaticConditionsToolCall.args.ruleName).toBe('Sales Rule');
       }
       if (updateAiInstructionsToolCall) {
-        expect(updateAiInstructionsToolCall.args.ruleName).toBe("Sales Rule");
+        expect(updateAiInstructionsToolCall.args.ruleName).toBe('Sales Rule');
       }
     });
-  },
+  }
 );
 
 function getRule(rule: Partial<RuleWithRelations>): RuleWithRelations {
   return {
-    id: "1",
-    emailAccountId: "user1",
-    name: "Rule name",
+    id: '1',
+    emailAccountId: 'user1',
+    name: 'Rule name',
 
     conditionalOperator: LogicalOperator.AND,
     // ai instructions
@@ -452,28 +452,28 @@ function getRule(rule: Partial<RuleWithRelations>): RuleWithRelations {
 }
 
 function getParsedMessage(
-  message: Omit<Partial<ParsedMessage>, "headers"> & {
+  message: Omit<Partial<ParsedMessage>, 'headers'> & {
     headers?: Partial<ParsedMessageHeaders>;
-  },
+  }
 ): ParsedMessage {
   return {
-    id: "id",
-    threadId: "thread-id",
-    snippet: "",
+    id: 'id',
+    threadId: 'thread-id',
+    snippet: '',
     attachments: [],
-    historyId: "history-id",
+    historyId: 'history-id',
     sizeEstimate: 100,
     internalDate: new Date().toISOString(),
     inline: [],
-    textPlain: "",
+    textPlain: '',
     ...message,
     headers: {
-      from: "test@example.com",
-      to: "recipient@example.com",
-      subject: "",
+      from: 'test@example.com',
+      to: 'recipient@example.com',
+      subject: '',
       date: new Date().toISOString(),
-      references: "",
-      "message-id": "message-id",
+      references: '',
+      'message-id': 'message-id',
       ...message.headers,
     },
   };
@@ -489,8 +489,8 @@ type Group = Prisma.GroupGetPayload<{
 
 function getGroup(group: Partial<Group>): Group {
   return {
-    id: "id",
-    name: "Group name",
+    id: 'id',
+    name: 'Group name',
     items: [],
     ...group,
   };
@@ -498,24 +498,24 @@ function getGroup(group: Partial<Group>): Group {
 
 function getGroupItem(item: Partial<GroupItem>): GroupItem {
   return {
-    id: "id",
-    value: "",
+    id: 'id',
+    value: '',
     type: GroupItemType.FROM,
     createdAt: new Date(),
     updatedAt: new Date(),
-    groupId: "group1",
+    groupId: 'group1',
     ...item,
   };
 }
 
 function getCategory(category: Partial<Category>): Category {
   return {
-    id: "id",
-    name: "",
+    id: 'id',
+    name: '',
     description: null,
     createdAt: new Date(),
     updatedAt: new Date(),
-    emailAccountId: "user1",
+    emailAccountId: 'user1',
     ...category,
   };
 }

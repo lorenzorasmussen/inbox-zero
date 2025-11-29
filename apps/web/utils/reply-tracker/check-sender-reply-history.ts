@@ -1,8 +1,8 @@
-import { extractEmailAddress } from "@/utils/email";
-import { createScopedLogger } from "@/utils/logger";
-import type { EmailProvider } from "@/utils/email/types";
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("reply-tracker/query");
+const logger = createScopedLogger('reply-tracker/query');
 
 /**
  * Checks if a user has ever sent a reply to a specific sender and counts received emails
@@ -15,11 +15,11 @@ const logger = createScopedLogger("reply-tracker/query");
 export async function checkSenderReplyHistory(
   emailProvider: EmailProvider,
   senderEmail: string,
-  receivedThreshold: number,
+  receivedThreshold: number
 ): Promise<{ hasReplied: boolean; receivedCount: number }> {
   const cleanSenderEmail = extractEmailAddress(senderEmail);
   if (!cleanSenderEmail) {
-    logger.warn("Could not extract email from sender", { senderEmail });
+    logger.warn('Could not extract email from sender', { senderEmail });
     // Default to assuming a reply might be needed if email is invalid
     return { hasReplied: true, receivedCount: 0 };
   }
@@ -30,14 +30,14 @@ export async function checkSenderReplyHistory(
       emailProvider.checkIfReplySent(cleanSenderEmail),
       emailProvider.countReceivedMessages(cleanSenderEmail, receivedThreshold),
     ]).catch((error) => {
-      logger.error("Timeout or error in parallel operations", {
+      logger.error('Timeout or error in parallel operations', {
         error,
         cleanSenderEmail,
       });
       return [true, 0] as const; // Safe defaults
     });
 
-    logger.info("Sender reply history check final result", {
+    logger.info('Sender reply history check final result', {
       senderEmail,
       cleanSenderEmail,
       hasReplied,
@@ -47,7 +47,7 @@ export async function checkSenderReplyHistory(
     return { hasReplied, receivedCount };
   } catch (error) {
     // Catch potential errors from Promise.all or other unexpected issues
-    logger.error("Overall error checking sender reply history", {
+    logger.error('Overall error checking sender reply history', {
       error,
       senderEmail,
       cleanSenderEmail,

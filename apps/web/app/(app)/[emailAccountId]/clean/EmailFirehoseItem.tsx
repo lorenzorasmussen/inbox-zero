@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import Link from "next/link";
 import {
-  ExternalLinkIcon,
-  Undo2Icon,
   ArchiveIcon,
   CheckIcon,
-} from "lucide-react";
-import { Badge } from "@/components/Badge";
-import { cn } from "@/utils";
-import type { CleanThread } from "@/utils/redis/clean.types";
-import { formatShortDate } from "@/utils/date";
-import { Button } from "@/components/ui/button";
+  ExternalLinkIcon,
+  Undo2Icon,
+} from 'lucide-react';
+import Link from 'next/link';
+import { Badge } from '@/components/Badge';
+import { toastError } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { CleanAction } from '@/generated/prisma/enums';
+import { cn } from '@/utils';
 import {
-  undoCleanInboxAction,
   changeKeepToDoneAction,
-} from "@/utils/actions/clean";
-import { toastError } from "@/components/Toast";
-import { getGmailUrl } from "@/utils/url";
-import { CleanAction } from "@/generated/prisma/enums";
+  undoCleanInboxAction,
+} from '@/utils/actions/clean';
+import { formatShortDate } from '@/utils/date';
+import type { CleanThread } from '@/utils/redis/clean.types';
+import { getGmailUrl } from '@/utils/url';
 
-type Status = "markedDone" | "markingDone" | "keep" | "labelled" | "processing";
+type Status = 'markedDone' | 'markingDone' | 'keep' | 'labelled' | 'processing';
 
 export function EmailItem({
   email,
@@ -35,7 +35,7 @@ export function EmailItem({
   userEmail: string;
   emailAccountId: string;
   action: CleanAction;
-  undoState?: "undoing" | "undone";
+  undoState?: 'undoing' | 'undone';
   setUndoing: (threadId: string) => void;
   setUndone: (threadId: string) => void;
 }) {
@@ -47,10 +47,10 @@ export function EmailItem({
   return (
     <div
       className={cn(
-        "flex items-center rounded-md border p-2 text-sm transition-all duration-300",
-        pending && "border-blue-500/30 bg-blue-50/50 dark:bg-blue-950/20",
-        archive && "border-green-500/30",
-        label && "border-yellow-500/30",
+        'flex items-center rounded-md border p-2 text-sm transition-all duration-300',
+        pending && 'border-blue-500/30 bg-blue-50/50 dark:bg-blue-950/20',
+        archive && 'border-green-500/30',
+        label && 'border-yellow-500/30'
       )}
     >
       <div className="min-w-0 flex-1">
@@ -89,10 +89,10 @@ function StatusCircle({ status }: { status: Status }) {
   return (
     <div
       className={cn(
-        "mr-2 size-2 rounded-full",
-        (status === "markedDone" || status === "markingDone") && "bg-green-500",
-        status === "keep" && "bg-blue-500",
-        status === "labelled" && "bg-yellow-500",
+        'mr-2 size-2 rounded-full',
+        (status === 'markedDone' || status === 'markingDone') && 'bg-green-500',
+        status === 'keep' && 'bg-blue-500',
+        status === 'labelled' && 'bg-yellow-500'
       )}
     />
   );
@@ -110,20 +110,20 @@ function StatusBadge({
   status: Status;
   email: CleanThread;
   action: CleanAction;
-  undoState?: "undoing" | "undone";
+  undoState?: 'undoing' | 'undone';
   setUndoing: (threadId: string) => void;
   setUndone: (threadId: string) => void;
   emailAccountId: string;
 }) {
-  if (status === "processing") {
+  if (status === 'processing') {
     return <Badge color="purple">Processing...</Badge>;
   }
 
-  if (undoState === "undoing") {
+  if (undoState === 'undoing') {
     return <Badge color="purple">Undoing...</Badge>;
   }
 
-  if (undoState === "undone") {
+  if (undoState === 'undone') {
     return <Badge color="purple">Undone</Badge>;
   }
 
@@ -132,18 +132,18 @@ function StatusBadge({
     return <Badge color="purple">Undone</Badge>;
   }
 
-  if (status === "markedDone" || status === "markingDone") {
+  if (status === 'markedDone' || status === 'markingDone') {
     return (
       <div className="group">
         <span className="group-hover:hidden">
           <Badge color="green">
-            {status === "markingDone"
+            {status === 'markingDone'
               ? action === CleanAction.MARK_READ
-                ? "Marking read..."
-                : "Archiving..."
+                ? 'Marking read...'
+                : 'Archiving...'
               : action === CleanAction.MARK_READ
-                ? "Marked read"
-                : "Archived"}
+                ? 'Marked read'
+                : 'Archived'}
           </Badge>
         </span>
         <div className="hidden group-hover:inline-flex">
@@ -176,7 +176,7 @@ function StatusBadge({
     );
   }
 
-  if (status === "keep") {
+  if (status === 'keep') {
     return (
       <div className="group">
         <span className="group-hover:hidden">
@@ -220,7 +220,7 @@ function StatusBadge({
     );
   }
 
-  if (status === "labelled") {
+  if (status === 'labelled') {
     return <Badge color="yellow">{email.label}</Badge>;
   }
 }
@@ -230,21 +230,21 @@ function getStatus(email: CleanThread): Status {
   // The StatusBadge component will handle showing the undone state
 
   if (email.archive) {
-    if (email.status === "processing") return "markingDone";
-    return "markedDone";
+    if (email.status === 'processing') return 'markingDone';
+    return 'markedDone';
   }
 
   if (email.label) {
-    return "labelled";
+    return 'labelled';
   }
 
   if (email.archive === false) {
-    return "keep";
+    return 'keep';
   }
 
-  return "processing";
+  return 'processing';
 }
 
 function isPending(email: CleanThread) {
-  return email.status === "processing" || email.status === "applying";
+  return email.status === 'processing' || email.status === 'applying';
 }

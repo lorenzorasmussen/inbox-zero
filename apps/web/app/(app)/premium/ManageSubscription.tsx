@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { CreditCardIcon } from "lucide-react";
-import Link from "next/link";
-import { env } from "@/env";
-import { Button } from "@/components/ui/button";
-import { toastError } from "@/components/Toast";
-import { getBillingPortalUrlAction } from "@/utils/actions/premium";
+import { CreditCardIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { toastError } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { env } from '@/env';
+import { getBillingPortalUrlAction } from '@/utils/actions/premium';
 
 export function ManageSubscription({
   premium: { stripeSubscriptionId, lemonSqueezyCustomerId },
@@ -36,7 +36,7 @@ export function ManageSubscription({
               toastError({
                 description:
                   result?.serverError ||
-                  "Error loading billing portal. Please contact support.",
+                  'Error loading billing portal. Please contact support.',
               });
             } else {
               window.location.href = url;
@@ -44,7 +44,7 @@ export function ManageSubscription({
           }}
         >
           <CreditCardIcon className="mr-2 h-4 w-4" />
-          Manage{hasBothStripeAndLemon ? " Stripe" : ""} subscription
+          Manage{hasBothStripeAndLemon ? ' Stripe' : ''} subscription
         </Button>
       )}
 
@@ -55,7 +55,7 @@ export function ManageSubscription({
             target="_blank"
           >
             <CreditCardIcon className="mr-2 h-4 w-4" />
-            Manage{hasBothStripeAndLemon ? " Lemon" : ""} subscription
+            Manage{hasBothStripeAndLemon ? ' Lemon' : ''} subscription
           </Link>
         </Button>
       )}

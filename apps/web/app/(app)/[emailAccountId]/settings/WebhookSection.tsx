@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { FormSection, FormSectionLeft } from "@/components/Form";
-import { Card } from "@/components/ui/card";
-import { CopyInput } from "@/components/CopyInput";
-import { RegenerateSecretButton } from "@/app/(app)/[emailAccountId]/settings/WebhookGenerate";
-import { useUser } from "@/hooks/useUser";
-import { LoadingContent } from "@/components/LoadingContent";
+import { RegenerateSecretButton } from '@/app/(app)/[emailAccountId]/settings/WebhookGenerate';
+import { CopyInput } from '@/components/CopyInput';
+import { FormSection, FormSectionLeft } from '@/components/Form';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Card } from '@/components/ui/card';
+import { useUser } from '@/hooks/useUser';
 
 export function WebhookSection() {
   const { data, isLoading, error, mutate } = useUser();

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { KnowledgeDialog } from "@/app/(app)/[emailAccountId]/assistant/knowledge/KnowledgeDialog";
-import { SettingCard } from "@/components/SettingCard";
-import { useDraftReplies } from "@/app/(app)/[emailAccountId]/assistant/settings/DraftReplies";
-import { Tooltip } from "@/components/Tooltip";
+import { KnowledgeDialog } from '@/app/(app)/[emailAccountId]/assistant/knowledge/KnowledgeDialog';
+import { useDraftReplies } from '@/app/(app)/[emailAccountId]/assistant/settings/DraftReplies';
+import { SettingCard } from '@/components/SettingCard';
+import { Tooltip } from '@/components/Tooltip';
 
 export function DraftKnowledgeSetting() {
   const { enabled, loading } = useDraftReplies();

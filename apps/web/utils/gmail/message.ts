@@ -1,33 +1,33 @@
-import type { gmail_v1 } from "@googleapis/gmail";
+import type { gmail_v1 } from '@googleapis/gmail';
+import parse from 'gmail-api-parse-message';
+import { extractDomainFromEmail } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
+import { isIgnoredSender } from '@/utils/filter-ignored-senders';
+import { getBatch } from '@/utils/gmail/batch';
+import { getAccessTokenFromClient } from '@/utils/gmail/client';
+import { GmailLabel } from '@/utils/gmail/label';
+import { withGmailRetry } from '@/utils/gmail/retry';
+import { createScopedLogger } from '@/utils/logger';
+import { sleep } from '@/utils/sleep';
 import {
   type BatchError,
+  isBatchError,
+  isDefined,
   type MessageWithPayload,
   type ParsedMessage,
   type ThreadWithPayloadMessages,
-  isBatchError,
-  isDefined,
-} from "@/utils/types";
-import { getBatch } from "@/utils/gmail/batch";
-import { extractDomainFromEmail } from "@/utils/email";
-import { createScopedLogger } from "@/utils/logger";
-import { sleep } from "@/utils/sleep";
-import { getAccessTokenFromClient } from "@/utils/gmail/client";
-import { GmailLabel } from "@/utils/gmail/label";
-import { isIgnoredSender } from "@/utils/filter-ignored-senders";
-import parse from "gmail-api-parse-message";
-import type { EmailProvider } from "@/utils/email/types";
-import { withGmailRetry } from "@/utils/gmail/retry";
+} from '@/utils/types';
 
-const logger = createScopedLogger("gmail/message");
+const logger = createScopedLogger('gmail/message');
 
 export function parseMessage(
-  message: MessageWithPayload,
+  message: MessageWithPayload
 ): ParsedMessage & { subject: string; date: string } {
   const parsed = parse(message) as ParsedMessage;
   return {
     ...parsed,
-    subject: parsed.headers?.subject || "",
-    date: parsed.headers?.date || "",
+    subject: parsed.headers?.subject || '',
+    date: parsed.headers?.date || '',
   };
 }
 
@@ -39,7 +39,7 @@ export function parseMessages(
   }: {
     withoutIgnoredSenders?: boolean;
     withoutDrafts?: boolean;
-  } = {},
+  } = {}
 ) {
   const messages =
     thread.messages?.map((message: MessageWithPayload) => {
@@ -67,11 +67,11 @@ export function parseMessages(
 export async function getMessage(
   messageId: string,
   gmail: gmail_v1.Gmail,
-  format?: "full" | "metadata",
+  format?: 'full' | 'metadata'
 ): Promise<MessageWithPayload> {
   return withGmailRetry(async () => {
     const message = await gmail.users.messages.get({
-      userId: "me",
+      userId: 'me',
       id: messageId,
       format,
     });
@@ -82,23 +82,23 @@ export async function getMessage(
 
 export async function getMessageByRfc822Id(
   rfc822MessageId: string,
-  gmail: gmail_v1.Gmail,
+  gmail: gmail_v1.Gmail
 ) {
   // Search for message using RFC822 Message-ID header
   // Remove any < > brackets if present
-  const cleanMessageId = rfc822MessageId.replace(/[<>]/g, "");
+  const cleanMessageId = rfc822MessageId.replace(/[<>]/g, '');
 
   const response = await withGmailRetry(() =>
     gmail.users.messages.list({
-      userId: "me",
+      userId: 'me',
       q: `rfc822msgid:${cleanMessageId}`,
       maxResults: 1,
-    }),
+    })
   );
 
   const message = response.data.messages?.[0];
   if (!message?.id) {
-    logger.error("No message found for RFC822 Message-ID", {
+    logger.error('No message found for RFC822 Message-ID', {
       rfc822MessageId,
     });
     return null;
@@ -116,31 +116,31 @@ export async function getMessagesBatch({
   accessToken: string;
   retryCount?: number;
 }): Promise<ParsedMessage[]> {
-  if (!accessToken) throw new Error("No access token");
+  if (!accessToken) throw new Error('No access token');
 
   if (retryCount > 3) {
-    logger.error("Too many retries", { messageIds, retryCount });
+    logger.error('Too many retries', { messageIds, retryCount });
     return [];
   }
-  if (messageIds.length > 100) throw new Error("Too many messages. Max 100");
+  if (messageIds.length > 100) throw new Error('Too many messages. Max 100');
 
   const batch: (MessageWithPayload | BatchError)[] = await getBatch(
     messageIds,
-    "/gmail/v1/users/me/messages",
-    accessToken,
+    '/gmail/v1/users/me/messages',
+    accessToken
   );
 
   const missingMessageIds = new Set<string>();
 
   if (batch.some((m) => isBatchError(m) && m.error.code === 401)) {
-    logger.error("Error fetching messages", { firstBatchItem: batch?.[0] });
-    throw new Error("Invalid access token");
+    logger.error('Error fetching messages', { firstBatchItem: batch?.[0] });
+    throw new Error('Invalid access token');
   }
 
   const messages = batch
     .map((message, i) => {
       if (isBatchError(message)) {
-        logger.error("Error fetching message", {
+        logger.error('Error fetching message', {
           code: message.error.code,
           error: message.error.message,
         });
@@ -154,7 +154,7 @@ export async function getMessagesBatch({
 
   // if we errored, then try to refetch the missing messages
   if (missingMessageIds.size > 0) {
-    logger.info("Missing messages", {
+    logger.info('Missing messages', {
       missingMessageIds: Array.from(missingMessageIds),
     });
     const nextRetryCount = retryCount + 1;
@@ -175,7 +175,7 @@ async function findPreviousEmailsWithSender(
   options: {
     sender: string;
     dateInSeconds: number;
-  },
+  }
 ) {
   const beforeDate = new Date(options.dateInSeconds * 1000);
   const [incomingEmails, outgoingEmails] = await Promise.all([
@@ -201,7 +201,7 @@ async function findPreviousEmailsWithSender(
 
 export async function hasPreviousCommunicationWithSender(
   client: EmailProvider,
-  options: { from: string; date: Date; messageId: string },
+  options: { from: string; date: Date; messageId: string }
 ) {
   const previousEmails = await findPreviousEmailsWithSender(client, {
     sender: options.from,
@@ -209,31 +209,31 @@ export async function hasPreviousCommunicationWithSender(
   });
   // Ignore the current email
   const hasPreviousEmail = !!previousEmails?.find(
-    (p) => p.id !== options.messageId,
+    (p) => p.id !== options.messageId
   );
 
   return hasPreviousEmail;
 }
 
 const PUBLIC_DOMAINS = new Set([
-  "gmail.com",
-  "yahoo.com",
-  "hotmail.com",
-  "outlook.com",
-  "aol.com",
-  "icloud.com",
-  "@me.com",
-  "protonmail.com",
-  "zoho.com",
-  "yandex.com",
-  "fastmail.com",
-  "gmx.com",
-  "@hey.com",
+  'gmail.com',
+  'yahoo.com',
+  'hotmail.com',
+  'outlook.com',
+  'aol.com',
+  'icloud.com',
+  '@me.com',
+  'protonmail.com',
+  'zoho.com',
+  'yandex.com',
+  'fastmail.com',
+  'gmx.com',
+  '@hey.com',
 ]);
 
 export async function hasPreviousCommunicationsWithSenderOrDomain(
   client: EmailProvider,
-  options: { from: string; date: Date; messageId: string },
+  options: { from: string; date: Date; messageId: string }
 ) {
   const domain = extractDomainFromEmail(options.from);
   if (!domain) return hasPreviousCommunicationWithSender(client, options);
@@ -261,7 +261,7 @@ export async function getMessages(
     maxResults?: number;
     pageToken?: string;
     labelIds?: string[];
-  },
+  }
 ): Promise<{
   messages: {
     id: string;
@@ -271,12 +271,12 @@ export async function getMessages(
 }> {
   const messages = await withGmailRetry(() =>
     gmail.users.messages.list({
-      userId: "me",
+      userId: 'me',
       maxResults: options.maxResults,
       q: options.query,
       pageToken: options.pageToken,
       labelIds: options.labelIds,
-    }),
+    })
   );
 
   return {
@@ -286,7 +286,7 @@ export async function getMessages(
 }
 
 function isMessage(
-  message: gmail_v1.Schema$Message,
+  message: gmail_v1.Schema$Message
 ): message is { id: string; threadId: string } {
   return !!message.id && !!message.threadId;
 }
@@ -297,7 +297,7 @@ export async function queryBatchMessages(
     query?: string;
     maxResults?: number;
     pageToken?: string;
-  },
+  }
 ) {
   const { query, pageToken } = options;
 
@@ -307,10 +307,10 @@ export async function queryBatchMessages(
 
   if (options.maxResults && options.maxResults > MAX_RESULTS) {
     logger.warn(
-      "Max results is greater than 20, which will cause rate limiting",
+      'Max results is greater than 20, which will cause rate limiting',
       {
         maxResults,
-      },
+      }
     );
   }
 
@@ -334,7 +334,7 @@ export async function queryBatchMessagesPages(
   }: {
     query: string;
     maxResults: number;
-  },
+  }
 ) {
   const messages: ParsedMessage[] = [];
   let nextPageToken: string | undefined;
@@ -353,7 +353,7 @@ export async function queryBatchMessagesPages(
 
 export async function getSentMessages(gmail: gmail_v1.Gmail, maxResults = 20) {
   const messages = await queryBatchMessages(gmail, {
-    query: "label:sent",
+    query: 'label:sent',
     maxResults,
   });
   return messages.messages;

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { AnimatePresence, motion } from "motion/react";
-import { ProgressBar } from "@tremor/react";
-import { cn } from "@/utils";
-import { LoadingMiniSpinner } from "@/components/Loading";
+import { ProgressBar } from '@tremor/react';
+import { AnimatePresence, motion } from 'motion/react';
+import { LoadingMiniSpinner } from '@/components/Loading';
+import { cn } from '@/utils';
 
 export function ProgressPanel({
   totalItems,
@@ -36,13 +36,13 @@ export function ProgressPanel({
           <ProgressBar
             value={progress}
             className="w-full"
-            color={isCompleted ? "green" : "blue"}
+            color={isCompleted ? 'green' : 'blue'}
           />
           <p className="mt-2 flex justify-between text-sm" aria-live="polite">
             <span
               className={cn(
-                "text-muted-foreground",
-                isCompleted ? "text-green-500" : "",
+                'text-muted-foreground',
+                isCompleted ? 'text-green-500' : ''
               )}
             >
               {isCompleted ? (

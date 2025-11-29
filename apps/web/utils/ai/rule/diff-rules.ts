@@ -1,8 +1,8 @@
-import z from "zod";
-import { createPatch } from "diff";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
+import { createPatch } from 'diff';
+import z from 'zod';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
 
 export async function aiDiffRules({
   emailAccount,
@@ -13,10 +13,10 @@ export async function aiDiffRules({
   oldPromptFile: string;
   newPromptFile: string;
 }) {
-  const diff = createPatch("prompt", oldPromptFile, newPromptFile);
+  const diff = createPatch('prompt', oldPromptFile, newPromptFile);
 
   const system =
-    "You are an AI assistant that analyzes differences between two prompt files and identifies added, edited, and removed rules.";
+    'You are an AI assistant that analyzes differences between two prompt files and identifies added, edited, and removed rules.';
   const prompt = `Analyze the following prompt files and their diff to identify the added, edited, and removed rules:
 
 ## Old prompt file:
@@ -57,11 +57,11 @@ Return the result in JSON format. Do not include any other text in your response
 </example>
 `;
 
-  const modelOptions = getModel(emailAccount.user, "chat");
+  const modelOptions = getModel(emailAccount.user, 'chat');
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Diff rules",
+    label: 'Diff rules',
     modelOptions,
   });
 
@@ -69,20 +69,20 @@ Return the result in JSON format. Do not include any other text in your response
     ...modelOptions,
     system,
     prompt,
-    schemaName: "diff_rules",
+    schemaName: 'diff_rules',
     schemaDescription:
-      "The result of the diff rules analysis. Return the result in JSON format. Do not include any other text in your response.",
+      'The result of the diff rules analysis. Return the result in JSON format. Do not include any other text in your response.',
     schema: z.object({
-      addedRules: z.array(z.string()).describe("The added rules"),
+      addedRules: z.array(z.string()).describe('The added rules'),
       editedRules: z
         .array(
           z.object({
-            oldRule: z.string().describe("The old rule"),
-            newRule: z.string().describe("The new rule"),
-          }),
+            oldRule: z.string().describe('The old rule'),
+            newRule: z.string().describe('The new rule'),
+          })
         )
-        .describe("The edited rules"),
-      removedRules: z.array(z.string()).describe("The removed rules"),
+        .describe('The edited rules'),
+      removedRules: z.array(z.string()).describe('The removed rules'),
     }),
   });
 

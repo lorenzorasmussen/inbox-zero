@@ -1,4 +1,4 @@
-import { parseAsBoolean, useQueryStates } from "nuqs";
+import { parseAsBoolean, useQueryStates } from 'nuqs';
 
 export function useSkipSettings() {
   return useQueryStates({

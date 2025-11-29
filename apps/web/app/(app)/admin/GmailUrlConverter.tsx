@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { useAction } from "next-safe-action/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/Input";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { Input } from '@/components/Input';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { toastSuccess, toastError } from "@/components/Toast";
-import { adminConvertGmailUrlAction } from "@/utils/actions/admin";
+} from '@/components/ui/card';
+import { adminConvertGmailUrlAction } from '@/utils/actions/admin';
 import {
-  convertGmailUrlBody,
   type ConvertGmailUrlBody,
-} from "@/utils/actions/admin.validation";
-import { internalDateToDate } from "@/utils/date";
+  convertGmailUrlBody,
+} from '@/utils/actions/admin.validation';
+import { internalDateToDate } from '@/utils/date';
 
 export function GmailUrlConverter() {
   const {
@@ -28,12 +28,12 @@ export function GmailUrlConverter() {
     result,
   } = useAction(adminConvertGmailUrlAction, {
     onSuccess: () => {
-      toastSuccess({ description: "Message found!" });
+      toastSuccess({ description: 'Message found!' });
     },
     onError: ({ error }) => {
       toastError({
-        title: "Error looking up message",
-        description: error.serverError || "An error occurred",
+        title: 'Error looking up message',
+        description: error.serverError || 'An error occurred',
       });
     },
   });
@@ -50,7 +50,7 @@ export function GmailUrlConverter() {
     (data) => {
       convertUrl(data);
     },
-    [convertUrl],
+    [convertUrl]
   );
 
   return (
@@ -68,7 +68,7 @@ export function GmailUrlConverter() {
             name="rfc822MessageId"
             label="RFC822 Message-ID"
             placeholder="<abc123@email.example.com>"
-            registerProps={register("rfc822MessageId")}
+            registerProps={register('rfc822MessageId')}
             error={errors.rfc822MessageId}
           />
           <Input
@@ -76,7 +76,7 @@ export function GmailUrlConverter() {
             name="email"
             label="Email Address"
             placeholder="user@example.com"
-            registerProps={register("email")}
+            registerProps={register('email')}
             error={errors.email}
           />
           <Button type="submit" loading={isExecuting}>

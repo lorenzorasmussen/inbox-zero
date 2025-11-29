@@ -1,11 +1,11 @@
-import { z } from "zod";
-import { createGenerateObject } from "@/utils/llms";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
-import { getModel, type ModelType } from "@/utils/llms/model";
-import { getUserInfoPrompt, getEmailListPrompt } from "@/utils/ai/helpers";
-import type { ConversationStatus } from "@/utils/reply-tracker/conversation-status-config";
-import { SystemType } from "@/generated/prisma/enums";
+import { z } from 'zod';
+import { SystemType } from '@/generated/prisma/enums';
+import { getEmailListPrompt, getUserInfoPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel, type ModelType } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { ConversationStatus } from '@/utils/reply-tracker/conversation-status-config';
+import type { EmailForLLM } from '@/utils/types';
 
 export async function aiDetermineThreadStatus({
   emailAccount,
@@ -23,7 +23,7 @@ export async function aiDetermineThreadStatus({
 Your task is to determine the current status of an email thread from the user's perspective. The thread can be in ONE of these mutually exclusive states:
 
 * TO_REPLY - We need to reply
-* AWAITING_REPLY - We're waiting for them to reply${userSentLastEmail ? "" : "\n* FYI - No reply needed"}
+* AWAITING_REPLY - We're waiting for them to reply${userSentLastEmail ? '' : '\n* FYI - No reply needed'}
 * ACTIONED - Thread is complete
 
 DETAILED CRITERIA:
@@ -46,7 +46,7 @@ DETAILED CRITERIA:
 - The user is NOT the one who needs to reply next
 - CRITICAL: If the user requested something and then received a response fulfilling that request, the user is NO LONGER awaiting a reply - the request was fulfilled${
     userSentLastEmail
-      ? ""
+      ? ''
       : `
 
 **FYI**: Information the user RECEIVED that they should be aware of, but doesn't require a response. Use this when:
@@ -72,23 +72,23 @@ CRITICAL RULES - READ CAREFULLY:
    - If SOMEONE ELSE promised to do something → AWAITING_REPLY (waiting for them)
    - If YOU promised to do something → TO_REPLY (you need to follow through)
 4. **Multi-person threads**: In threads with multiple participants, focus ONLY on what the user (the perspective being analyzed) needs to do. Ignore conversations between other people that don't involve the user's commitments.
-5. **Request fulfillment**: If the user asked for something (information, help, etc.) and received it, AND the user has no pending commitments/deliverables, they are no longer awaiting a reply. The status should be ${userSentLastEmail ? "ACTIONED (if fully resolved)" : "FYI (if informational) or ACTIONED (if fully resolved)"}. However, if the user still has a pending commitment, see Rule 6.
+5. **Request fulfillment**: If the user asked for something (information, help, etc.) and received it, AND the user has no pending commitments/deliverables, they are no longer awaiting a reply. The status should be ${userSentLastEmail ? 'ACTIONED (if fully resolved)' : 'FYI (if informational) or ACTIONED (if fully resolved)'}. However, if the user still has a pending commitment, see Rule 6.
 6. **Clarifying questions don't cancel commitments**: If the user has a pending commitment/deliverable and asks a clarifying question that gets answered, the status is TO_REPLY (not AWAITING_REPLY). The user needs to complete their original commitment now that they have the clarification.
 7. **User sends info/recommendations**: When the user SENDS informational content, advice, or recommendations without asking questions or expecting specific actions, it's ACTIONED (not AWAITING_REPLY). The user completed their action and isn't waiting for anything.
 8. **Latest message context matters**: If the latest message is purely informational but there are unresolved items earlier in the thread, prioritize the unresolved items${
     userSentLastEmail
-      ? ""
+      ? ''
       : `
 9. **FYI is only when nothing is pending**: Use FYI ONLY when there are absolutely no questions, requests, or pending actions in the entire thread`
   }${
     userSentLastEmail
       ? `
 9. **User sent last email**: Since the user sent the last email, FYI is NOT an option. Choose AWAITING_REPLY if waiting for a response, or ACTIONED if the thread is complete.`
-      : ""
+      : ''
   }
 
 Respond with a JSON object with:
-- status: One of TO_REPLY, ${userSentLastEmail ? "" : "FYI, "}AWAITING_REPLY, or ACTIONED
+- status: One of TO_REPLY, ${userSentLastEmail ? '' : 'FYI, '}AWAITING_REPLY, or ACTIONED
 - rationale: Brief one-line explanation for the decision`;
 
   const prompt = `${getUserInfoPrompt({ emailAccount })}
@@ -108,7 +108,7 @@ Based on the full thread context above, determine the current status of this thr
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Determine thread status",
+    label: 'Determine thread status',
     modelOptions,
   });
 

@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { NextResponse } from "next/server";
-import { withEmailAccount } from "@/utils/middleware";
-import { getEmailFieldStats } from "@/app/api/user/stats/helpers";
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getEmailFieldStats } from '@/app/api/user/stats/helpers';
+import { withEmailAccount } from '@/utils/middleware';
 
 const senderStatsQuery = z.object({
   fromDate: z.coerce.number().nullish(),
@@ -18,7 +18,7 @@ export interface SendersResponse {
  * Get sender statistics from database
  */
 async function getSenderStatistics(
-  options: SenderStatsQuery & { emailAccountId: string },
+  options: SenderStatsQuery & { emailAccountId: string }
 ): Promise<SendersResponse> {
   const [mostReceived, mostReceivedDomains] = await Promise.all([
     getMostReceivedFrom(options),
@@ -28,15 +28,15 @@ async function getSenderStatistics(
   return {
     mostActiveSenderEmails: mostReceived.data.map(
       (d: { from?: string; count: number }) => ({
-        name: d.from || "",
+        name: d.from || '',
         value: d.count,
-      }),
+      })
     ),
     mostActiveSenderDomains: mostReceivedDomains.data.map(
       (d: { from?: string; count: number }) => ({
-        name: d.from || "",
+        name: d.from || '',
         value: d.count,
-      }),
+      })
     ),
   };
 }
@@ -55,7 +55,7 @@ async function getMostReceivedFrom({
     emailAccountId,
     fromDate,
     toDate,
-    field: "from",
+    field: 'from',
     isSent: false,
   });
 }
@@ -74,18 +74,18 @@ async function getDomainsMostReceivedFrom({
     emailAccountId,
     fromDate,
     toDate,
-    field: "fromDomain",
+    field: 'fromDomain',
     isSent: false,
   });
 }
 
-export const GET = withEmailAccount("user/stats/senders", async (request) => {
+export const GET = withEmailAccount('user/stats/senders', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
 
   const { searchParams } = new URL(request.url);
   const query = senderStatsQuery.parse({
-    fromDate: searchParams.get("fromDate"),
-    toDate: searchParams.get("toDate"),
+    fromDate: searchParams.get('fromDate'),
+    toDate: searchParams.get('toDate'),
   });
 
   const result = await getSenderStatistics({

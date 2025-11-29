@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { ChevronRightIcon } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { useSetupProgress } from "@/hooks/useSetupProgress";
+import { ChevronRightIcon } from 'lucide-react';
+import Link from 'next/link';
+import { Card } from '@/components/ui/card';
+import { useSetupProgress } from '@/hooks/useSetupProgress';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { prefixPath } from '@/utils/path';
 
 export function SetupProgressCard() {
   const { emailAccountId } = useAccount();
@@ -17,7 +17,7 @@ export function SetupProgressCard() {
 
   return (
     <div className="px-3 pt-4">
-      <Link href={prefixPath(emailAccountId, "/setup")}>
+      <Link href={prefixPath(emailAccountId, '/setup')}>
         <Card className="cursor-pointer transition-all shadow-none p-2.5 hover:shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

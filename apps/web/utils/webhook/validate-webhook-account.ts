@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
-import { hasAiAccess, isPremium } from "@/utils/premium";
-import { unwatchEmails } from "@/app/api/watch/controller";
-import { createEmailProvider } from "@/utils/email/provider";
-import prisma from "@/utils/prisma";
-import type { Logger } from "@/utils/logger";
+import { NextResponse } from 'next/server';
+import { unwatchEmails } from '@/app/api/watch/controller';
+import { createEmailProvider } from '@/utils/email/provider';
+import type { Logger } from '@/utils/logger';
+import { hasAiAccess, isPremium } from '@/utils/premium';
+import prisma from '@/utils/prisma';
 
 export async function getWebhookEmailAccount(
   where: { email: string } | { watchEmailsSubscriptionId: string },
-  logger: Logger,
+  logger: Logger
 ) {
   const query = {
     select: {
@@ -51,7 +51,7 @@ export async function getWebhookEmailAccount(
     },
   };
 
-  if ("email" in where) {
+  if ('email' in where) {
     return await prisma.emailAccount.findUnique({
       where: { email: where.email },
       ...query,
@@ -64,7 +64,7 @@ export async function getWebhookEmailAccount(
   });
 
   if (!emailAccount) {
-    logger.info("Subscription not found in current field, checking history", {
+    logger.info('Subscription not found in current field, checking history', {
       subscriptionId: where.watchEmailsSubscriptionId,
     });
 
@@ -83,7 +83,7 @@ export async function getWebhookEmailAccount(
       });
 
       if (emailAccount) {
-        logger.info("Found account by historical subscription ID", {
+        logger.info('Found account by historical subscription ID', {
           subscriptionId: where.watchEmailsSubscriptionId,
           email: emailAccount.email,
           currentSubscriptionId: emailAccount.watchEmailsSubscriptionId,
@@ -93,7 +93,7 @@ export async function getWebhookEmailAccount(
   }
 
   if (!emailAccount) {
-    logger.error("Account not found", where);
+    logger.error('Account not found', where);
   }
 
   return emailAccount;
@@ -115,16 +115,16 @@ type ValidationResult =
 
 export async function validateWebhookAccount(
   emailAccount: ValidatedWebhookAccountData | null,
-  logger: Logger,
+  logger: Logger
 ): Promise<ValidationResult> {
   if (!emailAccount) {
-    logger.error("Account not found");
+    logger.error('Account not found');
     return { success: false, response: NextResponse.json({ ok: true }) };
   }
 
   const premium = isPremium(
     emailAccount.user.premium?.lemonSqueezyRenewsAt || null,
-    emailAccount.user.premium?.stripeSubscriptionStatus || null,
+    emailAccount.user.premium?.stripeSubscriptionStatus || null
   )
     ? emailAccount.user.premium
     : undefined;
@@ -135,7 +135,7 @@ export async function validateWebhookAccount(
   });
 
   if (!premium) {
-    logger.info("Account not premium", {
+    logger.info('Account not premium', {
       lemonSqueezyRenewsAt: emailAccount.user.premium?.lemonSqueezyRenewsAt,
       stripeSubscriptionStatus:
         emailAccount.user.premium?.stripeSubscriptionStatus,
@@ -151,7 +151,7 @@ export async function validateWebhookAccount(
   const userHasAiAccess = hasAiAccess(premium.tier, emailAccount.user.aiApiKey);
 
   if (!userHasAiAccess) {
-    logger.info("Does not have ai access - unwatching", {
+    logger.info('Does not have ai access - unwatching', {
       tier: premium.tier,
       hasApiKey: !!emailAccount.user.aiApiKey,
     });
@@ -165,7 +165,7 @@ export async function validateWebhookAccount(
 
   const hasAutomationRules = emailAccount.rules.length > 0;
   if (!hasAutomationRules) {
-    logger.info("Has no rules enabled");
+    logger.info('Has no rules enabled');
     return { success: false, response: NextResponse.json({ ok: true }) };
   }
 
@@ -173,7 +173,7 @@ export async function validateWebhookAccount(
     !emailAccount.account?.access_token ||
     !emailAccount.account?.refresh_token
   ) {
-    logger.error("Missing access or refresh token");
+    logger.error('Missing access or refresh token');
     return { success: false, response: NextResponse.json({ ok: true }) };
   }
 

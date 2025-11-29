@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type GetChatsResponse = Awaited<ReturnType<typeof getChats>>;
 
-export const GET = withEmailAccount("chats", async (request) => {
+export const GET = withEmailAccount('chats', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
   const result = await getChats({ emailAccountId });
   return NextResponse.json(result);
@@ -13,7 +13,7 @@ export const GET = withEmailAccount("chats", async (request) => {
 async function getChats({ emailAccountId }: { emailAccountId: string }) {
   const chats = await prisma.chat.findMany({
     where: { emailAccountId },
-    orderBy: { updatedAt: "desc" },
+    orderBy: { updatedAt: 'desc' },
   });
 
   return { chats };

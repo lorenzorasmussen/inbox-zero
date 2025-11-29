@@ -1,14 +1,14 @@
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import { captureException } from "@/utils/error";
-import type { EmailProvider } from "@/utils/email/types";
-import { createEmailProvider } from "@/utils/email/provider";
-import type { Logger } from "@/utils/logger";
+import { createEmailProvider } from '@/utils/email/provider';
+import type { EmailProvider } from '@/utils/email/types';
+import { captureException } from '@/utils/error';
+import type { Logger } from '@/utils/logger';
+import { createScopedLogger } from '@/utils/logger';
 import {
-  parseSubscriptionHistory,
-  cleanupOldHistoryEntries,
   addCurrentSubscriptionToHistory,
-} from "@/utils/outlook/subscription-history";
+  cleanupOldHistoryEntries,
+  parseSubscriptionHistory,
+} from '@/utils/outlook/subscription-history';
+import prisma from '@/utils/prisma';
 
 /**
  * Manages Outlook subscriptions, ensuring only one active subscription per email account
@@ -22,7 +22,7 @@ export class OutlookSubscriptionManager {
   constructor(client: EmailProvider, emailAccountId: string) {
     this.client = client;
     this.emailAccountId = emailAccountId;
-    this.logger = createScopedLogger("outlook/subscription-manager").with({
+    this.logger = createScopedLogger('outlook/subscription-manager').with({
       emailAccountId,
     });
   }
@@ -43,7 +43,7 @@ export class OutlookSubscriptionManager {
           new Date(existing.expirationDate).getTime() - now.getTime();
 
         if (timeUntilExpiry > renewalThresholdMs) {
-          this.logger.info("Existing subscription is valid; reuse", {
+          this.logger.info('Existing subscription is valid; reuse', {
             subscriptionId: existing.subscriptionId,
             expirationDate: existing.expirationDate,
           });
@@ -54,12 +54,12 @@ export class OutlookSubscriptionManager {
           };
         }
 
-        this.logger.info("Existing subscription near expiry; renewing", {
+        this.logger.info('Existing subscription near expiry; renewing', {
           subscriptionId: existing.subscriptionId,
           expirationDate: existing.expirationDate,
         });
       } else {
-        this.logger.info("No existing subscription found; creating new");
+        this.logger.info('No existing subscription found; creating new');
       }
 
       // If we got here, the subscription is missing or expiring soon. Cancel and create a new one.
@@ -67,7 +67,7 @@ export class OutlookSubscriptionManager {
 
       const subscription = await this.client.watchEmails();
 
-      this.logger.info("Successfully created new subscription", {
+      this.logger.info('Successfully created new subscription', {
         subscriptionId: subscription?.subscriptionId,
       });
 
@@ -79,7 +79,7 @@ export class OutlookSubscriptionManager {
           }
         : null;
     } catch (error) {
-      this.logger.error("Failed to create subscription", { error });
+      this.logger.error('Failed to create subscription', { error });
       captureException(error);
       return null;
     }
@@ -100,18 +100,18 @@ export class OutlookSubscriptionManager {
           subscriptionId: result.subscriptionId,
         });
       } catch (error) {
-        this.logger.error("Failed to save subscription to database", {
+        this.logger.error('Failed to save subscription to database', {
           subscriptionId: result.subscriptionId,
           error,
         });
 
         try {
           await this.client.unwatchEmails(result.subscriptionId);
-          this.logger.info("Canceled orphaned subscription after DB failure", {
+          this.logger.info('Canceled orphaned subscription after DB failure', {
             subscriptionId: result.subscriptionId,
           });
         } catch (cancelError) {
-          this.logger.error("Failed to cancel orphaned subscription", {
+          this.logger.error('Failed to cancel orphaned subscription', {
             subscriptionId: result.subscriptionId,
             error: cancelError,
           });
@@ -131,30 +131,30 @@ export class OutlookSubscriptionManager {
       const existingSubscriptionId = existing?.subscriptionId || null;
 
       if (existingSubscriptionId) {
-        this.logger.info("Canceling existing subscription", {
+        this.logger.info('Canceling existing subscription', {
           existingSubscriptionId,
         });
 
         try {
           await this.client.unwatchEmails(existingSubscriptionId);
-          this.logger.info("Successfully canceled existing subscription", {
+          this.logger.info('Successfully canceled existing subscription', {
             existingSubscriptionId,
           });
         } catch (error) {
           // Log but don't fail - the subscription might already be expired/invalid
           this.logger.warn(
-            "Failed to cancel existing subscription (may already be expired)",
+            'Failed to cancel existing subscription (may already be expired)',
             {
               existingSubscriptionId,
               error: error instanceof Error ? error.message : String(error),
-            },
+            }
           );
         }
       } else {
-        this.logger.info("No existing subscription found");
+        this.logger.info('No existing subscription found');
       }
     } catch (error) {
-      this.logger.error("Error checking for existing subscription", { error });
+      this.logger.error('Error checking for existing subscription', { error });
       // Don't throw - we still want to try creating a new subscription
     }
   }
@@ -185,13 +185,13 @@ export class OutlookSubscriptionManager {
     subscriptionId: string;
   }): Promise<void> {
     if (!subscription.expirationDate) {
-      throw new Error("Subscription missing expiration date");
+      throw new Error('Subscription missing expiration date');
     }
 
     const expirationDate = subscription.expirationDate;
     const now = new Date();
 
-    this.logger.info("Updating subscription in database", {
+    this.logger.info('Updating subscription in database', {
       subscriptionId: subscription.subscriptionId,
       expirationDate,
     });
@@ -200,7 +200,7 @@ export class OutlookSubscriptionManager {
 
     let updatedHistory = parseSubscriptionHistory(
       existing?.subscriptionHistory,
-      this.logger,
+      this.logger
     );
     updatedHistory = cleanupOldHistoryEntries(updatedHistory);
 
@@ -213,10 +213,10 @@ export class OutlookSubscriptionManager {
         existing.subscriptionId,
         now,
         existing.accountCreatedAt,
-        this.logger,
+        this.logger
       );
 
-      this.logger.info("Moving old subscription to history", {
+      this.logger.info('Moving old subscription to history', {
         oldSubscriptionId: existing.subscriptionId,
         newSubscriptionId: subscription.subscriptionId,
         historyLength: updatedHistory.length,
@@ -232,7 +232,7 @@ export class OutlookSubscriptionManager {
       },
     });
 
-    this.logger.info("Updated subscription in database", {
+    this.logger.info('Updated subscription in database', {
       subscriptionId: subscription.subscriptionId,
       expirationDate,
       historyEntries: updatedHistory.length,
@@ -241,11 +241,11 @@ export class OutlookSubscriptionManager {
 }
 
 export async function createManagedOutlookSubscription(
-  emailAccountId: string,
+  emailAccountId: string
 ): Promise<Date | null> {
   const provider = await createEmailProvider({
     emailAccountId,
-    provider: "microsoft",
+    provider: 'microsoft',
   });
   const manager = new OutlookSubscriptionManager(provider, emailAccountId);
 

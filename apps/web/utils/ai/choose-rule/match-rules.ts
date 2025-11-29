@@ -1,38 +1,38 @@
-import { getConditionTypes, isAIRule } from "@/utils/condition";
-import {
-  findMatchingGroup,
-  getGroupsWithRules,
-  type GroupsWithRules,
-} from "@/utils/group/find-matching-group";
-import type { ParsedMessage, RuleWithActions } from "@/utils/types";
 import {
   ExecutedRuleStatus,
   LogicalOperator,
   SystemType,
-} from "@/generated/prisma/enums";
-import { ConditionType } from "@/utils/config";
-import prisma from "@/utils/prisma";
-import { aiChooseRule } from "@/utils/ai/choose-rule/ai-choose-rule";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { Logger } from "@/utils/logger";
+} from '@/generated/prisma/enums';
+import { aiChooseRule } from '@/utils/ai/choose-rule/ai-choose-rule';
 import type {
-  MatchReason,
   MatchingRuleResult,
-} from "@/utils/ai/choose-rule/types";
-import { extractEmailAddress } from "@/utils/email";
-import { hasIcsAttachment } from "@/utils/parse/calender-event";
-import { checkSenderReplyHistory } from "@/utils/reply-tracker/check-sender-reply-history";
-import type { EmailProvider } from "@/utils/email/types";
-import type { ModelType } from "@/utils/llms/model";
+  MatchReason,
+} from '@/utils/ai/choose-rule/types';
 import {
   getColdEmailRule,
   isColdEmailRuleEnabled,
-} from "@/utils/cold-email/cold-email-rule";
-import { isColdEmail } from "@/utils/cold-email/is-cold-email";
-import { isConversationStatusType } from "@/utils/reply-tracker/conversation-status-config";
+} from '@/utils/cold-email/cold-email-rule';
+import { isColdEmail } from '@/utils/cold-email/is-cold-email';
+import { getConditionTypes, isAIRule } from '@/utils/condition';
+import { ConditionType } from '@/utils/config';
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import {
+  findMatchingGroup,
+  type GroupsWithRules,
+  getGroupsWithRules,
+} from '@/utils/group/find-matching-group';
+import type { ModelType } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { Logger } from '@/utils/logger';
+import { hasIcsAttachment } from '@/utils/parse/calender-event';
+import prisma from '@/utils/prisma';
+import { checkSenderReplyHistory } from '@/utils/reply-tracker/check-sender-reply-history';
+import { isConversationStatusType } from '@/utils/reply-tracker/conversation-status-config';
+import type { ParsedMessage, RuleWithActions } from '@/utils/types';
 
-const MODULE = "match-rules";
+const MODULE = 'match-rules';
 
 const TO_REPLY_RECEIVED_THRESHOLD = 10;
 
@@ -91,7 +91,7 @@ export async function findMatchingRules({
 
   // Filter out cold email rule which was already checked above
   const rulesWithoutColdEmail = rules.filter(
-    (rule) => rule.systemType !== SystemType.COLD_EMAIL,
+    (rule) => rule.systemType !== SystemType.COLD_EMAIL
   );
 
   const results = await findMatchingRulesWithReasons(
@@ -100,7 +100,7 @@ export async function findMatchingRules({
     emailAccount,
     provider,
     modelType,
-    logger,
+    logger
   );
 
   return results;
@@ -177,7 +177,7 @@ async function findPotentialMatchingRules({
         const { matchingItem, group, ruleExcluded } = matchesGroupRule(
           rule,
           groups,
-          message,
+          message
         );
 
         // If this rule is excluded by an exclusion pattern, skip it entirely
@@ -225,7 +225,7 @@ async function findPotentialMatchingRules({
     if (potentialAiMatch) {
       potentialAiMatches.push({
         ...rule,
-        instructions: rule.instructions ?? "",
+        instructions: rule.instructions ?? '',
       });
     }
   }
@@ -235,11 +235,11 @@ async function findPotentialMatchingRules({
     potentialAiMatches,
     message,
     provider,
-    logger,
+    logger
   );
 
   const hasLearnedPatternMatch = matches.some((m) =>
-    m.matchReasons.some((r) => r.type === ConditionType.LEARNED_PATTERN),
+    m.matchReasons.some((r) => r.type === ConditionType.LEARNED_PATTERN)
   );
 
   // If we have a learned pattern match, then return all matches and no potential AI matches
@@ -293,20 +293,19 @@ export function evaluateRuleConditions({
     }
     // No conditions means no match
     return { matched: false, potentialAiMatch: false, matchReasons };
-  } else {
-    // AND logic
-    if (hasStaticCondition && !staticMatch) {
-      // Static failed, so AND fails
-      return { matched: false, potentialAiMatch: false, matchReasons: [] };
-    }
-    if (hasAiCondition) {
-      // Static passed (or doesn't exist), but need AI to complete AND
-      return { matched: false, potentialAiMatch: true, matchReasons };
-    }
-    // Only static (and it passed), or no conditions (no match)
-    const matched = hasStaticCondition ? staticMatch : false;
-    return { matched, potentialAiMatch: false, matchReasons };
   }
+  // AND logic
+  if (hasStaticCondition && !staticMatch) {
+    // Static failed, so AND fails
+    return { matched: false, potentialAiMatch: false, matchReasons: [] };
+  }
+  if (hasAiCondition) {
+    // Static passed (or doesn't exist), but need AI to complete AND
+    return { matched: false, potentialAiMatch: true, matchReasons };
+  }
+  // Only static (and it passed), or no conditions (no match)
+  const matched = hasStaticCondition ? staticMatch : false;
+  return { matched, potentialAiMatch: false, matchReasons };
 }
 
 // Lazy load learned patterns when needed
@@ -355,16 +354,16 @@ function getMatchReason(matchReasons?: MatchReason[]): string | undefined {
     .map((reason) => {
       switch (reason.type) {
         case ConditionType.STATIC:
-          return "Matched static conditions";
+          return 'Matched static conditions';
         case ConditionType.LEARNED_PATTERN:
           return `Matched learned pattern: "${reason.groupItem.type}: ${reason.groupItem.value}"`;
         case ConditionType.PRESET:
-          return "Matched a system preset";
+          return 'Matched a system preset';
         case ConditionType.AI:
-          return "Matched via AI";
+          return 'Matched via AI';
       }
     })
-    .join(", ");
+    .join(', ');
 }
 
 async function findMatchingRulesWithReasons(
@@ -373,7 +372,7 @@ async function findMatchingRulesWithReasons(
   emailAccount: EmailAccountWithAI,
   provider: EmailProvider,
   modelType: ModelType,
-  logger: Logger,
+  logger: Logger
 ): Promise<MatchingRulesResult> {
   const isThread = provider.isReplyInThread(message);
 
@@ -416,8 +415,8 @@ async function findMatchingRulesWithReasons(
         .filter(
           (aiRule) =>
             !matches.some(
-              (existingMatch) => existingMatch.rule.id === aiRule.id,
-            ),
+              (existingMatch) => existingMatch.rule.id === aiRule.id
+            )
         )
         .map((rule) => ({
           rule,
@@ -429,32 +428,31 @@ async function findMatchingRulesWithReasons(
     const existingReasoning = matches
       .map((m) => getMatchReason(m.matchReasons))
       .filter((r): r is string => !!r)
-      .join(", ");
+      .join(', ');
 
     const aiReason = result.reason?.trim();
     const combinedReasoning = [existingReasoning, aiReason]
       .filter((r): r is string => !!r)
-      .join("; ");
+      .join('; ');
 
     return {
       matches: combinedMatches,
       reasoning: combinedReasoning,
     };
-  } else {
-    return {
-      matches,
-      reasoning: matches
-        .map((m) => getMatchReason(m.matchReasons))
-        .filter((r): r is string => !!r)
-        .join(", "),
-    };
   }
+  return {
+    matches,
+    reasoning: matches
+      .map((m) => getMatchReason(m.matchReasons))
+      .filter((r): r is string => !!r)
+      .join(', '),
+  };
 }
 
 export function matchesStaticRule(
-  rule: Pick<RuleWithActions, "from" | "to" | "subject" | "body">,
+  rule: Pick<RuleWithActions, 'from' | 'to' | 'subject' | 'body'>,
   message: ParsedMessage,
-  logger: Logger,
+  logger: Logger
 ) {
   const log = logger.with({ module: MODULE });
   const { from, to, subject, body } = rule;
@@ -464,7 +462,7 @@ export function matchesStaticRule(
   const safeRegexTest = (
     pattern: string,
     text: string,
-    allowPipeAsOr = false,
+    allowPipeAsOr = false
   ) => {
     try {
       // Split by pipe, comma, or " OR " to handle OR conditions only for email fields (from/to)
@@ -476,11 +474,11 @@ export function matchesStaticRule(
         // Escape regex special characters except for * which we want to support as wildcards
         const escapedPattern = individualPattern.replace(
           /[.+?^${}()[\]\\]/g,
-          "\\$&",
+          '\\$&'
         );
 
         // Convert all * to .* for wildcard matching
-        const regexPattern = escapedPattern.replace(/\*/g, ".*");
+        const regexPattern = escapedPattern.replace(/\*/g, '.*');
 
         if (new RegExp(regexPattern).test(text)) {
           return true;
@@ -489,7 +487,7 @@ export function matchesStaticRule(
 
       return false;
     } catch (error) {
-      log.error("Invalid regex pattern", { pattern, error });
+      log.error('Invalid regex pattern', { pattern, error });
       return false;
     }
   };
@@ -502,7 +500,7 @@ export function matchesStaticRule(
     ? safeRegexTest(subject, message.headers.subject, false)
     : true;
   const bodyMatch = body
-    ? safeRegexTest(body, message.textPlain || "", false)
+    ? safeRegexTest(body, message.textPlain || '', false)
     : true;
 
   return fromMatch && toMatch && subjectMatch && bodyMatch;
@@ -523,7 +521,7 @@ export function splitEmailPatterns(pattern: string): string[] {
 function matchesGroupRule(
   rule: RuleWithActions,
   groups: GroupsWithRules,
-  message: ParsedMessage,
+  message: ParsedMessage
 ) {
   const ruleGroup = groups.find((g) => g.id === rule.groupId);
   if (!ruleGroup)
@@ -549,11 +547,11 @@ export async function filterConversationStatusRules<
   potentialMatches: T[],
   message: ParsedMessage,
   provider: EmailProvider,
-  logger: Logger,
+  logger: Logger
 ): Promise<T[]> {
   const log = logger.with({ module: MODULE });
   const toReplyRule = potentialMatches.find(
-    (r) => r.systemType === SystemType.TO_REPLY,
+    (r) => r.systemType === SystemType.TO_REPLY
   );
 
   if (!toReplyRule) return potentialMatches;
@@ -564,19 +562,19 @@ export async function filterConversationStatusRules<
   const extractedSenderEmail = extractEmailAddress(senderEmail);
 
   const noReplyPrefixes = [
-    "noreply@",
-    "no-reply@",
-    "notifications@",
-    "notif@",
-    "info@",
-    "newsletter@",
-    "updates@",
-    "account@",
+    'noreply@',
+    'no-reply@',
+    'notifications@',
+    'notif@',
+    'info@',
+    'newsletter@',
+    'updates@',
+    'account@',
   ];
 
   function filteredOutConversationStatusRules() {
     return potentialMatches.filter(
-      (r) => !isConversationStatusType(r.systemType),
+      (r) => !isConversationStatusType(r.systemType)
     );
   }
 
@@ -590,22 +588,22 @@ export async function filterConversationStatusRules<
     const { hasReplied, receivedCount } = await checkSenderReplyHistory(
       provider,
       senderEmail,
-      TO_REPLY_RECEIVED_THRESHOLD,
+      TO_REPLY_RECEIVED_THRESHOLD
     );
 
     if (!hasReplied && receivedCount >= TO_REPLY_RECEIVED_THRESHOLD) {
       log.info(
-        "Filtering out TO_REPLY rule due to no prior reply and high received count",
+        'Filtering out TO_REPLY rule due to no prior reply and high received count',
         {
           ruleId: toReplyRule.id,
           senderEmail,
           receivedCount,
-        },
+        }
       );
       return filteredOutConversationStatusRules();
     }
   } catch (error) {
-    log.error("Error checking reply history for TO_REPLY filter", {
+    log.error('Error checking reply history for TO_REPLY filter', {
       senderEmail,
       error,
     });
@@ -623,7 +621,7 @@ export function filterMultipleSystemRules<
 >(selectedRules: { rule: T; isPrimary?: boolean }[]): T[] {
   const systemRules = selectedRules.filter((r) => r.rule?.systemType);
   const conversationRules = selectedRules.filter(
-    (r) => r.rule && !r.rule?.systemType,
+    (r) => r.rule && !r.rule?.systemType
   );
 
   let filteredSystemRules = systemRules;
@@ -656,10 +654,10 @@ async function getPreviouslyExecutedRuleIds({
       ruleId: { not: null },
     },
     select: { ruleId: true },
-    distinct: ["ruleId"],
+    distinct: ['ruleId'],
   });
 
   return new Set(
-    previousRules.map((r) => r.ruleId).filter((id): id is string => !!id),
+    previousRules.map((r) => r.ruleId).filter((id): id is string => !!id)
   );
 }

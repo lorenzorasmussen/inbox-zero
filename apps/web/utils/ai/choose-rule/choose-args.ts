@@ -1,23 +1,23 @@
-import { z } from "zod";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { ModelType } from "@/utils/llms/model";
-import { ActionType } from "@/generated/prisma/enums";
-import type { Action } from "@/generated/prisma/client";
-import {
-  type RuleWithActions,
-  isDefined,
-  type ParsedMessage,
-} from "@/utils/types";
-import { fetchMessagesAndGenerateDraft } from "@/utils/reply-tracker/generate-draft";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
+import { z } from 'zod';
+import type { Action } from '@/generated/prisma/client';
+import { ActionType } from '@/generated/prisma/enums';
 import {
   type ActionArgResponse,
   aiGenerateArgs,
-} from "@/utils/ai/choose-rule/ai-choose-args";
-import type { Logger } from "@/utils/logger";
-import type { EmailProvider } from "@/utils/email/types";
+} from '@/utils/ai/choose-rule/ai-choose-args';
+import type { EmailProvider } from '@/utils/email/types';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import type { ModelType } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { Logger } from '@/utils/logger';
+import { fetchMessagesAndGenerateDraft } from '@/utils/reply-tracker/generate-draft';
+import {
+  isDefined,
+  type ParsedMessage,
+  type RuleWithActions,
+} from '@/utils/types';
 
-const MODULE = "choose-args";
+const MODULE = 'choose-args';
 
 export async function getActionItemsWithAiArgs({
   message,
@@ -40,14 +40,14 @@ export async function getActionItemsWithAiArgs({
   // Draft content is handled via its own AI call
   // We provide a lot more context to the AI to draft the content
   const draftEmailActions = selectedRule.actions.filter(
-    (action) => action.type === ActionType.DRAFT_EMAIL && !action.content,
+    (action) => action.type === ActionType.DRAFT_EMAIL && !action.content
   );
 
   let draft: string | null = null;
 
   if (draftEmailActions.length) {
     try {
-      log.info("Generating draft", {
+      log.info('Generating draft', {
         email: emailAccount.email,
         threadId: message.threadId,
         isTest,
@@ -57,15 +57,15 @@ export async function getActionItemsWithAiArgs({
         emailAccount,
         message.threadId,
         client,
-        isTest ? message : undefined,
+        isTest ? message : undefined
       );
 
-      log.info("Draft generated", {
+      log.info('Draft generated', {
         email: emailAccount.email,
         threadId: message.threadId,
       });
     } catch (error) {
-      log.error("Failed to generate draft", {
+      log.error('Failed to generate draft', {
         email: emailAccount.email,
         threadId: message.threadId,
         error,
@@ -93,7 +93,7 @@ export async function getActionItemsWithAiArgs({
 export function combineActionsWithAiArgs(
   actions: Action[],
   aiArgs: ActionArgResponse | undefined,
-  draft: string | null = null,
+  draft: string | null = null
 ): Action[] {
   if (!aiArgs && !draft) return actions;
 
@@ -112,23 +112,23 @@ export function combineActionsWithAiArgs(
     // Merge variables for each field that has AI-generated content
     for (const [field, vars] of Object.entries(aiAction)) {
       // Skip content field only if the action originally had no content and we've already set a draft
-      if (field === "content" && draft && !action.content) continue;
+      if (field === 'content' && draft && !action.content) continue;
 
       // Only process fields that we know can contain template strings
       if (
-        field === "label" ||
-        field === "subject" ||
-        field === "content" ||
-        field === "to" ||
-        field === "cc" ||
-        field === "bcc" ||
-        field === "url"
+        field === 'label' ||
+        field === 'subject' ||
+        field === 'content' ||
+        field === 'to' ||
+        field === 'cc' ||
+        field === 'bcc' ||
+        field === 'url'
       ) {
         const originalValue = action[field];
-        if (typeof originalValue === "string") {
+        if (typeof originalValue === 'string') {
           (updatedAction[field] as string) = mergeTemplateWithVars(
             originalValue,
-            vars as Record<`var${number}`, string>,
+            vars as Record<`var${number}`, string>
           );
         }
       }
@@ -225,23 +225,23 @@ function extractActionsNeedingAiGeneration(actions: Action[]) {
 export function getParameterFieldsForAction(
   action: Pick<
     Action,
-    "label" | "subject" | "content" | "to" | "cc" | "bcc" | "url"
-  >,
+    'label' | 'subject' | 'content' | 'to' | 'cc' | 'bcc' | 'url'
+  >
 ) {
   const fields: Record<string, z.ZodObject<Record<string, z.ZodString>>> = {};
   const fieldNames = [
-    "label",
-    "subject",
-    "content",
-    "to",
-    "cc",
-    "bcc",
-    "url",
+    'label',
+    'subject',
+    'content',
+    'to',
+    'cc',
+    'bcc',
+    'url',
   ] as const;
 
   for (const field of fieldNames) {
     const value = action[field];
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       const { aiPrompts } = parseTemplate(value);
       if (aiPrompts.length > 0) {
         const schemaFields: Record<string, z.ZodString> = {};
@@ -254,14 +254,14 @@ export function getParameterFieldsForAction(
         aiPrompts.forEach((prompt, index) => {
           template = template.replace(
             `{{${prompt}}}`,
-            `{{var${index + 1}: ${prompt}}}`,
+            `{{var${index + 1}: ${prompt}}}`
           );
         });
 
         const description = `Generate this template: ${template}${
-          field === "content"
-            ? "\nMake sure to maintain the exact formatting."
-            : ""
+          field === 'content'
+            ? '\nMake sure to maintain the exact formatting.'
+            : ''
         }`;
 
         fields[field] = z.object(schemaFields).describe(description);
@@ -323,14 +323,14 @@ export function parseTemplate(template: string): {
  */
 export function mergeTemplateWithVars(
   template: string,
-  vars: Record<`var${number}`, string>,
+  vars: Record<`var${number}`, string>
 ): string {
   const { aiPrompts, fixedParts } = parseTemplate(template);
 
   let result = fixedParts[0];
   for (let i = 0; i < aiPrompts.length; i++) {
     const varKey = `var${i + 1}` as const;
-    const varValue = vars[varKey] || "";
+    const varValue = vars[varKey] || '';
     result += varValue + fixedParts[i + 1];
   }
 

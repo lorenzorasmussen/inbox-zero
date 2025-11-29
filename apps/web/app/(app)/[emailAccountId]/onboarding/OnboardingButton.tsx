@@ -1,4 +1,4 @@
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
 
 export function OnboardingButton({
   text,

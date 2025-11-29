@@ -1,17 +1,17 @@
-import prisma from "@/utils/prisma";
-import { PageHeading } from "@/components/Typography";
+import { formatDistanceToNow } from 'date-fns';
+import { notFound } from 'next/navigation';
+import { PageHeading } from '@/components/Typography';
+import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { notFound } from "next/navigation";
-import { formatDistanceToNow } from "date-fns";
-import { auth } from "@/utils/auth";
-import { getEmailTerminology } from "@/utils/terminology";
+} from '@/components/ui/card';
+import { auth } from '@/utils/auth';
+import prisma from '@/utils/prisma';
+import { getEmailTerminology } from '@/utils/terminology';
 
 export default async function RuleHistoryPage(props: {
   params: Promise<{ emailAccountId: string; ruleId: string }>;
@@ -46,17 +46,17 @@ export default async function RuleHistoryPage(props: {
       ruleId: rule.id,
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: 'desc',
     },
   });
 
   const triggerTypeLabels: Record<string, string> = {
-    ai_update: "AI Update",
-    manual_update: "Manual Update",
-    ai_creation: "AI Creation",
-    manual_creation: "Manual Creation",
-    system_creation: "System Creation",
-    system_update: "System Update",
+    ai_update: 'AI Update',
+    manual_update: 'Manual Update',
+    ai_creation: 'AI Creation',
+    manual_creation: 'Manual Creation',
+    system_creation: 'System Creation',
+    system_update: 'System Update',
   };
 
   return (
@@ -111,9 +111,9 @@ export default async function RuleHistoryPage(props: {
                       <div className="flex gap-2">
                         <dt className="font-medium">Status:</dt>
                         <dd>
-                          {history.enabled ? "Enabled" : "Disabled"}
-                          {history.automate && " • Automated"}
-                          {history.runOnThreads && " • Runs on threads"}
+                          {history.enabled ? 'Enabled' : 'Disabled'}
+                          {history.automate && ' • Automated'}
+                          {history.runOnThreads && ' • Runs on threads'}
                         </dd>
                       </div>
                       {history.conditionalOperator && (
@@ -181,7 +181,7 @@ export default async function RuleHistoryPage(props: {
                                 <span>
                                   {
                                     getEmailTerminology(
-                                      rule.emailAccount.account.provider,
+                                      rule.emailAccount.account.provider
                                     ).label.action
                                   }
                                   : {action.label}
@@ -197,7 +197,7 @@ export default async function RuleHistoryPage(props: {
                               )}
                               {action.to && <span>To: {action.to}</span>}
                             </div>
-                          ),
+                          )
                         )}
                       </div>
                     </div>

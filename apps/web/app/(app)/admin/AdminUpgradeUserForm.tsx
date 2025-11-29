@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { useAction } from "next-safe-action/hooks";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/Input";
-import { adminChangePremiumStatusAction } from "@/utils/actions/premium";
-import { Select } from "@/components/Select";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import {
-  changePremiumStatusSchema,
   type ChangePremiumStatusOptions,
-} from "@/app/(app)/admin/validation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { PremiumTier } from "@/generated/prisma/enums";
-import { toastError, toastSuccess } from "@/components/Toast";
+  changePremiumStatusSchema,
+} from '@/app/(app)/admin/validation';
+import { Input } from '@/components/Input';
+import { Select } from '@/components/Select';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { PremiumTier } from '@/generated/prisma/enums';
+import { adminChangePremiumStatusAction } from '@/utils/actions/premium';
 
 export const AdminUpgradeUserForm = () => {
   const { execute: changePremiumStatus, isExecuting } = useAction(
@@ -21,7 +21,7 @@ export const AdminUpgradeUserForm = () => {
     {
       onSuccess: () => {
         toastSuccess({
-          description: "Premium status changed",
+          description: 'Premium status changed',
         });
       },
       onError: ({ error }) => {
@@ -29,7 +29,7 @@ export const AdminUpgradeUserForm = () => {
           description: `Error changing premium status: ${error.serverError}`,
         });
       },
-    },
+    }
   );
 
   const {
@@ -39,7 +39,7 @@ export const AdminUpgradeUserForm = () => {
   } = useForm<ChangePremiumStatusOptions>({
     resolver: zodResolver(changePremiumStatusSchema),
     defaultValues: {
-      period: "BUSINESS_ANNUALLY",
+      period: 'BUSINESS_ANNUALLY',
     },
   });
 
@@ -52,7 +52,7 @@ export const AdminUpgradeUserForm = () => {
         emailAccountsAccess: data.emailAccountsAccess || undefined,
       });
     },
-    [changePremiumStatus],
+    [changePremiumStatus]
   );
 
   return (
@@ -61,14 +61,14 @@ export const AdminUpgradeUserForm = () => {
         type="email"
         name="email"
         label="Email"
-        registerProps={register("email", { required: true })}
+        registerProps={register('email', { required: true })}
         error={errors.email}
       />
       <Input
         type="number"
         name="lemonSqueezyCustomerId"
         label="Lemon Squeezy Customer Id"
-        registerProps={register("lemonSqueezyCustomerId", {
+        registerProps={register('lemonSqueezyCustomerId', {
           valueAsNumber: true,
         })}
         error={errors.lemonSqueezyCustomerId}
@@ -77,61 +77,61 @@ export const AdminUpgradeUserForm = () => {
         type="number"
         name="emailAccountsAccess"
         label="Seats"
-        registerProps={register("emailAccountsAccess", { valueAsNumber: true })}
+        registerProps={register('emailAccountsAccess', { valueAsNumber: true })}
         error={errors.emailAccountsAccess}
       />
       <Select
         label="Plan"
         options={[
           {
-            label: "BUSINESS_ANNUALLY",
-            value: "BUSINESS_ANNUALLY",
+            label: 'BUSINESS_ANNUALLY',
+            value: 'BUSINESS_ANNUALLY',
           },
           {
-            label: "BUSINESS_MONTHLY",
-            value: "BUSINESS_MONTHLY",
+            label: 'BUSINESS_MONTHLY',
+            value: 'BUSINESS_MONTHLY',
           },
           {
-            label: "BUSINESS_PLUS_ANNUALLY",
-            value: "BUSINESS_PLUS_ANNUALLY",
+            label: 'BUSINESS_PLUS_ANNUALLY',
+            value: 'BUSINESS_PLUS_ANNUALLY',
           },
           {
-            label: "BUSINESS_PLUS_MONTHLY",
-            value: "BUSINESS_PLUS_MONTHLY",
+            label: 'BUSINESS_PLUS_MONTHLY',
+            value: 'BUSINESS_PLUS_MONTHLY',
           },
           {
-            label: "PRO_ANNUALLY",
-            value: "PRO_ANNUALLY",
+            label: 'PRO_ANNUALLY',
+            value: 'PRO_ANNUALLY',
           },
           {
-            label: "PRO_MONTHLY",
-            value: "PRO_MONTHLY",
+            label: 'PRO_MONTHLY',
+            value: 'PRO_MONTHLY',
           },
           {
-            label: "BASIC_ANNUALLY",
-            value: "BASIC_ANNUALLY",
+            label: 'BASIC_ANNUALLY',
+            value: 'BASIC_ANNUALLY',
           },
           {
-            label: "BASIC_MONTHLY",
-            value: "BASIC_MONTHLY",
+            label: 'BASIC_MONTHLY',
+            value: 'BASIC_MONTHLY',
           },
           {
-            label: "COPILOT_MONTHLY",
-            value: "COPILOT_MONTHLY",
+            label: 'COPILOT_MONTHLY',
+            value: 'COPILOT_MONTHLY',
           },
           {
-            label: "LIFETIME",
-            value: "LIFETIME",
+            label: 'LIFETIME',
+            value: 'LIFETIME',
           },
         ]}
-        {...register("period")}
+        {...register('period')}
         error={errors.period}
       />
       <Input
         type="number"
         name="count"
         label="Months/Years"
-        registerProps={register("count", { valueAsNumber: true })}
+        registerProps={register('count', { valueAsNumber: true })}
         error={errors.count}
       />
       <div className="space-x-2">
@@ -140,11 +140,11 @@ export const AdminUpgradeUserForm = () => {
           loading={isExecuting}
           onClick={() => {
             onSubmit({
-              email: getValues("email"),
-              lemonSqueezyCustomerId: getValues("lemonSqueezyCustomerId"),
-              emailAccountsAccess: getValues("emailAccountsAccess"),
-              period: getValues("period"),
-              count: getValues("count"),
+              email: getValues('email'),
+              lemonSqueezyCustomerId: getValues('lemonSqueezyCustomerId'),
+              emailAccountsAccess: getValues('emailAccountsAccess'),
+              period: getValues('period'),
+              count: getValues('count'),
               upgrade: true,
             });
           }}
@@ -157,9 +157,9 @@ export const AdminUpgradeUserForm = () => {
           loading={isExecuting}
           onClick={() => {
             onSubmit({
-              email: getValues("email"),
-              period: getValues("period"),
-              count: getValues("count"),
+              email: getValues('email'),
+              period: getValues('period'),
+              count: getValues('count'),
               upgrade: false,
             });
           }}

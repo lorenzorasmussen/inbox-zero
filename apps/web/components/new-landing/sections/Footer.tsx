@@ -1,82 +1,82 @@
-import Link from "next/link";
-import { EXTENSION_URL } from "@/utils/config";
-import { Logo } from "@/components/new-landing/common/Logo";
-import { cn } from "@/utils";
-import { FooterLineLogo } from "@/components/new-landing/FooterLineLogo";
-import { Paragraph } from "@/components/new-landing/common/Typography";
-import { UnicornScene } from "@/components/new-landing/UnicornScene";
+import Link from 'next/link';
+import { Logo } from '@/components/new-landing/common/Logo';
+import { Paragraph } from '@/components/new-landing/common/Typography';
+import { FooterLineLogo } from '@/components/new-landing/FooterLineLogo';
+import { UnicornScene } from '@/components/new-landing/UnicornScene';
+import { cn } from '@/utils';
+import { EXTENSION_URL } from '@/utils/config';
 
 const navigation = {
   main: [
     {
-      name: "Inbox Zero Tabs (Chrome Extension)",
+      name: 'Inbox Zero Tabs (Chrome Extension)',
       href: EXTENSION_URL,
-      target: "_blank",
+      target: '_blank',
     },
-    { name: "AI Email Assistant", href: "/ai-automation" },
-    { name: "Reply Zero", href: "/reply-zero-ai" },
-    { name: "Bulk Email Unsubscriber", href: "/bulk-email-unsubscriber" },
-    { name: "Clean your inbox", href: "/clean-inbox" },
-    { name: "Cold Email Blocker", href: "/block-cold-emails" },
-    { name: "Email Analytics", href: "/email-analytics" },
-    { name: "Open Source", href: "/github", target: "_blank" },
+    { name: 'AI Email Assistant', href: '/ai-automation' },
+    { name: 'Reply Zero', href: '/reply-zero-ai' },
+    { name: 'Bulk Email Unsubscriber', href: '/bulk-email-unsubscriber' },
+    { name: 'Clean your inbox', href: '/clean-inbox' },
+    { name: 'Cold Email Blocker', href: '/block-cold-emails' },
+    { name: 'Email Analytics', href: '/email-analytics' },
+    { name: 'Open Source', href: '/github', target: '_blank' },
   ],
   useCases: [
-    { name: "Founder", href: "/founders" },
-    { name: "Small Business", href: "/small-business" },
-    { name: "Content Creator", href: "/creator" },
-    { name: "Realtor", href: "/real-estate" },
-    { name: "Customer Support", href: "/support" },
-    { name: "E-commerce", href: "/ecommerce" },
+    { name: 'Founder', href: '/founders' },
+    { name: 'Small Business', href: '/small-business' },
+    { name: 'Content Creator', href: '/creator' },
+    { name: 'Realtor', href: '/real-estate' },
+    { name: 'Customer Support', href: '/support' },
+    { name: 'E-commerce', href: '/ecommerce' },
   ],
   support: [
-    { name: "Pricing", href: "/#pricing" },
-    { name: "Contact", href: "mailto:elie@getinboxzero.com", target: "_blank" },
+    { name: 'Pricing', href: '/#pricing' },
+    { name: 'Contact', href: 'mailto:elie@getinboxzero.com', target: '_blank' },
     {
-      name: "Documentation",
-      href: "https://docs.getinboxzero.com",
-      target: "_blank",
+      name: 'Documentation',
+      href: 'https://docs.getinboxzero.com',
+      target: '_blank',
     },
-    { name: "Feature Requests", href: "/feature-requests", target: "_blank" },
-    { name: "Changelog", href: "/changelog", target: "_blank" },
+    { name: 'Feature Requests', href: '/feature-requests', target: '_blank' },
+    { name: 'Changelog', href: '/changelog', target: '_blank' },
     {
-      name: "Status",
-      href: "https://inbox-zero.openstatus.dev/",
-      target: "_blank",
+      name: 'Status',
+      href: 'https://inbox-zero.openstatus.dev/',
+      target: '_blank',
     },
   ],
   company: [
-    { name: "Affiliates", href: "/affiliates", target: "_blank" },
-    { name: "Blog", href: "/blog" },
-    { name: "Case Studies", href: "/case-studies" },
-    { name: "Twitter", href: "/twitter", target: "_blank" },
-    { name: "GitHub", href: "/github", target: "_blank" },
-    { name: "Discord", href: "/discord", target: "_blank" },
-    { name: "OSS Friends", href: "/oss-friends" },
-    { name: "Email Blaster", href: "/game" },
+    { name: 'Affiliates', href: '/affiliates', target: '_blank' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'Case Studies', href: '/case-studies' },
+    { name: 'Twitter', href: '/twitter', target: '_blank' },
+    { name: 'GitHub', href: '/github', target: '_blank' },
+    { name: 'Discord', href: '/discord', target: '_blank' },
+    { name: 'OSS Friends', href: '/oss-friends' },
+    { name: 'Email Blaster', href: '/game' },
   ],
   legal: [
-    { name: "Terms", href: "/terms" },
-    { name: "Privacy", href: "/privacy" },
+    { name: 'Terms', href: '/terms' },
+    { name: 'Privacy', href: '/privacy' },
     {
-      name: "SOC2 Compliant",
-      href: "https://security.getinboxzero.com",
-      target: "_blank",
+      name: 'SOC2 Compliant',
+      href: 'https://security.getinboxzero.com',
+      target: '_blank',
     },
-    { name: "Sitemap", href: "/sitemap.xml" },
+    { name: 'Sitemap', href: '/sitemap.xml' },
   ],
   compare: [
-    { name: "vs Fyxer.ai", href: "/best-fyxer-alternative" },
+    { name: 'vs Fyxer.ai', href: '/best-fyxer-alternative' },
     {
-      name: "vs Perplexity Email Assistant",
-      href: "/best-perplexity-email-assistant-alternative",
+      name: 'vs Perplexity Email Assistant',
+      href: '/best-perplexity-email-assistant-alternative',
     },
   ],
   social: [
     {
-      name: "Discord",
-      href: "/discord",
-      target: "_blank",
+      name: 'Discord',
+      href: '/discord',
+      target: '_blank',
       icon: () => (
         <svg
           fill="currentColor"
@@ -89,9 +89,9 @@ const navigation = {
       ),
     },
     {
-      name: "GitHub",
-      href: "/github",
-      target: "_blank",
+      name: 'GitHub',
+      href: '/github',
+      target: '_blank',
       icon: () => (
         <svg
           fill="currentColor"
@@ -108,9 +108,9 @@ const navigation = {
       ),
     },
     {
-      name: "X",
-      href: "/twitter",
-      target: "_blank",
+      name: 'X',
+      href: '/twitter',
+      target: '_blank',
       icon: () => (
         <svg
           fill="currentColor"
@@ -131,15 +131,15 @@ const navigation = {
 
 interface FooterProps {
   className: string;
-  variant?: "default" | "simple";
+  variant?: 'default' | 'simple';
 }
 
-export function Footer({ className, variant = "default" }: FooterProps) {
+export function Footer({ className, variant = 'default' }: FooterProps) {
   return (
     <footer className="relative z-50 border-t border-[#E7E7E7A3] bg-cover bg-center bg-no-repeat overflow-hidden">
-      {variant === "default" ? <UnicornScene className="opacity-15" /> : null}
+      {variant === 'default' ? <UnicornScene className="opacity-15" /> : null}
       <div
-        className={cn("overflow-hidden px-6 py-20 sm:py-24 lg:px-8", className)}
+        className={cn('overflow-hidden px-6 py-20 sm:py-24 lg:px-8', className)}
       >
         <div className="mt-16 grid grid-cols-2 gap-8 lg:grid-cols-5 xl:col-span-2 xl:mt-0">
           <div>
@@ -177,7 +177,7 @@ export function Footer({ className, variant = "default" }: FooterProps) {
           </div>
         </div>
       </div>
-      {variant === "default" ? (
+      {variant === 'default' ? (
         <FooterLineLogo className="hidden xl:block absolute bottom-0 left-1/2 -translate-x-1/2 mx-auto px-6 lg:px-8 -z-10" />
       ) : null}
     </footer>
@@ -204,7 +204,7 @@ function FooterList(props: {
             <Link
               href={item.href}
               target={item.target}
-              prefetch={item.target !== "_blank"}
+              prefetch={item.target !== '_blank'}
               className="text-sm leading-6 text-gray-500 hover:text-gray-900"
             >
               {item.name}

@@ -1,14 +1,14 @@
-"use server";
+'use server';
 
-import { actionClientUser } from "@/utils/actions/safe-action";
-import { inviteMemberBody } from "@/utils/actions/invite-member.validation";
-import prisma from "@/utils/prisma";
-import { SafeError } from "@/utils/error";
-import { hasOrganizationAdminRole } from "@/utils/organizations/roles";
-import { sendOrganizationInvitation } from "@/utils/organizations/invitations";
+import { inviteMemberBody } from '@/utils/actions/invite-member.validation';
+import { actionClientUser } from '@/utils/actions/safe-action';
+import { SafeError } from '@/utils/error';
+import { sendOrganizationInvitation } from '@/utils/organizations/invitations';
+import { hasOrganizationAdminRole } from '@/utils/organizations/roles';
+import prisma from '@/utils/prisma';
 
 export const inviteMemberAction = actionClientUser
-  .metadata({ name: "inviteMember" })
+  .metadata({ name: 'inviteMember' })
   .inputSchema(inviteMemberBody)
   .action(
     async ({
@@ -26,18 +26,18 @@ export const inviteMemberAction = actionClientUser
       });
 
       if (!inviterMember) {
-        throw new SafeError("You are not a member of this organization.");
+        throw new SafeError('You are not a member of this organization.');
       }
 
       if (!hasOrganizationAdminRole(inviterMember.role)) {
         throw new SafeError(
-          "Only organization owners or admins can invite members.",
+          'Only organization owners or admins can invite members.'
         );
       }
 
-      if (role === "owner" && inviterMember.role !== "owner") {
+      if (role === 'owner' && inviterMember.role !== 'owner') {
         throw new SafeError(
-          "Only existing owners can assign the owner role to new members.",
+          'Only existing owners can assign the owner role to new members.'
         );
       }
 
@@ -45,7 +45,7 @@ export const inviteMemberAction = actionClientUser
         where: {
           organizationId: inviterMember.organizationId,
           email,
-          status: "pending",
+          status: 'pending',
         },
         select: { id: true },
       });
@@ -58,7 +58,7 @@ export const inviteMemberAction = actionClientUser
           organizationId: inviterMember.organizationId,
           email,
           role,
-          status: "pending",
+          status: 'pending',
           expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14), // 14 days
           inviterId: inviterMember.emailAccountId,
         },
@@ -72,10 +72,10 @@ export const inviteMemberAction = actionClientUser
 
       await sendOrganizationInvitation({
         email,
-        organizationName: org?.name || "Your organization",
+        organizationName: org?.name || 'Your organization',
         inviterName:
           inviterMember.emailAccount.name || inviterMember.emailAccount.email,
         invitationId: invitation.id,
       });
-    },
+    }
   );

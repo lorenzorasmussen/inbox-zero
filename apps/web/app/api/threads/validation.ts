@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const threadsQuery = z.object({
   fromEmail: z.string().nullish(),

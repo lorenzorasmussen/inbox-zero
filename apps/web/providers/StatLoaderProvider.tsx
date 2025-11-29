@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   createContext,
@@ -6,11 +6,11 @@ import {
   useContext,
   useEffect,
   useState,
-} from "react";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { isError } from "@/utils/error";
-import { loadEmailStatsAction } from "@/utils/actions/stats";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from 'react';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { loadEmailStatsAction } from '@/utils/actions/stats';
+import { isError } from '@/utils/error';
 
 type Context = {
   isLoading: boolean;
@@ -54,9 +54,9 @@ class StatLoader {
 
     if (showToast) {
       if (isError(res)) {
-        toastError({ description: "Error loading stats." });
+        toastError({ description: 'Error loading stats.' });
       } else {
-        toastSuccess({ description: "Stats loaded!" });
+        toastSuccess({ description: 'Stats loaded!' });
       }
     }
 
@@ -81,7 +81,7 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
       });
       setIsLoading(false);
     },
-    [emailAccountId],
+    [emailAccountId]
   );
 
   const onLoadBatch = useCallback(
@@ -89,7 +89,7 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
       const batchSize = 50;
       for (let i = 0; i < batchSize; i++) {
         if (stopLoading) break;
-        console.log("Loading batch", i);
+        console.log('Loading batch', i);
         await onLoad({
           ...options,
           showToast: options.showToast && i === batchSize - 1,
@@ -97,7 +97,7 @@ export function StatLoaderProvider(props: { children: React.ReactNode }) {
       }
       setStopLoading(false);
     },
-    [onLoad, stopLoading],
+    [onLoad, stopLoading]
   );
 
   const onCancelLoadBatch = useCallback(() => {

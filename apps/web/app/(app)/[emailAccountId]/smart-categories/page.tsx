@@ -1,34 +1,34 @@
-import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { PenIcon, SparklesIcon } from "lucide-react";
-import sortBy from "lodash/sortBy";
-import prisma from "@/utils/prisma";
-import { ClientOnly } from "@/components/ClientOnly";
-import { GroupedTable } from "@/components/GroupedTable";
-import { TopBar } from "@/components/TopBar";
-import { CreateCategoryButton } from "@/app/(app)/[emailAccountId]/smart-categories/CreateCategoryButton";
-import { getUserCategoriesWithRules } from "@/utils/category.server";
-import { CategorizeWithAiButton } from "@/app/(app)/[emailAccountId]/smart-categories/CategorizeWithAiButton";
+import sortBy from 'lodash/sortBy';
+import { PenIcon, SparklesIcon } from 'lucide-react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { ArchiveProgress } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/ArchiveProgress';
+import { PermissionsCheck } from '@/app/(app)/[emailAccountId]/PermissionsCheck';
+import { CategorizeSendersProgress } from '@/app/(app)/[emailAccountId]/smart-categories/CategorizeProgress';
+import { CategorizeWithAiButton } from '@/app/(app)/[emailAccountId]/smart-categories/CategorizeWithAiButton';
+import { CreateCategoryButton } from '@/app/(app)/[emailAccountId]/smart-categories/CreateCategoryButton';
+import { Uncategorized } from '@/app/(app)/[emailAccountId]/smart-categories/Uncategorized';
+import { ClientOnly } from '@/components/ClientOnly';
+import { GroupedTable } from '@/components/GroupedTable';
+import { PremiumAlertWithData } from '@/components/PremiumAlert';
+import { TopBar } from '@/components/TopBar';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardTitle,
-  CardHeader,
   CardDescription,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Uncategorized } from "@/app/(app)/[emailAccountId]/smart-categories/Uncategorized";
-import { PermissionsCheck } from "@/app/(app)/[emailAccountId]/PermissionsCheck";
-import { ArchiveProgress } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/ArchiveProgress";
-import { PremiumAlertWithData } from "@/components/PremiumAlert";
-import { Button } from "@/components/ui/button";
-import { CategorizeSendersProgress } from "@/app/(app)/[emailAccountId]/smart-categories/CategorizeProgress";
-import { getCategorizationProgress } from "@/utils/redis/categorization-progress";
-import { prefixPath } from "@/utils/path";
-import { checkUserOwnsEmailAccount } from "@/utils/email-account";
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getUserCategoriesWithRules } from '@/utils/category.server';
+import { checkUserOwnsEmailAccount } from '@/utils/email-account';
+import { prefixPath } from '@/utils/path';
+import prisma from '@/utils/prisma';
+import { getCategorizationProgress } from '@/utils/redis/categorization-progress';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
 export default async function CategoriesPage({
@@ -57,7 +57,7 @@ export default async function CategoriesPage({
   ]);
 
   if (!(senders.length > 0 || categories.length > 0))
-    redirect(prefixPath(emailAccountId, "/smart-categories/setup"));
+    redirect(prefixPath(emailAccountId, '/smart-categories/setup'));
 
   return (
     <>
@@ -87,12 +87,12 @@ export default async function CategoriesPage({
                       Bulk Categorize
                     </>
                   ),
-                  variant: "outline",
+                  variant: 'outline',
                 }}
               />
               <Button variant="outline" asChild>
                 <Link
-                  href={prefixPath(emailAccountId, "/smart-categories/setup")}
+                  href={prefixPath(emailAccountId, '/smart-categories/setup')}
                 >
                   <PenIcon className="mr-2 size-4" />
                   Edit
@@ -122,12 +122,12 @@ export default async function CategoriesPage({
               <GroupedTable
                 emailGroups={sortBy(
                   senders,
-                  (sender) => sender.category?.name,
+                  (sender) => sender.category?.name
                 ).map((sender) => ({
                   address: sender.email,
                   category:
                     categories.find(
-                      (category) => category.id === sender.category?.id,
+                      (category) => category.id === sender.category?.id
                     ) || null,
                 }))}
                 categories={categories}

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { Settings2Icon } from "lucide-react";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { OnboardingWrapper } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper";
-import { CategoriesSetup } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingCategories";
+import { Settings2Icon } from 'lucide-react';
+import Image from 'next/image';
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { CategoriesSetup } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingCategories';
+import { OnboardingWrapper } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper';
+import { PageHeading, TypographyP } from '@/components/Typography';
 
 export function StepLabels({
   emailAccountId,

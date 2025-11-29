@@ -1,47 +1,47 @@
-"use client";
+'use client';
 
-import { useCallback, useState, useRef, useMemo } from "react";
-import useSWR from "swr";
-import useSWRInfinite from "swr/infinite";
-import { parseAsBoolean, useQueryState } from "nuqs";
-import PQueue from "p-queue";
 import {
   BookOpenCheckIcon,
-  SparklesIcon,
-  PenSquareIcon,
-  PauseIcon,
   ChevronsDownIcon,
+  PauseIcon,
+  PenSquareIcon,
   RefreshCcwIcon,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toastError } from "@/components/Toast";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import type { MessagesResponse } from "@/app/api/messages/route";
-import { EmailMessageCell } from "@/components/EmailMessageCell";
-import { runRulesAction } from "@/utils/actions/ai-rule";
-import type { RulesResponse } from "@/app/api/user/rules/route";
-import { Table, TableBody, TableRow, TableCell } from "@/components/ui/table";
-import { Card } from "@/components/ui/card";
-import type { RunRulesResult } from "@/utils/ai/choose-rule/run-rules";
-import { SearchForm } from "@/components/SearchForm";
-import type { BatchExecutedRulesResponse } from "@/app/api/user/executed-rules/batch/route";
-import { isAIRule, isGroupRule, isStaticRule } from "@/utils/condition";
-import { BulkRunRules } from "@/app/(app)/[emailAccountId]/assistant/BulkRunRules";
-import { cn } from "@/utils";
-import { TestCustomEmailForm } from "@/app/(app)/[emailAccountId]/assistant/TestCustomEmailForm";
-import { ResultsDisplay } from "@/app/(app)/[emailAccountId]/assistant/ResultDisplay";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { FixWithChat } from "@/app/(app)/[emailAccountId]/assistant/FixWithChat";
-import { useChat } from "@/providers/ChatProvider";
+  SparklesIcon,
+} from 'lucide-react';
+import { parseAsBoolean, useQueryState } from 'nuqs';
+import PQueue from 'p-queue';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import useSWR from 'swr';
+import useSWRInfinite from 'swr/infinite';
+import { BulkRunRules } from '@/app/(app)/[emailAccountId]/assistant/BulkRunRules';
+import { FixWithChat } from '@/app/(app)/[emailAccountId]/assistant/FixWithChat';
+import { ResultsDisplay } from '@/app/(app)/[emailAccountId]/assistant/ResultDisplay';
+import { TestCustomEmailForm } from '@/app/(app)/[emailAccountId]/assistant/TestCustomEmailForm';
+import type { MessagesResponse } from '@/app/api/messages/route';
+import type { BatchExecutedRulesResponse } from '@/app/api/user/executed-rules/batch/route';
+import type { RulesResponse } from '@/app/api/user/rules/route';
+import { EmailMessageCell } from '@/components/EmailMessageCell';
+import { LoadingContent } from '@/components/LoadingContent';
+import { SearchForm } from '@/components/SearchForm';
+import { toastError } from '@/components/Toast';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { useChat } from '@/providers/ChatProvider';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { cn } from '@/utils';
+import { runRulesAction } from '@/utils/actions/ai-rule';
+import type { RunRulesResult } from '@/utils/ai/choose-rule/run-rules';
+import { isAIRule, isGroupRule, isStaticRule } from '@/utils/condition';
 
-type Message = MessagesResponse["messages"][number];
+type Message = MessagesResponse['messages'][number];
 
 export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
-  const [searchQuery, setSearchQuery] = useQueryState("search");
+  const [searchQuery, setSearchQuery] = useQueryState('search');
   const [showCustomForm, setShowCustomForm] = useQueryState(
-    "custom",
-    parseAsBoolean.withDefault(false),
+    'custom',
+    parseAsBoolean.withDefault(false)
   );
 
   const { data, isLoading, isValidating, error, setSize, mutate, size } =
@@ -50,10 +50,10 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
         // Always return the URL for the first page
         if (index === 0) {
           const params = new URLSearchParams();
-          if (searchQuery) params.set("q", searchQuery);
+          if (searchQuery) params.set('q', searchQuery);
           const paramsString = params.toString();
 
-          return `/api/messages${paramsString ? `?${paramsString}` : ""}`;
+          return `/api/messages${paramsString ? `?${paramsString}` : ''}`;
         }
 
         // For subsequent pages, check if we have a next page token
@@ -61,15 +61,15 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
         if (!pageToken) return null;
 
         const params = new URLSearchParams();
-        if (searchQuery) params.set("q", searchQuery);
-        params.set("pageToken", pageToken);
+        if (searchQuery) params.set('q', searchQuery);
+        params.set('pageToken', pageToken);
         const paramsString = params.toString();
 
-        return `/api/messages${paramsString ? `?${paramsString}` : ""}`;
+        return `/api/messages${paramsString ? `?${paramsString}` : ''}`;
       },
       {
         revalidateFirstPage: false,
-      },
+      }
     );
 
   const onLoadMore = async () => {
@@ -93,24 +93,24 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
     });
   }, [data]);
 
-  const { data: rules } = useSWR<RulesResponse>("/api/user/rules");
+  const { data: rules } = useSWR<RulesResponse>('/api/user/rules');
   const { emailAccountId, userEmail } = useAccount();
 
   // Fetch existing executed rules for current messages
   const messageIdsToFetch = useMemo(
     () => messages.map((m) => m.id),
-    [messages],
+    [messages]
   );
 
   const { data: existingRules } = useSWR<BatchExecutedRulesResponse>(
     messageIdsToFetch.length > 0
-      ? `/api/user/executed-rules/batch?messageIds=${messageIdsToFetch.join(",")}`
-      : null,
+      ? `/api/user/executed-rules/batch?messageIds=${messageIdsToFetch.join(',')}`
+      : null
   );
 
   // only show test rules form if we have an AI rule. this form won't match group/static rules which will confuse users
   const hasAiRules = rules?.some(
-    (rule) => isAIRule(rule) && !isGroupRule(rule) && !isStaticRule(rule),
+    (rule) => isAIRule(rule) && !isGroupRule(rule) && !isStaticRule(rule)
   );
 
   const isRunningAllRef = useRef(false);
@@ -154,7 +154,7 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
       });
       if (result?.serverError) {
         toastError({
-          title: "There was an error processing the email",
+          title: 'There was an error processing the email',
           description: result.serverError,
         });
       } else if (result?.data) {
@@ -162,7 +162,7 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
       }
       setIsRunning((prev) => ({ ...prev, [message.id]: false }));
     },
-    [testMode, emailAccountId],
+    [testMode, emailAccountId]
   );
 
   const handleRunAll = async () => {
@@ -204,8 +204,8 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
           } catch (error) {
             console.error(`Failed to process message ${message.id}:`, error);
             toastError({
-              title: "Failed to process email",
-              description: `Error processing email from ${message.headers.from}: ${error instanceof Error ? error.message : "Unknown error"}`,
+              title: 'Failed to process email',
+              description: `Error processing email from ${message.headers.from}: ${error instanceof Error ? error.message : 'Unknown error'}`,
             });
           }
         });
@@ -246,7 +246,7 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
           ) : (
             <Button onClick={handleRunAll} size="sm">
               <BookOpenCheckIcon className="mr-2 size-4" />
-              {testMode ? "Test All" : "Run on All"}
+              {testMode ? 'Test All' : 'Run on All'}
             </Button>
           )}
 
@@ -319,10 +319,10 @@ export function ProcessRulesContent({ testMode }: { testMode: boolean }) {
               >
                 {!isValidating && <ChevronsDownIcon className="mr-2 size-4" />}
                 {isValidating
-                  ? "Loading..."
+                  ? 'Loading...'
                   : hasMore
-                    ? "Load More"
-                    : "No More Messages"}
+                    ? 'Load More'
+                    : 'No More Messages'}
               </Button>
             </div>
           </Card>
@@ -352,7 +352,7 @@ function ProcessRulesRow({
   return (
     <TableRow
       className={
-        isRunning ? "animate-pulse bg-blue-50 dark:bg-blue-950/20" : undefined
+        isRunning ? 'animate-pulse bg-blue-50 dark:bg-blue-950/20' : undefined
       }
     >
       <TableCell>
@@ -382,9 +382,9 @@ function ProcessRulesRow({
                   onClick={() => onRun(true)}
                 >
                   <RefreshCcwIcon
-                    className={cn("mr-2 size-4", isRunning && "animate-spin")}
+                    className={cn('mr-2 size-4', isRunning && 'animate-spin')}
                   />
-                  <span>{testMode ? "Retest" : "Rerun"}</span>
+                  <span>{testMode ? 'Retest' : 'Rerun'}</span>
                 </Button>
               </>
             ) : (
@@ -395,7 +395,7 @@ function ProcessRulesRow({
                 onClick={() => onRun()}
               >
                 {!isRunning && <SparklesIcon className="mr-2 size-4" />}
-                {testMode ? "Test" : "Run"}
+                {testMode ? 'Test' : 'Run'}
               </Button>
             )}
           </div>

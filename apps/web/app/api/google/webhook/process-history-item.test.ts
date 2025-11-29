@@ -1,118 +1,118 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { processHistoryItem } from "./process-history-item";
-import { HistoryEventType } from "./types";
-import { NewsletterStatus } from "@/generated/prisma/enums";
-import type { gmail_v1 } from "@googleapis/gmail";
-import { isAssistantEmail } from "@/utils/assistant/is-assistant-email";
-import { markMessageAsProcessing } from "@/utils/redis/message-processing";
-import { GmailLabel } from "@/utils/gmail/label";
-import { processAssistantEmail } from "@/utils/assistant/process-assistant-email";
-import { getEmailAccount } from "@/__tests__/helpers";
-import { createEmailProvider } from "@/utils/email/provider";
-import { createScopedLogger } from "@/utils/logger";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getEmailAccount } from '@/__tests__/helpers';
+import { NewsletterStatus } from '@/generated/prisma/enums';
+import { isAssistantEmail } from '@/utils/assistant/is-assistant-email';
+import { processAssistantEmail } from '@/utils/assistant/process-assistant-email';
+import { createEmailProvider } from '@/utils/email/provider';
+import { GmailLabel } from '@/utils/gmail/label';
+import { createScopedLogger } from '@/utils/logger';
+import { markMessageAsProcessing } from '@/utils/redis/message-processing';
+import { processHistoryItem } from './process-history-item';
+import { HistoryEventType } from './types';
 
-const logger = createScopedLogger("test");
+const logger = createScopedLogger('test');
 
-vi.mock("server-only", () => ({}));
-vi.mock("next/server", () => ({
+vi.mock('server-only', () => ({}));
+vi.mock('next/server', () => ({
   after: vi.fn((callback) => callback()),
 }));
-vi.mock("@/utils/prisma");
-vi.mock("@/utils/redis/message-processing", () => ({
+vi.mock('@/utils/prisma');
+vi.mock('@/utils/redis/message-processing', () => ({
   markMessageAsProcessing: vi.fn().mockResolvedValue(true),
 }));
 
-vi.mock("@/utils/gmail/thread", () => ({
+vi.mock('@/utils/gmail/thread', () => ({
   getThreadMessages: vi.fn().mockImplementation(async (_gmail, threadId) => [
     {
-      id: threadId === "thread-456" ? "456" : "123",
+      id: threadId === 'thread-456' ? '456' : '123',
       threadId,
-      labelIds: ["INBOX"],
-      internalDate: "1704067200000", // 2024-01-01T00:00:00Z
+      labelIds: ['INBOX'],
+      internalDate: '1704067200000', // 2024-01-01T00:00:00Z
       headers: {
-        from: "sender@example.com",
-        to: "user@test.com",
-        subject: "Test Email",
-        date: "2024-01-01T00:00:00Z",
+        from: 'sender@example.com',
+        to: 'user@test.com',
+        subject: 'Test Email',
+        date: '2024-01-01T00:00:00Z',
       },
-      body: "Hello World",
+      body: 'Hello World',
     },
   ]),
 }));
-vi.mock("@/utils/assistant/is-assistant-email", () => ({
+vi.mock('@/utils/assistant/is-assistant-email', () => ({
   isAssistantEmail: vi.fn().mockReturnValue(false),
 }));
-vi.mock("@/utils/cold-email/is-cold-email", () => ({
+vi.mock('@/utils/cold-email/is-cold-email', () => ({
   runColdEmailBlocker: vi
     .fn()
-    .mockResolvedValue({ isColdEmail: false, reason: "hasPreviousEmail" }),
+    .mockResolvedValue({ isColdEmail: false, reason: 'hasPreviousEmail' }),
 }));
-vi.mock("@/utils/categorize/senders/categorize", () => ({
+vi.mock('@/utils/categorize/senders/categorize', () => ({
   categorizeSender: vi.fn(),
 }));
-vi.mock("@/utils/ai/choose-rule/run-rules", () => ({
+vi.mock('@/utils/ai/choose-rule/run-rules', () => ({
   runRules: vi.fn(),
 }));
-vi.mock("@/utils/assistant/process-assistant-email", () => ({
+vi.mock('@/utils/assistant/process-assistant-email', () => ({
   processAssistantEmail: vi.fn().mockResolvedValue(undefined),
 }));
-vi.mock("@/utils/digest/index", () => ({
+vi.mock('@/utils/digest/index', () => ({
   enqueueDigestItem: vi.fn().mockResolvedValue(undefined),
 }));
-vi.mock("@/utils/email/provider", () => ({
+vi.mock('@/utils/email/provider', () => ({
   createEmailProvider: vi.fn().mockResolvedValue({
     getMessage: vi.fn().mockImplementation(async (messageId) => ({
       id: messageId,
-      threadId: messageId === "456" ? "thread-456" : "thread-123",
-      labelIds: ["INBOX"],
-      snippet: "Test email snippet",
-      historyId: "12345",
-      internalDate: "1704067200000",
+      threadId: messageId === '456' ? 'thread-456' : 'thread-123',
+      labelIds: ['INBOX'],
+      snippet: 'Test email snippet',
+      historyId: '12345',
+      internalDate: '1704067200000',
       sizeEstimate: 1024,
       headers: {
-        from: "sender@example.com",
-        to: "user@test.com",
-        subject: "Test Email",
-        date: "2024-01-01T00:00:00Z",
+        from: 'sender@example.com',
+        to: 'user@test.com',
+        subject: 'Test Email',
+        date: '2024-01-01T00:00:00Z',
       },
-      textPlain: "Hello World",
-      textHtml: "<b>Hello World</b>",
+      textPlain: 'Hello World',
+      textHtml: '<b>Hello World</b>',
     })),
     blockUnsubscribedEmail: vi.fn().mockResolvedValue(undefined),
     isSentMessage: vi.fn().mockReturnValue(false),
   }),
 }));
 
-vi.mock("@/utils/gmail/label", async () => {
-  const actual = await vi.importActual("@/utils/gmail/label");
+vi.mock('@/utils/gmail/label', async () => {
+  const actual = await vi.importActual('@/utils/gmail/label');
   return {
     ...actual,
     getLabelById: vi.fn().mockImplementation(async ({ id }: { id: string }) => {
       const labelMap: Record<string, { name: string }> = {
-        "label-1": { name: "Cold Email" },
-        "label-2": { name: "Newsletter" },
-        "label-3": { name: "Marketing" },
-        "label-4": { name: "To Reply" },
+        'label-1': { name: 'Cold Email' },
+        'label-2': { name: 'Newsletter' },
+        'label-3': { name: 'Marketing' },
+        'label-4': { name: 'To Reply' },
       };
-      return labelMap[id] || { name: "Unknown Label" };
+      return labelMap[id] || { name: 'Unknown Label' };
     }),
   };
 });
 
-vi.mock("@/utils/rule/learned-patterns", () => ({
+vi.mock('@/utils/rule/learned-patterns', () => ({
   saveLearnedPatterns: vi.fn().mockResolvedValue(undefined),
 }));
 
-describe("processHistoryItem", () => {
+describe('processHistoryItem', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   const createHistoryItem = (
-    messageId = "123",
-    threadId = "thread-123",
+    messageId = '123',
+    threadId = 'thread-123',
     type: HistoryEventType = HistoryEventType.MESSAGE_ADDED,
-    labelIds?: string[],
+    labelIds?: string[]
   ) => {
     const baseItem = { message: { id: messageId, threadId } };
 
@@ -124,7 +124,8 @@ describe("processHistoryItem", () => {
           labelIds: labelIds || [],
         } as gmail_v1.Schema$HistoryLabelRemoved,
       };
-    } else if (type === HistoryEventType.LABEL_ADDED) {
+    }
+    if (type === HistoryEventType.LABEL_ADDED) {
       return {
         type,
         item: {
@@ -132,17 +133,16 @@ describe("processHistoryItem", () => {
           labelIds: labelIds || [],
         } as gmail_v1.Schema$HistoryLabelAdded,
       };
-    } else {
-      return {
-        type,
-        item: baseItem as gmail_v1.Schema$HistoryMessageAdded,
-      };
     }
+    return {
+      type,
+      item: baseItem as gmail_v1.Schema$HistoryMessageAdded,
+    };
   };
 
   const defaultOptions = {
     gmail: {} as any,
-    accessToken: "fake-token",
+    accessToken: 'fake-token',
     hasAutomationRules: false,
     hasAiAccess: false,
     rules: [],
@@ -156,7 +156,7 @@ describe("processHistoryItem", () => {
     };
   }
 
-  it("should skip if message is already being processed", async () => {
+  it('should skip if message is already being processed', async () => {
     vi.mocked(markMessageAsProcessing).mockResolvedValueOnce(false);
 
     const options = {
@@ -167,7 +167,7 @@ describe("processHistoryItem", () => {
     await processHistoryItem(createHistoryItem(), options, logger);
   });
 
-  it("should skip if message is an assistant email", async () => {
+  it('should skip if message is an assistant email', async () => {
     vi.mocked(isAssistantEmail).mockReturnValueOnce(true);
 
     const options = {
@@ -179,34 +179,34 @@ describe("processHistoryItem", () => {
     expect(processAssistantEmail).toHaveBeenCalledWith({
       message: expect.objectContaining({
         headers: expect.objectContaining({
-          from: "sender@example.com",
-          to: "user@test.com",
+          from: 'sender@example.com',
+          to: 'user@test.com',
         }),
       }),
-      userEmail: "user@test.com",
-      emailAccountId: "email-account-id",
+      userEmail: 'user@test.com',
+      emailAccountId: 'email-account-id',
       provider: expect.any(Object),
     });
   });
 
-  it("should skip if message is outbound", async () => {
+  it('should skip if message is outbound', async () => {
     const mockProvider = {
       getMessage: vi.fn().mockResolvedValue({
-        id: "123",
-        threadId: "thread-123",
+        id: '123',
+        threadId: 'thread-123',
         labelIds: [GmailLabel.SENT],
-        snippet: "Test email snippet",
-        historyId: "12345",
-        internalDate: "1704067200000",
+        snippet: 'Test email snippet',
+        historyId: '12345',
+        internalDate: '1704067200000',
         sizeEstimate: 1024,
         headers: {
-          from: "user@test.com",
-          to: "recipient@example.com",
-          subject: "Test Email",
-          date: "2024-01-01T00:00:00Z",
+          from: 'user@test.com',
+          to: 'recipient@example.com',
+          subject: 'Test Email',
+          date: '2024-01-01T00:00:00Z',
         },
-        textPlain: "Hello World",
-        textHtml: "<b>Hello World</b>",
+        textPlain: 'Hello World',
+        textHtml: '<b>Hello World</b>',
       }),
       blockUnsubscribedEmail: vi.fn().mockResolvedValue(undefined),
       isSentMessage: vi.fn().mockReturnValue(true),
@@ -221,13 +221,13 @@ describe("processHistoryItem", () => {
     await processHistoryItem(createHistoryItem(), options, logger);
   });
 
-  it("should skip if email is unsubscribed", async () => {
-    const mockPrisma = await import("@/utils/prisma");
+  it('should skip if email is unsubscribed', async () => {
+    const mockPrisma = await import('@/utils/prisma');
     vi.mocked(mockPrisma.default.newsletter.findFirst).mockResolvedValueOnce({
-      id: "newsletter-123",
-      email: "sender@example.com",
+      id: 'newsletter-123',
+      email: 'sender@example.com',
       status: NewsletterStatus.UNSUBSCRIBED,
-      emailAccountId: "email-account-id",
+      emailAccountId: 'email-account-id',
       createdAt: new Date(),
       updatedAt: new Date(),
       patternAnalyzed: false,
@@ -237,21 +237,21 @@ describe("processHistoryItem", () => {
 
     const mockProvider = {
       getMessage: vi.fn().mockResolvedValue({
-        id: "123",
-        threadId: "thread-123",
-        labelIds: ["INBOX"],
-        snippet: "Test email snippet",
-        historyId: "12345",
-        internalDate: "1704067200000",
+        id: '123',
+        threadId: 'thread-123',
+        labelIds: ['INBOX'],
+        snippet: 'Test email snippet',
+        historyId: '12345',
+        internalDate: '1704067200000',
         sizeEstimate: 1024,
         headers: {
-          from: "sender@example.com",
-          to: "user@test.com",
-          subject: "Test Email",
-          date: "2024-01-01T00:00:00Z",
+          from: 'sender@example.com',
+          to: 'user@test.com',
+          subject: 'Test Email',
+          date: '2024-01-01T00:00:00Z',
         },
-        textPlain: "Hello World",
-        textHtml: "<b>Hello World</b>",
+        textPlain: 'Hello World',
+        textHtml: '<b>Hello World</b>',
       }),
       blockUnsubscribedEmail: vi.fn().mockResolvedValue(undefined),
       isSentMessage: vi.fn().mockReturnValue(false),
@@ -265,6 +265,6 @@ describe("processHistoryItem", () => {
     };
     await processHistoryItem(createHistoryItem(), options, logger);
 
-    expect(mockProvider.blockUnsubscribedEmail).toHaveBeenCalledWith("123");
+    expect(mockProvider.blockUnsubscribedEmail).toHaveBeenCalledWith('123');
   });
 });

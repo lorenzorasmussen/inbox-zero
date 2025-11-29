@@ -1,7 +1,7 @@
-import prisma from "@/utils/prisma";
-import { ReplyTrackerEmails } from "./ReplyTrackerEmails";
-import { getDateFilter, type TimeRange } from "./date-filter";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from '@/generated/prisma/client';
+import prisma from '@/utils/prisma';
+import { getDateFilter, type TimeRange } from './date-filter';
+import { ReplyTrackerEmails } from './ReplyTrackerEmails';
 
 const PAGE_SIZE = 20;
 
@@ -46,7 +46,7 @@ export async function Resolved({
     where: {
       id: { in: resolvedThreadTrackers.map((t) => t.id) },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 
   const totalPages = Math.ceil(Number(total?.[0]?.count) / PAGE_SIZE);

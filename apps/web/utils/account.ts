@@ -1,20 +1,19 @@
-import { notFound } from "next/navigation";
-import { cookies } from "next/headers";
-import { auth } from "@/utils/auth";
-import {
-  getGmailClientWithRefresh,
-  getAccessTokenFromClient,
-} from "@/utils/gmail/client";
-import {
-  getOutlookClientWithRefresh,
-  getAccessTokenFromClient as getOutlookAccessToken,
-} from "@/utils/outlook/client";
-import { redirect } from "next/navigation";
-import prisma from "@/utils/prisma";
+import { cookies } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
+import { auth } from '@/utils/auth';
 import {
   LAST_EMAIL_ACCOUNT_COOKIE,
   type LastEmailAccountCookieValue,
-} from "@/utils/cookies";
+} from '@/utils/cookies';
+import {
+  getAccessTokenFromClient,
+  getGmailClientWithRefresh,
+} from '@/utils/gmail/client';
+import {
+  getAccessTokenFromClient as getOutlookAccessToken,
+  getOutlookClientWithRefresh,
+} from '@/utils/outlook/client';
+import prisma from '@/utils/prisma';
 
 export async function getGmailClientForEmail({
   emailAccountId,
@@ -24,7 +23,7 @@ export async function getGmailClientForEmail({
   const tokens = await getTokens({ emailAccountId });
   const gmail = getGmailClientWithRefresh({
     accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken || "",
+    refreshToken: tokens.refreshToken || '',
     expiresAt: tokens.expiresAt,
     emailAccountId,
   });
@@ -39,7 +38,7 @@ export async function getGmailAndAccessTokenForEmail({
   const tokens = await getTokens({ emailAccountId });
   const gmail = await getGmailClientWithRefresh({
     accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken || "",
+    refreshToken: tokens.refreshToken || '',
     expiresAt: tokens.expiresAt,
     emailAccountId,
   });
@@ -55,7 +54,7 @@ export async function getOutlookClientForEmail({
   const tokens = await getTokens({ emailAccountId });
   const outlook = await getOutlookClientWithRefresh({
     accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken || "",
+    refreshToken: tokens.refreshToken || '',
     expiresAt: tokens.expiresAt,
     emailAccountId,
   });
@@ -70,7 +69,7 @@ export async function getOutlookAndAccessTokenForEmail({
   const tokens = await getTokens({ emailAccountId });
   const outlook = await getOutlookClientWithRefresh({
     accessToken: tokens.accessToken,
-    refreshToken: tokens.refreshToken || "",
+    refreshToken: tokens.refreshToken || '',
     expiresAt: tokens.expiresAt,
     emailAccountId,
   });
@@ -93,7 +92,7 @@ export async function getOutlookClientForEmailId({
   });
   const outlook = await getOutlookClientWithRefresh({
     accessToken: account?.account.access_token,
-    refreshToken: account?.account.refresh_token || "",
+    refreshToken: account?.account.refresh_token || '',
     expiresAt: account?.account.expires_at?.getTime() ?? null,
     emailAccountId,
   });
@@ -120,7 +119,7 @@ async function getTokens({ emailAccountId }: { emailAccountId: string }) {
 export async function redirectToEmailAccountPath(path: `/${string}`) {
   const session = await auth();
   const userId = session?.user.id;
-  if (!userId) throw new Error("Not authenticated");
+  if (!userId) throw new Error('Not authenticated');
 
   const lastEmailAccountId = await getLastEmailAccountFromCookie(userId);
 
@@ -144,7 +143,7 @@ export async function redirectToEmailAccountPath(path: `/${string}`) {
 }
 
 async function getLastEmailAccountFromCookie(
-  userId: string,
+  userId: string
 ): Promise<string | null> {
   try {
     const cookieStore = await cookies();

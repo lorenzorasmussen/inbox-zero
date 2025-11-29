@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { CopyIcon } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { CopyIcon } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 export function CopyInput({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
@@ -25,7 +25,7 @@ export function CopyInput({ value }: { value: string }) {
         }}
       >
         <CopyIcon className="mr-2 size-4" />
-        {copied ? "Copied!" : "Copy"}
+        {copied ? 'Copied!' : 'Copy'}
       </Button>
     </div>
   );

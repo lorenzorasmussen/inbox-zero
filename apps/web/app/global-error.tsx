@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { ErrorDisplay } from "@/components/ErrorDisplay";
-import { Button } from "@/components/ui/button";
-import { captureException } from "@/utils/error";
+import { useEffect } from 'react';
+import { ErrorDisplay } from '@/components/ErrorDisplay';
+import { Button } from '@/components/ui/button';
+import { captureException } from '@/utils/error';
 
 export default function GlobalError({ error }: any) {
   useEffect(() => {

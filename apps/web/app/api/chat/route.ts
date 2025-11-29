@@ -1,39 +1,39 @@
-import { convertToModelMessages, type UIMessage } from "ai";
-import { z } from "zod";
-import { withEmailAccount } from "@/utils/middleware";
-import { getEmailAccountWithAi } from "@/utils/user/get";
-import { NextResponse } from "next/server";
-import { aiProcessAssistantChat } from "@/utils/ai/assistant/chat";
-import type { Logger } from "@/utils/logger";
-import prisma from "@/utils/prisma";
-import type { Prisma } from "@/generated/prisma/client";
-import { convertToUIMessages } from "@/components/assistant-chat/helpers";
-import { captureException } from "@/utils/error";
-import { messageContextSchema } from "@/app/api/chat/validation";
+import { convertToModelMessages, type UIMessage } from 'ai';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { messageContextSchema } from '@/app/api/chat/validation';
+import { convertToUIMessages } from '@/components/assistant-chat/helpers';
+import type { Prisma } from '@/generated/prisma/client';
+import { aiProcessAssistantChat } from '@/utils/ai/assistant/chat';
+import { captureException } from '@/utils/error';
+import type { Logger } from '@/utils/logger';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { getEmailAccountWithAi } from '@/utils/user/get';
 
 export const maxDuration = 120;
 
 const textPartSchema = z.object({
   text: z.string().min(1).max(3000),
-  type: z.enum(["text"]),
+  type: z.enum(['text']),
 });
 
 const assistantInputSchema = z.object({
   id: z.string(),
   message: z.object({
     id: z.string(),
-    role: z.enum(["user"]),
+    role: z.enum(['user']),
     parts: z.array(textPartSchema),
   }),
   context: messageContextSchema.optional(),
 });
 
-export const POST = withEmailAccount("chat", async (request) => {
+export const POST = withEmailAccount('chat', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
 
   const user = await getEmailAccountWithAi({ emailAccountId });
 
-  if (!user) return NextResponse.json({ error: "Not authenticated" });
+  if (!user) return NextResponse.json({ error: 'Not authenticated' });
 
   const json = await request.json();
   const { data, error } = assistantInputSchema.safeParse(json);
@@ -50,15 +50,15 @@ export const POST = withEmailAccount("chat", async (request) => {
 
   if (!chat) {
     return NextResponse.json(
-      { error: "Failed to get or create chat" },
-      { status: 500 },
+      { error: 'Failed to get or create chat' },
+      { status: 500 }
     );
   }
 
   if (chat.emailAccountId !== emailAccountId) {
     return NextResponse.json(
-      { error: "You are not authorized to access this chat" },
-      { status: 403 },
+      { error: 'You are not authorized to access this chat' },
+      { status: 403 }
     );
   }
 
@@ -68,7 +68,7 @@ export const POST = withEmailAccount("chat", async (request) => {
   await saveChatMessage({
     chat: { connect: { id: chat.id } },
     id: message.id,
-    role: "user",
+    role: 'user',
     parts: message.parts,
   });
 
@@ -86,10 +86,10 @@ export const POST = withEmailAccount("chat", async (request) => {
       },
     });
   } catch (error) {
-    request.logger.error("Error in assistant chat", { error });
+    request.logger.error('Error in assistant chat', { error });
     return NextResponse.json(
-      { error: "Error in assistant chat" },
-      { status: 500 },
+      { error: 'Error in assistant chat' },
+      { status: 500 }
     );
   }
 });
@@ -108,10 +108,10 @@ async function createNewChat({
       data: { emailAccountId, id: chatId },
       include: { messages: true },
     });
-    logger.info("New chat created", { chatId: newChat.id, emailAccountId });
+    logger.info('New chat created', { chatId: newChat.id, emailAccountId });
     return newChat;
   } catch (error) {
-    logger.error("Failed to create new chat", { error, emailAccountId });
+    logger.error('Failed to create new chat', { error, emailAccountId });
     return undefined;
   }
 }
@@ -131,7 +131,7 @@ async function saveChatMessage(message: Prisma.ChatMessageCreateInput) {
 async function saveChatMessages(
   messages: UIMessage[],
   chatId: string,
-  logger: Logger,
+  logger: Logger
 ) {
   try {
     return prisma.chatMessage.createMany({
@@ -142,7 +142,7 @@ async function saveChatMessages(
       })),
     });
   } catch (error) {
-    logger.error("Failed to save chat messages", { error, chatId });
+    logger.error('Failed to save chat messages', { error, chatId });
     captureException(error, { extra: { chatId } });
     throw error;
   }

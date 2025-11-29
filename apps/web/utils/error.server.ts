@@ -1,15 +1,15 @@
-import { setUser } from "@sentry/nextjs";
-import { trackError } from "@/utils/posthog";
-import { auth } from "@/utils/auth";
-import { createScopedLogger } from "@/utils/logger";
+import { setUser } from '@sentry/nextjs';
+import { auth } from '@/utils/auth';
+import { createScopedLogger } from '@/utils/logger';
+import { trackError } from '@/utils/posthog';
 
-const logger = createScopedLogger("error.server");
+const logger = createScopedLogger('error.server');
 
 export async function logErrorToPosthog(
-  type: "api" | "action",
+  type: 'api' | 'action',
   url: string,
   errorType: string,
-  emailAccountId: string,
+  emailAccountId: string
 ) {
   try {
     const session = await auth();
@@ -24,6 +24,6 @@ export async function logErrorToPosthog(
       });
     }
   } catch (error) {
-    logger.error("Error logging to PostHog:", { error });
+    logger.error('Error logging to PostHog:', { error });
   }
 }

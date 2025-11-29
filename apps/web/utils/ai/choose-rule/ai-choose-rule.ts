@@ -1,10 +1,10 @@
-import { z } from "zod";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { stringifyEmail } from "@/utils/stringify-email";
-import { isDefined, type EmailForLLM } from "@/utils/types";
-import { getModel, type ModelType } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
-import { getUserInfoPrompt, getUserRulesPrompt } from "@/utils/ai/helpers";
+import { z } from 'zod';
+import { getUserInfoPrompt, getUserRulesPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel, type ModelType } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { stringifyEmail } from '@/utils/stringify-email';
+import { type EmailForLLM, isDefined } from '@/utils/types';
 
 type GetAiResponseOptions = {
   email: EmailForLLM;
@@ -29,7 +29,7 @@ export async function aiChooseRule<
   rules: { rule: T; isPrimary?: boolean }[];
   reason: string;
 }> {
-  if (!rules.length) return { rules: [], reason: "No rules to evaluate" };
+  if (!rules.length) return { rules: [], reason: 'No rules to evaluate' };
 
   const { result: aiResponse } = await getAiResponse({
     email,
@@ -41,7 +41,7 @@ export async function aiChooseRule<
   if (aiResponse.noMatchFound) {
     return {
       rules: [],
-      reason: aiResponse.reasoning || "AI determined no rules matched",
+      reason: aiResponse.reasoning || 'AI determined no rules matched',
     };
   }
 
@@ -49,7 +49,7 @@ export async function aiChooseRule<
     .map((match) => {
       if (!match.ruleName) return undefined;
       const rule = rules.find(
-        (r) => r.name.toLowerCase() === match.ruleName.toLowerCase(),
+        (r) => r.name.toLowerCase() === match.ruleName.toLowerCase()
       );
       return rule ? { rule, isPrimary: match.isPrimary } : undefined;
     })
@@ -69,13 +69,13 @@ async function getAiResponse(options: GetAiResponseOptions): Promise<{
   };
   modelOptions: ReturnType<typeof getModel>;
 }> {
-  const { email, emailAccount, rules, modelType = "default" } = options;
+  const { email, emailAccount, rules, modelType = 'default' } = options;
 
   const modelOptions = getModel(emailAccount.user, modelType);
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Choose rule",
+    label: 'Choose rule',
     modelOptions,
   });
 
@@ -91,15 +91,14 @@ async function getAiResponse(options: GetAiResponseOptions): Promise<{
     });
 
     return { result, modelOptions };
-  } else {
-    return getAiResponseSingleRule({
-      email,
-      emailAccount,
-      rules,
-      modelOptions,
-      generateObject,
-    });
   }
+  return getAiResponseSingleRule({
+    email,
+    emailAccount,
+    rules,
+    modelOptions,
+    generateObject,
+  });
 }
 
 async function getAiResponseSingleRule({
@@ -111,7 +110,7 @@ async function getAiResponseSingleRule({
 }: {
   email: EmailForLLM;
   emailAccount: EmailAccountWithAI;
-  rules: GetAiResponseOptions["rules"];
+  rules: GetAiResponseOptions['rules'];
   modelOptions: ReturnType<typeof getModel>;
   generateObject: ReturnType<typeof createGenerateObject>;
 }) {
@@ -161,14 +160,14 @@ ${stringifyEmail(email, 500)}
     schema: z.object({
       reasoning: z
         .string()
-        .describe("The reason you chose the rule. Keep it concise"),
+        .describe('The reason you chose the rule. Keep it concise'),
       ruleName: z
         .string()
         .nullish()
-        .describe("The exact name of the rule you want to apply"),
+        .describe('The exact name of the rule you want to apply'),
       noMatchFound: z
         .boolean()
-        .describe("True if no match was found, false otherwise"),
+        .describe('True if no match was found, false otherwise'),
     }),
   });
 
@@ -196,16 +195,16 @@ async function getAiResponseMultiRule({
 }: {
   email: EmailForLLM;
   emailAccount: EmailAccountWithAI;
-  rules: GetAiResponseOptions["rules"];
+  rules: GetAiResponseOptions['rules'];
   modelOptions: ReturnType<typeof getModel>;
   generateObject: ReturnType<typeof createGenerateObject>;
 }) {
   const rulesSection = rules
     .map(
       (rule) =>
-        `<rule>\n<name>${rule.name}</name>\n<instructions>${rule.instructions}</instructions>\n</rule>`,
+        `<rule>\n<name>${rule.name}</name>\n<instructions>${rule.instructions}</instructions>\n</rule>`
     )
-    .join("\n");
+    .join('\n');
 
   const system = `You are an AI assistant that helps people manage their emails.
 
@@ -269,29 +268,29 @@ ${stringifyEmail(email, 500)}
       matchedRules: z
         .array(
           z.object({
-            ruleName: z.string().describe("The exact name of the rule"),
+            ruleName: z.string().describe('The exact name of the rule'),
             isPrimary: z
               .boolean()
               .describe(
-                "True if the rule is the primary match, false otherwise",
+                'True if the rule is the primary match, false otherwise'
               ),
-          }),
+          })
         )
-        .describe("Array of all matching rules"),
+        .describe('Array of all matching rules'),
       reasoning: z
         .string()
         .describe(
-          "The reasoning you used to choose the rules. Keep it concise",
+          'The reasoning you used to choose the rules. Keep it concise'
         ),
       noMatchFound: z
         .boolean()
-        .describe("True if no match was found, false otherwise"),
+        .describe('True if no match was found, false otherwise'),
     }),
   });
 
   return {
     matchedRules: aiResponse.object.matchedRules || [],
     noMatchFound: aiResponse.object?.noMatchFound ?? false,
-    reasoning: aiResponse.object?.reasoning ?? "",
+    reasoning: aiResponse.object?.reasoning ?? '',
   };
 }

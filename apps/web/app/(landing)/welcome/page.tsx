@@ -1,18 +1,18 @@
-import { Suspense } from "react";
-import { cookies } from "next/headers";
-import type { Metadata } from "next";
-import { after } from "next/server";
-import { OnboardingForm } from "@/app/(landing)/welcome/form";
-import { SquaresPattern } from "@/app/(landing)/home/SquaresPattern";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { CardBasic } from "@/components/ui/card";
-import { fetchUserAndStoreUtms } from "@/app/(landing)/welcome/utms";
-import { auth } from "@/utils/auth";
+import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import { after } from 'next/server';
+import { Suspense } from 'react';
+import { SquaresPattern } from '@/app/(landing)/home/SquaresPattern';
+import { OnboardingForm } from '@/app/(landing)/welcome/form';
+import { fetchUserAndStoreUtms } from '@/app/(landing)/welcome/utms';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { CardBasic } from '@/components/ui/card';
+import { auth } from '@/utils/auth';
 
 export const metadata: Metadata = {
-  title: "Welcome",
-  description: "Get started with Inbox Zero",
-  alternates: { canonical: "/welcome" },
+  title: 'Welcome',
+  description: 'Get started with Inbox Zero',
+  alternates: { canonical: '/welcome' },
 };
 
 export default async function WelcomePage(props: {

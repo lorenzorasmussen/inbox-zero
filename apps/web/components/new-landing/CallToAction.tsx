@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePostHog } from "posthog-js/react";
-import { Button } from "@/components/new-landing/common/Button";
-import { Chat } from "@/components/new-landing/icons/Chat";
-import { cx } from "class-variance-authority";
-import { landingPageAnalytics } from "@/hooks/useAnalytics";
+import { cx } from 'class-variance-authority';
+import Link from 'next/link';
+import { usePostHog } from 'posthog-js/react';
+import { Button } from '@/components/new-landing/common/Button';
+import { Chat } from '@/components/new-landing/icons/Chat';
+import { landingPageAnalytics } from '@/hooks/useAnalytics';
 
 interface CallToActionProps {
   text?: string;
   className?: string;
-  buttonSize?: "xl" | "lg";
+  buttonSize?: 'xl' | 'lg';
 }
 
 export function CallToAction({
-  text = "Get started",
-  buttonSize = "xl",
+  text = 'Get started',
+  buttonSize = 'xl',
   className,
 }: CallToActionProps) {
   const posthog = usePostHog();
 
   return (
-    <div className={cx("flex justify-center items-center gap-4", className)}>
+    <div className={cx('flex justify-center items-center gap-4', className)}>
       <Button size={buttonSize} asChild>
         <Link
           href="/login"

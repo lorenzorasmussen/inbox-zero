@@ -1,31 +1,31 @@
-import groupBy from "lodash/groupBy";
-import subDays from "date-fns/subDays";
-import prisma from "@/utils/prisma";
-import { ActionType } from "@/generated/prisma/enums";
-import { createScopedLogger } from "@/utils/logger";
+import subDays from 'date-fns/subDays';
+import groupBy from 'lodash/groupBy';
+import { ActionType } from '@/generated/prisma/enums';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
 const MAX_DRAFTS_TO_CHECK = 10;
 
-const logger = createScopedLogger("auto-draft/disable-unused");
+const logger = createScopedLogger('auto-draft/disable-unused');
 
 /**
  * Disables auto-draft feature for users who haven't used their last 10 drafts
  * Only checks drafts that are more than a day old to give users time to use them
  */
 export async function disableUnusedAutoDrafts() {
-  logger.info("Starting to check for unused auto-drafts");
+  logger.info('Starting to check for unused auto-drafts');
 
   // Find all users who have the auto-draft feature enabled (have an Action of type DRAFT_EMAIL)
   const autoDraftActions = await findAutoDraftActions();
 
-  logger.info("Found auto-draft actions", { count: autoDraftActions.length });
+  logger.info('Found auto-draft actions', { count: autoDraftActions.length });
 
   const groupedByEmailAccount = groupBy(
     autoDraftActions,
-    (action) => action.rule.emailAccountId,
+    (action) => action.rule.emailAccountId
   );
 
-  logger.info("Grouped by email account", {
+  logger.info('Grouped by email account', {
     count: Object.keys(groupedByEmailAccount).length,
   });
 
@@ -40,33 +40,33 @@ export async function disableUnusedAutoDrafts() {
 
   for (const [emailAccountId, actions] of entries) {
     try {
-      logger.info("Processing email account", { emailAccountId });
+      logger.info('Processing email account', { emailAccountId });
 
       const ruleIds = actions.map((action) => action.rule.id);
 
       const executedDraftActions = await findExecutedDraftActions(ruleIds);
 
       if (executedDraftActions.length < MAX_DRAFTS_TO_CHECK) {
-        logger.info("Skipping email account - not enough drafts", {
+        logger.info('Skipping email account - not enough drafts', {
           emailAccountId,
         });
         continue;
       }
 
-      logger.info("Found executed draft actions", {
+      logger.info('Found executed draft actions', {
         count: executedDraftActions.length,
       });
 
       const anyDraftsSent = executedDraftActions.some(
-        (action) => action.wasDraftSent === true,
+        (action) => action.wasDraftSent === true
       );
 
       if (anyDraftsSent) {
-        logger.info("Skipping email account - drafts were sent", {
+        logger.info('Skipping email account - drafts were sent', {
           emailAccountId,
         });
       } else {
-        logger.info("Disabling auto-draft for email account", {
+        logger.info('Disabling auto-draft for email account', {
           emailAccountId,
         });
         const actionIds = actions.map((action) => action.id);
@@ -74,7 +74,7 @@ export async function disableUnusedAutoDrafts() {
         results.usersDisabled++;
       }
     } catch (error) {
-      logger.error("Error processing email account", {
+      logger.error('Error processing email account', {
         emailAccountId,
         error,
       });
@@ -82,7 +82,7 @@ export async function disableUnusedAutoDrafts() {
     }
   }
 
-  logger.info("Completed auto-draft usage check", results);
+  logger.info('Completed auto-draft usage check', results);
   return results;
 }
 
@@ -118,7 +118,7 @@ async function findExecutedDraftActions(ruleIds: string[]) {
       wasDraftSent: true,
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: 'desc',
     },
     take: MAX_DRAFTS_TO_CHECK,
   });

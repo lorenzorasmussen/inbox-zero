@@ -6,45 +6,45 @@ export type Brand = {
 
 const BRANDS = {
   doac: {
-    alt: "Diary of a CEO",
-    src: "/images/new-landing/logos/doac.svg",
-    height: "h-7 sm:h-8 md:h-10 -translate-y-1",
+    alt: 'Diary of a CEO',
+    src: '/images/new-landing/logos/doac.svg',
+    height: 'h-7 sm:h-8 md:h-10 -translate-y-1',
   },
   netflix: {
-    alt: "Netflix",
-    src: "/images/new-landing/logos/netflix.svg",
+    alt: 'Netflix',
+    src: '/images/new-landing/logos/netflix.svg',
   },
   resend: {
-    alt: "Resend",
-    src: "/images/new-landing/logos/resend.svg",
+    alt: 'Resend',
+    src: '/images/new-landing/logos/resend.svg',
   },
   zendesk: {
-    alt: "Zendesk",
-    src: "/images/new-landing/logos/zendesk.svg",
+    alt: 'Zendesk',
+    src: '/images/new-landing/logos/zendesk.svg',
   },
   compass: {
-    alt: "Compass",
-    src: "/images/new-landing/logos/compass.svg",
+    alt: 'Compass',
+    src: '/images/new-landing/logos/compass.svg',
   },
   alta: {
-    alt: "Alta",
-    src: "/images/new-landing/logos/alta.svg",
+    alt: 'Alta',
+    src: '/images/new-landing/logos/alta.svg',
   },
   bytedance: {
-    alt: "ByteDance",
-    src: "/images/new-landing/logos/bytedance.svg",
+    alt: 'ByteDance',
+    src: '/images/new-landing/logos/bytedance.svg',
   },
   wix: {
-    alt: "Wix",
-    src: "/images/new-landing/logos/wix.svg",
+    alt: 'Wix',
+    src: '/images/new-landing/logos/wix.svg',
   },
   joco: {
-    alt: "JOCO",
-    src: "/images/new-landing/logos/joco.svg",
+    alt: 'JOCO',
+    src: '/images/new-landing/logos/joco.svg',
   },
   kw: {
-    alt: "Keller Williams",
-    src: "/images/new-landing/logos/kw.svg",
+    alt: 'Keller Williams',
+    src: '/images/new-landing/logos/kw.svg',
   },
 } as const satisfies Record<string, Brand>;
 

@@ -1,46 +1,46 @@
-import { z } from "zod";
-import { createGenerateObject } from "@/utils/llms";
-import type { gmail_v1 } from "@googleapis/gmail";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailSummary } from "@/utils/ai/report/summarize-emails";
-import { createScopedLogger } from "@/utils/logger";
-import { getModel } from "@/utils/llms/model";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { z } from 'zod';
+import type { EmailSummary } from '@/utils/ai/report/summarize-emails';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("email-report-label-analysis");
+const logger = createScopedLogger('email-report-label-analysis');
 
 const labelAnalysisSchema = z.object({
   optimizationSuggestions: z.array(
     z.object({
       type: z
-        .enum(["create", "consolidate", "rename", "delete"])
-        .describe("Type of optimization"),
-      suggestion: z.string().describe("Specific suggestion"),
-      reason: z.string().describe("Reason for this suggestion"),
-      impact: z.enum(["high", "medium", "low"]).describe("Expected impact"),
-    }),
+        .enum(['create', 'consolidate', 'rename', 'delete'])
+        .describe('Type of optimization'),
+      suggestion: z.string().describe('Specific suggestion'),
+      reason: z.string().describe('Reason for this suggestion'),
+      impact: z.enum(['high', 'medium', 'low']).describe('Expected impact'),
+    })
   ),
 });
 
 export async function aiAnalyzeLabelOptimization(
   emailSummaries: EmailSummary[],
   emailAccount: EmailAccountWithAI,
-  gmailLabels: gmail_v1.Schema$Label[],
+  gmailLabels: gmail_v1.Schema$Label[]
 ): Promise<z.infer<typeof labelAnalysisSchema>> {
   const system = `You are a Gmail organization expert. Analyze the user's current labels and email patterns to suggest specific optimizations that will improve their email organization and workflow efficiency.
 
 Focus on practical suggestions that will reduce email management time and improve organization.`;
 
   const prompt = `### Current Gmail Labels
-${gmailLabels.map((label) => `- ${label.name}: ${label.messagesTotal || 0} emails, ${label.messagesUnread || 0} unread`).join("\n")}
+${gmailLabels.map((label) => `- ${label.name}: ${label.messagesTotal || 0} emails, ${label.messagesUnread || 0} unread`).join('\n')}
 
 ### Email Content Analysis
 ${emailSummaries
   .slice(0, 30)
   .map(
     (email, i) =>
-      `${i + 1}. From: ${email.sender} | Subject: ${email.subject} | Category: ${email.category} | Summary: ${email.summary}`,
+      `${i + 1}. From: ${email.sender} | Subject: ${email.subject} | Category: ${email.category} | Summary: ${email.summary}`
   )
-  .join("\n")}
+  .join('\n')}
 
 ---
 
@@ -52,11 +52,11 @@ Based on the current labels and email content, suggest specific optimizations:
 
 Each suggestion should include the reason and expected impact.`;
 
-  const modelOptions = getModel(emailAccount.user, "economy");
+  const modelOptions = getModel(emailAccount.user, 'economy');
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "email-report-label-analysis",
+    label: 'email-report-label-analysis',
     modelOptions,
   });
 

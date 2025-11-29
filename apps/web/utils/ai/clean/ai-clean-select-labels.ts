@@ -1,7 +1,7 @@
-import { z } from "zod";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
+import { z } from 'zod';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
 
 const schema = z.object({ labels: z.array(z.string()).optional() });
 
@@ -31,7 +31,7 @@ ${instructions}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Clean - Select Labels",
+    label: 'Clean - Select Labels',
     modelOptions,
   });
 

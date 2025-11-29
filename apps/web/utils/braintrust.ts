@@ -1,7 +1,7 @@
-import { initDataset, type Dataset } from "braintrust";
-import { createScopedLogger } from "@/utils/logger";
+import { type Dataset, initDataset } from 'braintrust';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("braintrust");
+const logger = createScopedLogger('braintrust');
 
 // Used for evals. Not used in production.
 export class Braintrust {
@@ -9,7 +9,7 @@ export class Braintrust {
 
   constructor(dataset: string) {
     if (process.env.BRAINTRUST_API_KEY) {
-      this.dataset = initDataset("inbox-zero", { dataset });
+      this.dataset = initDataset('inbox-zero', { dataset });
     }
   }
 
@@ -19,7 +19,7 @@ export class Braintrust {
     try {
       this.dataset.insert(data);
     } catch (error) {
-      logger.error("Error inserting to Braintrust dataset", { error });
+      logger.error('Error inserting to Braintrust dataset', { error });
     }
   }
 }

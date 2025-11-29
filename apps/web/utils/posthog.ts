@@ -1,9 +1,9 @@
-import { PostHog } from "posthog-node";
-import { env } from "@/env";
-import { createScopedLogger } from "@/utils/logger";
-import { hash } from "@/utils/hash";
+import { PostHog } from 'posthog-node';
+import { env } from '@/env';
+import { hash } from '@/utils/hash';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("posthog");
+const logger = createScopedLogger('posthog');
 
 async function getPosthogUserId(options: { email: string }) {
   const personsEndpoint = `https://app.posthog.com/api/projects/${env.POSTHOG_PROJECT_ID}/persons/`;
@@ -15,14 +15,14 @@ async function getPosthogUserId(options: { email: string }) {
       headers: {
         Authorization: `Bearer ${env.POSTHOG_API_SECRET}`,
       },
-    },
+    }
   );
 
   const resGet: { results: { id: string; distinct_ids: string[] }[] } =
     await responseGet.json();
 
   if (!resGet.results?.[0]) {
-    logger.error("No Posthog user found with distinct id", {
+    logger.error('No Posthog user found with distinct id', {
       email: options.email,
     });
     return;
@@ -31,7 +31,7 @@ async function getPosthogUserId(options: { email: string }) {
   if (!resGet.results[0].distinct_ids?.includes(options.email)) {
     // double check distinct id
     throw new Error(
-      `Distinct id ${resGet.results[0].distinct_ids} does not include ${options.email}`,
+      `Distinct id ${resGet.results[0].distinct_ids} does not include ${options.email}`
     );
   }
 
@@ -42,7 +42,7 @@ async function getPosthogUserId(options: { email: string }) {
 
 export async function deletePosthogUser(options: { email: string }) {
   if (!env.POSTHOG_API_SECRET || !env.POSTHOG_PROJECT_ID) {
-    logger.warn("Posthog env variables not set");
+    logger.warn('Posthog env variables not set');
     return;
   }
 
@@ -50,7 +50,7 @@ export async function deletePosthogUser(options: { email: string }) {
   const userId = await getPosthogUserId({ email: options.email });
 
   if (!userId) {
-    logger.warn("No Posthog user found with distinct id", {
+    logger.warn('No Posthog user found with distinct id', {
       email: options.email,
     });
     return;
@@ -61,13 +61,13 @@ export async function deletePosthogUser(options: { email: string }) {
   // 2. delete user by id
   try {
     await fetch(`${personsEndpoint}${userId}/?delete_events=true`, {
-      method: "DELETE",
+      method: 'DELETE',
       headers: {
         Authorization: `Bearer ${env.POSTHOG_API_SECRET}`,
       },
     });
   } catch (error) {
-    logger.error("Error deleting Posthog user", { error });
+    logger.error('Error deleting Posthog user', { error });
   }
 }
 
@@ -79,7 +79,7 @@ export async function aliasPosthogUser({
   newEmail: string;
 }) {
   if (!env.NEXT_PUBLIC_POSTHOG_KEY) {
-    logger.warn("NEXT_PUBLIC_POSTHOG_KEY not set");
+    logger.warn('NEXT_PUBLIC_POSTHOG_KEY not set');
     return;
   }
 
@@ -89,12 +89,12 @@ export async function aliasPosthogUser({
     // This ensures all historical events remain connected
     client.alias({ distinctId: newEmail, alias: oldEmail });
     await client.shutdown();
-    logger.info("PostHog user aliased", {
+    logger.info('PostHog user aliased', {
       oldEmail: hash(oldEmail),
       newEmail: hash(newEmail),
     });
   } catch (error) {
-    logger.error("Error aliasing PostHog user", { error });
+    logger.error('Error aliasing PostHog user', { error });
   }
 }
 
@@ -102,11 +102,11 @@ export async function posthogCaptureEvent(
   email: string,
   event: string,
   properties?: Record<string, any>,
-  sendFeatureFlags?: boolean,
+  sendFeatureFlags?: boolean
 ) {
   try {
     if (!env.NEXT_PUBLIC_POSTHOG_KEY) {
-      logger.warn("NEXT_PUBLIC_POSTHOG_KEY not set");
+      logger.warn('NEXT_PUBLIC_POSTHOG_KEY not set');
       return;
     }
 
@@ -119,41 +119,41 @@ export async function posthogCaptureEvent(
     });
     await client.shutdown();
   } catch (error) {
-    logger.error("Error capturing PostHog event", { error });
+    logger.error('Error capturing PostHog event', { error });
   }
 }
 
 export async function trackUserSignedUp(email: string, createdAt: Date) {
   return posthogCaptureEvent(
     email,
-    "User signed up",
+    'User signed up',
     {
       $set_once: { createdAt },
     },
-    true,
+    true
   );
 }
 
 export async function trackStripeCustomerCreated(
   email: string,
-  stripeCustomerId: string,
+  stripeCustomerId: string
 ) {
   return posthogCaptureEvent(
     email,
-    "Stripe customer created",
+    'Stripe customer created',
     {
       $set_once: { stripeCustomerId },
     },
-    true,
+    true
   );
 }
 
 export async function trackStripeCheckoutCreated(email: string) {
-  return posthogCaptureEvent(email, "Stripe checkout created");
+  return posthogCaptureEvent(email, 'Stripe checkout created');
 }
 
 export async function trackStripeCheckoutCompleted(email: string) {
-  return posthogCaptureEvent(email, "Stripe checkout completed");
+  return posthogCaptureEvent(email, 'Stripe checkout completed');
 }
 
 export async function trackError({
@@ -166,7 +166,7 @@ export async function trackError({
   email: string;
   emailAccountId: string;
   errorType: string;
-  type: "api" | "action";
+  type: 'api' | 'action';
   url: string;
 }) {
   return posthogCaptureEvent(email, errorType, {
@@ -175,37 +175,37 @@ export async function trackError({
 }
 
 export async function trackTrialStarted(email: string, attributes: any) {
-  return posthogCaptureEvent(email, "Premium trial started", {
+  return posthogCaptureEvent(email, 'Premium trial started', {
     ...attributes,
     $set: {
       premium: true,
-      premiumTier: "subscription",
-      premiumStatus: "on_trial",
+      premiumTier: 'subscription',
+      premiumStatus: 'on_trial',
     },
   });
 }
 
 export async function trackUpgradedToPremium(email: string, attributes: any) {
-  return posthogCaptureEvent(email, "Upgraded to premium", {
+  return posthogCaptureEvent(email, 'Upgraded to premium', {
     ...attributes,
     $set: {
       premium: true,
-      premiumTier: "subscription",
-      premiumStatus: "active",
+      premiumTier: 'subscription',
+      premiumStatus: 'active',
     },
   });
 }
 
 export async function trackSubscriptionTrialStarted(
   email: string,
-  attributes: any,
+  attributes: any
 ) {
-  return posthogCaptureEvent(email, "Premium subscription trial started", {
+  return posthogCaptureEvent(email, 'Premium subscription trial started', {
     ...attributes,
     $set: {
       premium: true,
-      premiumTier: "subscription",
-      premiumStatus: "on_trial",
+      premiumTier: 'subscription',
+      premiumStatus: 'on_trial',
     },
   });
 }
@@ -213,7 +213,7 @@ export async function trackSubscriptionTrialStarted(
 export async function trackSubscriptionCustom(
   email: string,
   status: string,
-  attributes: any,
+  attributes: any
 ) {
   const event = `Premium subscription ${status}`;
 
@@ -221,7 +221,7 @@ export async function trackSubscriptionCustom(
     ...attributes,
     $set: {
       premium: true,
-      premiumTier: "subscription",
+      premiumTier: 'subscription',
       premiumStatus: status,
     },
   });
@@ -229,13 +229,13 @@ export async function trackSubscriptionCustom(
 
 export async function trackSubscriptionStatusChanged(
   email: string,
-  attributes: any,
+  attributes: any
 ) {
-  return posthogCaptureEvent(email, "Subscription status changed", {
+  return posthogCaptureEvent(email, 'Subscription status changed', {
     ...attributes,
     $set: {
       premium: true,
-      premiumTier: "subscription",
+      premiumTier: 'subscription',
       premiumStatus: attributes.status,
     },
   });
@@ -244,9 +244,9 @@ export async function trackSubscriptionStatusChanged(
 export async function trackSubscriptionCancelled(
   email: string,
   status: string,
-  attributes: any,
+  attributes: any
 ) {
-  return posthogCaptureEvent(email, "Cancelled premium subscription", {
+  return posthogCaptureEvent(email, 'Cancelled premium subscription', {
     ...attributes,
     $set: {
       premiumCancelled: true,
@@ -259,13 +259,13 @@ export async function trackSubscriptionCancelled(
 export async function trackSwitchedPremiumPlan(
   email: string,
   status: string,
-  attributes: any,
+  attributes: any
 ) {
-  return posthogCaptureEvent(email, "Switched premium plan", {
+  return posthogCaptureEvent(email, 'Switched premium plan', {
     ...attributes,
     $set: {
       premium: true,
-      premiumTier: "subscription",
+      premiumTier: 'subscription',
       premiumStatus: status,
     },
   });
@@ -282,7 +282,7 @@ export async function trackPaymentSuccess({
   lemonSqueezyId: string;
   lemonSqueezyType: string;
 }) {
-  return posthogCaptureEvent(email, "Payment success", {
+  return posthogCaptureEvent(email, 'Payment success', {
     totalPaidUSD,
     lemonSqueezyId,
     lemonSqueezyType,
@@ -290,9 +290,9 @@ export async function trackPaymentSuccess({
 }
 
 export async function trackStripeEvent(email: string, data: any) {
-  return posthogCaptureEvent(email, "Stripe event", data);
+  return posthogCaptureEvent(email, 'Stripe event', data);
 }
 
 export async function trackUserDeleted(userId: string) {
-  return posthogCaptureEvent("anonymous", "User deleted", { userId }, false);
+  return posthogCaptureEvent('anonymous', 'User deleted', { userId }, false);
 }

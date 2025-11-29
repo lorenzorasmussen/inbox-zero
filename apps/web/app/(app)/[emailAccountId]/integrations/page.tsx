@@ -1,8 +1,8 @@
-import { PageWrapper } from "@/components/PageWrapper";
-import { PageHeader } from "@/components/PageHeader";
-import { Integrations } from "@/app/(app)/[emailAccountId]/integrations/Integrations";
-import { Button } from "@/components/ui/button";
-import { RequestAccessDialog } from "./RequestAccessDialog";
+import { Integrations } from '@/app/(app)/[emailAccountId]/integrations/Integrations';
+import { PageHeader } from '@/components/PageHeader';
+import { PageWrapper } from '@/components/PageWrapper';
+import { Button } from '@/components/ui/button';
+import { RequestAccessDialog } from './RequestAccessDialog';
 
 export default function IntegrationsPage() {
   return (

@@ -1,8 +1,8 @@
-import { capitalCase } from "capital-case";
-import { Badge } from "@/components/Badge";
-import type { Thread } from "@/components/email-list/types";
-import { PlanBadge, getActionColor } from "@/components/PlanBadge";
-import { getActionFields } from "@/utils/action-item";
+import { capitalCase } from 'capital-case';
+import { Badge } from '@/components/Badge';
+import type { Thread } from '@/components/email-list/types';
+import { getActionColor, PlanBadge } from '@/components/PlanBadge';
+import { getActionFields } from '@/utils/action-item';
 
 export function PlanExplanation(props: { provider: string; thread: Thread }) {
   const { provider, thread } = props;

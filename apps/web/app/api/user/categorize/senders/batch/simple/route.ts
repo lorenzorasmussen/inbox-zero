@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { withError } from "@/utils/middleware";
-import { handleBatchRequest } from "@/app/api/user/categorize/senders/batch/handle-batch";
-import { env } from "@/env";
-import { isValidInternalApiKey } from "@/utils/internal-api";
-import { createScopedLogger } from "@/utils/logger";
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { handleBatchRequest } from '@/app/api/user/categorize/senders/batch/handle-batch';
+import { env } from '@/env';
+import { isValidInternalApiKey } from '@/utils/internal-api';
+import { createScopedLogger } from '@/utils/logger';
+import { withError } from '@/utils/middleware';
 
-const logger = createScopedLogger("api/user/categorize/senders/batch/simple");
+const logger = createScopedLogger('api/user/categorize/senders/batch/simple');
 
 export const maxDuration = 300;
 
@@ -14,12 +14,12 @@ export const maxDuration = 300;
 export const POST = withError(async (request) => {
   if (env.QSTASH_TOKEN) {
     return NextResponse.json({
-      error: "Qstash is set. This endpoint is disabled.",
+      error: 'Qstash is set. This endpoint is disabled.',
     });
   }
 
   if (!isValidInternalApiKey(await headers(), logger))
-    return NextResponse.json({ error: "Invalid API key" });
+    return NextResponse.json({ error: 'Invalid API key' });
 
   return handleBatchRequest(request);
 });

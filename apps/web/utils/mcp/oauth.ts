@@ -1,23 +1,23 @@
 import {
-  startAuthorization,
+  discoverAuthorizationServerMetadata,
+  discoverOAuthProtectedResourceMetadata,
   exchangeAuthorization,
   refreshAuthorization,
   registerClient,
-  discoverAuthorizationServerMetadata,
-  discoverOAuthProtectedResourceMetadata,
-} from "@modelcontextprotocol/sdk/client/auth.js";
+  startAuthorization,
+} from '@modelcontextprotocol/sdk/client/auth.js';
 import type {
   AuthorizationServerMetadata,
-  OAuthClientMetadata,
   OAuthClientInformation,
+  OAuthClientMetadata,
   OAuthTokens,
-} from "@modelcontextprotocol/sdk/shared/auth.js";
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import { getIntegration, getStaticCredentials } from "./integrations";
-import type { IntegrationKey } from "./integrations";
+} from '@modelcontextprotocol/sdk/shared/auth.js';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import type { IntegrationKey } from './integrations';
+import { getIntegration, getStaticCredentials } from './integrations';
 
-const logger = createScopedLogger("mcp-oauth");
+const logger = createScopedLogger('mcp-oauth');
 
 // Conservative default expiration window when OAuth provider doesn't return expires_in
 // Set to 1 hour to ensure tokens are refreshed proactively
@@ -48,12 +48,12 @@ export async function generateOAuthUrl({
   const clientInfo = await getOAuthClient(integration, redirectUri);
   const metadata = await getMetadataForIntegration(
     integrationConfig,
-    integration,
+    integration
   );
 
   if (!metadata.authorization_endpoint) {
     throw new Error(
-      `No authorization endpoint found for ${integration}. OAuth discovery may have failed.`,
+      `No authorization endpoint found for ${integration}. OAuth discovery may have failed.`
     );
   }
 
@@ -61,12 +61,12 @@ export async function generateOAuthUrl({
     metadata,
     clientInformation: clientInfo,
     redirectUrl: redirectUri,
-    scope: integrationConfig.scopes.join(" "),
+    scope: integrationConfig.scopes.join(' '),
     state,
     resource: new URL(integrationConfig.serverUrl),
   });
 
-  logger.info("OAuth flow started", { integration });
+  logger.info('OAuth flow started', { integration });
 
   return {
     url: result.authorizationUrl.toString(),
@@ -100,7 +100,7 @@ export async function handleOAuthCallback({
   const clientInfo = await getOAuthClient(integration, redirectUri);
   const metadata = await getMetadataForIntegration(
     integrationConfig,
-    integration,
+    integration
   );
 
   const tokens = await exchangeAuthorization(metadata.token_endpoint, {
@@ -147,7 +147,7 @@ export async function handleOAuthCallback({
     },
   });
 
-  logger.info("OAuth callback completed", {
+  logger.info('OAuth callback completed', {
     integration,
     emailAccountId,
     hasRefreshToken: !!tokens.refresh_token,
@@ -169,7 +169,7 @@ export async function getAuthToken({
 }): Promise<string> {
   const integrationConfig = getIntegration(integration);
 
-  if (integrationConfig.authType === "api-token") {
+  if (integrationConfig.authType === 'api-token') {
     const connection = await prisma.mcpConnection.findFirst({
       where: {
         emailAccountId,
@@ -183,7 +183,7 @@ export async function getAuthToken({
 
     if (!connection?.apiKey) {
       throw new Error(
-        `No API key found for ${integration}. Please configure the integration first.`,
+        `No API key found for ${integration}. Please configure the integration first.`
       );
     }
 
@@ -215,7 +215,7 @@ async function getValidAccessToken({
 
   if (!connection?.accessToken) {
     throw new Error(
-      `No access token found for ${integration}. Please connect the integration first.`,
+      `No access token found for ${integration}. Please connect the integration first.`
     );
   }
 
@@ -223,7 +223,7 @@ async function getValidAccessToken({
   const isExpired = connection.expiresAt && connection.expiresAt < now;
 
   if (isExpired && connection.refreshToken) {
-    logger.info("Access token expired, refreshing", {
+    logger.info('Access token expired, refreshing', {
       integration,
       emailAccountId,
     });
@@ -234,7 +234,7 @@ async function getValidAccessToken({
 
   if (isExpired) {
     throw new Error(
-      `Access token for ${integration} has expired and no refresh token is available. Please reconnect.`,
+      `Access token for ${integration} has expired and no refresh token is available. Please reconnect.`
     );
   }
 
@@ -271,14 +271,14 @@ async function refreshOAuthTokens({
 
   if (!connection?.refreshToken) {
     throw new Error(
-      `No refresh token found for ${integration} connection ${emailAccountId}`,
+      `No refresh token found for ${integration} connection ${emailAccountId}`
     );
   }
 
   const clientInfo = await getOAuthClient(integration);
   const metadata = await getMetadataForIntegration(
     integrationConfig,
-    integration,
+    integration
   );
 
   const tokens = await refreshAuthorization(metadata.token_endpoint, {
@@ -302,7 +302,7 @@ async function refreshOAuthTokens({
     },
   });
 
-  logger.info("OAuth tokens refreshed", {
+  logger.info('OAuth tokens refreshed', {
     integration,
     emailAccountId,
   });
@@ -317,7 +317,7 @@ async function refreshOAuthTokens({
  */
 async function discoverMetadata(
   serverUrl: string,
-  integration: string,
+  integration: string
 ): Promise<AuthorizationServerMetadata> {
   const integrationConfig = getIntegration(integration);
 
@@ -337,17 +337,17 @@ async function discoverMetadata(
     stored?.registeredTokenUrl &&
     stored.registeredServerUrl === serverUrl
   ) {
-    logger.info("Using cached OAuth metadata", { integration });
+    logger.info('Using cached OAuth metadata', { integration });
 
     return createAuthServerMetadata(
       serverUrl,
       stored.registeredAuthorizationUrl,
-      stored.registeredTokenUrl,
+      stored.registeredTokenUrl
     );
   }
 
   // Discover via RFC 8414/9728
-  logger.info("Discovering OAuth metadata from server", {
+  logger.info('Discovering OAuth metadata from server', {
     integration,
     serverUrl,
   });
@@ -361,7 +361,7 @@ async function discoverMetadata(
         await discoverOAuthProtectedResourceMetadata(serverUrl);
       if (resourceMetadata?.authorization_servers?.[0]) {
         authServerUrl = resourceMetadata.authorization_servers[0];
-        logger.info("Found auth server via protected resource metadata", {
+        logger.info('Found auth server via protected resource metadata', {
           integration,
           authServerUrl,
         });
@@ -369,8 +369,8 @@ async function discoverMetadata(
     } catch {
       // Protected resource metadata is optional - many servers don't implement it
       logger.info(
-        "Protected resource metadata not available, using server URL directly",
-        { integration, serverUrl },
+        'Protected resource metadata not available, using server URL directly',
+        { integration, serverUrl }
       );
     }
 
@@ -378,7 +378,7 @@ async function discoverMetadata(
     const metadata = await discoverAuthorizationServerMetadata(authServerUrl);
 
     if (!metadata) {
-      throw new Error("OAuth metadata discovery returned no results");
+      throw new Error('OAuth metadata discovery returned no results');
     }
 
     // Cache the discovered endpoints for next time
@@ -388,7 +388,7 @@ async function discoverMetadata(
       registeredServerUrl: serverUrl,
     });
 
-    logger.info("OAuth metadata discovered and cached", {
+    logger.info('OAuth metadata discovered and cached', {
       integration,
       authEndpoint: metadata.authorization_endpoint,
       tokenEndpoint: metadata.token_endpoint,
@@ -397,14 +397,14 @@ async function discoverMetadata(
 
     return metadata;
   } catch (error) {
-    logger.warn("Failed to discover OAuth metadata, trying fallback config", {
+    logger.warn('Failed to discover OAuth metadata, trying fallback config', {
       error,
       integration,
     });
 
     // Fallback to static oauthConfig if discovery fails
     if (integrationConfig.oauthConfig) {
-      logger.info("Using static OAuth config fallback", {
+      logger.info('Using static OAuth config fallback', {
         integration,
         authEndpoint: integrationConfig.oauthConfig.authorization_endpoint,
       });
@@ -413,7 +413,7 @@ async function discoverMetadata(
         serverUrl,
         integrationConfig.oauthConfig.authorization_endpoint,
         integrationConfig.oauthConfig.token_endpoint,
-        integrationConfig.oauthConfig.registration_endpoint,
+        integrationConfig.oauthConfig.registration_endpoint
       );
 
       await upsertMcpIntegration(integration, {
@@ -425,9 +425,9 @@ async function discoverMetadata(
       return metadata;
     }
 
-    logger.error("No fallback OAuth config available", { error, integration });
+    logger.error('No fallback OAuth config available', { error, integration });
     throw new Error(
-      `Could not discover OAuth endpoints for ${integration}. Server may not support OAuth discovery and no fallback config is available.`,
+      `Could not discover OAuth endpoints for ${integration}. Server may not support OAuth discovery and no fallback config is available.`
     );
   }
 }
@@ -438,14 +438,14 @@ async function discoverMetadata(
  */
 async function getOAuthClient(
   integration: IntegrationKey,
-  redirectUri?: string,
+  redirectUri?: string
 ): Promise<OAuthClientInformation> {
   const integrationConfig = getIntegration(integration);
   const staticCreds = getStaticCredentials(integration);
 
   // Use static credentials if available
   if (staticCreds?.clientId) {
-    logger.info("Using static OAuth credentials", { integration });
+    logger.info('Using static OAuth credentials', { integration });
     return {
       client_id: staticCreds.clientId,
       client_secret: staticCreds.clientSecret,
@@ -462,7 +462,7 @@ async function getOAuthClient(
   });
 
   if (stored?.oauthClientId) {
-    logger.info("Using stored OAuth credentials", { integration });
+    logger.info('Using stored OAuth credentials', { integration });
     return {
       client_id: stored.oauthClientId,
       client_secret: stored.oauthClientSecret || undefined,
@@ -475,28 +475,28 @@ async function getOAuthClient(
 
   if (!redirectUri) {
     throw new Error(
-      `redirectUri is required for dynamic client registration for ${integration}`,
+      `redirectUri is required for dynamic client registration for ${integration}`
     );
   }
 
-  logger.info("Performing dynamic client registration", { integration });
+  logger.info('Performing dynamic client registration', { integration });
 
   const oauthServerUrl = getOAuthServerUrl(integrationConfig);
   const metadata = await discoverMetadata(oauthServerUrl, integration);
 
   if (!metadata.registration_endpoint) {
     throw new Error(
-      `Dynamic registration not supported for ${integration}. Please configure static OAuth credentials.`,
+      `Dynamic registration not supported for ${integration}. Please configure static OAuth credentials.`
     );
   }
 
   const clientMetadata: OAuthClientMetadata = {
-    client_name: "Inbox Zero",
+    client_name: 'Inbox Zero',
     redirect_uris: [redirectUri],
-    grant_types: ["authorization_code", "refresh_token"],
-    response_types: ["code"],
-    token_endpoint_auth_method: "none", // Public client with PKCE
-    scope: integrationConfig.scopes.join(" "),
+    grant_types: ['authorization_code', 'refresh_token'],
+    response_types: ['code'],
+    token_endpoint_auth_method: 'none', // Public client with PKCE
+    scope: integrationConfig.scopes.join(' '),
   };
 
   const registered = await registerClient(metadata.registration_endpoint, {
@@ -509,7 +509,7 @@ async function getOAuthClient(
     oauthClientSecret: registered.client_secret,
   });
 
-  logger.info("Dynamic client registration successful", {
+  logger.info('Dynamic client registration successful', {
     integration,
     clientId: registered.client_id,
   });
@@ -528,7 +528,7 @@ async function upsertMcpIntegration(
     registeredServerUrl?: string;
     oauthClientId?: string;
     oauthClientSecret?: string | null;
-  },
+  }
 ) {
   return prisma.mcpIntegration.upsert({
     where: { name: integration },
@@ -541,7 +541,7 @@ function createAuthServerMetadata(
   issuer: string,
   authorizationEndpoint: string,
   tokenEndpoint: string,
-  registrationEndpoint?: string,
+  registrationEndpoint?: string
 ): AuthorizationServerMetadata {
   return {
     issuer,
@@ -550,16 +550,16 @@ function createAuthServerMetadata(
     ...(registrationEndpoint && {
       registration_endpoint: registrationEndpoint,
     }),
-    grant_types_supported: ["authorization_code", "refresh_token"],
-    response_types_supported: ["code"],
-    token_endpoint_auth_methods_supported: ["none"],
-    code_challenge_methods_supported: ["S256", "plain"],
+    grant_types_supported: ['authorization_code', 'refresh_token'],
+    response_types_supported: ['code'],
+    token_endpoint_auth_methods_supported: ['none'],
+    code_challenge_methods_supported: ['S256', 'plain'],
   };
 }
 
 function calculateTokenExpiration(
   expiresIn: number | undefined,
-  context?: { integration: string; isRefresh?: boolean },
+  context?: { integration: string; isRefresh?: boolean }
 ): Date {
   if (expiresIn) {
     return new Date(Date.now() + expiresIn * 1000);
@@ -567,12 +567,12 @@ function calculateTokenExpiration(
 
   // OAuth provider didn't return expires_in - use conservative default
   logger.warn(
-    "OAuth provider did not return expires_in, using default expiry",
+    'OAuth provider did not return expires_in, using default expiry',
     {
       integration: context?.integration,
       isRefresh: context?.isRefresh ?? false,
       defaultExpiryMs: DEFAULT_TOKEN_EXPIRY_MS,
-    },
+    }
   );
 
   return new Date(Date.now() + DEFAULT_TOKEN_EXPIRY_MS);
@@ -580,20 +580,20 @@ function calculateTokenExpiration(
 
 async function getMetadataForIntegration(
   integrationConfig: ReturnType<typeof getIntegration>,
-  integration: string,
+  integration: string
 ) {
   const oauthServerUrl = getOAuthServerUrl(integrationConfig);
   return await discoverMetadata(oauthServerUrl, integration);
 }
 
 function getOAuthServerUrl(
-  integrationConfig: ReturnType<typeof getIntegration>,
+  integrationConfig: ReturnType<typeof getIntegration>
 ): string {
-  const serverUrl = integrationConfig.serverUrl || "";
+  const serverUrl = integrationConfig.serverUrl || '';
 
   // If serverUrl ends with /mcp, OAuth discovery is at the base URL
   // This is the standard pattern: OAuth at https://mcp.example.com, MCP protocol at https://mcp.example.com/mcp
-  if (serverUrl.endsWith("/mcp")) {
+  if (serverUrl.endsWith('/mcp')) {
     return serverUrl.slice(0, -4);
   }
 

@@ -1,10 +1,10 @@
-import type React from "react";
-import type { HTMLInputTypeAttribute } from "react";
-import type { FieldError } from "react-hook-form";
-import { MinusCircleIcon, PlusCircleIcon } from "lucide-react";
-import TextareaAutosize from "react-textarea-autosize";
-import { cn } from "@/utils";
-import { TooltipExplanation } from "@/components/TooltipExplanation";
+import { MinusCircleIcon, PlusCircleIcon } from 'lucide-react';
+import type React from 'react';
+import type { HTMLInputTypeAttribute } from 'react';
+import type { FieldError } from 'react-hook-form';
+import TextareaAutosize from 'react-textarea-autosize';
+import { TooltipExplanation } from '@/components/TooltipExplanation';
+import { cn } from '@/utils';
 
 export interface InputProps {
   name: string;
@@ -34,7 +34,7 @@ export interface InputProps {
 export const Input = (props: InputProps) => {
   const Component = props.autosizeTextarea
     ? TextareaAutosize
-    : props.as || "input";
+    : props.as || 'input';
 
   const errorMessage = getErrorMessage(props.error?.type, props.error?.message);
 
@@ -70,7 +70,7 @@ export const Input = (props: InputProps) => {
         />
       ) : null}
 
-      <div className={cn(props.label || props.labelComponent ? "mt-1" : "")}>
+      <div className={cn(props.label || props.labelComponent ? 'mt-1' : '')}>
         <div className="flex">
           {props.leftText ? (
             <div className="flex-1">
@@ -90,8 +90,8 @@ export const Input = (props: InputProps) => {
             <Component
               {...inputProps}
               className={cn(
-                "block w-full flex-1 rounded-md border-slate-300 bg-background shadow-sm focus:border-black focus:ring-black disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-foreground disabled:ring-slate-200 dark:border-slate-700 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-400 dark:disabled:ring-slate-700 sm:text-sm",
-                props.className,
+                'block w-full flex-1 rounded-md border-slate-300 bg-background shadow-sm focus:border-black focus:ring-black disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-foreground disabled:ring-slate-200 dark:border-slate-700 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-400 dark:disabled:ring-slate-700 sm:text-sm',
+                props.className
               )}
             />
           )}
@@ -111,7 +111,7 @@ export const Input = (props: InputProps) => {
   );
 };
 
-type LabelProps = Pick<InputProps, "name" | "label" | "tooltipText">;
+type LabelProps = Pick<InputProps, 'name' | 'label' | 'tooltipText'>;
 
 export const Label = (props: LabelProps) => {
   return (
@@ -160,8 +160,8 @@ const InputWithLeftFixedText = (props: {
       <input
         {...props.inputProps}
         className={cn(
-          "block w-[120px] flex-1 rounded-none rounded-r-md border-slate-300 bg-background focus:border-black focus:ring-black disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-foreground disabled:ring-slate-200 dark:border-slate-700 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-400 dark:disabled:ring-slate-700 sm:w-full sm:min-w-[150px] sm:max-w-full sm:text-sm",
-          props.className,
+          'block w-[120px] flex-1 rounded-none rounded-r-md border-slate-300 bg-background focus:border-black focus:ring-black disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-foreground disabled:ring-slate-200 dark:border-slate-700 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-400 dark:disabled:ring-slate-700 sm:w-full sm:min-w-[150px] sm:max-w-full sm:text-sm',
+          props.className
         )}
       />
     </div>
@@ -178,8 +178,8 @@ const InputWithRightFixedText = (props: {
       <input
         {...props.inputProps}
         className={cn(
-          "block w-full min-w-0 flex-1 rounded-none rounded-l-md border-slate-300 bg-background focus:border-black focus:ring-black disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-foreground disabled:ring-slate-200 dark:border-slate-700 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-400 dark:disabled:ring-slate-700 sm:text-sm",
-          props.className,
+          'block w-full min-w-0 flex-1 rounded-none rounded-l-md border-slate-300 bg-background focus:border-black focus:ring-black disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-foreground disabled:ring-slate-200 dark:border-slate-700 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-400 dark:disabled:ring-slate-700 sm:text-sm',
+          props.className
         )}
       />
       <span className="inline-flex items-center rounded-r-md border border-l-0 border-slate-300 bg-slate-50 px-3 text-muted-foreground dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 sm:text-sm">
@@ -220,7 +220,7 @@ export const AddRemoveButtons = (props: {
 };
 
 export function LabelWithRightButton(
-  props: LabelProps & { rightButton: { text: string; onClick: () => void } },
+  props: LabelProps & { rightButton: { text: string; onClick: () => void } }
 ) {
   return (
     <div className="flex justify-between">
@@ -237,12 +237,12 @@ export function LabelWithRightButton(
 }
 
 function getErrorMessage(
-  errorType?: FieldError["type"],
-  errorMessage?: FieldError["message"],
+  errorType?: FieldError['type'],
+  errorMessage?: FieldError['message']
 ) {
-  if (errorType === "required") return "This field is required";
-  if (errorType === "minLength") return "This field is too short";
-  if (errorType === "maxLength") return "This field is too long";
+  if (errorType === 'required') return 'This field is required';
+  if (errorType === 'minLength') return 'This field is too short';
+  if (errorType === 'maxLength') return 'This field is too long';
 
   return errorMessage;
 }

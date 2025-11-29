@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { DownloadIcon } from "lucide-react";
-import type { ThreadMessage } from "@/components/email-list/types";
-import { CardBasic } from "@/components/ui/card";
+import { DownloadIcon } from 'lucide-react';
+import Link from 'next/link';
+import type { ThreadMessage } from '@/components/email-list/types';
+import { Button } from '@/components/ui/button';
+import { CardBasic } from '@/components/ui/card';
 
 export function EmailAttachments({ message }: { message: ThreadMessage }) {
   return (
@@ -40,27 +40,27 @@ export function EmailAttachments({ message }: { message: ThreadMessage }) {
 
 function mimeTypeToString(mimeType: string): string {
   switch (mimeType) {
-    case "application/pdf":
-      return "PDF";
-    case "application/zip":
-      return "ZIP";
-    case "image/png":
-      return "PNG";
-    case "image/jpeg":
-      return "JPEG";
+    case 'application/pdf':
+      return 'PDF';
+    case 'application/zip':
+      return 'ZIP';
+    case 'image/png':
+      return 'PNG';
+    case 'image/jpeg':
+      return 'JPEG';
     // LLM generated. Need to check they're actually needed
-    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      return "DOCX";
-    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-      return "XLSX";
-    case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-      return "PPTX";
-    case "application/vnd.ms-excel":
-      return "XLS";
-    case "application/vnd.ms-powerpoint":
-      return "PPT";
-    case "application/msword":
-      return "DOC";
+    case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      return 'DOCX';
+    case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+      return 'XLSX';
+    case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+      return 'PPTX';
+    case 'application/vnd.ms-excel':
+      return 'XLS';
+    case 'application/vnd.ms-powerpoint':
+      return 'PPT';
+    case 'application/msword':
+      return 'DOC';
     default:
       return mimeType;
   }

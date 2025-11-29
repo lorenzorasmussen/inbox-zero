@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import Link from "next/link";
 import {
   ArchiveIcon,
-  CheckIcon,
-  MailIcon,
   BanIcon,
   BotIcon,
-  type LucideIcon,
-  ChromeIcon,
   CalendarIcon,
-} from "lucide-react";
-import { useLocalStorage } from "usehooks-ts";
-import { PageHeading, SectionDescription } from "@/components/Typography";
-import { Card } from "@/components/ui/card";
-import { prefixPath } from "@/utils/path";
-import { useSetupProgress } from "@/hooks/useSetupProgress";
-import { LoadingContent } from "@/components/LoadingContent";
-import { EXTENSION_URL } from "@/utils/config";
-import { isGoogleProvider } from "@/utils/email/provider-types";
-import { useAccount } from "@/providers/EmailAccountProvider";
+  CheckIcon,
+  ChromeIcon,
+  type LucideIcon,
+  MailIcon,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useLocalStorage } from 'usehooks-ts';
 import {
-  STEP_KEYS,
   getStepNumber,
-} from "@/app/(app)/[emailAccountId]/onboarding/OnboardingContent";
+  STEP_KEYS,
+} from '@/app/(app)/[emailAccountId]/onboarding/OnboardingContent';
+import { LoadingContent } from '@/components/LoadingContent';
+import { PageHeading, SectionDescription } from '@/components/Typography';
+import { Card } from '@/components/ui/card';
+import { useSetupProgress } from '@/hooks/useSetupProgress';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { EXTENSION_URL } from '@/utils/config';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import { prefixPath } from '@/utils/path';
 
 function FeatureCard({
   emailAccountId,
@@ -60,42 +60,42 @@ function FeatureCard({
 function getFeatures(provider: string) {
   const features = [
     {
-      href: "/automation",
+      href: '/automation',
       icon: BotIcon,
-      iconBg: "bg-green-100 dark:bg-green-900/50",
-      iconColor: "text-green-600 dark:text-green-400",
-      title: "AI Assistant",
+      iconBg: 'bg-green-100 dark:bg-green-900/50',
+      iconColor: 'text-green-600 dark:text-green-400',
+      title: 'AI Assistant',
       description:
-        "Your personal email assistant that organizes, archives, and drafts replies",
+        'Your personal email assistant that organizes, archives, and drafts replies',
     },
     {
-      href: "/bulk-unsubscribe",
+      href: '/bulk-unsubscribe',
       icon: ArchiveIcon,
-      iconBg: "bg-purple-100 dark:bg-purple-900/50",
-      iconColor: "text-purple-600 dark:text-purple-400",
-      title: "Bulk Unsubscribe",
-      description: "Easily unsubscribe from unwanted newsletters in one click",
+      iconBg: 'bg-purple-100 dark:bg-purple-900/50',
+      iconColor: 'text-purple-600 dark:text-purple-400',
+      title: 'Bulk Unsubscribe',
+      description: 'Easily unsubscribe from unwanted newsletters in one click',
     },
     ...(isGoogleProvider(provider)
       ? [
           {
-            href: "/reply-zero",
+            href: '/reply-zero',
             icon: MailIcon,
-            iconBg: "bg-blue-100 dark:bg-blue-900/50",
-            iconColor: "text-blue-600 dark:text-blue-400",
-            title: "Reply Zero",
+            iconBg: 'bg-blue-100 dark:bg-blue-900/50',
+            iconColor: 'text-blue-600 dark:text-blue-400',
+            title: 'Reply Zero',
             description:
-              "Track emails needing replies & follow-ups. Get AI-drafted responses",
+              'Track emails needing replies & follow-ups. Get AI-drafted responses',
           } as const,
         ]
       : []),
     {
-      href: "/cold-email-blocker",
+      href: '/cold-email-blocker',
       icon: BanIcon,
-      iconBg: "bg-orange-100 dark:bg-orange-900/50",
-      iconColor: "text-orange-600 dark:text-orange-400",
-      title: "Cold Email Blocker",
-      description: "Filter out unsolicited messages and keep your inbox clean",
+      iconBg: 'bg-orange-100 dark:bg-orange-900/50',
+      iconColor: 'text-orange-600 dark:text-orange-400',
+      title: 'Cold Email Blocker',
+      description: 'Filter out unsolicited messages and keep your inbox clean',
     },
   ] as const;
 
@@ -155,7 +155,7 @@ const StepItem = ({
 
   return (
     <div
-      className={`border-b border-border last:border-0 ${completed ? "opacity-60" : ""}`}
+      className={`border-b border-border last:border-0 ${completed ? 'opacity-60' : ''}`}
     >
       <div className="flex items-center justify-between gap-8 p-4">
         <div className="flex max-w-lg items-center">
@@ -229,8 +229,8 @@ function Checklist({
   isCalendarConnected: boolean;
 }) {
   const [isExtensionInstalled, setIsExtensionInstalled] = useLocalStorage(
-    "inbox-zero-extension-installed",
-    false,
+    'inbox-zero-extension-installed',
+    false
   );
 
   const handleMarkExtensionDone = () => {
@@ -259,7 +259,7 @@ function Checklist({
       <StepItem
         href={prefixPath(
           emailAccountId,
-          `/onboarding?step=${getStepNumber(STEP_KEYS.LABELS)}`,
+          `/onboarding?step=${getStepNumber(STEP_KEYS.LABELS)}`
         )}
         icon={<BotIcon size={20} />}
         iconBg="bg-green-100 dark:bg-green-900/50"
@@ -271,7 +271,7 @@ function Checklist({
       />
 
       <StepItem
-        href={prefixPath(emailAccountId, "/bulk-unsubscribe")}
+        href={prefixPath(emailAccountId, '/bulk-unsubscribe')}
         icon={<ArchiveIcon size={20} />}
         iconBg="bg-purple-100 dark:bg-purple-900/50"
         iconColor="text-purple-500 dark:text-purple-400"
@@ -282,7 +282,7 @@ function Checklist({
       />
 
       <StepItem
-        href={prefixPath(emailAccountId, "/calendars")}
+        href={prefixPath(emailAccountId, '/calendars')}
         icon={<CalendarIcon size={20} />}
         iconBg="bg-blue-100 dark:bg-blue-900/50"
         iconColor="text-blue-500 dark:text-blue-400"
@@ -295,7 +295,7 @@ function Checklist({
       {isGoogleProvider(provider) && (
         <StepItem
           href={EXTENSION_URL}
-          linkProps={{ target: "_blank", rel: "noopener noreferrer" }}
+          linkProps={{ target: '_blank', rel: 'noopener noreferrer' }}
           icon={<ChromeIcon size={20} />}
           iconBg="bg-orange-100 dark:bg-orange-900/50"
           iconColor="text-orange-500 dark:text-orange-400"
@@ -360,8 +360,8 @@ function SetupPageContent({
         <PageHeading className="text-center">Welcome to Inbox Zero</PageHeading>
         <SectionDescription className="mt-2 text-center text-base">
           {isSetupComplete
-            ? "What would you like to do?"
-            : "Complete these steps to get the most out of Inbox Zero"}
+            ? 'What would you like to do?'
+            : 'Complete these steps to get the most out of Inbox Zero'}
         </SectionDescription>
       </div>
 

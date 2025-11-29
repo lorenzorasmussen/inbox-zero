@@ -1,5 +1,5 @@
-import { Rule } from "@/app/(app)/[emailAccountId]/assistant/RuleForm";
-import { TopSection } from "@/components/TopSection";
+import { Rule } from '@/app/(app)/[emailAccountId]/assistant/RuleForm';
+import { TopSection } from '@/components/TopSection';
 
 export default async function RulePage(props: {
   params: Promise<{ ruleId: string; account: string }>;
@@ -12,7 +12,7 @@ export default async function RulePage(props: {
 
   return (
     <div>
-      {searchParams.new === "true" && (
+      {searchParams.new === 'true' && (
         <TopSection
           title="Here are your rule settings!"
           descriptionComponent={

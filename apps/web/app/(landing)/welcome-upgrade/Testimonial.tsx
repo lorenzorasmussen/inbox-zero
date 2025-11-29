@@ -1,4 +1,4 @@
-import { ABTestimonial } from "@/components/PersonWithLogo";
+import { ABTestimonial } from '@/components/PersonWithLogo';
 
 export function Testimonial() {
   return (

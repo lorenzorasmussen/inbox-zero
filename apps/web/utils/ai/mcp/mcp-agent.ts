@@ -1,13 +1,13 @@
-import { stepCountIs, type ToolSet } from "ai";
-import { createGenerateText } from "@/utils/llms";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { createMcpToolsForAgent } from "@/utils/ai/mcp/mcp-tools";
-import { getModel } from "@/utils/llms/model";
-import type { EmailForLLM } from "@/utils/types";
-import { getEmailListPrompt, getUserInfoPrompt } from "@/utils/ai/helpers";
-import { createScopedLogger } from "@/utils/logger";
+import { stepCountIs, type ToolSet } from 'ai';
+import { getEmailListPrompt, getUserInfoPrompt } from '@/utils/ai/helpers';
+import { createMcpToolsForAgent } from '@/utils/ai/mcp/mcp-tools';
+import { createGenerateText } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import type { EmailForLLM } from '@/utils/types';
 
-const logger = createScopedLogger("mcp-agent");
+const logger = createScopedLogger('mcp-agent');
 
 type McpAgentOptions = {
   emailAccount: EmailAccountWithAI;
@@ -23,11 +23,11 @@ type McpAgentResponse = {
   }>;
 };
 
-const NO_RELEVANT_INFO_FOUND = "NO_RELEVANT_INFO_FOUND";
+const NO_RELEVANT_INFO_FOUND = 'NO_RELEVANT_INFO_FOUND';
 
 async function runMcpAgent(
   options: McpAgentOptions,
-  mcpTools: ToolSet,
+  mcpTools: ToolSet
 ): Promise<McpAgentResponse> {
   const { emailAccount, messages } = options;
 
@@ -55,11 +55,11 @@ The last emails in the thread are:
 ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
 </thread>`;
 
-  const modelOptions = getModel(emailAccount.user, "economy");
+  const modelOptions = getModel(emailAccount.user, 'economy');
 
   const generateText = createGenerateText({
     emailAccount,
-    label: "MCP Agent",
+    label: 'MCP Agent',
     modelOptions,
   });
 
@@ -70,15 +70,15 @@ ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
     prompt,
     stopWhen: stepCountIs(10),
     onStepFinish: async ({ text, toolCalls }) => {
-      logger.trace("Step finished", { text, toolCalls });
+      logger.trace('Step finished', { text, toolCalls });
     },
   });
 
   const hasNoRelevantInfo = result.text.includes(NO_RELEVANT_INFO_FOUND);
 
   if (hasNoRelevantInfo) {
-    logger.trace("No relevant information found", {
-      explanation: result.text.replace(NO_RELEVANT_INFO_FOUND, "").trim(),
+    logger.trace('No relevant information found', {
+      explanation: result.text.replace(NO_RELEVANT_INFO_FOUND, '').trim(),
     });
   }
 
@@ -89,16 +89,16 @@ ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
       const allToolCallsWithResults = result.steps.flatMap((step) =>
         step.toolCalls.map((call) => {
           const toolResult = step.toolResults?.find(
-            (result) => result.toolCallId === call.toolCallId,
+            (result) => result.toolCallId === call.toolCallId
           );
           return {
             toolName: call.toolName,
             arguments: call.input as Record<string, unknown>,
             result: toolResult?.output
               ? `${JSON.stringify(toolResult.output).slice(0, 200)}...`
-              : "No result",
+              : 'No result',
           };
-        }),
+        })
       );
       return allToolCallsWithResults;
     },
@@ -106,7 +106,7 @@ ${getEmailListPrompt({ messages, messageMaxLength: 1000, maxMessages: 5 })}
 }
 
 export async function mcpAgent(
-  options: McpAgentOptions,
+  options: McpAgentOptions
 ): Promise<McpAgentResponse | null> {
   const { emailAccount, messages } = options;
 

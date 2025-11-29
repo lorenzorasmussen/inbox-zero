@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import posthog from "posthog-js";
-import { PostHogProvider as PHProvider } from "posthog-js/react";
-import { useSession } from "@/utils/auth-client";
-import { usePathname, useSearchParams } from "next/navigation";
-import { env } from "@/env";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import { usePathname, useSearchParams } from 'next/navigation';
+import posthog from 'posthog-js';
+import { PostHogProvider as PHProvider } from 'posthog-js/react';
+import { useEffect } from 'react';
+import { env } from '@/env';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { useSession } from '@/utils/auth-client';
 
 // based on: https://posthog.com/docs/libraries/next-js
 
@@ -20,7 +20,7 @@ export function PostHogPageview() {
       if (searchParams?.toString()) {
         url = `${url}?${searchParams.toString()}`;
       }
-      posthog.capture("$pageview", {
+      posthog.capture('$pageview', {
         $current_url: url,
       });
     }
@@ -54,7 +54,7 @@ export function PostHogIdentify() {
         {},
         {
           default_email_account_provider: emailAccount?.account?.provider,
-        },
+        }
       );
     }
   }, [emailAccount]);
@@ -62,7 +62,7 @@ export function PostHogIdentify() {
   return null;
 }
 
-if (typeof window !== "undefined" && env.NEXT_PUBLIC_POSTHOG_KEY) {
+if (typeof window !== 'undefined' && env.NEXT_PUBLIC_POSTHOG_KEY) {
   posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
     api_host: env.NEXT_PUBLIC_POSTHOG_API_HOST, // https://posthog.com/docs/advanced/proxy/nextjs
     capture_pageview: false, // Disable automatic pageview capture, as we capture manually

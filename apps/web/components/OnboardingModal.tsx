@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { useLocalStorage, useWindowSize } from "usehooks-ts";
-import { PlayIcon } from "lucide-react";
-import { useModal } from "@/hooks/useModal";
-import { YouTubeVideo } from "@/components/YouTubeVideo";
-import { MuxVideo } from "@/components/MuxVideo";
-import { Button } from "@/components/ui/button";
+import { PlayIcon } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useLocalStorage, useWindowSize } from 'usehooks-ts';
+import { MuxVideo } from '@/components/MuxVideo';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
+import { YouTubeVideo } from '@/components/YouTubeVideo';
+import { useModal } from '@/hooks/useModal';
 
 export function OnboardingModal({
   title,
@@ -136,7 +136,7 @@ export const useOnboarding = (feature: string) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [hasViewedOnboarding, setHasViewedOnboarding] = useLocalStorage(
     `viewed${feature}Onboarding`,
-    false,
+    false
   );
 
   useEffect(() => {

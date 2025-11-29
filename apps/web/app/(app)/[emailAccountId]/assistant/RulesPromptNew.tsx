@@ -1,40 +1,40 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState, useRef } from "react";
-import { useLocalStorage } from "usehooks-ts";
-import { PlusIcon, UserPenIcon } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { createRulesAction } from "@/utils/actions/ai-rule";
+import { PlusIcon, UserPenIcon } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { useLocalStorage } from 'usehooks-ts';
+import { AssistantOnboarding } from '@/app/(app)/[emailAccountId]/assistant/AssistantOnboarding';
+import { AvailableActionsPanel } from '@/app/(app)/[emailAccountId]/assistant/AvailableActionsPanel';
+import { CreatedRulesModal } from '@/app/(app)/[emailAccountId]/assistant/CreatedRulesModal';
+import { ExamplesGrid } from '@/app/(app)/[emailAccountId]/assistant/ExamplesList';
+import { getPersonas } from '@/app/(app)/[emailAccountId]/assistant/examples';
+import { PersonaDialog } from '@/app/(app)/[emailAccountId]/assistant/PersonaDialog';
+import { ProcessingPromptFileDialog } from '@/app/(app)/[emailAccountId]/assistant/ProcessingPromptFileDialog';
+import { RuleDialog } from '@/app/(app)/[emailAccountId]/assistant/RuleDialog';
 import {
   SimpleRichTextEditor,
   type SimpleRichTextEditorRef,
-} from "@/components/editor/SimpleRichTextEditor";
-import { LoadingContent } from "@/components/LoadingContent";
-import { getPersonas } from "@/app/(app)/[emailAccountId]/assistant/examples";
-import { PersonaDialog } from "@/app/(app)/[emailAccountId]/assistant/PersonaDialog";
-import { useModal } from "@/hooks/useModal";
-import { ProcessingPromptFileDialog } from "@/app/(app)/[emailAccountId]/assistant/ProcessingPromptFileDialog";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useLabels } from "@/hooks/useLabels";
-import { RuleDialog } from "@/app/(app)/[emailAccountId]/assistant/RuleDialog";
-import { useDialogState } from "@/hooks/useDialogState";
-import { useRules } from "@/hooks/useRules";
-import { ExamplesGrid } from "@/app/(app)/[emailAccountId]/assistant/ExamplesList";
-import { AssistantOnboarding } from "@/app/(app)/[emailAccountId]/assistant/AssistantOnboarding";
-import { CreatedRulesModal } from "@/app/(app)/[emailAccountId]/assistant/CreatedRulesModal";
-import type { CreateRuleResult } from "@/utils/rule/types";
-import { toastError } from "@/components/Toast";
-import { AvailableActionsPanel } from "@/app/(app)/[emailAccountId]/assistant/AvailableActionsPanel";
+} from '@/components/editor/SimpleRichTextEditor';
+import { LoadingContent } from '@/components/LoadingContent';
+import { toastError } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useDialogState } from '@/hooks/useDialogState';
+import { useLabels } from '@/hooks/useLabels';
+import { useModal } from '@/hooks/useModal';
+import { useRules } from '@/hooks/useRules';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { createRulesAction } from '@/utils/actions/ai-rule';
+import type { CreateRuleResult } from '@/utils/rule/types';
 
 export function RulesPrompt() {
   const { emailAccountId, provider } = useAccount();
   const { isModalOpen, setIsModalOpen } = useModal();
   const onOpenPersonaDialog = useCallback(
     () => setIsModalOpen(true),
-    [setIsModalOpen],
+    [setIsModalOpen]
   );
 
   const [persona, setPersona] = useState<string | null>(null);
@@ -83,13 +83,13 @@ function RulesPromptForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessingDialogOpen, setIsProcessingDialogOpen] = useState(false);
   const [createdRules, setCreatedRules] = useState<CreateRuleResult[] | null>(
-    null,
+    null
   );
   const [showCreatedRulesModal, setShowCreatedRulesModal] = useState(false);
   const [
     viewedProcessingPromptFileDialog,
     setViewedProcessingPromptFileDialog,
-  ] = useLocalStorage("viewedProcessingPromptFileDialog", false);
+  ] = useLocalStorage('viewedProcessingPromptFileDialog', false);
 
   const ruleDialog = useDialogState();
 
@@ -97,10 +97,10 @@ function RulesPromptForm({
 
   const onSubmit = useCallback(async () => {
     const markdown = editorRef.current?.getMarkdown();
-    if (typeof markdown !== "string") return;
-    if (markdown.trim() === "") {
+    if (typeof markdown !== 'string') return;
+    if (markdown.trim() === '') {
       toastError({
-        description: "Please enter a prompt to create rules",
+        description: 'Please enter a prompt to create rules',
       });
       return;
     }
@@ -124,7 +124,7 @@ function RulesPromptForm({
         return result;
       },
       {
-        loading: "Creating rules...",
+        loading: 'Creating rules...',
         success: (result) => {
           const { rules = [], errors = [] } = result?.data || {};
           setCreatedRules(rules);
@@ -132,7 +132,7 @@ function RulesPromptForm({
           if (errors.length > 0) {
             const errorDetails = errors
               .map((e) => `${e.ruleName}: ${e.error}`)
-              .join(", ");
+              .join(', ');
             return `${rules.length} rules created. ${errors.length} failed: ${errorDetails}`;
           }
 
@@ -141,7 +141,7 @@ function RulesPromptForm({
         error: (err) => {
           return `Error creating rules: ${err.message}`;
         },
-      },
+      }
     );
   }, [mutate, viewedProcessingPromptFileDialog, emailAccountId]);
 
@@ -195,7 +195,7 @@ function RulesPromptForm({
                   onClick={examples ? onHideExamples : onOpenPersonaDialog}
                 >
                   <UserPenIcon className="mr-2 size-4" />
-                  {examples ? "Hide examples" : "Choose from examples"}
+                  {examples ? 'Hide examples' : 'Choose from examples'}
                 </Button>
 
                 <Button

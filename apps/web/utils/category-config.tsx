@@ -1,23 +1,23 @@
-import type { IconCircleColor } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import type { CategoryAction } from "@/utils/actions/rule.validation";
+import {
+  BellIcon,
+  CalendarIcon,
+  MailIcon,
+  MegaphoneIcon,
+  NewspaperIcon,
+  ReceiptIcon,
+  UsersIcon,
+} from 'lucide-react';
+import type { IconCircleColor } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { SystemType } from '@/generated/prisma/enums';
+import type { CategoryAction } from '@/utils/actions/rule.validation';
 import {
   getCategoryAction,
   getRuleConfig,
   getRuleLabel,
-} from "@/utils/rule/consts";
-import { SystemType } from "@/generated/prisma/enums";
-import {
-  MailIcon,
-  NewspaperIcon,
-  MegaphoneIcon,
-  CalendarIcon,
-  ReceiptIcon,
-  BellIcon,
-  UsersIcon,
-} from "lucide-react";
+} from '@/utils/rule/consts';
 
 export const categoryConfig = (
-  provider: string,
+  provider: string
 ): {
   key: SystemType;
   label: string;
@@ -31,7 +31,7 @@ export const categoryConfig = (
     label: getRuleLabel(SystemType.TO_REPLY),
     tooltipText: getRuleConfig(SystemType.TO_REPLY).tooltipText,
     Icon: MailIcon,
-    iconColor: "blue",
+    iconColor: 'blue',
     action: getCategoryAction(SystemType.TO_REPLY, provider),
   },
   {
@@ -39,7 +39,7 @@ export const categoryConfig = (
     label: getRuleLabel(SystemType.NEWSLETTER),
     tooltipText: getRuleConfig(SystemType.NEWSLETTER).tooltipText,
     Icon: NewspaperIcon,
-    iconColor: "purple",
+    iconColor: 'purple',
     action: getCategoryAction(SystemType.NEWSLETTER, provider),
   },
   {
@@ -47,7 +47,7 @@ export const categoryConfig = (
     label: getRuleLabel(SystemType.MARKETING),
     tooltipText: getRuleConfig(SystemType.MARKETING).tooltipText,
     Icon: MegaphoneIcon,
-    iconColor: "green",
+    iconColor: 'green',
     action: getCategoryAction(SystemType.MARKETING, provider),
   },
   {
@@ -55,7 +55,7 @@ export const categoryConfig = (
     label: getRuleLabel(SystemType.CALENDAR),
     tooltipText: getRuleConfig(SystemType.CALENDAR).tooltipText,
     Icon: CalendarIcon,
-    iconColor: "yellow",
+    iconColor: 'yellow',
     action: getCategoryAction(SystemType.CALENDAR, provider),
   },
   {
@@ -63,7 +63,7 @@ export const categoryConfig = (
     label: getRuleLabel(SystemType.RECEIPT),
     tooltipText: getRuleConfig(SystemType.RECEIPT).tooltipText,
     Icon: ReceiptIcon,
-    iconColor: "orange",
+    iconColor: 'orange',
     action: getCategoryAction(SystemType.RECEIPT, provider),
   },
   {
@@ -71,7 +71,7 @@ export const categoryConfig = (
     label: getRuleLabel(SystemType.NOTIFICATION),
     tooltipText: getRuleConfig(SystemType.NOTIFICATION).tooltipText,
     Icon: BellIcon,
-    iconColor: "red",
+    iconColor: 'red',
     action: getCategoryAction(SystemType.NOTIFICATION, provider),
   },
   {
@@ -79,7 +79,7 @@ export const categoryConfig = (
     label: getRuleLabel(SystemType.COLD_EMAIL),
     tooltipText: getRuleConfig(SystemType.COLD_EMAIL).tooltipText,
     Icon: UsersIcon,
-    iconColor: "indigo",
+    iconColor: 'indigo',
     action: getCategoryAction(SystemType.COLD_EMAIL, provider),
   },
 ];

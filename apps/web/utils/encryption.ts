@@ -3,14 +3,14 @@ import {
   createDecipheriv,
   randomBytes,
   scryptSync,
-} from "node:crypto";
-import { env } from "@/env";
-import { createScopedLogger } from "@/utils/logger";
+} from 'node:crypto';
+import { env } from '@/env';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("encryption");
+const logger = createScopedLogger('encryption');
 
 // Cryptographic constants
-const ALGORITHM = "aes-256-gcm";
+const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16; // 16 bytes for AES GCM
 const AUTH_TAG_LENGTH = 16; // 16 bytes for authentication tag
 const KEY_LENGTH = 32; // 32 bytes for AES-256
@@ -19,7 +19,7 @@ const KEY_LENGTH = 32; // 32 bytes for AES-256
 const key = scryptSync(
   env.EMAIL_ENCRYPT_SECRET,
   env.EMAIL_ENCRYPT_SALT,
-  KEY_LENGTH,
+  KEY_LENGTH
 );
 
 /**
@@ -35,7 +35,7 @@ export function encryptToken(text: string | null): string | null {
 
     const cipher = createCipheriv(ALGORITHM, key, iv);
     const encrypted = Buffer.concat([
-      cipher.update(text, "utf8"),
+      cipher.update(text, 'utf8'),
       cipher.final(),
     ]);
 
@@ -43,9 +43,9 @@ export function encryptToken(text: string | null): string | null {
     const authTag = cipher.getAuthTag();
 
     // Return IV + Auth Tag + Encrypted content as hex
-    return Buffer.concat([iv, authTag, encrypted]).toString("hex");
+    return Buffer.concat([iv, authTag, encrypted]).toString('hex');
   } catch (error) {
-    logger.error("Encryption failed", { error });
+    logger.error('Encryption failed', { error });
     return null;
   }
 }
@@ -58,7 +58,7 @@ export function decryptToken(encryptedText: string | null): string | null {
   if (encryptedText === null || encryptedText === undefined) return null;
 
   try {
-    const buffer = Buffer.from(encryptedText, "hex");
+    const buffer = Buffer.from(encryptedText, 'hex');
 
     // Extract IV (first 16 bytes)
     const iv = buffer.subarray(0, IV_LENGTH);
@@ -77,9 +77,9 @@ export function decryptToken(encryptedText: string | null): string | null {
       decipher.final(),
     ]);
 
-    return decrypted.toString("utf8");
+    return decrypted.toString('utf8');
   } catch (error) {
-    logger.error("Decryption failed", { error });
+    logger.error('Decryption failed', { error });
     return null;
   }
 }

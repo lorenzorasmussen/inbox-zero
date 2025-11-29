@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useOrgSWR } from "@/hooks/useOrgSWR";
-import { BarChart, Title } from "@tremor/react";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import { CardBasic } from "@/components/ui/card";
-import type { EmailActionStatsResponse } from "@/app/api/user/stats/email-actions/route";
+import { BarChart, Title } from '@tremor/react';
+import type { EmailActionStatsResponse } from '@/app/api/user/stats/email-actions/route';
+import { LoadingContent } from '@/components/LoadingContent';
+import { CardBasic } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useOrgSWR } from '@/hooks/useOrgSWR';
 
 export function EmailActionsAnalytics() {
   const { data, isLoading, error } = useOrgSWR<EmailActionStatsResponse>(
-    "/api/user/stats/email-actions",
+    '/api/user/stats/email-actions'
   );
 
   return (
@@ -28,8 +28,8 @@ export function EmailActionsAnalytics() {
             className="mt-4 h-72"
             data={data.result}
             index="date"
-            categories={["Archived", "Deleted"]}
-            colors={["lime", "pink"]}
+            categories={['Archived', 'Deleted']}
+            colors={['lime', 'pink']}
           />
         </CardBasic>
       )}

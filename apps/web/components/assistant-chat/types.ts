@@ -1,4 +1,4 @@
-import type { UIMessage } from "ai";
+import type { UIMessage } from 'ai';
 import type {
   AddToKnowledgeBaseTool,
   CreateRuleTool,
@@ -8,7 +8,7 @@ import type {
   UpdateLearnedPatternsTool,
   UpdateRuleActionsTool,
   UpdateRuleConditionsTool,
-} from "@/utils/ai/assistant/chat";
+} from '@/utils/ai/assistant/chat';
 
 // export type DataPart = { type: "append-message"; message: string };
 

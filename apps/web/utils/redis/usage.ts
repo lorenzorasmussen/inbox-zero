@@ -1,9 +1,9 @@
-import "server-only";
-import type { LanguageModelUsage } from "ai";
-import { redis } from "@/utils/redis";
-import { createScopedLogger } from "@/utils/logger";
+import 'server-only';
+import type { LanguageModelUsage } from 'ai';
+import { createScopedLogger } from '@/utils/logger';
+import { redis } from '@/utils/redis';
 
-const logger = createScopedLogger("redis/usage");
+const logger = createScopedLogger('redis/usage');
 
 export type RedisUsage = {
   openaiCalls?: number;
@@ -36,24 +36,24 @@ export async function saveUsage(options: {
 
   await Promise.all([
     // TODO: this isn't openai specific, it can be any llm
-    redis.hincrby(key, "openaiCalls", 1),
+    redis.hincrby(key, 'openaiCalls', 1),
     usage.totalTokens
-      ? redis.hincrby(key, "openaiTokensUsed", usage.totalTokens)
+      ? redis.hincrby(key, 'openaiTokensUsed', usage.totalTokens)
       : null,
     usage.outputTokens
-      ? redis.hincrby(key, "openaiCompletionTokensUsed", usage.outputTokens)
+      ? redis.hincrby(key, 'openaiCompletionTokensUsed', usage.outputTokens)
       : null,
     usage.inputTokens
-      ? redis.hincrby(key, "openaiPromptTokensUsed", usage.inputTokens)
+      ? redis.hincrby(key, 'openaiPromptTokensUsed', usage.inputTokens)
       : null,
     usage.cachedInputTokens
-      ? redis.hincrby(key, "cachedInputTokensUsed", usage.cachedInputTokens)
+      ? redis.hincrby(key, 'cachedInputTokensUsed', usage.cachedInputTokens)
       : null,
     usage.reasoningTokens
-      ? redis.hincrby(key, "reasoningTokensUsed", usage.reasoningTokens)
+      ? redis.hincrby(key, 'reasoningTokensUsed', usage.reasoningTokens)
       : null,
-    cost ? redis.hincrbyfloat(key, "cost", cost) : null,
+    cost ? redis.hincrbyfloat(key, 'cost', cost) : null,
   ]).catch((error) => {
-    logger.error("Error saving usage", { error: error.message, cost, usage });
+    logger.error('Error saving usage', { error: error.message, cost, usage });
   });
 }

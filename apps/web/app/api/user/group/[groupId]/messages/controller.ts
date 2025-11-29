@@ -1,14 +1,14 @@
-import prisma from "@/utils/prisma";
-import { createHash } from "node:crypto";
-import groupBy from "lodash/groupBy";
-import { findMatchingGroupItem } from "@/utils/group/find-matching-group";
-import { extractEmailAddress } from "@/utils/email";
-import { GroupItemType } from "@/generated/prisma/enums";
-import type { GroupItem } from "@/generated/prisma/client";
-import type { MessageWithGroupItem } from "@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/types";
-import { SafeError } from "@/utils/error";
-import { createEmailProvider } from "@/utils/email/provider";
-import type { EmailProvider } from "@/utils/email/types";
+import { createHash } from 'node:crypto';
+import groupBy from 'lodash/groupBy';
+import type { MessageWithGroupItem } from '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/types';
+import type { GroupItem } from '@/generated/prisma/client';
+import { GroupItemType } from '@/generated/prisma/enums';
+import { extractEmailAddress } from '@/utils/email';
+import { createEmailProvider } from '@/utils/email/provider';
+import type { EmailProvider } from '@/utils/email/types';
+import { SafeError } from '@/utils/error';
+import { findMatchingGroupItem } from '@/utils/group/find-matching-group';
+import prisma from '@/utils/prisma';
 
 const PAGE_SIZE = 20;
 
@@ -41,7 +41,7 @@ export async function getGroupEmails({
     include: { items: true },
   });
 
-  if (!group) throw new SafeError("Group not found");
+  if (!group) throw new SafeError('Group not found');
 
   const emailProvider = await createEmailProvider({
     emailAccountId,
@@ -84,7 +84,7 @@ export async function fetchPaginatedMessages({
   if (pageToken) {
     try {
       const decodedState = JSON.parse(
-        Buffer.from(pageToken, "base64").toString("utf-8"),
+        Buffer.from(pageToken, 'base64').toString('utf-8')
       );
       if (decodedState.groupItemsHash === groupItemsHash) {
         paginationState = decodedState;
@@ -105,11 +105,11 @@ export async function fetchPaginatedMessages({
     emailProvider,
     from,
     to,
-    paginationState,
+    paginationState
   );
 
   const nextPageToken = nextPaginationState
-    ? Buffer.from(JSON.stringify(nextPaginationState)).toString("base64")
+    ? Buffer.from(JSON.stringify(nextPaginationState)).toString('base64')
     : undefined;
 
   return { messages, nextPageToken };
@@ -118,12 +118,12 @@ export async function fetchPaginatedMessages({
 // used for pagination
 // if the group items change, we start from the beginning
 function createGroupItemsHash(
-  groupItems: { type: string; value: string }[],
+  groupItems: { type: string; value: string }[]
 ): string {
   const itemsString = JSON.stringify(
-    groupItems.map((item) => ({ type: item.type, value: item.value })),
+    groupItems.map((item) => ({ type: item.type, value: item.value }))
   );
-  return createHash("md5").update(itemsString).digest("hex");
+  return createHash('md5').update(itemsString).digest('hex');
 }
 
 // we set up our own pagination
@@ -134,7 +134,7 @@ async function fetchPaginatedGroupMessages(
   emailProvider: EmailProvider,
   from: Date | undefined,
   to: Date | undefined,
-  paginationState: InternalPaginationState,
+  paginationState: InternalPaginationState
 ): Promise<{
   messages: MessageWithGroupItem[];
   nextPaginationState?: InternalPaginationState;
@@ -155,7 +155,7 @@ async function fetchPaginatedGroupMessages(
     while (paginationState.type === type && messages.length < PAGE_SIZE) {
       const chunk = items.slice(
         paginationState.chunkIndex * CHUNK_SIZE,
-        (paginationState.chunkIndex + 1) * CHUNK_SIZE,
+        (paginationState.chunkIndex + 1) * CHUNK_SIZE
       );
       if (chunk.length === 0) break;
 
@@ -166,7 +166,7 @@ async function fetchPaginatedGroupMessages(
         PAGE_SIZE - messages.length,
         from,
         to,
-        paginationState.pageToken,
+        paginationState.pageToken
       );
       messages = [...messages, ...result.messages];
 
@@ -215,7 +215,7 @@ async function fetchGroupMessages(
   maxResults: number,
   from?: Date,
   to?: Date,
-  pageToken?: string,
+  pageToken?: string
 ): Promise<{ messages: MessageWithGroupItem[]; nextPageToken?: string }> {
   const query = buildQuery(groupItemType, groupItems, from, to);
 
@@ -230,10 +230,10 @@ async function fetchGroupMessages(
       const message = await emailProvider.getMessage(m.id);
       const matchingGroupItem = findMatchingGroupItem(
         message.headers,
-        groupItems,
+        groupItems
       );
       return { ...message, matchingGroupItem };
-    }),
+    })
   );
 
   return {
@@ -247,26 +247,26 @@ function buildQuery(
   groupItemType: GroupItemType,
   groupItems: GroupItem[],
   from?: Date,
-  to?: Date,
+  to?: Date
 ) {
   const beforeQuery = from
     ? `before:${Math.floor(from.getTime() / 1000)} `
-    : "";
-  const afterQuery = to ? `after:${Math.floor(to.getTime() / 1000)} ` : "";
+    : '';
+  const afterQuery = to ? `after:${Math.floor(to.getTime() / 1000)} ` : '';
 
   if (groupItemType === GroupItemType.FROM) {
     const q = `from:(${groupItems
       .map((item) => `"${extractEmailAddress(item.value) || item.value}"`)
-      .join(" OR ")}) ${beforeQuery}${afterQuery}`;
+      .join(' OR ')}) ${beforeQuery}${afterQuery}`;
     return q;
   }
 
   if (groupItemType === GroupItemType.SUBJECT) {
     const q = `subject:(${groupItems
       .map((item) => `"${item.value}"`)
-      .join(" OR ")}) ${beforeQuery}${afterQuery}`;
+      .join(' OR ')}) ${beforeQuery}${afterQuery}`;
     return q;
   }
 
-  return "";
+  return '';
 }

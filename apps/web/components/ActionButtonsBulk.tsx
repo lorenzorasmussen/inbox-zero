@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import { ButtonGroup } from "@/components/ButtonGroup";
-import { LoadingMiniSpinner } from "@/components/Loading";
-import { ArchiveIcon, SparklesIcon, Trash2Icon } from "lucide-react";
+import { ArchiveIcon, SparklesIcon, Trash2Icon } from 'lucide-react';
+import { useMemo } from 'react';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { LoadingMiniSpinner } from '@/components/Loading';
 
 export function ActionButtonsBulk(props: {
   isPlanning: boolean;
@@ -23,7 +23,7 @@ export function ActionButtonsBulk(props: {
   const buttons = useMemo(
     () => [
       {
-        tooltip: "Process with assistant",
+        tooltip: 'Process with assistant',
         onClick: onPlanAiAction,
         icon: isPlanning ? (
           <LoadingMiniSpinner />
@@ -32,7 +32,7 @@ export function ActionButtonsBulk(props: {
         ),
       },
       {
-        tooltip: "Archive",
+        tooltip: 'Archive',
         onClick: onArchive,
         icon: isArchiving ? (
           <LoadingMiniSpinner />
@@ -41,7 +41,7 @@ export function ActionButtonsBulk(props: {
         ),
       },
       {
-        tooltip: "Delete",
+        tooltip: 'Delete',
         onClick: onDelete,
         icon: isDeleting ? (
           <LoadingMiniSpinner />
@@ -50,7 +50,7 @@ export function ActionButtonsBulk(props: {
         ),
       },
     ],
-    [isArchiving, isPlanning, isDeleting, onArchive, onPlanAiAction, onDelete],
+    [isArchiving, isPlanning, isDeleting, onArchive, onPlanAiAction, onDelete]
   );
 
   return <ButtonGroup buttons={buttons} />;

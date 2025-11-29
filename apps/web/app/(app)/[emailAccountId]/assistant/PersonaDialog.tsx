@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { ButtonList } from "@/components/ButtonList";
-import type { Personas } from "./examples";
+import { ButtonList } from '@/components/ButtonList';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import type { Personas } from './examples';
 
 export function PersonaDialog({
   isOpen,

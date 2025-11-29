@@ -1,9 +1,9 @@
-import { z } from "zod";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { Category } from "@/generated/prisma/client";
-import { formatCategoriesForPrompt } from "@/utils/ai/categorize-sender/format-categories";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
+import { z } from 'zod';
+import type { Category } from '@/generated/prisma/client';
+import { formatCategoriesForPrompt } from '@/utils/ai/categorize-sender/format-categories';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
 
 export async function aiCategorizeSender({
   emailAccount,
@@ -14,7 +14,7 @@ export async function aiCategorizeSender({
   emailAccount: EmailAccountWithAI;
   sender: string;
   previousEmails: { subject: string; snippet: string }[];
-  categories: Pick<Category, "name" | "description">[];
+  categories: Pick<Category, 'name' | 'description'>[];
 }) {
   const system = `You are an AI assistant specializing in email management and organization.
 Your task is to categorize an email accounts based on their name, email address, and content from previous emails.
@@ -28,10 +28,10 @@ ${previousEmails
   .slice(0, 3)
   .map(
     (email) =>
-      `<email><subject>${email.subject}</subject><snippet>${email.snippet}</snippet></email>`,
+      `<email><subject>${email.subject}</subject><snippet>${email.snippet}</snippet></email>`
   )
-  .join("\n")}
-${previousEmails.length === 0 ? "No previous emails found" : ""}
+  .join('\n')}
+${previousEmails.length === 0 ? 'No previous emails found' : ''}
 
 <categories>
 ${formatCategoriesForPrompt(categories)}
@@ -50,7 +50,7 @@ ${formatCategoriesForPrompt(categories)}
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Categorize sender",
+    label: 'Categorize sender',
     modelOptions,
   });
 
@@ -59,7 +59,7 @@ ${formatCategoriesForPrompt(categories)}
     system,
     prompt,
     schema: z.object({
-      rationale: z.string().describe("Keep it short. 1-2 sentences max."),
+      rationale: z.string().describe('Keep it short. 1-2 sentences max.'),
       category: z.string(),
     }),
   });

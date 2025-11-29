@@ -1,9 +1,5 @@
-"use client";
+'use client';
 
-import { useMemo, useState } from "react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { getEmailTerminology } from "@/utils/terminology";
 import {
   AlertCircleIcon,
   ArchiveIcon,
@@ -27,43 +23,47 @@ import {
   SparklesIcon,
   TagIcon,
   Users2Icon,
-} from "lucide-react";
-import { Logo } from "@/components/Logo";
-import { useComposeModal } from "@/providers/ComposeModalProvider";
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { AccountSwitcher } from '@/components/AccountSwitcher';
+import { ClientOnly } from '@/components/ClientOnly';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Logo } from '@/components/Logo';
+import { NavUser } from '@/components/NavUser';
+import { PremiumCard } from '@/components/PremiumCard';
+import { ReferralDialog } from '@/components/ReferralDialog';
+import { SetupProgressCard } from '@/components/SetupProgressCard';
+import { SideNavMenu } from '@/components/SideNavMenu';
+import { CommandShortcut } from '@/components/ui/command';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroupLabel,
   SidebarGroup,
-  SidebarHeader,
   SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenu,
-  useSidebar,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { SetupProgressCard } from "@/components/SetupProgressCard";
-import { SideNavMenu } from "@/components/SideNavMenu";
-import { CommandShortcut } from "@/components/ui/command";
-import { useSplitLabels } from "@/hooks/useLabels";
-import { LoadingContent } from "@/components/LoadingContent";
-import { useCleanerEnabled } from "@/hooks/useFeatureFlags";
-import { ClientOnly } from "@/components/ClientOnly";
-import { AccountSwitcher } from "@/components/AccountSwitcher";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { ReferralDialog } from "@/components/ReferralDialog";
-import { isGoogleProvider } from "@/utils/email/provider-types";
-import { NavUser } from "@/components/NavUser";
-import { PremiumCard } from "@/components/PremiumCard";
+  useSidebar,
+} from '@/components/ui/sidebar';
+import { useCleanerEnabled } from '@/hooks/useFeatureFlags';
+import { useSplitLabels } from '@/hooks/useLabels';
+import { useComposeModal } from '@/providers/ComposeModalProvider';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import { prefixPath } from '@/utils/path';
+import { getEmailTerminology } from '@/utils/terminology';
 
 type NavItem = {
   name: string;
   href: string;
   icon: LucideIcon | (() => React.ReactNode);
-  target?: "_blank";
+  target?: '_blank';
   count?: number;
   hideInMail?: boolean;
 };
@@ -78,46 +78,46 @@ export const useNavigation = () => {
   const navItems: NavItem[] = useMemo(
     () => [
       {
-        name: "Assistant",
-        href: prefixPath(currentEmailAccountId, "/automation"),
+        name: 'Assistant',
+        href: prefixPath(currentEmailAccountId, '/automation'),
         icon: SparklesIcon,
       },
       {
-        name: "Bulk Unsubscribe",
-        href: prefixPath(currentEmailAccountId, "/bulk-unsubscribe"),
+        name: 'Bulk Unsubscribe',
+        href: prefixPath(currentEmailAccountId, '/bulk-unsubscribe'),
         icon: MailsIcon,
       },
       ...(isGoogleProvider(provider)
         ? [
             {
-              name: "Deep Clean",
-              href: prefixPath(currentEmailAccountId, "/clean"),
+              name: 'Deep Clean',
+              href: prefixPath(currentEmailAccountId, '/clean'),
               icon: BrushIcon,
             },
           ]
         : []),
       {
-        name: "Analytics",
-        href: prefixPath(currentEmailAccountId, "/stats"),
+        name: 'Analytics',
+        href: prefixPath(currentEmailAccountId, '/stats'),
         icon: BarChartBigIcon,
       },
       {
-        name: "Calendars",
-        href: prefixPath(currentEmailAccountId, "/calendars"),
+        name: 'Calendars',
+        href: prefixPath(currentEmailAccountId, '/calendars'),
         icon: CalendarIcon,
       },
     ],
-    [currentEmailAccountId, provider],
+    [currentEmailAccountId, provider]
   );
 
   const navItemsFiltered = useMemo(
     () =>
       navItems.filter((item) => {
-        if (item.href === `/${emailAccountId}/clean` || item.href === "/clean")
+        if (item.href === `/${emailAccountId}/clean` || item.href === '/clean')
           return showCleaner;
         return true;
       }),
-    [showCleaner, emailAccountId, navItems],
+    [showCleaner, emailAccountId, navItems]
   );
 
   return {
@@ -127,52 +127,52 @@ export const useNavigation = () => {
 
 const topMailLinks: NavItem[] = [
   {
-    name: "Inbox",
+    name: 'Inbox',
     icon: InboxIcon,
-    href: "?type=inbox",
+    href: '?type=inbox',
   },
   {
-    name: "Drafts",
+    name: 'Drafts',
     icon: FileIcon,
-    href: "?type=draft",
+    href: '?type=draft',
   },
   {
-    name: "Sent",
+    name: 'Sent',
     icon: SendIcon,
-    href: "?type=sent",
+    href: '?type=sent',
   },
   {
-    name: "Archived",
+    name: 'Archived',
     icon: ArchiveIcon,
-    href: "?type=archive",
+    href: '?type=archive',
   },
 ];
 
 const bottomMailLinks: NavItem[] = [
   {
-    name: "Personal",
+    name: 'Personal',
     icon: PersonStandingIcon,
-    href: "?type=CATEGORY_PERSONAL",
+    href: '?type=CATEGORY_PERSONAL',
   },
   {
-    name: "Social",
+    name: 'Social',
     icon: Users2Icon,
-    href: "?type=CATEGORY_SOCIAL",
+    href: '?type=CATEGORY_SOCIAL',
   },
   {
-    name: "Updates",
+    name: 'Updates',
     icon: AlertCircleIcon,
-    href: "?type=CATEGORY_UPDATES",
+    href: '?type=CATEGORY_UPDATES',
   },
   {
-    name: "Forums",
+    name: 'Forums',
     icon: MessagesSquareIcon,
-    href: "?type=CATEGORY_FORUMS",
+    href: '?type=CATEGORY_FORUMS',
   },
   {
-    name: "Promotions",
+    name: 'Promotions',
     icon: RatioIcon,
-    href: "?type=CATEGORY_PROMOTIONS",
+    href: '?type=CATEGORY_PROMOTIONS',
   },
 ];
 
@@ -181,20 +181,20 @@ export function SideNav({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { emailAccountId, emailAccount } = useAccount();
   const currentEmailAccountId = emailAccount?.id || emailAccountId;
   const path = usePathname();
-  const showMailNav = path.includes("/mail") || path.includes("/compose");
+  const showMailNav = path.includes('/mail') || path.includes('/compose');
 
   const visibleBottomLinks = useMemo(
     () =>
       showMailNav
         ? [
             {
-              name: "Back",
-              href: "/automation",
+              name: 'Back',
+              href: '/automation',
               icon: ArrowLeftIcon,
             },
           ]
         : [],
-    [showMailNav],
+    [showMailNav]
   );
 
   const { state } = useSidebar();
@@ -202,7 +202,7 @@ export function SideNav({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="gap-0 pb-0">
-        {state.includes("left-sidebar") ? (
+        {state.includes('left-sidebar') ? (
           <div className="flex items-center rounded-md pl-2 pr-0.5 py-3 text-foreground justify-between">
             <Link href="/setup">
               <Logo className="h-3.5" />
@@ -218,7 +218,7 @@ export function SideNav({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        {state.includes("left-sidebar") ? <SetupProgressCard /> : null}
+        {state.includes('left-sidebar') ? <SetupProgressCard /> : null}
 
         <SidebarGroupContent>
           {showMailNav ? (
@@ -232,7 +232,7 @@ export function SideNav({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroupContent>
       </SidebarContent>
 
-      <PremiumCard isCollapsed={!state.includes("left-sidebar")} />
+      <PremiumCard isCollapsed={!state.includes('left-sidebar')} />
 
       <SidebarFooter className="pb-4">
         <ClientOnly>
@@ -247,7 +247,7 @@ export function SideNav({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenuButton>
 
         <SidebarMenuButton asChild>
-          <Link href={prefixPath(currentEmailAccountId, "/settings")}>
+          <Link href={prefixPath(currentEmailAccountId, '/settings')}>
             <SettingsIcon className="size-4" />
             <span className="font-semibold">Settings</span>
           </Link>
@@ -270,13 +270,13 @@ function MailNav({ path }: { path: string }) {
 
   // Transform user labels into NavItems
   const labelNavItems = useMemo(() => {
-    const searchParams = new URLSearchParams(path.split("?")[1] || "");
-    const currentLabelId = searchParams.get("labelId");
+    const searchParams = new URLSearchParams(path.split('?')[1] || '');
+    const currentLabelId = searchParams.get('labelId');
 
     return visibleLabels.map((label) => ({
-      name: label.name ?? "",
+      name: label.name ?? '',
       icon: TagIcon,
-      href: `?type=label&labelId=${encodeURIComponent(label.id ?? "")}`,
+      href: `?type=label&labelId=${encodeURIComponent(label.id ?? '')}`,
       // Add active state for the current label
       active: currentLabelId === label.id,
     }));
@@ -284,13 +284,13 @@ function MailNav({ path }: { path: string }) {
 
   // Transform hidden labels into NavItems
   const hiddenLabelNavItems = useMemo(() => {
-    const searchParams = new URLSearchParams(path.split("?")[1] || "");
-    const currentLabelId = searchParams.get("labelId");
+    const searchParams = new URLSearchParams(path.split('?')[1] || '');
+    const currentLabelId = searchParams.get('labelId');
 
     return hiddenLabels.map((label) => ({
-      name: label.name ?? "",
+      name: label.name ?? '',
       icon: TagIcon,
-      href: `?type=label&labelId=${encodeURIComponent(label.id ?? "")}`,
+      href: `?type=label&labelId=${encodeURIComponent(label.id ?? '')}`,
       // Add active state for the current label
       active: currentLabelId === label.id,
     }));

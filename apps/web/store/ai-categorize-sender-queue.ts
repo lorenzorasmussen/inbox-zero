@@ -1,13 +1,12 @@
-import { useMemo } from "react";
-import { atom, useAtomValue } from "jotai";
-import pRetry from "p-retry";
-import { jotaiStore } from "@/store";
-import { exponentialBackoff } from "@/utils/sleep";
-import { sleep } from "@/utils/sleep";
-import { categorizeSenderAction } from "@/utils/actions/categorize";
-import { aiQueue } from "@/utils/queue/ai-queue";
+import { atom, useAtomValue } from 'jotai';
+import pRetry from 'p-retry';
+import { useMemo } from 'react';
+import { jotaiStore } from '@/store';
+import { categorizeSenderAction } from '@/utils/actions/categorize';
+import { aiQueue } from '@/utils/queue/ai-queue';
+import { exponentialBackoff, sleep } from '@/utils/sleep';
 
-type CategorizationStatus = "pending" | "processing" | "completed";
+type CategorizationStatus = 'pending' | 'processing' | 'completed';
 
 interface QueueItem {
   status: CategorizationStatus;
@@ -27,7 +26,7 @@ export const pushToAiCategorizeSenderQueueAtom = ({
     const newQueue = new Map(prev);
     for (const id of pushIds) {
       if (!newQueue.has(id)) {
-        newQueue.set(id, { status: "pending" });
+        newQueue.set(id, { status: 'pending' });
       }
     }
     return newQueue;
@@ -54,7 +53,7 @@ export const useAiCategorizationQueueItem = (id: string) => {
 const hasProcessingItemsAtom = atom((get) => {
   const queue = get(aiCategorizeSenderQueueAtom);
   return Array.from(queue.values()).some(
-    (item) => item.status === "processing",
+    (item) => item.status === 'processing'
   );
 });
 
@@ -72,7 +71,7 @@ function processAiCategorizeSenderQueue({
   const tasks = senders.map((sender) => async () => {
     jotaiStore.set(aiCategorizeSenderQueueAtom, (prev) => {
       const newQueue = new Map(prev);
-      newQueue.set(sender, { status: "processing" });
+      newQueue.set(sender, { status: 'processing' });
       return newQueue;
     });
 
@@ -80,7 +79,7 @@ function processAiCategorizeSenderQueue({
       async (attemptCount) => {
         // biome-ignore lint/suspicious/noConsole: frontend
         console.log(
-          `Queue: aiCategorizeSender. Processing ${sender}${attemptCount > 1 ? ` (attempt ${attemptCount})` : ""}`,
+          `Queue: aiCategorizeSender. Processing ${sender}${attemptCount > 1 ? ` (attempt ${attemptCount})` : ''}`
         );
 
         const result = await categorizeSenderAction(emailAccountId, {
@@ -95,13 +94,13 @@ function processAiCategorizeSenderQueue({
         jotaiStore.set(aiCategorizeSenderQueueAtom, (prev) => {
           const newQueue = new Map(prev);
           newQueue.set(sender, {
-            status: "completed",
+            status: 'completed',
             categoryId: result?.data?.categoryId || undefined,
           });
           return newQueue;
         });
       },
-      { retries: 3 },
+      { retries: 3 }
     );
   });
 

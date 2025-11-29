@@ -1,9 +1,9 @@
-import { toastSuccess, toastError } from "@/components/Toast";
+import { toastError, toastSuccess } from '@/components/Toast';
 import {
   createAutoArchiveFilterAction,
   deleteFilterAction,
   trashThreadAction,
-} from "@/utils/actions/mail";
+} from '@/utils/actions/mail';
 
 export async function onAutoArchive({
   emailAccountId,
@@ -25,11 +25,11 @@ export async function onAutoArchive({
   if (result?.serverError) {
     toastError({
       description:
-        `There was an error enabling auto archive. ${result.serverError || ""}`.trim(),
+        `There was an error enabling auto archive. ${result.serverError || ''}`.trim(),
     });
   } else {
     toastSuccess({
-      description: "Auto archive enabled!",
+      description: 'Auto archive enabled!',
     });
   }
 }
@@ -45,11 +45,11 @@ export async function onDeleteFilter({
   if (result?.serverError) {
     toastError({
       description:
-        `There was an error disabling auto archive. ${result.serverError || ""}`.trim(),
+        `There was an error disabling auto archive. ${result.serverError || ''}`.trim(),
     });
   } else {
     toastSuccess({
-      description: "Auto archive disabled!",
+      description: 'Auto archive disabled!',
     });
   }
 }
@@ -65,11 +65,11 @@ export async function onTrashThread({
   if (result?.serverError) {
     toastError({
       description:
-        `There was an error deleting the thread. ${result.serverError || ""}`.trim(),
+        `There was an error deleting the thread. ${result.serverError || ''}`.trim(),
     });
   } else {
     toastSuccess({
-      description: "Thread deleted!",
+      description: 'Thread deleted!',
     });
   }
 }

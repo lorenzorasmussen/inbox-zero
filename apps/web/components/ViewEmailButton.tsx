@@ -1,9 +1,9 @@
-import { MailIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useDisplayedEmail } from "@/hooks/useDisplayedEmail";
-import { Tooltip } from "@/components/Tooltip";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { isGoogleProvider } from "@/utils/email/provider-types";
+import { MailIcon } from 'lucide-react';
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/ui/button';
+import { useDisplayedEmail } from '@/hooks/useDisplayedEmail';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { isGoogleProvider } from '@/utils/email/provider-types';
 
 export function ViewEmailButton({
   threadId,
@@ -14,7 +14,7 @@ export function ViewEmailButton({
   threadId: string;
   messageId: string;
   className?: string;
-  size?: "icon" | "xs" | "sm";
+  size?: 'icon' | 'xs' | 'sm';
 }) {
   const { provider } = useAccount();
   const { showEmail } = useDisplayedEmail();
@@ -27,7 +27,7 @@ export function ViewEmailButton({
     <Tooltip content="View email">
       <Button
         variant="outline"
-        size={size || "icon"}
+        size={size || 'icon'}
         onClick={() => showEmail({ threadId, messageId })}
         className={className}
       >

@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { useAction } from "next-safe-action/hooks";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { useAction } from 'next-safe-action/hooks';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { FormSection, FormSectionLeft } from '@/components/Form';
+import { usePremium } from '@/components/PremiumAlert';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,12 +16,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { FormSection, FormSectionLeft } from "@/components/Form";
-import { deleteAccountAction } from "@/utils/actions/user";
-import { logOut } from "@/utils/user";
-import { useStatLoader } from "@/providers/StatLoaderProvider";
-import { usePremium } from "@/components/PremiumAlert";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { useStatLoader } from '@/providers/StatLoaderProvider';
+import { deleteAccountAction } from '@/utils/actions/user';
+import { logOut } from '@/utils/user';
 
 export function DeleteSection() {
   const { onCancelLoadBatch } = useStatLoader();
@@ -34,7 +34,7 @@ export function DeleteSection() {
     useState(false);
 
   const { executeAsync: executeDeleteAccount } = useAction(
-    deleteAccountAction.bind(null),
+    deleteAccountAction.bind(null)
   );
 
   const handleDeleteAccount = async () => {
@@ -44,14 +44,14 @@ export function DeleteSection() {
     toast.promise(
       async () => {
         const result = await executeDeleteAccount();
-        await logOut("/");
+        await logOut('/');
         if (result?.serverError) throw new Error(result.serverError);
       },
       {
-        loading: "Deleting account...",
-        success: "Account deleted!",
+        loading: 'Deleting account...',
+        success: 'Account deleted!',
         error: (err) => `Error deleting account: ${err.message}`,
-      },
+      }
     );
   };
 
@@ -79,8 +79,8 @@ export function DeleteSection() {
             <AlertDialogHeader>
               <AlertDialogTitle>
                 {shouldBlockDeletion
-                  ? "Cancel subscription first"
-                  : "Are you absolutely sure?"}
+                  ? 'Cancel subscription first'
+                  : 'Are you absolutely sure?'}
               </AlertDialogTitle>
               <AlertDialogDescription asChild>
                 <div>
@@ -92,14 +92,14 @@ export function DeleteSection() {
                       </p>
                       <p className="mb-3">
                         You can manage your subscription by clicking "Manage
-                        Subscription" above or going to the{" "}
+                        Subscription" above or going to the{' '}
                         <Link
                           href="/premium"
                           className="text-blue-600 underline hover:text-blue-800"
                           onClick={() => setIsDialogOpen(false)}
                         >
                           premium page
-                        </Link>{" "}
+                        </Link>{' '}
                         and clicking "Manage subscription".
                       </p>
                       <p className="text-sm text-gray-600">

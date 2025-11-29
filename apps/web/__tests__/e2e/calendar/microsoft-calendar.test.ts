@@ -8,9 +8,9 @@
  * 1. Set TEST_OUTLOOK_EMAIL env var to your Outlook email
  */
 
-import { describe, test, expect, beforeAll, vi } from "vitest";
-import prisma from "@/utils/prisma";
-import { microsoftAvailabilityProvider } from "@/utils/calendar/providers/microsoft-availability";
+import { beforeAll, describe, expect, test, vi } from 'vitest';
+import { microsoftAvailabilityProvider } from '@/utils/calendar/providers/microsoft-availability';
+import prisma from '@/utils/prisma';
 
 // ============================================
 // TEST DATA - SET VIA ENVIRONMENT VARIABLES
@@ -18,9 +18,9 @@ import { microsoftAvailabilityProvider } from "@/utils/calendar/providers/micros
 const RUN_E2E_TESTS = process.env.RUN_E2E_TESTS;
 const TEST_OUTLOOK_EMAIL = process.env.TEST_OUTLOOK_EMAIL;
 
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
-describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
+describe.skipIf(!RUN_E2E_TESTS)('Outlook Calendar Integration Tests', () => {
   let calendarConnection: {
     id: string;
     accessToken: string;
@@ -35,9 +35,9 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
     const testEmail = TEST_OUTLOOK_EMAIL;
 
     if (!testEmail) {
-      console.warn("\n⚠️  Set TEST_OUTLOOK_EMAIL env var to run these tests");
+      console.warn('\n⚠️  Set TEST_OUTLOOK_EMAIL env var to run these tests');
       console.warn(
-        "   Example: TEST_OUTLOOK_EMAIL=your@email.com pnpm test-e2e outlook-calendar\n",
+        '   Example: TEST_OUTLOOK_EMAIL=your@email.com pnpm test-e2e outlook-calendar\n'
       );
       return;
     }
@@ -47,7 +47,7 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
       where: {
         email: testEmail,
         account: {
-          provider: "microsoft",
+          provider: 'microsoft',
         },
       },
       include: {
@@ -63,7 +63,7 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
     const connection = await prisma.calendarConnection.findFirst({
       where: {
         emailAccountId: emailAccount.id,
-        provider: "microsoft",
+        provider: 'microsoft',
         isConnected: true,
       },
       include: {
@@ -76,10 +76,10 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
 
     if (!connection) {
       console.warn(
-        "\n⚠️  No Microsoft calendar connection found for this account",
+        '\n⚠️  No Microsoft calendar connection found for this account'
       );
       console.warn(
-        "   Please connect your Microsoft calendar in the app first\n",
+        '   Please connect your Microsoft calendar in the app first\n'
       );
       return;
     }
@@ -87,7 +87,7 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
     // Ensure we have valid tokens
     if (!connection.accessToken || !connection.refreshToken) {
       console.warn(
-        "\n⚠️  Calendar connection has no access token or refresh token",
+        '\n⚠️  Calendar connection has no access token or refresh token'
       );
       return;
     }
@@ -107,11 +107,11 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
     console.log(`   Enabled calendars: ${enabledCalendars.length}\n`);
   });
 
-  describe("Calendar availability", () => {
-    test("should fetch calendar busy periods from Microsoft API", async () => {
+  describe('Calendar availability', () => {
+    test('should fetch calendar busy periods from Microsoft API', async () => {
       if (!calendarConnection || enabledCalendars.length === 0) {
         console.log(
-          "   ⚠️  Skipping test - no calendar connection or enabled calendars",
+          '   ⚠️  Skipping test - no calendar connection or enabled calendars'
         );
         return;
       }
@@ -128,11 +128,11 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
       const timeMax = tomorrowEnd.toISOString();
 
       console.log(
-        `   📅 Checking availability for: ${tomorrow.toDateString()}`,
+        `   📅 Checking availability for: ${tomorrow.toDateString()}`
       );
       console.log(`   ⏰ Time range: ${timeMin} to ${timeMax}`);
       console.log(
-        `   📋 Calendar IDs (${enabledCalendars.length}): ${enabledCalendars.map((c) => `${c.calendarId.substring(0, 20)}...`).join(", ")}`,
+        `   📋 Calendar IDs (${enabledCalendars.length}): ${enabledCalendars.map((c) => `${c.calendarId.substring(0, 20)}...`).join(', ')}`
       );
 
       // Use the Microsoft availability provider
@@ -146,26 +146,26 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
         timeMax,
       });
 
-      console.log("\n   📦 Provider Response:");
-      console.log(`   ${"=".repeat(60)}`);
+      console.log('\n   📦 Provider Response:');
+      console.log(`   ${'='.repeat(60)}`);
       console.log(`   Total busy periods found: ${busyPeriods.length}`);
 
       if (busyPeriods.length > 0) {
-        console.log("\n   Busy Periods:");
+        console.log('\n   Busy Periods:');
         for (let i = 0; i < busyPeriods.length; i++) {
           const period = busyPeriods[i];
           console.log(`   ${i + 1}. Start: ${period.start}`);
           console.log(`      End:   ${period.end}`);
         }
       } else {
-        console.log("\n   ⚠️  No busy periods found!");
+        console.log('\n   ⚠️  No busy periods found!');
         console.log(
-          "      This likely means either your calendar is empty, or events are marked as 'Free'",
+          "      This likely means either your calendar is empty, or events are marked as 'Free'"
         );
       }
 
-      console.log(`\n   ${"=".repeat(60)}`);
-      console.log("   ✅ Test complete - see logs above for details\n");
+      console.log(`\n   ${'='.repeat(60)}`);
+      console.log('   ✅ Test complete - see logs above for details\n');
 
       expect(busyPeriods).toBeDefined();
       expect(Array.isArray(busyPeriods)).toBe(true);
@@ -176,10 +176,10 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Calendar Integration Tests", () => {
 
       // Verify busy periods have correct structure
       if (busyPeriods.length > 0) {
-        expect(busyPeriods[0]).toHaveProperty("start");
-        expect(busyPeriods[0]).toHaveProperty("end");
-        expect(typeof busyPeriods[0].start).toBe("string");
-        expect(typeof busyPeriods[0].end).toBe("string");
+        expect(busyPeriods[0]).toHaveProperty('start');
+        expect(busyPeriods[0]).toHaveProperty('end');
+        expect(typeof busyPeriods[0].start).toBe('string');
+        expect(typeof busyPeriods[0].end).toBe('string');
       }
     }, 30_000);
   });

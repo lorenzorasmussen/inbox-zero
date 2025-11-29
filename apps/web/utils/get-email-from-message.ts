@@ -1,17 +1,17 @@
-import type { ParsedMessage, EmailForLLM } from "@/utils/types";
-import { emailToContent, type EmailToContentOptions } from "@/utils/mail";
-import { internalDateToDate } from "@/utils/date";
+import { internalDateToDate } from '@/utils/date';
+import { type EmailToContentOptions, emailToContent } from '@/utils/mail';
+import type { EmailForLLM, ParsedMessage } from '@/utils/types';
 
 // Convert a ParsedMessage to an EmailForLLM
 export function getEmailForLLM(
   message: ParsedMessage,
-  contentOptions?: EmailToContentOptions,
+  contentOptions?: EmailToContentOptions
 ): EmailForLLM {
   return {
     id: message.id,
     from: message.headers.from,
     to: message.headers.to,
-    replyTo: message.headers["reply-to"],
+    replyTo: message.headers['reply-to'],
     cc: message.headers.cc,
     subject: message.headers.subject,
     content: emailToContent(message, contentOptions),

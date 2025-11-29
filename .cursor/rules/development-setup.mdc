@@ -1,0 +1,44 @@
+---
+description: Development environment setup and configuration
+globs: ["package.json", "*.env*", "docker-compose*.yml"]
+alwaysApply: true
+---
+
+# Development Environment Setup
+
+## Required Tools
+- Node.js 22+
+- pnpm 10+
+- Docker & Docker Compose
+- Git
+
+## Environment Files
+- `.env` - Local environment variables
+- `.env.local` - Local overrides
+- `.env.example` - Template configuration
+
+## Database Setup
+- PostgreSQL via Docker Compose (port 5433)
+- Redis via Docker Compose (port 6379)
+- Prisma migrations required
+
+## Development Commands
+- `pnpm dev` - Start development server
+- `pnpm test` - Run test suite
+- `pnpm lint` - Run code quality checks
+- `pnpm prisma studio` - Open database GUI
+
+## Health Check
+Run `./scripts/dev-health-check.sh` to verify environment.
+
+## Quick Start
+Run `./scripts/quick-start.sh` for complete environment setup.
+
+## Database URLs
+- PostgreSQL: localhost:5433
+- Redis: localhost:6379
+- Redis HTTP: localhost:8079
+
+## Application URLs
+- Web App: http://localhost:3001
+- Prisma Studio: http://localhost:5555

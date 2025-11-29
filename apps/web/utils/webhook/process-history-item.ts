@@ -1,18 +1,18 @@
-import prisma from "@/utils/prisma";
-import { runRules } from "@/utils/ai/choose-rule/run-rules";
-import { categorizeSender } from "@/utils/categorize/senders/categorize";
-import { markMessageAsProcessing } from "@/utils/redis/message-processing";
-import { isAssistantEmail } from "@/utils/assistant/is-assistant-email";
-import { processAssistantEmail } from "@/utils/assistant/process-assistant-email";
-import { handleOutboundMessage } from "@/utils/reply-tracker/handle-outbound";
-import { NewsletterStatus } from "@/generated/prisma/enums";
-import type { EmailAccount } from "@/generated/prisma/client";
-import { extractEmailAddress } from "@/utils/email";
-import { isIgnoredSender } from "@/utils/filter-ignored-senders";
-import type { EmailProvider } from "@/utils/email/types";
-import type { RuleWithActions } from "@/utils/types";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { Logger } from "@/utils/logger";
+import type { EmailAccount } from '@/generated/prisma/client';
+import { NewsletterStatus } from '@/generated/prisma/enums';
+import { runRules } from '@/utils/ai/choose-rule/run-rules';
+import { isAssistantEmail } from '@/utils/assistant/is-assistant-email';
+import { processAssistantEmail } from '@/utils/assistant/process-assistant-email';
+import { categorizeSender } from '@/utils/categorize/senders/categorize';
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
+import { isIgnoredSender } from '@/utils/filter-ignored-senders';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { markMessageAsProcessing } from '@/utils/redis/message-processing';
+import { handleOutboundMessage } from '@/utils/reply-tracker/handle-outbound';
+import type { RuleWithActions } from '@/utils/types';
 
 export type SharedProcessHistoryOptions = {
   provider: EmailProvider;
@@ -20,7 +20,7 @@ export type SharedProcessHistoryOptions = {
   hasAutomationRules: boolean;
   hasAiAccess: boolean;
   emailAccount: EmailAccountWithAI &
-    Pick<EmailAccount, "autoCategorizeSenders">;
+    Pick<EmailAccount, 'autoCategorizeSenders'>;
   logger: Logger;
 };
 
@@ -32,7 +32,7 @@ export async function processHistoryItem(
     messageId: string;
     threadId?: string;
   },
-  options: SharedProcessHistoryOptions,
+  options: SharedProcessHistoryOptions
 ) {
   const {
     provider,
@@ -49,11 +49,11 @@ export async function processHistoryItem(
   const isFree = await markMessageAsProcessing({ userEmail, messageId });
 
   if (!isFree) {
-    logger.info("Skipping. Message already being processed.");
+    logger.info('Skipping. Message already being processed.');
     return;
   }
 
-  logger.info("Getting message");
+  logger.info('Getting message');
 
   try {
     const [parsedMessage, hasExistingRule] = await Promise.all([
@@ -90,22 +90,22 @@ export async function processHistoryItem(
 
     // if the rule has already been executed, skip
     if (finalHasExistingRule) {
-      logger.info("Skipping. Rule already exists.");
+      logger.info('Skipping. Rule already exists.');
       return;
     }
 
     if (isIgnoredSender(parsedMessage.headers.from)) {
-      logger.info("Skipping. Ignored sender.");
+      logger.info('Skipping. Ignored sender.');
       return;
     }
 
     // Skip messages that are not in inbox or sent items folders
     // We want to process inbox messages (for rules/automation) and sent messages (for reply tracking)
-    const isInInbox = parsedMessage.labelIds?.includes("INBOX") || false;
-    const isInSentItems = parsedMessage.labelIds?.includes("SENT") || false;
+    const isInInbox = parsedMessage.labelIds?.includes('INBOX') || false;
+    const isInSentItems = parsedMessage.labelIds?.includes('SENT') || false;
 
     if (!isInInbox && !isInSentItems) {
-      logger.info("Skipping message not in inbox or sent items", {
+      logger.info('Skipping message not in inbox or sent items', {
         labelIds: parsedMessage.labelIds,
       });
       return;
@@ -117,7 +117,7 @@ export async function processHistoryItem(
     });
 
     if (isForAssistant) {
-      logger.info("Passing through assistant email.");
+      logger.info('Passing through assistant email.');
       return processAssistantEmail({
         message: parsedMessage,
         emailAccountId,
@@ -132,7 +132,7 @@ export async function processHistoryItem(
     });
 
     if (isFromAssistant) {
-      logger.info("Skipping. Assistant email.");
+      logger.info('Skipping. Assistant email.');
       return;
     }
 
@@ -159,12 +159,12 @@ export async function processHistoryItem(
 
     if (sender) {
       await provider.blockUnsubscribedEmail(messageId);
-      logger.info("Skipping. Blocked unsubscribed email.", { from: email });
+      logger.info('Skipping. Blocked unsubscribed email.', { from: email });
       return;
     }
 
     if (!hasAiAccess) {
-      logger.info("Skipping. No AI access.");
+      logger.info('Skipping. No AI access.');
       return;
     }
 
@@ -184,7 +184,7 @@ export async function processHistoryItem(
     }
 
     if (hasAutomationRules && hasAiAccess) {
-      logger.info("Running rules...");
+      logger.info('Running rules...');
 
       await runRules({
         provider,
@@ -192,7 +192,7 @@ export async function processHistoryItem(
         rules,
         emailAccount,
         isTest: false,
-        modelType: "default",
+        modelType: 'default',
         logger,
       });
     }
@@ -200,18 +200,18 @@ export async function processHistoryItem(
     // Handle provider-specific "not found" errors
     if (error instanceof Error) {
       const isGoogleNotFound =
-        error.message === "Requested entity was not found.";
+        error.message === 'Requested entity was not found.';
       const isOutlookNotFound =
-        error.message.includes("ItemNotFound") ||
-        error.message.includes("ResourceNotFound");
+        error.message.includes('ItemNotFound') ||
+        error.message.includes('ResourceNotFound');
 
       if (isGoogleNotFound || isOutlookNotFound) {
-        logger.info("Message not found");
+        logger.info('Message not found');
         return;
       }
     }
 
-    logger.error("Error processing message", {
+    logger.error('Error processing message', {
       error: error instanceof Error ? error.message : String(error),
     });
     throw error;

@@ -1,5 +1,5 @@
-import { PermissionsCheck } from "@/app/(app)/[emailAccountId]/PermissionsCheck";
-import { BulkUnsubscribe } from "./BulkUnsubscribeSection";
+import { PermissionsCheck } from '@/app/(app)/[emailAccountId]/PermissionsCheck';
+import { BulkUnsubscribe } from './BulkUnsubscribeSection';
 
 export default async function BulkUnsubscribePage() {
   return (

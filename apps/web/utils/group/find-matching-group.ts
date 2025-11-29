@@ -1,8 +1,8 @@
-import prisma from "@/utils/prisma";
-import { generalizeSubject } from "@/utils/string";
-import type { ParsedMessage } from "@/utils/types";
-import { GroupItemType } from "@/generated/prisma/enums";
-import type { GroupItem } from "@/generated/prisma/client";
+import type { GroupItem } from '@/generated/prisma/client';
+import { GroupItemType } from '@/generated/prisma/enums';
+import prisma from '@/utils/prisma';
+import { generalizeSubject } from '@/utils/string';
+import type { ParsedMessage } from '@/utils/types';
 
 export type GroupsWithRules = Awaited<ReturnType<typeof getGroupsWithRules>>;
 
@@ -24,7 +24,7 @@ export async function getGroupsWithRules({
 
 export function findMatchingGroup(
   message: ParsedMessage,
-  group: GroupsWithRules[number],
+  group: GroupsWithRules[number]
 ) {
   // First check for exclude patterns
   const excludeMatch = findExclusionMatch(message.headers, group.items);
@@ -41,9 +41,9 @@ export function findMatchingGroup(
   return { group: null, matchingItem: null, excluded: false };
 }
 
-function matchesPattern<T extends Pick<GroupItem, "type" | "value">>(
+function matchesPattern<T extends Pick<GroupItem, 'type' | 'value'>>(
   item: T,
-  headers: { from: string; subject: string },
+  headers: { from: string; subject: string }
 ): boolean {
   const { from, subject } = headers;
 
@@ -67,24 +67,24 @@ function matchesPattern<T extends Pick<GroupItem, "type" | "value">>(
 }
 
 function findExclusionMatch<
-  T extends Pick<GroupItem, "type" | "value" | "exclude">,
+  T extends Pick<GroupItem, 'type' | 'value' | 'exclude'>,
 >(headers: { from: string; subject: string }, groupItems: T[]) {
   return groupItems.some(
-    (item) => item.exclude && matchesPattern(item, headers),
+    (item) => item.exclude && matchesPattern(item, headers)
   );
 }
 
 function findInclusionMatch<
-  T extends Pick<GroupItem, "type" | "value" | "exclude">,
+  T extends Pick<GroupItem, 'type' | 'value' | 'exclude'>,
 >(headers: { from: string; subject: string }, groupItems: T[]) {
   return groupItems.find(
-    (item) => !item.exclude && matchesPattern(item, headers),
+    (item) => !item.exclude && matchesPattern(item, headers)
   );
 }
 
 // Keep this for backward compatibility
 export function findMatchingGroupItem<
-  T extends Pick<GroupItem, "type" | "value" | "exclude">,
+  T extends Pick<GroupItem, 'type' | 'value' | 'exclude'>,
 >(headers: { from: string; subject: string }, groupItems: T[]) {
   const hasExclusion = findExclusionMatch(headers, groupItems);
   if (hasExclusion) return null;

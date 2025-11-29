@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useAction } from "next-safe-action/hooks";
-import { useCallback } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { ErrorMessage, Input, Label } from "@/components/Input";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import TextareaAutosize from 'react-textarea-autosize';
+import { ErrorMessage, Input, Label } from '@/components/Input';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -16,14 +17,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import TextareaAutosize from "react-textarea-autosize";
-import { registerSSOProviderAction } from "@/utils/actions/sso";
+} from '@/components/ui/dialog';
+import { useDialogState } from '@/hooks/useDialogState';
+import { registerSSOProviderAction } from '@/utils/actions/sso';
 import {
   type SsoRegistrationBody,
   ssoRegistrationBody,
-} from "@/utils/actions/sso.validation";
-import { useDialogState } from "@/hooks/useDialogState";
+} from '@/utils/actions/sso.validation';
 
 export function RegisterSSOModal() {
   const {
@@ -38,7 +38,7 @@ export function RegisterSSOModal() {
   const { isOpen, onToggle, onClose } = useDialogState();
 
   const { executeAsync: executeRegisterSSO, isExecuting } = useAction(
-    registerSSOProviderAction,
+    registerSSOProviderAction
   );
 
   const onSubmit: SubmitHandler<SsoRegistrationBody> = useCallback(
@@ -47,18 +47,18 @@ export function RegisterSSOModal() {
 
       if (result?.serverError) {
         toastError({
-          title: "Error registering SSO",
+          title: 'Error registering SSO',
           description: result.serverError,
         });
       } else {
         toastSuccess({
-          description: "SSO registration initiated successfully!",
+          description: 'SSO registration initiated successfully!',
         });
         reset();
         onClose();
       }
     },
-    [executeRegisterSSO, reset, onClose],
+    [executeRegisterSSO, reset, onClose]
   );
 
   return (
@@ -83,7 +83,7 @@ export function RegisterSSOModal() {
               name="organizationName"
               label="Organization Name"
               placeholder="e.g., Your Company"
-              registerProps={register("organizationName")}
+              registerProps={register('organizationName')}
               error={errors.organizationName}
             />
 
@@ -92,7 +92,7 @@ export function RegisterSSOModal() {
               name="providerId"
               label="Provider ID"
               placeholder="e.g., your-company-saml"
-              registerProps={register("providerId")}
+              registerProps={register('providerId')}
               error={errors.providerId}
             />
 
@@ -101,7 +101,7 @@ export function RegisterSSOModal() {
               name="domain"
               label="Domain"
               placeholder="e.g., your-company.com"
-              registerProps={register("domain")}
+              registerProps={register('domain')}
               error={errors.domain}
             />
 
@@ -112,11 +112,11 @@ export function RegisterSSOModal() {
                 className="block w-full flex-1 whitespace-pre-wrap rounded-md border border-border bg-background shadow-sm focus:border-black focus:ring-black sm:text-sm"
                 minRows={3}
                 rows={3}
-                {...register("idpMetadata")}
+                {...register('idpMetadata')}
                 placeholder="Paste your SAML IDP metadata XML from your identity provider here."
               />
               {errors.idpMetadata && (
-                <ErrorMessage message={errors.idpMetadata.message ?? ""} />
+                <ErrorMessage message={errors.idpMetadata.message ?? ''} />
               )}
             </div>
           </div>

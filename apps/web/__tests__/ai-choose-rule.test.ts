@@ -1,32 +1,32 @@
-import { describe, expect, test, vi } from "vitest";
-import { aiChooseRule } from "@/utils/ai/choose-rule/ai-choose-rule";
-import { ActionType } from "@/generated/prisma/enums";
-import { getEmail, getEmailAccount, getRule } from "@/__tests__/helpers";
+import { describe, expect, test, vi } from 'vitest';
+import { getEmail, getEmailAccount, getRule } from '@/__tests__/helpers';
+import { ActionType } from '@/generated/prisma/enums';
+import { aiChooseRule } from '@/utils/ai/choose-rule/ai-choose-rule';
 
 // pnpm test-ai ai-choose-rule
 
-const isAiTest = process.env.RUN_AI_TESTS === "true";
+const isAiTest = process.env.RUN_AI_TESTS === 'true';
 
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
-describe.runIf(isAiTest)("aiChooseRule", () => {
-  test("Should return no rule when no rules passed", async () => {
+describe.runIf(isAiTest)('aiChooseRule', () => {
+  test('Should return no rule when no rules passed', async () => {
     const result = await aiChooseRule({
       rules: [],
       email: getEmail(),
       emailAccount: getEmailAccount(),
     });
 
-    expect(result).toEqual({ rules: [], reason: "No rules to evaluate" });
+    expect(result).toEqual({ rules: [], reason: 'No rules to evaluate' });
   });
 
-  test("Should return correct rule when only one rule passed", async () => {
+  test('Should return correct rule when only one rule passed', async () => {
     const rule = getRule(
-      "Match emails that have the word 'test' in the subject line",
+      "Match emails that have the word 'test' in the subject line"
     );
 
     const result = await aiChooseRule({
-      email: getEmail({ subject: "test" }),
+      email: getEmail({ subject: 'test' }),
       rules: [rule],
       emailAccount: getEmailAccount(),
     });
@@ -37,21 +37,21 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
     expect(result.reason).toBeTruthy();
   });
 
-  test("Should return correct rule when multiple rules passed", async () => {
+  test('Should return correct rule when multiple rules passed', async () => {
     const rule1 = getRule(
       "Match emails that have the word 'test' in the subject line",
       [],
-      "Test emails",
+      'Test emails'
     );
     const rule2 = getRule(
       "Match emails that have the word 'remember' in the subject line",
       [],
-      "Remember emails",
+      'Remember emails'
     );
 
     const result = await aiChooseRule({
       rules: [rule1, rule2],
-      email: getEmail({ subject: "remember that call" }),
+      email: getEmail({ subject: 'remember that call' }),
       emailAccount: getEmailAccount(),
     });
 
@@ -60,25 +60,25 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
     expect(result.reason).toBeTruthy();
   });
 
-  test("Should select the correct rule and provide a reason", async () => {
+  test('Should select the correct rule and provide a reason', async () => {
     const rule1 = getRule(
       "Match emails that have the word 'question' in the subject line",
       [],
-      "Question emails",
+      'Question emails'
     );
     const rule2 = getRule(
-      "Match emails asking for a joke",
+      'Match emails asking for a joke',
       [
         {
-          id: "id",
+          id: 'id',
           createdAt: new Date(),
           updatedAt: new Date(),
           type: ActionType.REPLY,
-          ruleId: "ruleId",
+          ruleId: 'ruleId',
           label: null,
           labelId: null,
           subject: null,
-          content: "{{Write a joke}}",
+          content: '{{Write a joke}}',
           to: null,
           cc: null,
           bcc: null,
@@ -88,14 +88,14 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
           folderId: null,
         },
       ],
-      "Joke requests",
+      'Joke requests'
     );
 
     const result = await aiChooseRule({
       rules: [rule1, rule2],
       email: getEmail({
-        subject: "Joke",
-        content: "Tell me a joke about sheep",
+        subject: 'Joke',
+        content: 'Tell me a joke about sheep',
       }),
       emailAccount: getEmailAccount(),
     });
@@ -105,71 +105,71 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
     expect(result.reason).toBeTruthy();
   });
 
-  describe("Complex real-world rule scenarios", () => {
+  describe('Complex real-world rule scenarios', () => {
     const recruiters = getRule(
-      "Match emails from recruiters or about job opportunities",
+      'Match emails from recruiters or about job opportunities',
       [],
-      "Recruiters",
+      'Recruiters'
     );
     const legal = getRule(
-      "Match emails containing legal documents or contracts",
+      'Match emails containing legal documents or contracts',
       [],
-      "Legal",
+      'Legal'
     );
     const requiresResponse = getRule(
-      "Match emails requiring a response",
+      'Match emails requiring a response',
       [],
-      "Requires Response",
+      'Requires Response'
     );
     const productUpdates = getRule(
-      "Match emails about product updates or feature announcements",
+      'Match emails about product updates or feature announcements',
       [],
-      "Product Updates",
+      'Product Updates'
     );
     const financial = getRule(
-      "Match emails containing financial information or invoices",
+      'Match emails containing financial information or invoices',
       [],
-      "Financial",
+      'Financial'
     );
     const technicalIssues = getRule(
-      "Match emails about technical issues like server downtime or bug reports",
+      'Match emails about technical issues like server downtime or bug reports',
       [],
-      "Technical Issues",
+      'Technical Issues'
     );
     const marketing = getRule(
-      "Match emails containing marketing or promotional content",
+      'Match emails containing marketing or promotional content',
       [],
-      "Marketing",
+      'Marketing'
     );
     const teamUpdates = getRule(
-      "Match emails about team updates or internal communications",
+      'Match emails about team updates or internal communications',
       [],
-      "Team Updates",
+      'Team Updates'
     );
     const customerFeedback = getRule(
-      "Match emails about customer feedback or support requests",
+      'Match emails about customer feedback or support requests',
       [],
-      "Customer Feedback",
+      'Customer Feedback'
     );
     const events = getRule(
-      "Match emails containing event invitations or RSVPs",
+      'Match emails containing event invitations or RSVPs',
       [],
-      "Events",
+      'Events'
     );
     const projectDeadlines = getRule(
-      "Match emails about project deadlines or milestones",
+      'Match emails about project deadlines or milestones',
       [],
-      "Project Deadlines",
+      'Project Deadlines'
     );
     const urgent = getRule(
-      "Match urgent emails requiring immediate attention",
+      'Match urgent emails requiring immediate attention',
       [],
-      "Urgent",
+      'Urgent'
     );
     const catchAll = getRule(
       "Match emails that don't fit any other category",
       [],
-      "Catch All",
+      'Catch All'
     );
 
     const rules = [
@@ -188,13 +188,13 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       catchAll,
     ];
 
-    test("Should match simple response required", async () => {
+    test('Should match simple response required', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          from: "alicesmith@gmail.com",
-          subject: "Can we meet for lunch tomorrow?",
-          content: "LMK\n\n--\nAlice Smith,\nCEO, The Boring Fund",
+          from: 'alicesmith@gmail.com',
+          subject: 'Can we meet for lunch tomorrow?',
+          content: 'LMK\n\n--\nAlice Smith,\nCEO, The Boring Fund',
         }),
         emailAccount: getEmailAccount(),
       });
@@ -204,11 +204,11 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match technical issues", async () => {
+    test('Should match technical issues', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "Server downtime reported",
+          subject: 'Server downtime reported',
           content:
             "We're experiencing critical server issues affecting production.",
         }),
@@ -217,14 +217,14 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
 
       // Log if multiple rules were matched
       if (result.rules.length > 1) {
-        console.log("⚠️  Technical Issues test matched multiple rules:");
+        console.log('⚠️  Technical Issues test matched multiple rules:');
         console.log(
           result.rules.map((r) => ({
             name: r.rule.name,
             isPrimary: r.isPrimary,
-          })),
+          }))
         );
-        console.log("Reasoning:", result.reason);
+        console.log('Reasoning:', result.reason);
       }
 
       // AI may match multiple rules (e.g., Technical Issues + Urgent)
@@ -235,12 +235,12 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match financial emails", async () => {
+    test('Should match financial emails', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "Your invoice for March 2024",
-          content: "Please find attached your invoice for services rendered.",
+          subject: 'Your invoice for March 2024',
+          content: 'Please find attached your invoice for services rendered.',
         }),
         emailAccount: getEmailAccount(),
       });
@@ -250,11 +250,11 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match recruiter emails", async () => {
+    test('Should match recruiter emails', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "New job opportunity at Tech Corp",
+          subject: 'New job opportunity at Tech Corp',
           content:
             "I came across your profile and think you'd be perfect for...",
         }),
@@ -266,26 +266,26 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match legal documents", async () => {
+    test('Should match legal documents', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "Please review: Contract for new project",
-          content: "Attached is the contract for your review and signature.",
+          subject: 'Please review: Contract for new project',
+          content: 'Attached is the contract for your review and signature.',
         }),
         emailAccount: getEmailAccount(),
       });
 
       // Log if multiple rules were matched
       if (result.rules.length > 1) {
-        console.log("⚠️  Legal Documents test matched multiple rules:");
+        console.log('⚠️  Legal Documents test matched multiple rules:');
         console.log(
           result.rules.map((r) => ({
             name: r.rule.name,
             isPrimary: r.isPrimary,
-          })),
+          }))
         );
-        console.log("Reasoning:", result.reason);
+        console.log('Reasoning:', result.reason);
       }
 
       // AI may match multiple rules (e.g., Legal + Requires Response)
@@ -296,12 +296,12 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match emails requiring response", async () => {
+    test('Should match emails requiring response', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "Team lunch tomorrow?",
-          content: "Would you like to join us for team lunch tomorrow at 12pm?",
+          subject: 'Team lunch tomorrow?',
+          content: 'Would you like to join us for team lunch tomorrow at 12pm?',
         }),
         emailAccount: getEmailAccount(),
       });
@@ -309,15 +309,15 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       // Log if multiple rules were matched
       if (result.rules.length > 1) {
         console.log(
-          "⚠️  Emails Requiring Response test matched multiple rules:",
+          '⚠️  Emails Requiring Response test matched multiple rules:'
         );
         console.log(
           result.rules.map((r) => ({
             name: r.rule.name,
             isPrimary: r.isPrimary,
-          })),
+          }))
         );
-        console.log("Reasoning:", result.reason);
+        console.log('Reasoning:', result.reason);
       }
 
       // AI may match multiple rules (e.g., Requires Response + Team Updates)
@@ -328,11 +328,11 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match product updates", async () => {
+    test('Should match product updates', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "New Feature Release: AI Integration",
+          subject: 'New Feature Release: AI Integration',
           content: "We're excited to announce our new AI features...",
         }),
         emailAccount: getEmailAccount(),
@@ -343,11 +343,11 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match marketing emails", async () => {
+    test('Should match marketing emails', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "50% off Spring Sale!",
+          subject: '50% off Spring Sale!',
           content: "Don't miss out on our biggest sale of the season!",
         }),
         emailAccount: getEmailAccount(),
@@ -358,11 +358,11 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match team updates", async () => {
+    test('Should match team updates', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "Weekly Team Update",
+          subject: 'Weekly Team Update',
           content: "Here's what the team accomplished this week...",
         }),
         emailAccount: getEmailAccount(),
@@ -373,11 +373,11 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match customer feedback", async () => {
+    test('Should match customer feedback', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "Customer Feedback: App Performance",
+          subject: 'Customer Feedback: App Performance',
           content: "I've been experiencing slow loading times...",
         }),
         emailAccount: getEmailAccount(),
@@ -385,14 +385,14 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
 
       // Log if multiple rules were matched
       if (result.rules.length > 1) {
-        console.log("⚠️  Customer Feedback test matched multiple rules:");
+        console.log('⚠️  Customer Feedback test matched multiple rules:');
         console.log(
           result.rules.map((r) => ({
             name: r.rule.name,
             isPrimary: r.isPrimary,
-          })),
+          }))
         );
-        console.log("Reasoning:", result.reason);
+        console.log('Reasoning:', result.reason);
       }
 
       // AI may match multiple rules (e.g., Customer Feedback + Technical Issues + Requires Response)
@@ -403,11 +403,11 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       expect(result.reason).toBeTruthy();
     });
 
-    test("Should match event invitations", async () => {
+    test('Should match event invitations', async () => {
       const result = await aiChooseRule({
         rules,
         email: getEmail({
-          subject: "Invitation: Annual Tech Conference",
+          subject: 'Invitation: Annual Tech Conference',
           content: "You're invited to speak at our annual conference...",
         }),
         emailAccount: getEmailAccount(),
@@ -415,14 +415,14 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
 
       // Log if multiple rules were matched
       if (result.rules.length > 1) {
-        console.log("⚠️  Event Invitations test matched multiple rules:");
+        console.log('⚠️  Event Invitations test matched multiple rules:');
         console.log(
           result.rules.map((r) => ({
             name: r.rule.name,
             isPrimary: r.isPrimary,
-          })),
+          }))
         );
-        console.log("Reasoning:", result.reason);
+        console.log('Reasoning:', result.reason);
       }
 
       // AI may match multiple rules (e.g., Events + Requires Response)
@@ -451,7 +451,7 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       const result = await aiChooseRule({
         rules: rulesWithoutCatchAll,
         email: getEmail({
-          subject: "Weather Update: Sunny skies ahead",
+          subject: 'Weather Update: Sunny skies ahead',
           content:
             "Today's forecast: Clear skies with temperatures reaching 75°F. Perfect day for outdoor activities!\n\nUV Index: Moderate\nWind: 5-10 mph",
         }),
@@ -461,7 +461,7 @@ describe.runIf(isAiTest)("aiChooseRule", () => {
       // This is a weather notification that doesn't match any of our business rules
       // Should return empty array with no reason
       expect(result.rules).toEqual([]);
-      expect(result.reason).toBe("");
+      expect(result.reason).toBe('');
     });
   });
 });

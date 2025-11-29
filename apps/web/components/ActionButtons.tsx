@@ -1,16 +1,16 @@
-import { useCallback, useMemo, useState } from "react";
 import {
   ArchiveIcon,
-  Trash2Icon,
   ExternalLinkIcon,
   SparklesIcon,
-} from "lucide-react";
-import { ButtonGroup } from "@/components/ButtonGroup";
-import { LoadingMiniSpinner } from "@/components/Loading";
-import { getGmailUrl } from "@/utils/url";
-import { onTrashThread } from "@/utils/actions/client";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { isGoogleProvider } from "@/utils/email/provider-types";
+  Trash2Icon,
+} from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { LoadingMiniSpinner } from '@/components/Loading';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { onTrashThread } from '@/utils/actions/client';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import { getGmailUrl } from '@/utils/url';
 
 export function ActionButtons({
   threadId,
@@ -32,7 +32,7 @@ export function ActionButtons({
   const openInGmail = useCallback(() => {
     // open in gmail
     const url = getGmailUrl(threadId, userEmail);
-    window.open(url, "_blank");
+    window.open(url, '_blank');
   }, [threadId, userEmail]);
 
   const [isTrashing, setIsTrashing] = useState(false);
@@ -51,14 +51,14 @@ export function ActionButtons({
       ...(isGoogleProvider(provider)
         ? [
             {
-              tooltip: "Open in Gmail",
+              tooltip: 'Open in Gmail',
               onClick: openInGmail,
               icon: <ExternalLinkIcon className="size-4" aria-hidden="true" />,
             },
           ]
         : []),
       {
-        tooltip: "Process with assistant",
+        tooltip: 'Process with assistant',
         onClick: onPlanAiAction,
         icon: isPlanning ? (
           <LoadingMiniSpinner />
@@ -67,13 +67,13 @@ export function ActionButtons({
         ),
       },
       {
-        tooltip: "Archive",
+        tooltip: 'Archive',
         onClick: onArchive,
         icon: <ArchiveIcon className="size-4" aria-hidden="true" />,
       },
       // may remove later
       {
-        tooltip: "Delete",
+        tooltip: 'Delete',
         onClick: onTrash,
         icon: isTrashing ? (
           <LoadingMiniSpinner />
@@ -90,7 +90,7 @@ export function ActionButtons({
       isPlanning,
       openInGmail,
       provider,
-    ],
+    ]
   );
 
   return <ButtonGroup buttons={buttons} shadow={shadow} />;

@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { Toggle } from "@/components/Toggle";
-import { enableMultiRuleSelectionAction } from "@/utils/actions/rule";
-import { toastError } from "@/components/Toast";
-import { SettingCard } from "@/components/SettingCard";
-import { useEmailAccountFull } from "@/hooks/useEmailAccountFull";
-import { useAction } from "next-safe-action/hooks";
-import { Skeleton } from "@/components/ui/skeleton";
-import { LoadingContent } from "@/components/LoadingContent";
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback } from 'react';
+import { LoadingContent } from '@/components/LoadingContent';
+import { SettingCard } from '@/components/SettingCard';
+import { toastError } from '@/components/Toast';
+import { Toggle } from '@/components/Toggle';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useEmailAccountFull } from '@/hooks/useEmailAccountFull';
+import { enableMultiRuleSelectionAction } from '@/utils/actions/rule';
 
 export function MultiRuleSetting() {
   const { data, isLoading, error, mutate } = useEmailAccountFull();
 
   const { execute } = useAction(
-    enableMultiRuleSelectionAction.bind(null, data?.id ?? ""),
+    enableMultiRuleSelectionAction.bind(null, data?.id ?? ''),
     {
       onSuccess: () => {
         mutate();
@@ -22,10 +22,10 @@ export function MultiRuleSetting() {
       onError: (error) => {
         mutate();
         toastError({
-          description: `There was an error: ${error.error.serverError || "Unknown error"}`,
+          description: `There was an error: ${error.error.serverError || 'Unknown error'}`,
         });
       },
-    },
+    }
   );
 
   const enabled = data?.multiRuleSelectionEnabled ?? false;
@@ -42,7 +42,7 @@ export function MultiRuleSetting() {
 
       execute({ enable });
     },
-    [data, mutate, execute],
+    [data, mutate, execute]
   );
 
   return (

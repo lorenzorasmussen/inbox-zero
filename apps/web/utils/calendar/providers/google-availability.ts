@@ -1,12 +1,12 @@
-import type { calendar_v3 } from "@googleapis/calendar";
-import { createScopedLogger } from "@/utils/logger";
-import { getCalendarClientWithRefresh } from "../client";
+import type { calendar_v3 } from '@googleapis/calendar';
+import { createScopedLogger } from '@/utils/logger';
 import type {
-  CalendarAvailabilityProvider,
   BusyPeriod,
-} from "../availability-types";
+  CalendarAvailabilityProvider,
+} from '../availability-types';
+import { getCalendarClientWithRefresh } from '../client';
 
-const logger = createScopedLogger("calendar/google-availability");
+const logger = createScopedLogger('calendar/google-availability');
 
 async function fetchGoogleCalendarBusyPeriods({
   calendarClient,
@@ -32,7 +32,7 @@ async function fetchGoogleCalendarBusyPeriods({
 
     if (response.data.calendars) {
       for (const [_calendarId, calendar] of Object.entries(
-        response.data.calendars,
+        response.data.calendars
       )) {
         if (calendar.busy) {
           for (const period of calendar.busy) {
@@ -47,7 +47,7 @@ async function fetchGoogleCalendarBusyPeriods({
       }
     }
 
-    logger.trace("Google Calendar busy periods", {
+    logger.trace('Google Calendar busy periods', {
       busyPeriods,
       timeMin,
       timeMax,
@@ -55,13 +55,13 @@ async function fetchGoogleCalendarBusyPeriods({
 
     return busyPeriods;
   } catch (error) {
-    logger.error("Error fetching Google Calendar busy periods", { error });
+    logger.error('Error fetching Google Calendar busy periods', { error });
     throw error;
   }
 }
 
 export const googleAvailabilityProvider: CalendarAvailabilityProvider = {
-  name: "google",
+  name: 'google',
 
   async fetchBusyPeriods({
     accessToken,

@@ -1,36 +1,36 @@
-"use client";
+'use client';
 
-import { useCallback, useRef, useState, useMemo } from "react";
-import { useQueryState } from "nuqs";
-import Link from "next/link";
-import { toast } from "sonner";
-import { ChevronsDownIcon } from "lucide-react";
-import { ActionButtonsBulk } from "@/components/ActionButtonsBulk";
-import { Celebration } from "@/components/Celebration";
-import { EmailPanel } from "@/components/email-list/EmailPanel";
-import type { Thread } from "@/components/email-list/types";
-import { Tabs } from "@/components/Tabs";
-import { GroupHeading } from "@/components/GroupHeading";
-import { Checkbox } from "@/components/Checkbox";
-import { MessageText } from "@/components/Typography";
-import { AlertBasic } from "@/components/Alert";
-import { EmailListItem } from "@/components/email-list/EmailListItem";
+import { ChevronsDownIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useQueryState } from 'nuqs';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { ActionButtonsBulk } from '@/components/ActionButtonsBulk';
+import { AlertBasic } from '@/components/Alert';
+import { Celebration } from '@/components/Celebration';
+import { Checkbox } from '@/components/Checkbox';
+import { EmailListItem } from '@/components/email-list/EmailListItem';
+import { EmailPanel } from '@/components/email-list/EmailPanel';
+import type { Thread } from '@/components/email-list/types';
+import { GroupHeading } from '@/components/GroupHeading';
+import { ButtonLoader } from '@/components/Loading';
+import { Tabs } from '@/components/Tabs';
+import { MessageText } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { runAiRules } from "@/utils/queue/email-actions";
-import { Button } from "@/components/ui/button";
-import { ButtonLoader } from "@/components/Loading";
+} from '@/components/ui/resizable';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
   archiveEmails,
   deleteEmails,
   markReadThreads,
-} from "@/store/archive-queue";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { useIsMobile } from "@/hooks/use-mobile";
+} from '@/store/archive-queue';
+import { prefixPath } from '@/utils/path';
+import { runAiRules } from '@/utils/queue/email-actions';
 
 export function List({
   emails,
@@ -48,7 +48,7 @@ export function List({
   handleLoadMore?: () => void;
 }) {
   const { emailAccountId } = useAccount();
-  const [selectedTab] = useQueryState("tab", { defaultValue: "all" });
+  const [selectedTab] = useQueryState('tab', { defaultValue: 'all' });
 
   const planned = useMemo(() => {
     return emails.filter((email) => email.plan?.rule);
@@ -57,26 +57,26 @@ export function List({
   const tabs = useMemo(
     () => [
       {
-        label: "All",
-        value: "all",
-        href: "/mail?tab=all",
+        label: 'All',
+        value: 'all',
+        href: '/mail?tab=all',
       },
       {
-        label: `Planned${planned.length ? ` (${planned.length})` : ""}`,
-        value: "planned",
-        href: "/mail?tab=planned",
+        label: `Planned${planned.length ? ` (${planned.length})` : ''}`,
+        value: 'planned',
+        href: '/mail?tab=planned',
       },
     ],
-    [planned],
+    [planned]
   );
 
   // only show tabs if there are planned emails or categorized emails
   const showTabs = !!planned.length;
 
   const filteredEmails = useMemo(() => {
-    if (selectedTab === "planned") return planned;
+    if (selectedTab === 'planned') return planned;
 
-    if (selectedTab === "all") return emails;
+    if (selectedTab === 'all') return emails;
 
     return emails;
   }, [emails, selectedTab, planned]);
@@ -102,18 +102,18 @@ export function List({
           handleLoadMore={handleLoadMore}
           emptyMessage={
             <div className="px-2">
-              {selectedTab === "planned" ? (
+              {selectedTab === 'planned' ? (
                 <AlertBasic
                   title="No planned emails"
                   description={
                     <>
-                      Set rules on the{" "}
+                      Set rules on the{' '}
                       <Link
-                        href={prefixPath(emailAccountId, "/automation")}
+                        href={prefixPath(emailAccountId, '/automation')}
                         className="font-semibold hover:underline"
                       >
                         Assistant page
-                      </Link>{" "}
+                      </Link>{' '}
                       for our AI to handle incoming emails for you.
                     </>
                   }
@@ -130,8 +130,8 @@ export function List({
         />
       ) : (
         <div className="mt-20">
-          {type === "inbox" ? (
-            <Celebration message={"You made it to Inbox Zero!"} />
+          {type === 'inbox' ? (
+            <Celebration message={'You made it to Inbox Zero!'} />
           ) : (
             <div className="flex items-center justify-center font-title text-2xl text-primary">
               No emails to display
@@ -163,15 +163,15 @@ export function EmailList({
   const { emailAccountId, userEmail, provider } = useAccount();
 
   // if right panel is open
-  const [openThreadId, setOpenThreadId] = useQueryState("thread-id");
+  const [openThreadId, setOpenThreadId] = useQueryState('thread-id');
   const closePanel = useCallback(
     () => setOpenThreadId(null),
-    [setOpenThreadId],
+    [setOpenThreadId]
   );
 
   const openedRow = useMemo(
     () => threads.find((thread) => thread.id === openThreadId),
-    [openThreadId, threads],
+    [openThreadId, threads]
   );
 
   // if checkbox for a row has been checked
@@ -196,11 +196,11 @@ export function EmailList({
   const onPlanAiAction = useCallback(
     (thread: Thread) => {
       toast.promise(() => runAiRules(emailAccountId, [thread], true), {
-        success: "Running...",
-        error: "There was an error running the AI rules :(",
+        success: 'Running...',
+        error: 'There was an error running the AI rules :(',
       });
     },
-    [emailAccountId],
+    [emailAccountId]
   );
 
   const onArchive = useCallback(
@@ -221,13 +221,13 @@ export function EmailList({
           });
         },
         {
-          loading: "Archiving...",
-          success: "Archived!",
-          error: "There was an error archiving the email :(",
-        },
+          loading: 'Archiving...',
+          success: 'Archived!',
+          error: 'There was an error archiving the email :(',
+        }
       );
     },
-    [refetch, emailAccountId],
+    [refetch, emailAccountId]
   );
 
   const listRef = useRef<HTMLUListElement>(null);
@@ -261,7 +261,7 @@ export function EmailList({
 
   function advanceToAdjacentThread() {
     const openedRowIndex = threads.findIndex(
-      (thread) => thread.id === openThreadId,
+      (thread) => thread.id === openThreadId
     );
 
     if (openedRowIndex === -1 || threads.length === 0 || threads.length === 1) {
@@ -298,10 +298,10 @@ export function EmailList({
         });
       },
       {
-        loading: "Archiving emails...",
-        success: "Emails archived",
-        error: "There was an error archiving the emails :(",
-      },
+        loading: 'Archiving emails...',
+        success: 'Emails archived',
+        error: 'There was an error archiving the emails :(',
+      }
     );
   }, [selectedRows, refetch, emailAccountId]);
 
@@ -325,10 +325,10 @@ export function EmailList({
         });
       },
       {
-        loading: "Deleting emails...",
-        success: "Emails deleted!",
-        error: "There was an error deleting the emails :(",
-      },
+        loading: 'Deleting emails...',
+        success: 'Emails deleted!',
+        error: 'There was an error deleting the emails :(',
+      }
     );
   }, [selectedRows, refetch, emailAccountId]);
 
@@ -343,9 +343,9 @@ export function EmailList({
         // runAiRules(threadIds, () => refetch(threadIds));
       },
       {
-        success: "Running AI rules...",
-        error: "There was an error running the AI rules :(",
-      },
+        success: 'Running AI rules...',
+        error: 'There was an error running the AI rules :(',
+      }
     );
   }, [emailAccountId, selectedRows, threads]);
 
@@ -394,7 +394,7 @@ export function EmailList({
 
       {isEmpty ? (
         <div className="py-2">
-          {typeof emptyMessage === "string" ? (
+          {typeof emptyMessage === 'string' ? (
             <MessageText>{emptyMessage}</MessageText>
           ) : (
             emptyMessage
@@ -451,7 +451,7 @@ export function EmailList({
                 <Button
                   variant="outline"
                   className="mb-2 w-full"
-                  size={"sm"}
+                  size={'sm'}
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
                 >
@@ -499,8 +499,8 @@ function ResizeGroup({
   if (!right) return left;
 
   return (
-    <ResizablePanelGroup direction={isMobile ? "vertical" : "horizontal"}>
-      <ResizablePanel style={{ overflow: "auto" }} defaultSize={50} minSize={0}>
+    <ResizablePanelGroup direction={isMobile ? 'vertical' : 'horizontal'}>
+      <ResizablePanel style={{ overflow: 'auto' }} defaultSize={50} minSize={0}>
         {left}
       </ResizablePanel>
       <ResizableHandle withHandle />

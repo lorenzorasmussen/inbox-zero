@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
-import type { GetEmailAccountsResponse } from "@/app/api/user/email-accounts/route";
-import { setLastEmailAccountAction } from "@/utils/actions/email-account-cookie";
+import { useParams } from 'next/navigation';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import type { GetEmailAccountsResponse } from '@/app/api/user/email-accounts/route';
+import { setLastEmailAccountAction } from '@/utils/actions/email-account-cookie';
 
 type Context = {
-  emailAccount: GetEmailAccountsResponse["emailAccounts"][number] | undefined;
+  emailAccount: GetEmailAccountsResponse['emailAccounts'][number] | undefined;
   emailAccountId: string;
   userEmail: string;
   isLoading: boolean;
@@ -30,13 +30,13 @@ export function EmailAccountProvider({
       try {
         // Not using SWR here because this will lead to a circular provider tree
         // This is the simplest fix
-        const response = await fetch("/api/user/email-accounts");
+        const response = await fetch('/api/user/email-accounts');
         if (response.ok) {
           const emailAccounts: GetEmailAccountsResponse = await response.json();
           setData(emailAccounts);
         }
       } catch (error) {
-        console.error("Error fetching accounts:", error);
+        console.error('Error fetching accounts:', error);
       } finally {
         setIsLoading(false);
       }
@@ -66,9 +66,9 @@ export function EmailAccountProvider({
       value={{
         emailAccount,
         isLoading,
-        emailAccountId: emailAccountId ?? "",
-        userEmail: emailAccount?.email ?? "",
-        provider: emailAccount?.account?.provider ?? "",
+        emailAccountId: emailAccountId ?? '',
+        userEmail: emailAccount?.email ?? '',
+        provider: emailAccount?.account?.provider ?? '',
       }}
     >
       {children}
@@ -81,7 +81,7 @@ export function useAccount() {
 
   if (context === undefined) {
     throw new Error(
-      "useEmailAccount must be used within an EmailAccountProvider",
+      'useEmailAccount must be used within an EmailAccountProvider'
     );
   }
 

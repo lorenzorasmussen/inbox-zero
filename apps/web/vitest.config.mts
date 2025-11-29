@@ -1,14 +1,22 @@
-import { config } from "dotenv";
-import { defineConfig } from "vitest/config";
-import tsconfigPaths from "vite-tsconfig-paths";
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  plugins: [react()],
   test: {
-    environment: "node",
-    setupFiles: ["./__tests__/setup.ts"],
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./__tests__/setup.ts'],
+    environmentMatchGlobs: ['<root>/apps/web/**/*'],
     env: {
-      ...config({ path: "./.env.test" }).parsed,
+      NODE_ENV: 'test',
+      NEXT_PUBLIC_APP_URL: 'http://localhost:3001',
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './apps/web'),
     },
   },
 });

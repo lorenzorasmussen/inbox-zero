@@ -1,41 +1,41 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { PremiumTier } from "@/generated/prisma/enums";
-import { transferPremiumDuringMerge } from "./merge-premium";
-import prisma from "@/utils/__mocks__/prisma";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { PremiumTier } from '@/generated/prisma/enums';
+import prisma from '@/utils/__mocks__/prisma';
+import { transferPremiumDuringMerge } from './merge-premium';
 
-vi.mock("@/utils/prisma");
-vi.mock("server-only", () => ({}));
+vi.mock('@/utils/prisma');
+vi.mock('server-only', () => ({}));
 
-describe("transferPremiumDuringMerge", () => {
+describe('transferPremiumDuringMerge', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe("when both users have premium subscriptions", () => {
-    it("should choose source premium when source has higher tier", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
-      const sourcePremiumId = "source-premium-id";
-      const targetPremiumId = "target-premium-id";
+  describe('when both users have premium subscriptions', () => {
+    it('should choose source premium when source has higher tier', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
+      const sourcePremiumId = 'source-premium-id';
+      const targetPremiumId = 'target-premium-id';
 
       // Mock source user with BUSINESS_PLUS tier (higher)
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: sourcePremiumId,
           premiumAdminId: null,
           premium: {
             id: sourcePremiumId,
             tier: PremiumTier.BUSINESS_PLUS_MONTHLY,
-            users: [{ id: sourceUserId, email: "source@example.com" }],
+            users: [{ id: sourceUserId, email: 'source@example.com' }],
             admins: [],
           },
           premiumAdmin: null,
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: targetPremiumId,
           premiumAdminId: null,
           premium: {
@@ -58,30 +58,30 @@ describe("transferPremiumDuringMerge", () => {
       });
     });
 
-    it("should keep target premium when target has higher tier", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
-      const sourcePremiumId = "source-premium-id";
-      const targetPremiumId = "target-premium-id";
+    it('should keep target premium when target has higher tier', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
+      const sourcePremiumId = 'source-premium-id';
+      const targetPremiumId = 'target-premium-id';
 
       // Mock source user with PRO tier (lower)
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: sourcePremiumId,
           premiumAdminId: null,
           premium: {
             id: sourcePremiumId,
             tier: PremiumTier.PRO_MONTHLY,
-            users: [{ id: sourceUserId, email: "source@example.com" }],
+            users: [{ id: sourceUserId, email: 'source@example.com' }],
             admins: [],
           },
           premiumAdmin: null,
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: targetPremiumId,
           premiumAdminId: null,
           premium: {
@@ -97,30 +97,30 @@ describe("transferPremiumDuringMerge", () => {
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
-    it("should choose source premium when both have same tier", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
-      const sourcePremiumId = "source-premium-id";
-      const targetPremiumId = "target-premium-id";
+    it('should choose source premium when both have same tier', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
+      const sourcePremiumId = 'source-premium-id';
+      const targetPremiumId = 'target-premium-id';
 
       // Mock both users with same tier
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: sourcePremiumId,
           premiumAdminId: null,
           premium: {
             id: sourcePremiumId,
             tier: PremiumTier.PRO_MONTHLY,
-            users: [{ id: sourceUserId, email: "source@example.com" }],
+            users: [{ id: sourceUserId, email: 'source@example.com' }],
             admins: [],
           },
           premiumAdmin: null,
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: targetPremiumId,
           premiumAdminId: null,
           premium: {
@@ -143,24 +143,24 @@ describe("transferPremiumDuringMerge", () => {
       });
     });
 
-    it("should do nothing when both users already share the same premium", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
-      const sharedPremiumId = "shared-premium-id";
+    it('should do nothing when both users already share the same premium', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
+      const sharedPremiumId = 'shared-premium-id';
 
       // Mock both users with same premium
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: sharedPremiumId,
           premiumAdminId: null,
           premium: {
             id: sharedPremiumId,
             tier: PremiumTier.PRO_MONTHLY,
             users: [
-              { id: sourceUserId, email: "source@example.com" },
-              { id: targetUserId, email: "target@example.com" },
+              { id: sourceUserId, email: 'source@example.com' },
+              { id: targetUserId, email: 'target@example.com' },
             ],
             admins: [],
           },
@@ -168,7 +168,7 @@ describe("transferPremiumDuringMerge", () => {
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: sharedPremiumId,
           premiumAdminId: null,
           premium: {
@@ -185,29 +185,29 @@ describe("transferPremiumDuringMerge", () => {
     });
   });
 
-  describe("when only source user has premium", () => {
-    it("should transfer premium to target user", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
-      const sourcePremiumId = "source-premium-id";
+  describe('when only source user has premium', () => {
+    it('should transfer premium to target user', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
+      const sourcePremiumId = 'source-premium-id';
 
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: sourcePremiumId,
           premiumAdminId: null,
           premium: {
             id: sourcePremiumId,
             tier: PremiumTier.PRO_MONTHLY,
-            users: [{ id: sourceUserId, email: "source@example.com" }],
+            users: [{ id: sourceUserId, email: 'source@example.com' }],
             admins: [],
           },
           premiumAdmin: null,
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: null,
           premiumAdminId: null,
           premium: null,
@@ -225,16 +225,16 @@ describe("transferPremiumDuringMerge", () => {
     });
   });
 
-  describe("when only target user has premium", () => {
+  describe('when only target user has premium', () => {
     it("should keep target user's premium", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
-      const targetPremiumId = "target-premium-id";
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
+      const targetPremiumId = 'target-premium-id';
 
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: null,
           premiumAdminId: null,
           premium: null,
@@ -242,7 +242,7 @@ describe("transferPremiumDuringMerge", () => {
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: targetPremiumId,
           premiumAdminId: null,
           premium: {
@@ -259,15 +259,15 @@ describe("transferPremiumDuringMerge", () => {
     });
   });
 
-  describe("when neither user has premium", () => {
-    it("should do nothing", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
+  describe('when neither user has premium', () => {
+    it('should do nothing', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
 
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: null,
           premiumAdminId: null,
           premium: null,
@@ -275,7 +275,7 @@ describe("transferPremiumDuringMerge", () => {
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: null,
           premiumAdminId: null,
           premium: null,
@@ -289,28 +289,28 @@ describe("transferPremiumDuringMerge", () => {
     });
   });
 
-  describe("when source user has premium admin rights", () => {
-    it("should transfer admin rights to target user", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
-      const premiumAdminId = "premium-admin-id";
+  describe('when source user has premium admin rights', () => {
+    it('should transfer admin rights to target user', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
+      const premiumAdminId = 'premium-admin-id';
 
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: null,
           premiumAdminId: premiumAdminId,
           premium: null,
           premiumAdmin: {
             id: premiumAdminId,
-            users: [{ id: sourceUserId, email: "source@example.com" }],
-            admins: [{ id: sourceUserId, email: "source@example.com" }],
+            users: [{ id: sourceUserId, email: 'source@example.com' }],
+            admins: [{ id: sourceUserId, email: 'source@example.com' }],
           },
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: null,
           premiumAdminId: null,
           premium: null,
@@ -338,28 +338,28 @@ describe("transferPremiumDuringMerge", () => {
       });
     });
 
-    it("should not update premiumAdminId when target already has admin rights", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
-      const sourcePremiumAdminId = "source-premium-admin-id";
-      const targetPremiumAdminId = "target-premium-admin-id";
+    it('should not update premiumAdminId when target already has admin rights', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
+      const sourcePremiumAdminId = 'source-premium-admin-id';
+      const targetPremiumAdminId = 'target-premium-admin-id';
 
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: null,
           premiumAdminId: sourcePremiumAdminId,
           premium: null,
           premiumAdmin: {
             id: sourcePremiumAdminId,
-            users: [{ id: sourceUserId, email: "source@example.com" }],
-            admins: [{ id: sourceUserId, email: "source@example.com" }],
+            users: [{ id: sourceUserId, email: 'source@example.com' }],
+            admins: [{ id: sourceUserId, email: 'source@example.com' }],
           },
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: null,
           premiumAdminId: targetPremiumAdminId,
           premium: null,
@@ -384,14 +384,14 @@ describe("transferPremiumDuringMerge", () => {
     });
   });
 
-  describe("error handling", () => {
-    it("should return early when source user is not found", async () => {
-      const sourceUserId = "non-existent-source";
-      const targetUserId = "target-user-id";
+  describe('error handling', () => {
+    it('should return early when source user is not found', async () => {
+      const sourceUserId = 'non-existent-source';
+      const targetUserId = 'target-user-id';
 
       prisma.user.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({
         id: targetUserId,
-        email: "target@example.com",
+        email: 'target@example.com',
         premiumId: null,
         premiumAdminId: null,
         premium: null,
@@ -404,14 +404,14 @@ describe("transferPremiumDuringMerge", () => {
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
-    it("should handle error gracefully when target user is not found", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "non-existent-target";
+    it('should handle error gracefully when target user is not found', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'non-existent-target';
 
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: null,
           premiumAdminId: null,
           premium: null,
@@ -421,7 +421,7 @@ describe("transferPremiumDuringMerge", () => {
 
       // Should not throw an error, but should complete gracefully
       await expect(
-        transferPremiumDuringMerge({ sourceUserId, targetUserId }),
+        transferPremiumDuringMerge({ sourceUserId, targetUserId })
       ).resolves.toBeUndefined();
 
       // Should not make any updates when target user is not found
@@ -429,28 +429,28 @@ describe("transferPremiumDuringMerge", () => {
       expect(prisma.user.update).not.toHaveBeenCalled();
     });
 
-    it("should handle database errors gracefully", async () => {
-      const sourceUserId = "source-user-id";
-      const targetUserId = "target-user-id";
-      const sourcePremiumId = "source-premium-id";
+    it('should handle database errors gracefully', async () => {
+      const sourceUserId = 'source-user-id';
+      const targetUserId = 'target-user-id';
+      const sourcePremiumId = 'source-premium-id';
 
       prisma.user.findUnique
         .mockResolvedValueOnce({
           id: sourceUserId,
-          email: "source@example.com",
+          email: 'source@example.com',
           premiumId: sourcePremiumId,
           premiumAdminId: null,
           premium: {
             id: sourcePremiumId,
             tier: PremiumTier.PRO_MONTHLY,
-            users: [{ id: sourceUserId, email: "source@example.com" }],
+            users: [{ id: sourceUserId, email: 'source@example.com' }],
             admins: [],
           },
           premiumAdmin: null,
         } as any)
         .mockResolvedValueOnce({
           id: targetUserId,
-          email: "target@example.com",
+          email: 'target@example.com',
           premiumId: null,
           premiumAdminId: null,
           premium: null,
@@ -458,12 +458,12 @@ describe("transferPremiumDuringMerge", () => {
 
       // Mock database error
       prisma.user.update.mockRejectedValue(
-        new Error("Database connection failed"),
+        new Error('Database connection failed')
       );
 
       // Should not throw an error, but should complete gracefully
       await expect(
-        transferPremiumDuringMerge({ sourceUserId, targetUserId }),
+        transferPremiumDuringMerge({ sourceUserId, targetUserId })
       ).resolves.toBeUndefined();
     });
   });

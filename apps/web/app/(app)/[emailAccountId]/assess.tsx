@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { useAction } from "next-safe-action/hooks";
-import { useEffect } from "react";
-import { whitelistInboxZeroAction } from "@/utils/actions/whitelist";
+import { useAction } from 'next-safe-action/hooks';
+import { useEffect } from 'react';
+import { useOrgAccess } from '@/hooks/useOrgAccess';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
   analyzeWritingStyleAction,
   assessAction,
-} from "@/utils/actions/assess";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { useOrgAccess } from "@/hooks/useOrgAccess";
+} from '@/utils/actions/assess';
+import { whitelistInboxZeroAction } from '@/utils/actions/whitelist';
 
 export function AssessUser() {
   const { emailAccountId, provider } = useAccount();
   const { isAccountOwner } = useOrgAccess();
   const { executeAsync: executeAssessAsync } = useAction(
-    assessAction.bind(null, emailAccountId),
+    assessAction.bind(null, emailAccountId)
   );
   const { execute: executeWhitelistInboxZero } = useAction(
-    whitelistInboxZeroAction.bind(null, emailAccountId),
+    whitelistInboxZeroAction.bind(null, emailAccountId)
   );
   const { execute: executeAnalyzeWritingStyle } = useAction(
-    analyzeWritingStyleAction.bind(null, emailAccountId),
+    analyzeWritingStyleAction.bind(null, emailAccountId)
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: only run once
@@ -31,7 +31,7 @@ export function AssessUser() {
     async function assess() {
       const result = await executeAssessAsync();
       // no need to run this over and over after the first time
-      if (!result?.data?.skipped && provider !== "microsoft") {
+      if (!result?.data?.skipped && provider !== 'microsoft') {
         executeWhitelistInboxZero();
       }
     }

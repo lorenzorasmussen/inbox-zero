@@ -3,7 +3,7 @@ interface OutlookProps {
   height?: string | number;
 }
 
-export function Outlook({ width = "28", height = "27" }: OutlookProps) {
+export function Outlook({ width = '28', height = '27' }: OutlookProps) {
   return (
     <svg
       width={width}

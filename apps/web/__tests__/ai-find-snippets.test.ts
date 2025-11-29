@@ -1,18 +1,19 @@
-import { describe, expect, test, vi } from "vitest";
-import { aiFindSnippets } from "@/utils/ai/snippets/find-snippets";
-import { getEmail, getEmailAccount } from "@/__tests__/helpers";
+import { describe, expect, test, vi } from 'vitest';
+import { getEmail, getEmailAccount } from '@/__tests__/helpers';
+import { aiFindSnippets } from '@/utils/ai/snippets/find-snippets';
+
 // pnpm test-ai ai-find-snippets
 
-const isAiTest = process.env.RUN_AI_TESTS === "true";
+const isAiTest = process.env.RUN_AI_TESTS === 'true';
 
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
-describe.runIf(isAiTest)("aiFindSnippets", () => {
-  test("should find snippets in similar emails", async () => {
+describe.runIf(isAiTest)('aiFindSnippets', () => {
+  test('should find snippets in similar emails', async () => {
     const emails = [
       getEmail({
         content:
-          "You can schedule a meeting with me here: https://cal.com/john-smith",
+          'You can schedule a meeting with me here: https://cal.com/john-smith',
       }),
       getEmail({
         content:
@@ -20,7 +21,7 @@ describe.runIf(isAiTest)("aiFindSnippets", () => {
       }),
       getEmail({
         content:
-          "Thanks for reaching out. Feel free to schedule a meeting at https://cal.com/john-smith",
+          'Thanks for reaching out. Feel free to schedule a meeting at https://cal.com/john-smith',
       }),
     ];
 
@@ -31,15 +32,15 @@ describe.runIf(isAiTest)("aiFindSnippets", () => {
 
     expect(result.snippets).toHaveLength(1);
     expect(result.snippets[0]).toMatchObject({
-      text: expect.stringContaining("cal.com/john-smith"),
+      text: expect.stringContaining('cal.com/john-smith'),
       count: 3,
     });
 
-    console.log("Returned snippet:");
+    console.log('Returned snippet:');
     console.log(result.snippets[0]);
   });
 
-  test("should return empty array for unique emails", async () => {
+  test('should return empty array for unique emails', async () => {
     const emails = [
       getEmail({
         content:

@@ -1,47 +1,47 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { cleanupOrphanedAccount } from "./orphaned-account";
-import prisma from "@/utils/__mocks__/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import { getMockAccountWithEmailAccount } from "@/__tests__/helpers";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getMockAccountWithEmailAccount } from '@/__tests__/helpers';
+import prisma from '@/utils/__mocks__/prisma';
+import { createScopedLogger } from '@/utils/logger';
+import { cleanupOrphanedAccount } from './orphaned-account';
 
-const logger = createScopedLogger("test");
+const logger = createScopedLogger('test');
 
-vi.mock("@/utils/prisma");
+vi.mock('@/utils/prisma');
 
-describe("cleanupOrphanedAccount", () => {
+describe('cleanupOrphanedAccount', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should skip cleanup if account not found", async () => {
+  it('should skip cleanup if account not found', async () => {
     prisma.account.findUnique.mockResolvedValue(null);
 
-    await cleanupOrphanedAccount("account-id", logger);
+    await cleanupOrphanedAccount('account-id', logger);
 
     expect(prisma.account.delete).not.toHaveBeenCalled();
   });
 
-  it("should skip cleanup if account has email account", async () => {
+  it('should skip cleanup if account has email account', async () => {
     prisma.account.findUnique.mockResolvedValue(
       getMockAccountWithEmailAccount({
-        id: "account-id",
-        userId: "user-id",
-        emailAccount: { id: "email-id" },
-      }) as any,
+        id: 'account-id',
+        userId: 'user-id',
+        emailAccount: { id: 'email-id' },
+      }) as any
     );
 
-    await cleanupOrphanedAccount("account-id", logger);
+    await cleanupOrphanedAccount('account-id', logger);
 
     expect(prisma.account.delete).not.toHaveBeenCalled();
   });
 
-  it("should delete account and user when user has no other email accounts", async () => {
+  it('should delete account and user when user has no other email accounts', async () => {
     prisma.account.findUnique.mockResolvedValue(
       getMockAccountWithEmailAccount({
-        id: "account-id",
-        userId: "user-id",
+        id: 'account-id',
+        userId: 'user-id',
         emailAccount: null,
-      }) as any,
+      }) as any
     );
 
     prisma.emailAccount.count.mockResolvedValue(0);
@@ -49,10 +49,10 @@ describe("cleanupOrphanedAccount", () => {
     prisma.user.delete.mockResolvedValue({} as any);
     prisma.$transaction.mockImplementation((ops) => Promise.resolve(ops));
 
-    await cleanupOrphanedAccount("account-id", logger);
+    await cleanupOrphanedAccount('account-id', logger);
 
     expect(prisma.emailAccount.count).toHaveBeenCalledWith({
-      where: { userId: "user-id" },
+      where: { userId: 'user-id' },
     });
     expect(prisma.$transaction).toHaveBeenCalledWith([
       expect.anything(), // account delete
@@ -60,22 +60,22 @@ describe("cleanupOrphanedAccount", () => {
     ]);
   });
 
-  it("should delete only account when user has other email accounts", async () => {
+  it('should delete only account when user has other email accounts', async () => {
     prisma.account.findUnique.mockResolvedValue(
       getMockAccountWithEmailAccount({
-        id: "account-id",
-        userId: "user-id",
+        id: 'account-id',
+        userId: 'user-id',
         emailAccount: null,
-      }) as any,
+      }) as any
     );
 
     prisma.emailAccount.count.mockResolvedValue(2);
     prisma.account.delete.mockResolvedValue({} as any);
 
-    await cleanupOrphanedAccount("account-id", logger);
+    await cleanupOrphanedAccount('account-id', logger);
 
     expect(prisma.account.delete).toHaveBeenCalledWith({
-      where: { id: "account-id" },
+      where: { id: 'account-id' },
     });
     expect(prisma.user.delete).not.toHaveBeenCalled();
   });

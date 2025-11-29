@@ -1,18 +1,18 @@
-import { CallToAction } from "@/components/new-landing/CallToAction";
+import { CallToAction } from '@/components/new-landing/CallToAction';
 import {
   Section,
   SectionContent,
-} from "@/components/new-landing/common/Section";
+} from '@/components/new-landing/common/Section';
 import {
   SectionHeading,
   SectionSubtitle,
-} from "@/components/new-landing/common/Typography";
+} from '@/components/new-landing/common/Typography';
 
 export function FinalCTA() {
   return (
     <div
       className="bg-[url('/images/new-landing/buy-back-time-bg.png')] bg-cover bg-center bg-no-repeat"
-      style={{ backgroundPosition: "center 44%" }}
+      style={{ backgroundPosition: 'center 44%' }}
     >
       <Section>
         <SectionHeading>

@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
-import { ColdEmailStatus } from "@/generated/prisma/enums";
+import { NextResponse } from 'next/server';
+import { ColdEmailStatus } from '@/generated/prisma/enums';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 const LIMIT = 50;
 
@@ -12,7 +12,7 @@ async function getColdEmails(
     emailAccountId,
     status,
   }: { emailAccountId: string; status: ColdEmailStatus },
-  page: number,
+  page: number
 ) {
   const where = {
     emailAccountId,
@@ -24,7 +24,7 @@ async function getColdEmails(
       where,
       take: LIMIT,
       skip: (page - 1) * LIMIT,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         fromEmail: true,
@@ -41,13 +41,13 @@ async function getColdEmails(
   return { coldEmails, totalPages: Math.ceil(count / LIMIT) };
 }
 
-export const GET = withEmailAccount("user/cold-email", async (request) => {
+export const GET = withEmailAccount('user/cold-email', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
 
   const url = new URL(request.url);
-  const page = Number.parseInt(url.searchParams.get("page") || "1");
+  const page = Number.parseInt(url.searchParams.get('page') || '1');
   const status =
-    (url.searchParams.get("status") as ColdEmailStatus | undefined) ||
+    (url.searchParams.get('status') as ColdEmailStatus | undefined) ||
     ColdEmailStatus.AI_LABELED_COLD;
 
   const result = await getColdEmails({ emailAccountId, status }, page);

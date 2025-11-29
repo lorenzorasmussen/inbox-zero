@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { Toggle } from "@/components/Toggle";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import { SettingCard } from "@/components/SettingCard";
-import { useEmailAccountFull } from "@/hooks/useEmailAccountFull";
-import { useAction } from "next-safe-action/hooks";
-import { updateReferralSignatureAction } from "@/utils/actions/email-account";
-import { env } from "@/env";
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback } from 'react';
+import { LoadingContent } from '@/components/LoadingContent';
+import { SettingCard } from '@/components/SettingCard';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Toggle } from '@/components/Toggle';
+import { Skeleton } from '@/components/ui/skeleton';
+import { env } from '@/env';
+import { useEmailAccountFull } from '@/hooks/useEmailAccountFull';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { updateReferralSignatureAction } from '@/utils/actions/email-account';
 
 export function ReferralSignatureSetting() {
   const { data, isLoading, error, mutate } = useEmailAccountFull();
@@ -21,7 +21,7 @@ export function ReferralSignatureSetting() {
     {
       onSuccess: () => {
         toastSuccess({
-          description: "Referral signature setting updated!",
+          description: 'Referral signature setting updated!',
         });
       },
       onError: (error) => {
@@ -29,13 +29,13 @@ export function ReferralSignatureSetting() {
         toastError({
           description:
             error.error.serverError ||
-            "Failed to update referral signature setting",
+            'Failed to update referral signature setting',
         });
       },
       onSettled: () => {
         mutate();
       },
-    },
+    }
   );
 
   const handleToggle = useCallback(
@@ -50,7 +50,7 @@ export function ReferralSignatureSetting() {
 
       execute({ enabled });
     },
-    [data, mutate, execute],
+    [data, mutate, execute]
   );
 
   if (env.NEXT_PUBLIC_DISABLE_REFERRAL_SIGNATURE) {

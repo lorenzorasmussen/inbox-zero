@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import type { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
-import { Button } from "@/components/ui/button";
+import type { DropdownMenuCheckboxItemProps } from '@radix-ui/react-dropdown-menu';
+import * as React from 'react';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/utils";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/utils';
 
-type Checked = DropdownMenuCheckboxItemProps["checked"];
+type Checked = DropdownMenuCheckboxItemProps['checked'];
 
 export function DetailedStatsFilter(props: {
   label: string;
@@ -44,7 +44,7 @@ export function DetailedStatsFilter(props: {
         <Button
           variant="ghost"
           size="sm"
-          className={cn("h-10 whitespace-nowrap", className)}
+          className={cn('h-10 whitespace-nowrap', className)}
         >
           {props.icon}
           {props.label}

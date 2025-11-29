@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { ExternalLinkIcon } from "lucide-react";
-import Link from "next/link";
-import { MessageText } from "@/components/Typography";
-import { getEmailUrlForMessage } from "@/utils/url";
-import { decodeSnippet } from "@/utils/gmail/decode";
-import { ViewEmailButton } from "@/components/ViewEmailButton";
-import { useThread } from "@/hooks/useThread";
-import { snippetRemoveReply } from "@/utils/gmail/snippet";
-import { extractNameFromEmail } from "@/utils/email";
-import { Badge } from "@/components/ui/badge";
-import { useEmail } from "@/providers/EmailProvider";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { useMemo } from "react";
-import { isDefined } from "@/utils/types";
-import { isGoogleProvider } from "@/utils/email/provider-types";
-import { getRuleLabel } from "@/utils/rule/consts";
-import { SystemType } from "@/generated/prisma/enums";
+import { ExternalLinkIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useMemo } from 'react';
+import { MessageText } from '@/components/Typography';
+import { Badge } from '@/components/ui/badge';
+import { ViewEmailButton } from '@/components/ViewEmailButton';
+import { SystemType } from '@/generated/prisma/enums';
+import { useThread } from '@/hooks/useThread';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { useEmail } from '@/providers/EmailProvider';
+import { extractNameFromEmail } from '@/utils/email';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import { decodeSnippet } from '@/utils/gmail/decode';
+import { snippetRemoveReply } from '@/utils/gmail/snippet';
+import { getRuleLabel } from '@/utils/rule/consts';
+import { isDefined } from '@/utils/types';
+import { getEmailUrlForMessage } from '@/utils/url';
 
 export function EmailMessageCell({
   sender,
@@ -51,7 +51,7 @@ export function EmailMessageCell({
         // If not found by ID, try to find by name
         if (!label) {
           const foundLabel = Object.values(userLabels).find(
-            (l) => l.name.toLowerCase() === idOrName.toLowerCase(),
+            (l) => l.name.toLowerCase() === idOrName.toLowerCase()
           );
           if (foundLabel) {
             label = foundLabel;
@@ -72,14 +72,14 @@ export function EmailMessageCell({
           }
         }
 
-        if (label.name.includes("/")) {
+        if (label.name.includes('/')) {
           return false;
         }
         return true;
       });
 
-    if (labelIds && !labelIds.includes("INBOX")) {
-      labels?.unshift({ id: "ARCHIVE", name: "Archived" });
+    if (labelIds && !labelIds.includes('INBOX')) {
+      labels?.unshift({ id: 'ARCHIVE', name: 'Archived' });
     }
 
     return labels;
@@ -99,7 +99,7 @@ export function EmailMessageCell({
                 messageId,
                 threadId,
                 userEmail,
-                provider,
+                provider
               )}
               target="_blank"
             >
@@ -152,12 +152,12 @@ export function EmailMessageCellWithData({
       userEmail={userEmail}
       subject={
         error
-          ? "Error loading email"
+          ? 'Error loading email'
           : isLoading
-            ? "Loading email..."
-            : firstMessage?.headers.subject || ""
+            ? 'Loading email...'
+            : firstMessage?.headers.subject || ''
       }
-      snippet={error ? "" : isLoading ? "" : firstMessage?.snippet || ""}
+      snippet={error ? '' : isLoading ? '' : firstMessage?.snippet || ''}
       threadId={threadId}
       messageId={messageId}
       labelIds={firstMessage?.labelIds}

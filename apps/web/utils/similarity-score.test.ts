@@ -1,49 +1,49 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { calculateSimilarity } from "./similarity-score";
-import { parseReply } from "@/utils/mail";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { parseReply } from '@/utils/mail';
+import { calculateSimilarity } from './similarity-score';
 
-vi.mock("server-only", () => ({}));
-vi.mock("@/utils/mail");
+vi.mock('server-only', () => ({}));
+vi.mock('@/utils/mail');
 
-describe("calculateSimilarity", () => {
+describe('calculateSimilarity', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Provide a default mock implementation for parseReply for most tests
-    vi.mocked(parseReply).mockImplementation((text) => text || "");
+    vi.mocked(parseReply).mockImplementation((text) => text || '');
   });
 
-  it("should return 0.0 if either text is null or undefined", () => {
-    expect(calculateSimilarity(null, "text2")).toBe(0.0);
-    expect(calculateSimilarity("text1", undefined)).toBe(0.0);
+  it('should return 0.0 if either text is null or undefined', () => {
+    expect(calculateSimilarity(null, 'text2')).toBe(0.0);
+    expect(calculateSimilarity('text1', undefined)).toBe(0.0);
     expect(calculateSimilarity(null, null)).toBe(0.0);
   });
 
-  it("should return 0.0 if either normalized text is empty", () => {
+  it('should return 0.0 if either normalized text is empty', () => {
     // Mock parseReply to return empty string for one case
     vi.mocked(parseReply).mockImplementation((text) =>
-      text === "text1" ? "" : text || "",
+      text === 'text1' ? '' : text || ''
     );
-    expect(calculateSimilarity("text1", "text2")).toBe(0.0);
+    expect(calculateSimilarity('text1', 'text2')).toBe(0.0);
 
     vi.mocked(parseReply).mockImplementation((text) =>
-      text === "text2" ? "" : text || "",
+      text === 'text2' ? '' : text || ''
     );
-    expect(calculateSimilarity("text1", "text2")).toBe(0.0);
+    expect(calculateSimilarity('text1', 'text2')).toBe(0.0);
   });
 
-  it("should return 1.0 if both normalized texts are empty", () => {
-    vi.mocked(parseReply).mockImplementation(() => ""); // Both parse to empty
-    expect(calculateSimilarity("text1", "text2")).toBe(1.0);
+  it('should return 1.0 if both normalized texts are empty', () => {
+    vi.mocked(parseReply).mockImplementation(() => ''); // Both parse to empty
+    expect(calculateSimilarity('text1', 'text2')).toBe(1.0);
   });
 
-  it("should call parseReply for both texts", () => {
-    const text1 = "Reply 1\n> Quoted text";
-    const text2 = "Reply 2";
+  it('should call parseReply for both texts', () => {
+    const text1 = 'Reply 1\n> Quoted text';
+    const text2 = 'Reply 2';
     // Let parseReply return specific values for checking
     vi.mocked(parseReply).mockImplementation((text) => {
-      if (text === text1) return "Reply 1 parsed";
-      if (text === text2) return "Reply 2 parsed";
-      return "";
+      if (text === text1) return 'Reply 1 parsed';
+      if (text === text2) return 'Reply 2 parsed';
+      return '';
     });
 
     calculateSimilarity(text1, text2);
@@ -53,16 +53,16 @@ describe("calculateSimilarity", () => {
     expect(parseReply).toHaveBeenCalledWith(text2);
   });
 
-  it("should calculate similarity based on normalized parsed replies", () => {
-    const text1 = "  Reply ONE \n> Quoted";
-    const text2 = "reply two";
-    const parsed1 = "Reply ONE"; // What parseReply returns for text1
-    const parsed2 = "reply two"; // What parseReply returns for text2
+  it('should calculate similarity based on normalized parsed replies', () => {
+    const text1 = '  Reply ONE \n> Quoted';
+    const text2 = 'reply two';
+    const parsed1 = 'Reply ONE'; // What parseReply returns for text1
+    const parsed2 = 'reply two'; // What parseReply returns for text2
 
     vi.mocked(parseReply).mockImplementation((text) => {
       if (text === text1) return parsed1;
       if (text === text2) return parsed2;
-      return "";
+      return '';
     });
 
     const expectedScore = 0.571_428_571_428_571_4;
@@ -72,13 +72,13 @@ describe("calculateSimilarity", () => {
     expect(score).toBeCloseTo(expectedScore);
   });
 
-  it("should return 1.0 if normalized parsed texts are identical", () => {
-    const text1 = "Identical Text";
-    const text2 = "  identical text \n> Old stuff";
+  it('should return 1.0 if normalized parsed texts are identical', () => {
+    const text1 = 'Identical Text';
+    const text2 = '  identical text \n> Old stuff';
     vi.mocked(parseReply).mockImplementation((text) => {
-      if (text === text1) return "Identical Text";
-      if (text === text2) return "identical text"; // parseReply extracts the relevant part
-      return "";
+      if (text === text1) return 'Identical Text';
+      if (text === text2) return 'identical text'; // parseReply extracts the relevant part
+      return '';
     });
 
     const score = calculateSimilarity(text1, text2);
@@ -87,9 +87,9 @@ describe("calculateSimilarity", () => {
     expect(score).toBe(1.0);
   });
 
-  it("should return 0.0 if normalized texts are completely different", () => {
-    const text1 = "First";
-    const text2 = "Second";
+  it('should return 0.0 if normalized texts are completely different', () => {
+    const text1 = 'First';
+    const text2 = 'Second';
     vi.mocked(parseReply).mockImplementation((text) => text); // Simple mock
 
     const score = calculateSimilarity(text1, text2);
@@ -97,9 +97,9 @@ describe("calculateSimilarity", () => {
     expect(score).toBe(0.0);
   });
 
-  it("should handle special characters in normalization", () => {
-    const text1 = "Text with $pecial chars!";
-    const text2 = "text with $pecial chars!";
+  it('should handle special characters in normalization', () => {
+    const text1 = 'Text with $pecial chars!';
+    const text2 = 'text with $pecial chars!';
     vi.mocked(parseReply).mockImplementation((text) => text);
 
     const score = calculateSimilarity(text1, text2);
@@ -107,9 +107,9 @@ describe("calculateSimilarity", () => {
     expect(score).toBe(1.0);
   });
 
-  it("should handle slightly different but similar texts", () => {
-    const text1 = "This is the first sentence.";
-    const text2 = "This is the second sentence.";
+  it('should handle slightly different but similar texts', () => {
+    const text1 = 'This is the first sentence.';
+    const text2 = 'This is the second sentence.';
     vi.mocked(parseReply).mockImplementation((text) => text);
 
     const score = calculateSimilarity(text1, text2);
@@ -119,7 +119,7 @@ describe("calculateSimilarity", () => {
     expect(score).toBeCloseTo(0.711_111_111_111_111_1);
   });
 
-  it("should handle a realistic email example with a minor change", () => {
+  it('should handle a realistic email example with a minor change', () => {
     const text1 = `Hi Team,
 
 Just a quick reminder about the meeting tomorrow at 10 AM. Please come prepared to discuss the quarterly results.
@@ -154,7 +154,7 @@ Bob`;
     vi.mocked(parseReply).mockImplementation((text) => {
       if (text === text1) return parsed1;
       if (text === text2) return parsed2;
-      return text || ""; // Fallback for safety
+      return text || ''; // Fallback for safety
     });
 
     const score = calculateSimilarity(text1, text2);

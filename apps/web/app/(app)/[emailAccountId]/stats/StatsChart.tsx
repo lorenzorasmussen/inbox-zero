@@ -1,15 +1,15 @@
-import { type Color, Card, Title, BarChart } from "@tremor/react";
-import { useOrgSWR } from "@/hooks/useOrgSWR";
+import { BarChart, Card, type Color, Title } from '@tremor/react';
 import type {
   StatsByDayQuery,
   StatsByDayResponse,
-} from "@/app/api/user/stats/day/route";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/app/api/user/stats/day/route';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useOrgSWR } from '@/hooks/useOrgSWR';
 
 export function StatsChart(props: {
   title: string;
-  type: StatsByDayQuery["type"];
+  type: StatsByDayQuery['type'];
   color: Color;
   refreshInterval: number;
 }) {
@@ -35,7 +35,7 @@ export function StatsChart(props: {
               className="mt-4 h-72"
               data={data}
               index="date"
-              categories={["Emails"]}
+              categories={['Emails']}
               colors={[props.color]}
             />
           </Card>

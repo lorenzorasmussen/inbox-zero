@@ -1,12 +1,12 @@
-import { z } from "zod";
-import { createScopedLogger } from "@/utils/logger";
-import type { Knowledge } from "@/generated/prisma/client";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
-import { getUserInfoPrompt } from "@/utils/ai/helpers";
+import { z } from 'zod';
+import type { Knowledge } from '@/generated/prisma/client';
+import { getUserInfoPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("ai/knowledge/extract");
+const logger = createScopedLogger('ai/knowledge/extract');
 
 const system = `You are a knowledge extraction agent. Your task is to analyze the provided knowledge base entries and extract the most relevant information for drafting an email response, based ONLY on the provided knowledge base entries.
 
@@ -49,7 +49,7 @@ const getUserPrompt = ({
 }) => {
   const knowledgeBaseText = knowledgeBase
     .map((k) => `Title: ${k.title}\nContent: ${k.content}`)
-    .join("\n\n");
+    .join('\n\n');
 
   return `<email>
 ${emailContent}
@@ -67,10 +67,10 @@ Extract the most relevant information FROM THE KNOWLEDGE BASE for drafting a res
 const extractionSchema = z.object({
   relevantContent: z
     .string()
-    .describe("Extracted relevant information from the knowledge base."),
+    .describe('Extracted relevant information from the knowledge base.'),
   explanation: z
     .string()
-    .describe("Explanation of why the extracted information is relevant."),
+    .describe('Explanation of why the extracted information is relevant.'),
 });
 export type ExtractedKnowledge = z.infer<typeof extractionSchema>;
 
@@ -88,11 +88,11 @@ export async function aiExtractRelevantKnowledge({
 
     const prompt = getUserPrompt({ knowledgeBase, emailContent, emailAccount });
 
-    const modelOptions = getModel(emailAccount.user, "economy");
+    const modelOptions = getModel(emailAccount.user, 'economy');
 
     const generateObject = createGenerateObject({
       emailAccount,
-      label: "Knowledge extraction",
+      label: 'Knowledge extraction',
       modelOptions,
     });
 
@@ -105,7 +105,7 @@ export async function aiExtractRelevantKnowledge({
 
     return result.object;
   } catch (error) {
-    logger.error("Failed to extract knowledge", { error });
+    logger.error('Failed to extract knowledge', { error });
     return null;
   }
 }

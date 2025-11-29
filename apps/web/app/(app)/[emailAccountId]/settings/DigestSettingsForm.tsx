@@ -1,61 +1,61 @@
-import { useCallback, useEffect, useState } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { useAction } from "next-safe-action/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
-import useSWR from "swr";
-import { z } from "zod";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { TimePicker } from "@/components/TimePicker";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { LoadingContent } from "@/components/LoadingContent";
-import { useRules } from "@/hooks/useRules";
-import { MultiSelectFilter } from "@/components/MultiSelectFilter";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback, useEffect, useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import useSWR from 'swr';
+import { z } from 'zod';
+import type { GetDigestScheduleResponse } from '@/app/api/user/digest-schedule/route';
+import type { GetDigestSettingsResponse } from '@/app/api/user/digest-settings/route';
+import { LoadingContent } from '@/components/LoadingContent';
+import { MultiSelectFilter } from '@/components/MultiSelectFilter';
+import { TimePicker } from '@/components/TimePicker';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { FormItem } from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ActionType } from '@/generated/prisma/enums';
+import { useRules } from '@/hooks/useRules';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
   updateDigestItemsAction,
   updateDigestScheduleAction,
-} from "@/utils/actions/settings";
-import { ActionType } from "@/generated/prisma/enums";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import type { GetDigestSettingsResponse } from "@/app/api/user/digest-settings/route";
-import type { GetDigestScheduleResponse } from "@/app/api/user/digest-schedule/route";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/utils/actions/settings';
 import {
-  Select,
-  SelectItem,
-  SelectContent,
-  SelectTrigger,
-} from "@/components/ui/select";
-import { FormItem } from "@/components/ui/form";
-import {
+  bitmaskToDayOfWeek,
   createCanonicalTimeOfDay,
   dayOfWeekToBitmask,
-  bitmaskToDayOfWeek,
-} from "@/utils/schedule";
+} from '@/utils/schedule';
 
 const digestSettingsSchema = z.object({
   selectedItems: z.set(z.string()),
   // Schedule
-  schedule: z.string().min(1, "Please select a frequency"),
-  dayOfWeek: z.string().min(1, "Please select a day"),
-  time: z.string().min(1, "Please select a time"),
+  schedule: z.string().min(1, 'Please select a frequency'),
+  dayOfWeek: z.string().min(1, 'Please select a day'),
+  time: z.string().min(1, 'Please select a time'),
 });
 
 type DigestSettingsFormValues = z.infer<typeof digestSettingsSchema>;
 
 const frequencies = [
-  { value: "daily", label: "Day" },
-  { value: "weekly", label: "Week" },
+  { value: 'daily', label: 'Day' },
+  { value: 'weekly', label: 'Week' },
 ];
 
 const daysOfWeek = [
-  { value: "0", label: "Sunday" },
-  { value: "1", label: "Monday" },
-  { value: "2", label: "Tuesday" },
-  { value: "3", label: "Wednesday" },
-  { value: "4", label: "Thursday" },
-  { value: "5", label: "Friday" },
-  { value: "6", label: "Saturday" },
+  { value: '0', label: 'Sunday' },
+  { value: '1', label: 'Monday' },
+  { value: '2', label: 'Tuesday' },
+  { value: '3', label: 'Wednesday' },
+  { value: '4', label: 'Thursday' },
+  { value: '5', label: 'Friday' },
+  { value: '6', label: 'Saturday' },
 ];
 
 export function DigestSettingsForm() {
@@ -72,20 +72,20 @@ export function DigestSettingsForm() {
     isLoading: digestLoading,
     error: digestError,
     mutate: mutateDigestSettings,
-  } = useSWR<GetDigestSettingsResponse>("/api/user/digest-settings");
+  } = useSWR<GetDigestSettingsResponse>('/api/user/digest-settings');
 
   const {
     data: scheduleData,
     isLoading: scheduleLoading,
     error: scheduleError,
     mutate: mutateSchedule,
-  } = useSWR<GetDigestScheduleResponse>("/api/user/digest-schedule");
+  } = useSWR<GetDigestScheduleResponse>('/api/user/digest-schedule');
 
   const isLoading = rulesLoading || digestLoading || scheduleLoading;
   const error = rulesError || digestError || scheduleError;
 
   const [selectedDigestItems, setSelectedDigestItems] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
   const {
@@ -98,9 +98,9 @@ export function DigestSettingsForm() {
     resolver: zodResolver(digestSettingsSchema),
     defaultValues: {
       selectedItems: new Set(),
-      schedule: "daily",
-      dayOfWeek: "1",
-      time: "09:00",
+      schedule: 'daily',
+      dayOfWeek: '1',
+      time: '09:00',
     },
   });
 
@@ -115,11 +115,11 @@ export function DigestSettingsForm() {
       },
       onError: (error) => {
         toastError({
-          title: "Error updating digest items",
-          description: error.error.serverError || "An error occurred",
+          title: 'Error updating digest items',
+          description: error.error.serverError || 'An error occurred',
         });
       },
-    },
+    }
   );
 
   const { execute: executeSchedule } = useAction(
@@ -130,11 +130,11 @@ export function DigestSettingsForm() {
       },
       onError: (error) => {
         toastError({
-          title: "Error updating digest schedule",
-          description: error.error.serverError || "An error occurred",
+          title: 'Error updating digest schedule',
+          description: error.error.serverError || 'An error occurred',
         });
       },
-    },
+    }
   );
 
   // Initialize selected items and form data from API responses
@@ -151,7 +151,7 @@ export function DigestSettingsForm() {
 
       // Add cold email if enabled
       if (digestSettings.coldEmail) {
-        selectedItems.add("cold-emails");
+        selectedItems.add('cold-emails');
       }
 
       setSelectedDigestItems(selectedItems);
@@ -167,7 +167,7 @@ export function DigestSettingsForm() {
 
   // Update form when selectedDigestItems changes
   useEffect(() => {
-    setValue("selectedItems", selectedDigestItems);
+    setValue('selectedItems', selectedDigestItems);
   }, [selectedDigestItems, setValue]);
 
   const onSubmit: SubmitHandler<DigestSettingsFormValues> = useCallback(
@@ -182,7 +182,7 @@ export function DigestSettingsForm() {
 
       // Then set selected rules to true
       data.selectedItems.forEach((itemId) => {
-        if (itemId !== "cold-emails") {
+        if (itemId !== 'cold-emails') {
           ruleDigestPreferences[itemId] = true;
         }
       });
@@ -192,17 +192,17 @@ export function DigestSettingsForm() {
 
       let intervalDays: number;
       switch (schedule) {
-        case "daily":
+        case 'daily':
           intervalDays = 1;
           break;
-        case "weekly":
+        case 'weekly':
           intervalDays = 7;
           break;
         default:
           intervalDays = 1;
       }
 
-      const [hourStr, minuteStr] = time.split(":");
+      const [hourStr, minuteStr] = time.split(':');
       const hour24 = Number.parseInt(hourStr, 10);
       const minute = Number.parseInt(minuteStr, 10);
 
@@ -222,16 +222,16 @@ export function DigestSettingsForm() {
           executeSchedule(scheduleUpdateData),
         ]);
         toastSuccess({
-          description: "Your digest settings have been updated!",
+          description: 'Your digest settings have been updated!',
         });
       } catch {
         toastError({
-          title: "Error updating digest settings",
-          description: "An error occurred while saving your settings",
+          title: 'Error updating digest settings',
+          description: 'An error occurred while saving your settings',
         });
       }
     },
-    [rules, executeItems, executeSchedule],
+    [rules, executeItems, executeSchedule]
   );
 
   // Create options for MultiSelectFilter
@@ -241,8 +241,8 @@ export function DigestSettingsForm() {
       value: rule.id,
     })) || []),
     {
-      label: "Cold Emails",
-      value: "cold-emails",
+      label: 'Cold Emails',
+      value: 'cold-emails',
     },
   ];
 
@@ -276,14 +276,14 @@ export function DigestSettingsForm() {
                   <Label htmlFor="frequency-select">Every</Label>
                   <Select
                     value={watchedValues.schedule}
-                    onValueChange={(val) => setValue("schedule", val)}
+                    onValueChange={(val) => setValue('schedule', val)}
                   >
                     <SelectTrigger id="frequency-select">
                       {watchedValues.schedule
                         ? frequencies.find(
-                            (f) => f.value === watchedValues.schedule,
+                            (f) => f.value === watchedValues.schedule
                           )?.label
-                        : "Select..."}
+                        : 'Select...'}
                     </SelectTrigger>
                     <SelectContent>
                       {frequencies.map((f) => (
@@ -295,19 +295,19 @@ export function DigestSettingsForm() {
                   </Select>
                 </FormItem>
 
-                {watchedValues.schedule !== "daily" && (
+                {watchedValues.schedule !== 'daily' && (
                   <FormItem>
                     <Label htmlFor="dayofweek-select">on</Label>
                     <Select
                       value={watchedValues.dayOfWeek}
-                      onValueChange={(val) => setValue("dayOfWeek", val)}
+                      onValueChange={(val) => setValue('dayOfWeek', val)}
                     >
                       <SelectTrigger id="dayofweek-select">
                         {watchedValues.dayOfWeek
                           ? daysOfWeek.find(
-                              (d) => d.value === watchedValues.dayOfWeek,
+                              (d) => d.value === watchedValues.dayOfWeek
                             )?.label
-                          : "Select..."}
+                          : 'Select...'}
                       </SelectTrigger>
                       <SelectContent>
                         {daysOfWeek.map((d) => (
@@ -324,7 +324,7 @@ export function DigestSettingsForm() {
                   id="time-picker"
                   label="at"
                   value={watchedValues.time}
-                  onChange={(value) => setValue("time", value)}
+                  onChange={(value) => setValue('time', value)}
                 />
               </div>
             </div>
@@ -349,7 +349,7 @@ function EmailPreview({
   const { data: rules } = useRules();
 
   const selectedDigestNames = Array.from(selectedDigestItems).map((itemId) => {
-    if (itemId === "cold-emails") return "Cold Emails";
+    if (itemId === 'cold-emails') return 'Cold Emails';
     return rules?.find((rule) => rule.id === itemId)?.name || itemId;
   });
 
@@ -359,10 +359,10 @@ function EmailPreview({
       : null,
     async (url: string) => {
       const response = await fetch(url);
-      if (!response.ok) throw new Error("Failed to fetch preview");
+      if (!response.ok) throw new Error('Failed to fetch preview');
       return response.text();
     },
-    { keepPreviousData: true },
+    { keepPreviousData: true }
   );
 
   return (
@@ -387,28 +387,28 @@ function EmailPreview({
 }
 
 function getInitialScheduleProps(
-  digestSchedule?: GetDigestScheduleResponse | null,
+  digestSchedule?: GetDigestScheduleResponse | null
 ) {
   const initialSchedule = (() => {
-    if (!digestSchedule) return "daily";
+    if (!digestSchedule) return 'daily';
     switch (digestSchedule.intervalDays) {
       case 1:
-        return "daily";
+        return 'daily';
       case 7:
-        return "weekly";
+        return 'weekly';
       case 14:
-        return "biweekly";
+        return 'biweekly';
       case 30:
-        return "monthly";
+        return 'monthly';
       default:
-        return "daily";
+        return 'daily';
     }
   })();
 
   const initialDayOfWeek = (() => {
-    if (!digestSchedule || digestSchedule.daysOfWeek == null) return "1";
+    if (!digestSchedule || digestSchedule.daysOfWeek == null) return '1';
     const dayOfWeek = bitmaskToDayOfWeek(digestSchedule.daysOfWeek);
-    return dayOfWeek !== null ? dayOfWeek.toString() : "1";
+    return dayOfWeek !== null ? dayOfWeek.toString() : '1';
   })();
 
   const initialTime = digestSchedule?.timeOfDay
@@ -416,14 +416,14 @@ function getInitialScheduleProps(
         const hours = new Date(digestSchedule.timeOfDay)
           .getHours()
           .toString()
-          .padStart(2, "0");
+          .padStart(2, '0');
         const minutes = new Date(digestSchedule.timeOfDay)
           .getMinutes()
           .toString()
-          .padStart(2, "0");
+          .padStart(2, '0');
         return `${hours}:${minutes}`;
       })()
-    : "09:00";
+    : '09:00';
 
   return {
     schedule: initialSchedule,

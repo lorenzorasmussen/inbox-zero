@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { withAuth } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
-import { createManagedOutlookSubscription } from "@/utils/outlook/subscription-manager";
+import { NextResponse } from 'next/server';
+import { withAuth } from '@/utils/middleware';
+import { createManagedOutlookSubscription } from '@/utils/outlook/subscription-manager';
+import prisma from '@/utils/prisma';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-export const GET = withAuth("outlook/watch", async (request) => {
+export const GET = withAuth('outlook/watch', async (request) => {
   const userId = request.auth.userId;
   const results = [];
 
@@ -13,7 +13,7 @@ export const GET = withAuth("outlook/watch", async (request) => {
     where: {
       userId,
       account: {
-        provider: "microsoft",
+        provider: 'microsoft',
       },
     },
     select: { id: true },
@@ -21,8 +21,8 @@ export const GET = withAuth("outlook/watch", async (request) => {
 
   if (emailAccounts.length === 0) {
     return NextResponse.json(
-      { message: "No Microsoft email accounts found for this user." },
-      { status: 404 },
+      { message: 'No Microsoft email accounts found for this user.' },
+      { status: 404 }
     );
   }
 
@@ -42,11 +42,11 @@ export const GET = withAuth("outlook/watch", async (request) => {
       });
 
       if (!account?.account.access_token || !account?.account.refresh_token) {
-        request.logger.warn("Missing tokens for account", { emailAccountId });
+        request.logger.warn('Missing tokens for account', { emailAccountId });
         results.push({
           emailAccountId,
-          status: "error",
-          message: "Missing authentication tokens.",
+          status: 'error',
+          message: 'Missing authentication tokens.',
         });
         continue;
       }
@@ -57,29 +57,29 @@ export const GET = withAuth("outlook/watch", async (request) => {
       if (expirationDate) {
         results.push({
           emailAccountId,
-          status: "success",
+          status: 'success',
           expirationDate,
         });
       } else {
-        request.logger.error("Error watching inbox for account", {
+        request.logger.error('Error watching inbox for account', {
           emailAccountId,
         });
         results.push({
           emailAccountId,
-          status: "error",
-          message: "Failed to set up watch for this account.",
+          status: 'error',
+          message: 'Failed to set up watch for this account.',
         });
       }
     } catch (error) {
-      request.logger.error("Exception while watching inbox for account", {
+      request.logger.error('Exception while watching inbox for account', {
         emailAccountId,
         error,
       });
       results.push({
         emailAccountId,
-        status: "error",
+        status: 'error',
         message:
-          "An unexpected error occurred while setting up watch for this account.",
+          'An unexpected error occurred while setting up watch for this account.',
         errorDetails: error instanceof Error ? error.message : String(error),
       });
     }

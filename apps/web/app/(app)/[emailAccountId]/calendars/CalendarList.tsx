@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { Toggle } from "@/components/Toggle";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Star } from "lucide-react";
-import type { GetCalendarsResponse } from "@/app/api/user/calendars/route";
+import { Calendar as CalendarIcon, Star } from 'lucide-react';
+import type { GetCalendarsResponse } from '@/app/api/user/calendars/route';
+import { Toggle } from '@/components/Toggle';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 
-type Calendar = GetCalendarsResponse["connections"][0]["calendars"][0];
+type Calendar = GetCalendarsResponse['connections'][0]['calendars'][0];
 
 interface CalendarListProps {
   calendars: Calendar[];

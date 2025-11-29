@@ -1,8 +1,6 @@
-"use client";
+'use client';
 
-import type React from "react";
-import clsx from "clsx";
-import Link from "next/link";
+import clsx from 'clsx';
 import {
   ArchiveIcon,
   ArchiveXIcon,
@@ -16,13 +14,28 @@ import {
   MoreHorizontalIcon,
   TagIcon,
   TrashIcon,
-} from "lucide-react";
-import { type PostHog, usePostHog } from "posthog-js/react";
-import type { UserResponse } from "@/app/api/user/me/route";
-import { Button } from "@/components/ui/button";
-import { ButtonLoader } from "@/components/Loading";
-import { Tooltip } from "@/components/Tooltip";
-import { Separator } from "@/components/ui/separator";
+} from 'lucide-react';
+import Link from 'next/link';
+import { type PostHog, usePostHog } from 'posthog-js/react';
+import type React from 'react';
+import {
+  useApproveButton,
+  useAutoArchive,
+  useBulkArchive,
+  useBulkDelete,
+  useUnsubscribe,
+} from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/hooks';
+import type { Row } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/types';
+import type { UserResponse } from '@/app/api/user/me/route';
+import { LabelsSubMenu } from '@/components/LabelsSubMenu';
+import { ButtonLoader } from '@/components/Loading';
+import {
+  PremiumTooltip,
+  PremiumTooltipContent,
+} from '@/components/PremiumAlert';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,28 +46,15 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  PremiumTooltip,
-  PremiumTooltipContent,
-} from "@/components/PremiumAlert";
-import { NewsletterStatus } from "@/generated/prisma/enums";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { createFilterAction } from "@/utils/actions/mail";
-import { getGmailSearchUrl } from "@/utils/url";
-import type { Row } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/types";
-import {
-  useUnsubscribe,
-  useAutoArchive,
-  useApproveButton,
-  useBulkArchive,
-  useBulkDelete,
-} from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/hooks";
-import { LabelsSubMenu } from "@/components/LabelsSubMenu";
-import type { EmailLabel } from "@/providers/EmailProvider";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { isGoogleProvider } from "@/utils/email/provider-types";
-import { getEmailTerminology } from "@/utils/terminology";
+} from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+import { NewsletterStatus } from '@/generated/prisma/enums';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import type { EmailLabel } from '@/providers/EmailProvider';
+import { createFilterAction } from '@/utils/actions/mail';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import { getEmailTerminology } from '@/utils/terminology';
+import { getGmailSearchUrl } from '@/utils/url';
 
 export function ActionCell<T extends Row>({
   item,
@@ -97,13 +97,13 @@ export function ActionCell<T extends Row>({
       </PremiumTooltip>
       <Tooltip
         contentComponent={
-          !hasUnsubscribeAccess ? (
+          hasUnsubscribeAccess ? undefined : (
             <PremiumTooltipContent openModal={openPremiumModal} />
-          ) : undefined
+          )
         }
         content={
           hasUnsubscribeAccess
-            ? "Auto archive emails using Gmail filters."
+            ? 'Auto archive emails using Gmail filters.'
             : undefined
         }
       >
@@ -119,13 +119,13 @@ export function ActionCell<T extends Row>({
       </Tooltip>
       <Tooltip
         contentComponent={
-          !hasUnsubscribeAccess ? (
+          hasUnsubscribeAccess ? undefined : (
             <PremiumTooltipContent openModal={openPremiumModal} />
-          ) : undefined
+          )
         }
         content={
           hasUnsubscribeAccess
-            ? "Approve to filter it from the list."
+            ? 'Approve to filter it from the list.'
             : undefined
         }
       >
@@ -173,35 +173,35 @@ function UnsubscribeButton<T extends Row>({
       posthog,
       refetchPremium,
       emailAccountId,
-    },
+    }
   );
 
-  const hasUnsubscribeLink = unsubscribeLink !== "#";
+  const hasUnsubscribeLink = unsubscribeLink !== '#';
 
   return (
     <Button
       size="sm"
       variant={
-        item.status === NewsletterStatus.UNSUBSCRIBED ? "red" : "secondary"
+        item.status === NewsletterStatus.UNSUBSCRIBED ? 'red' : 'secondary'
       }
       asChild
     >
       <Link
         href={unsubscribeLink}
-        target={hasUnsubscribeLink ? "_blank" : undefined}
+        target={hasUnsubscribeLink ? '_blank' : undefined}
         onClick={onUnsubscribe}
         rel="noreferrer"
       >
         {unsubscribeLoading && <ButtonLoader />}
         <span className="hidden xl:block">
-          {hasUnsubscribeLink ? "Unsubscribe" : "Block"}
+          {hasUnsubscribeLink ? 'Unsubscribe' : 'Block'}
         </span>
         <span className="block xl:hidden">
           <Tooltip
             content={
               hasUnsubscribeLink
-                ? "Unsubscribe from emails from this sender"
-                : "This sender does not have an unsubscribe link, but we can still block all emails from this sender and automatically archive them for you."
+                ? 'Unsubscribe from emails from this sender'
+                : 'This sender does not have an unsubscribe link, but we can still block all emails from this sender and automatically archive them for you.'
             }
           >
             <MailMinusIcon className="size-4" />
@@ -248,15 +248,15 @@ function AutoArchiveButton<T extends Row>({
   return (
     <div
       className={clsx(
-        "flex h-min items-center gap-1 rounded-md text-secondary-foreground",
-        item.autoArchived ? "bg-blue-100 dark:bg-blue-800" : "bg-secondary",
+        'flex h-min items-center gap-1 rounded-md text-secondary-foreground',
+        item.autoArchived ? 'bg-blue-100 dark:bg-blue-800' : 'bg-secondary'
       )}
     >
       <Button
         variant={
           item.status === NewsletterStatus.AUTO_ARCHIVED || item.autoArchived
-            ? "blue"
-            : "secondary"
+            ? 'blue'
+            : 'secondary'
         }
         className="px-3 shadow-none"
         size="sm"
@@ -278,8 +278,8 @@ function AutoArchiveButton<T extends Row>({
             variant={
               item.status === NewsletterStatus.AUTO_ARCHIVED ||
               item.autoArchived
-                ? "blue"
-                : "secondary"
+                ? 'blue'
+                : 'secondary'
             }
             className="px-2 shadow-none"
             size="sm"
@@ -301,7 +301,7 @@ function AutoArchiveButton<T extends Row>({
             <>
               <DropdownMenuItem
                 onClick={async () => {
-                  posthog.capture("Clicked Disable Auto Archive");
+                  posthog.capture('Clicked Disable Auto Archive');
                   onDisableAutoArchive();
                 }}
               >
@@ -320,7 +320,7 @@ function AutoArchiveButton<T extends Row>({
               <DropdownMenuItem
                 key={label.id}
                 onClick={async () => {
-                  posthog.capture("Clicked Auto Archive and Label");
+                  posthog.capture('Clicked Auto Archive and Label');
                   await onAutoArchiveAndLabel(label.id!, label.name!);
                 }}
               >
@@ -365,7 +365,7 @@ function ApproveButton<T extends Row>({
     <Button
       size="sm"
       variant={
-        item.status === NewsletterStatus.APPROVED ? "green" : "secondary"
+        item.status === NewsletterStatus.APPROVED ? 'green' : 'secondary'
       }
       onClick={onApprove}
       disabled={!hasUnsubscribeAccess}
@@ -463,12 +463,12 @@ export function MoreDropdown<T extends Row>({
                 });
                 if (res?.serverError) {
                   toastError({
-                    title: "Error",
-                    description: `Failed to add ${item.name} to ${label.name}. ${res.serverError || ""}`,
+                    title: 'Error',
+                    description: `Failed to add ${item.name} to ${label.name}. ${res.serverError || ''}`,
                   });
                 } else {
                   toastSuccess({
-                    title: "Success!",
+                    title: 'Success!',
                     description: `Added ${item.name} to ${label.name}`,
                   });
                 }
@@ -488,7 +488,7 @@ export function MoreDropdown<T extends Row>({
         <DropdownMenuItem
           onClick={() => {
             const yes = confirm(
-              `Are you sure you want to delete all emails from ${item.name}?`,
+              `Are you sure you want to delete all emails from ${item.name}?`
             );
             if (!yes) return;
 

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const storedDigestContentSchema = z.object({ content: z.string() });
 export type StoredDigestContent = z.infer<typeof storedDigestContentSchema>;

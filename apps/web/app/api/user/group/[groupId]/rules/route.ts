@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
-import { SafeError } from "@/utils/error";
+import { NextResponse } from 'next/server';
+import { SafeError } from '@/utils/error';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type GroupRulesResponse = Awaited<ReturnType<typeof getGroupRules>>;
 
@@ -23,21 +23,21 @@ async function getGroupRules({
     },
   });
 
-  if (!groupWithRules) throw new SafeError("Group not found");
+  if (!groupWithRules) throw new SafeError('Group not found');
 
   return { rule: groupWithRules.rule };
 }
 
 export const GET = withEmailAccount(
-  "user/group/rules",
+  'user/group/rules',
   async (request, { params }) => {
     const emailAccountId = request.auth.emailAccountId;
 
     const { groupId } = await params;
-    if (!groupId) return NextResponse.json({ error: "Group id required" });
+    if (!groupId) return NextResponse.json({ error: 'Group id required' });
 
     const result = await getGroupRules({ emailAccountId, groupId });
 
     return NextResponse.json(result);
-  },
+  }
 );

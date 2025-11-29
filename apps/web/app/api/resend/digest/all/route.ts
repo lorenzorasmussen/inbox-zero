@@ -1,20 +1,20 @@
-import { NextResponse } from "next/server";
-import subDays from "date-fns/subDays";
-import prisma from "@/utils/prisma";
-import { withError } from "@/utils/middleware";
-import { env } from "@/env";
-import { hasCronSecret, hasPostCronSecret } from "@/utils/cron";
-import { captureException } from "@/utils/error";
-import { createScopedLogger } from "@/utils/logger";
-import { publishToQstashQueue } from "@/utils/upstash";
+import subDays from 'date-fns/subDays';
+import { NextResponse } from 'next/server';
+import { env } from '@/env';
+import { hasCronSecret, hasPostCronSecret } from '@/utils/cron';
+import { captureException } from '@/utils/error';
+import { createScopedLogger } from '@/utils/logger';
+import { withError } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { publishToQstashQueue } from '@/utils/upstash';
 
-const logger = createScopedLogger("cron/resend/digest/all");
+const logger = createScopedLogger('cron/resend/digest/all');
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
 async function sendDigestAllUpdate() {
-  logger.info("Sending digest all update");
+  logger.info('Sending digest all update');
 
   const now = new Date();
 
@@ -29,7 +29,7 @@ async function sendDigestAllUpdate() {
         premium: {
           OR: [
             { lemonSqueezyRenewsAt: { gt: now } },
-            { stripeSubscriptionStatus: { in: ["active", "trialing"] } },
+            { stripeSubscriptionStatus: { in: ['active', 'trialing'] } },
           ],
         },
       },
@@ -43,7 +43,7 @@ async function sendDigestAllUpdate() {
     },
   });
 
-  logger.info("Sending digest to users", {
+  logger.info('Sending digest to users', {
     eligibleAccounts: emailAccounts.length,
   });
 
@@ -52,27 +52,27 @@ async function sendDigestAllUpdate() {
   for (const emailAccount of emailAccounts) {
     try {
       await publishToQstashQueue({
-        queueName: "email-digest-all",
+        queueName: 'email-digest-all',
         parallelism: 3, // Allow up to 3 concurrent jobs from this queue
         url,
         body: { emailAccountId: emailAccount.id },
       });
     } catch (error) {
-      logger.error("Failed to publish to Qstash", {
+      logger.error('Failed to publish to Qstash', {
         email: emailAccount.email,
         error,
       });
     }
   }
 
-  logger.info("All requests initiated", { count: emailAccounts.length });
+  logger.info('All requests initiated', { count: emailAccounts.length });
   return { count: emailAccounts.length };
 }
 
 export const GET = withError(async (request) => {
   if (!hasCronSecret(request)) {
-    captureException(new Error("Unauthorized request: api/resend/digest/all"));
-    return new Response("Unauthorized", { status: 401 });
+    captureException(new Error('Unauthorized request: api/resend/digest/all'));
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const result = await sendDigestAllUpdate();
@@ -83,9 +83,9 @@ export const GET = withError(async (request) => {
 export const POST = withError(async (request) => {
   if (!(await hasPostCronSecret(request))) {
     captureException(
-      new Error("Unauthorized cron request: api/resend/digest/all"),
+      new Error('Unauthorized cron request: api/resend/digest/all')
     );
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const result = await sendDigestAllUpdate();

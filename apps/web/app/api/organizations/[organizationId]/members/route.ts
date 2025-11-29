@@ -1,22 +1,22 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withAuth } from "@/utils/middleware";
-import { fetchAndCheckIsAdmin } from "@/utils/organizations/access";
+import { NextResponse } from 'next/server';
+import { withAuth } from '@/utils/middleware';
+import { fetchAndCheckIsAdmin } from '@/utils/organizations/access';
+import prisma from '@/utils/prisma';
 
 export type OrganizationMembersResponse = Awaited<
   ReturnType<typeof getOrganizationMembers>
 >;
 
 export const GET = withAuth(
-  "organizations/members",
+  'organizations/members',
   async (request, { params }) => {
     const { userId } = request.auth;
     const { organizationId } = await params;
 
     if (!organizationId) {
       return NextResponse.json(
-        { error: "Organization ID is required" },
-        { status: 400 },
+        { error: 'Organization ID is required' },
+        { status: 400 }
       );
     }
 
@@ -25,7 +25,7 @@ export const GET = withAuth(
     const result = await getOrganizationMembers({ organizationId });
 
     return NextResponse.json(result);
-  },
+  }
 );
 
 async function getOrganizationMembers({
@@ -48,7 +48,7 @@ async function getOrganizationMembers({
         },
       },
     },
-    orderBy: [{ role: "asc" }, { createdAt: "asc" }],
+    orderBy: [{ role: 'asc' }, { createdAt: 'asc' }],
   });
 
   return { members };

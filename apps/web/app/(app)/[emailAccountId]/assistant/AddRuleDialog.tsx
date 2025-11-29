@@ -1,7 +1,7 @@
-import { PlusIcon } from "lucide-react";
-import { RulesPrompt } from "@/app/(app)/[emailAccountId]/assistant/RulesPromptNew";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { PlusIcon } from 'lucide-react';
+import { RulesPrompt } from '@/app/(app)/[emailAccountId]/assistant/RulesPromptNew';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 export function AddRuleDialog() {
   return (

@@ -1,7 +1,7 @@
-import { SectionDescription } from "@/components/Typography";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/Input";
-import { cn } from "@/utils";
+import { Label } from '@/components/Input';
+import { SectionDescription } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/utils';
 
 type ButtonListItem = {
   id: string;
@@ -34,15 +34,15 @@ export function ButtonList({
       )}
 
       <div
-        className={cn("mt-1 grid gap-1", {
-          "grid-cols-2": columns === 2,
-          "grid-cols-3": columns === 3,
+        className={cn('mt-1 grid gap-1', {
+          'grid-cols-2': columns === 2,
+          'grid-cols-3': columns === 3,
         })}
       >
         {items.map((item) => (
           <Button
             key={item.id}
-            variant={selectedId === item.id ? "default" : "outline"}
+            variant={selectedId === item.id ? 'default' : 'outline'}
             onClick={() => onSelect(item.id)}
           >
             {item.name}

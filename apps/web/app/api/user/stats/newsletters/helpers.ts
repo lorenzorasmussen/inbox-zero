@@ -1,23 +1,23 @@
-import type { EmailProvider, EmailFilter } from "@/utils/email/types";
-import { extractEmailAddress } from "@/utils/email";
-import prisma from "@/utils/prisma";
-import { NewsletterStatus } from "@/generated/prisma/enums";
-import { GmailLabel } from "@/utils/gmail/label";
-import { createScopedLogger } from "@/utils/logger";
+import { NewsletterStatus } from '@/generated/prisma/enums';
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailFilter, EmailProvider } from '@/utils/email/types';
+import { GmailLabel } from '@/utils/gmail/label';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("newsletter-helpers");
+const logger = createScopedLogger('newsletter-helpers');
 
 export async function getAutoArchiveFilters(emailProvider: EmailProvider) {
   try {
     const filters = await emailProvider.getFiltersList();
 
     const autoArchiveFilters = filters.filter((filter) =>
-      isAutoArchiveFilter(filter, emailProvider),
+      isAutoArchiveFilter(filter, emailProvider)
     );
 
     return autoArchiveFilters;
   } catch (error) {
-    logger.error("Error getting auto-archive filters", { error });
+    logger.error('Error getting auto-archive filters', { error });
     // Return empty array instead of throwing, so the newsletter stats still work
     return [];
   }
@@ -26,7 +26,7 @@ export async function getAutoArchiveFilters(emailProvider: EmailProvider) {
 export function findAutoArchiveFilter(
   autoArchiveFilters: EmailFilter[],
   fromEmail: string,
-  emailProvider: EmailProvider,
+  emailProvider: EmailProvider
 ) {
   return autoArchiveFilters.find((filter) => {
     const from = extractEmailAddress(fromEmail);
@@ -56,12 +56,12 @@ export function filterNewsletters<
   },
 >(
   newsletters: T[],
-  filters: ("unhandled" | "autoArchived" | "unsubscribed" | "approved" | "")[],
+  filters: ('unhandled' | 'autoArchived' | 'unsubscribed' | 'approved' | '')[]
 ): T[] {
-  const showAutoArchived = filters.includes("autoArchived");
-  const showApproved = filters.includes("approved");
-  const showUnsubscribed = filters.includes("unsubscribed");
-  const showUnhandled = filters.includes("unhandled");
+  const showAutoArchived = filters.includes('autoArchived');
+  const showApproved = filters.includes('approved');
+  const showUnsubscribed = filters.includes('unsubscribed');
+  const showUnhandled = filters.includes('unhandled');
 
   return newsletters.filter((email) => {
     if (
@@ -80,9 +80,9 @@ export function filterNewsletters<
 
 function isAutoArchiveFilter(filter: EmailFilter, provider: EmailProvider) {
   switch (provider.name) {
-    case "google":
+    case 'google':
       return isGmailAutoArchiveFilter(filter);
-    case "microsoft":
+    case 'microsoft':
       return isOutlookAutoArchiveFilter(filter);
     default:
       return false;
@@ -93,11 +93,11 @@ function isGmailAutoArchiveFilter(filter: EmailFilter): boolean {
   // For Gmail: check if it removes INBOX label or adds TRASH label
   return Boolean(
     filter.action?.removeLabelIds?.includes(GmailLabel.INBOX) ||
-      filter.action?.addLabelIds?.includes(GmailLabel.TRASH),
+      filter.action?.addLabelIds?.includes(GmailLabel.TRASH)
   );
 }
 
 function isOutlookAutoArchiveFilter(filter: EmailFilter): boolean {
   // For Outlook: check if it moves to archive folder (removeLabelIds contains "INBOX")
-  return Boolean(filter.action?.removeLabelIds?.includes("INBOX"));
+  return Boolean(filter.action?.removeLabelIds?.includes('INBOX'));
 }

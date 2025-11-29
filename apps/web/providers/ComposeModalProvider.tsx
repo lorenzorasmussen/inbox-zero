@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { createContext, useContext } from "react";
-import { useModal } from "@/hooks/useModal";
-import { ComposeEmailFormLazy } from "@/app/(app)/[emailAccountId]/compose/ComposeEmailFormLazy";
+import { createContext, useContext } from 'react';
+import { ComposeEmailFormLazy } from '@/app/(app)/[emailAccountId]/compose/ComposeEmailFormLazy';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
+import { useModal } from '@/hooks/useModal';
 
 type Context = {
   onOpen: () => void;

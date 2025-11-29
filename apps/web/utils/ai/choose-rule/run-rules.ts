@@ -1,58 +1,58 @@
-import { after } from "next/server";
-import type { ParsedMessage, RuleWithActions } from "@/utils/types";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
+import groupBy from 'lodash/groupBy';
+import { after } from 'next/server';
+import { analyzeSenderPattern } from '@/app/api/ai/analyze-sender-pattern/call-analyze-pattern-api';
+import type { Rule } from '@/generated/prisma/client';
 import {
   ActionType,
   ExecutedRuleStatus,
   SystemType,
-} from "@/generated/prisma/enums";
-import type { Rule } from "@/generated/prisma/client";
-import type { ActionItem } from "@/utils/ai/types";
-import { findMatchingRules } from "@/utils/ai/choose-rule/match-rules";
-import { getActionItemsWithAiArgs } from "@/utils/ai/choose-rule/choose-args";
-import { executeAct } from "@/utils/ai/choose-rule/execute";
-import prisma from "@/utils/prisma";
-import type { MatchReason } from "@/utils/ai/choose-rule/types";
-import { serializeMatchReasons } from "@/utils/ai/choose-rule/types";
-import { sanitizeActionFields } from "@/utils/action-item";
-import { extractEmailAddress } from "@/utils/email";
-import { filterNullProperties } from "@/utils";
-import { analyzeSenderPattern } from "@/app/api/ai/analyze-sender-pattern/call-analyze-pattern-api";
-import {
-  scheduleDelayedActions,
-  cancelScheduledActions,
-} from "@/utils/scheduled-actions/scheduler";
-import groupBy from "lodash/groupBy";
-import type { EmailProvider } from "@/utils/email/types";
-import type { ModelType } from "@/utils/llms/model";
+} from '@/generated/prisma/enums';
+import { filterNullProperties } from '@/utils';
+import { sanitizeActionFields } from '@/utils/action-item';
+import { getActionItemsWithAiArgs } from '@/utils/ai/choose-rule/choose-args';
+import { executeAct } from '@/utils/ai/choose-rule/execute';
+import { findMatchingRules } from '@/utils/ai/choose-rule/match-rules';
+import type { MatchReason } from '@/utils/ai/choose-rule/types';
+import { serializeMatchReasons } from '@/utils/ai/choose-rule/types';
+import type { ActionItem } from '@/utils/ai/types';
+import { saveColdEmail } from '@/utils/cold-email/is-cold-email';
+import { ConditionType } from '@/utils/config';
+import { internalDateToDate } from '@/utils/date';
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
+import type { ModelType } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 import {
   CONVERSATION_STATUS_TYPES,
   isConversationStatusType,
-} from "@/utils/reply-tracker/conversation-status-config";
+} from '@/utils/reply-tracker/conversation-status-config';
 import {
   determineConversationStatus,
   updateThreadTrackers,
-} from "@/utils/reply-tracker/handle-conversation-status";
-import { removeConflictingThreadStatusLabels } from "@/utils/reply-tracker/label-helpers";
-import { saveColdEmail } from "@/utils/cold-email/is-cold-email";
-import { internalDateToDate } from "@/utils/date";
-import { ConditionType } from "@/utils/config";
-import type { Logger } from "@/utils/logger";
+} from '@/utils/reply-tracker/handle-conversation-status';
+import { removeConflictingThreadStatusLabels } from '@/utils/reply-tracker/label-helpers';
+import {
+  cancelScheduledActions,
+  scheduleDelayedActions,
+} from '@/utils/scheduled-actions/scheduler';
+import type { ParsedMessage, RuleWithActions } from '@/utils/types';
 
-const MODULE = "ai/choose-rule";
+const MODULE = 'ai/choose-rule';
 
 export type RunRulesResult = {
   rule?: Pick<
     Rule,
-    | "id"
-    | "name"
-    | "instructions"
-    | "groupId"
-    | "from"
-    | "to"
-    | "subject"
-    | "body"
-    | "conditionalOperator"
+    | 'id'
+    | 'name'
+    | 'instructions'
+    | 'groupId'
+    | 'from'
+    | 'to'
+    | 'subject'
+    | 'body'
+    | 'conditionalOperator'
   > | null;
   actionItems?: ActionItem[];
   reason?: string | null;
@@ -62,7 +62,7 @@ export type RunRulesResult = {
   createdAt: Date;
 };
 
-export const CONVERSATION_TRACKING_META_RULE_ID = "conversation-tracking-meta";
+export const CONVERSATION_TRACKING_META_RULE_ID = 'conversation-tracking-meta';
 
 export async function runRules({
   provider,
@@ -105,13 +105,13 @@ export async function runRules({
 
   const finalMatches = limitDraftEmailActions(conversationAwareMatches, logger);
 
-  logger.trace("Matching rule", () => ({
+  logger.trace('Matching rule', () => ({
     module: MODULE,
     results: finalMatches.map(filterNullProperties),
   }));
 
   if (!finalMatches.length) {
-    const reason = results.reasoning || "No rules matched";
+    const reason = results.reasoning || 'No rules matched';
     if (!isTest) {
       await prisma.executedRule.create({
         data: {
@@ -156,7 +156,7 @@ export async function runRules({
       if (!statusRule) {
         const executedRule: RunRulesResult = {
           rule: null,
-          reason: statusReason || "No enabled conversation status rule found",
+          reason: statusReason || 'No enabled conversation status rule found',
           createdAt: batchTimestamp,
           status: ExecutedRuleStatus.SKIPPED,
         };
@@ -186,7 +186,7 @@ export async function runRules({
       isTest,
       modelType,
       batchTimestamp,
-      logger,
+      logger
     );
 
     executedRules.push({
@@ -204,10 +204,10 @@ function prepareRulesWithMetaRule(rules: RuleWithActions[]): {
 } {
   // Separate conversation status rules from regular rules
   const conversationRules = rules.filter((r) =>
-    isConversationStatusType(r.systemType),
+    isConversationStatusType(r.systemType)
   );
   const regularRules = rules.filter(
-    (r) => !isConversationStatusType(r.systemType),
+    (r) => !isConversationStatusType(r.systemType)
   );
 
   // If any conversation status rules are enabled, create a meta-rule
@@ -216,7 +216,7 @@ function prepareRulesWithMetaRule(rules: RuleWithActions[]): {
     const metaRule = {
       ...template,
       id: CONVERSATION_TRACKING_META_RULE_ID,
-      name: "Conversations",
+      name: 'Conversations',
       instructions: `Personal conversations and communication with real people. This covers all conversation states: emails you need to reply to, emails you're awaiting replies on, FYI updates from people, and resolved discussions.
 
 Match when:
@@ -252,7 +252,7 @@ async function executeMatchedRule(
   isTest: boolean,
   modelType: ModelType,
   batchTimestamp: Date,
-  logger: Logger,
+  logger: Logger
 ) {
   const actionItems = await getActionItemsWithAiArgs({
     message,
@@ -266,8 +266,8 @@ async function executeMatchedRule(
 
   const { immediateActions, delayedActions } = groupBy(actionItems, (item) =>
     item.delayInMinutes != null && item.delayInMinutes > 0
-      ? "delayedActions"
-      : "immediateActions",
+      ? 'delayedActions'
+      : 'immediateActions'
   );
 
   if (isTest) {
@@ -348,7 +348,7 @@ async function executeMatchedRule(
         messageId: message.id,
         threadId: message.threadId,
         ruleId: rule.id,
-        reason: "Superseded by new rule execution",
+        reason: 'Superseded by new rule execution',
       });
       await scheduleDelayedActions({
         executedRuleId: executedRule.id,
@@ -409,7 +409,7 @@ async function analyzeSenderPatternIfAiMatch({
         analyzeSenderPattern({
           emailAccountId,
           from: fromAddress,
-        }),
+        })
       );
     }
   }
@@ -436,7 +436,7 @@ function shouldAnalyzeSenderPattern({
     result.matchReasons?.some(
       (reason) =>
         reason.type === ConditionType.STATIC ||
-        reason.type === ConditionType.LEARNED_PATTERN,
+        reason.type === ConditionType.LEARNED_PATTERN
     )
   ) {
     return false;
@@ -511,7 +511,7 @@ export async function ensureConversationRuleContinuity({
   }
 
   const hasConversationMetaRuleInMatches = matches.some((match) =>
-    isConversationRule(match.rule.id),
+    isConversationRule(match.rule.id)
   );
 
   if (hasConversationMetaRuleInMatches) {
@@ -519,8 +519,8 @@ export async function ensureConversationRuleContinuity({
   }
 
   logger.info(
-    "Automatically adding conversation meta rule due to previous application in thread",
-    { module: MODULE },
+    'Automatically adding conversation meta rule due to previous application in thread',
+    { module: MODULE }
   );
 
   // Find the meta rule in regularRules
@@ -560,7 +560,7 @@ export function limitDraftEmailActions(
     rule: RuleWithActions;
     matchReasons?: MatchReason[];
   }[],
-  logger: Logger,
+  logger: Logger
 ): {
   rule: RuleWithActions;
   matchReasons?: MatchReason[];
@@ -571,7 +571,7 @@ export function limitDraftEmailActions(
       .map((action) => ({
         action,
         hasFixedContent: Boolean(action.content?.trim()),
-      })),
+      }))
   );
 
   if (draftCandidates.length <= 1) {
@@ -586,7 +586,7 @@ export function limitDraftEmailActions(
 
   const selectedDraftId = preferredCandidate.action.id;
 
-  logger.info("Limiting draft actions to a single selection", {
+  logger.info('Limiting draft actions to a single selection', {
     module: MODULE,
     selectedDraftId,
   });
@@ -594,7 +594,7 @@ export function limitDraftEmailActions(
   return matches.map((match) => {
     const hasExtraDrafts = match.rule.actions.some(
       (action) =>
-        action.type === ActionType.DRAFT_EMAIL && action.id !== selectedDraftId,
+        action.type === ActionType.DRAFT_EMAIL && action.id !== selectedDraftId
     );
 
     if (!hasExtraDrafts) {
@@ -608,7 +608,7 @@ export function limitDraftEmailActions(
         actions: match.rule.actions.filter(
           (action) =>
             action.type !== ActionType.DRAFT_EMAIL ||
-            action.id === selectedDraftId,
+            action.id === selectedDraftId
         ),
       },
     };

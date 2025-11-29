@@ -1,35 +1,51 @@
 {
-  "extends": "tsconfig/nextjs.json",
-  "compilerOptions": {
-    "baseUrl": "./",
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@next/third-parties/google": [
-        "./node_modules/@next/third-parties/dist/google"
-      ],
-      "sanity/*": [
-        "../node_modules/sanity/*"
-      ]
-    },
-    "target": "ES2017",
-    "strictNullChecks": true
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "./env.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "public/sw.js"
-  ]
+	"extends": "tsconfig/nextjs.json",
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["dom", "dom.iterable", "ES6"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"incremental": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./apps/web/*"],
+			"@/components/*": ["./apps/web/components/*"],
+			"@/utils/*": ["./apps/web/utils/*"],
+			"@/hooks/*": ["./apps/web/hooks/*"],
+			"@/types/*": ["./apps/web/types/*"],
+			"@next/third-parties/google": [
+				"./node_modules/@next/third-parties/dist/google"
+			],
+			"sanity/*": ["../node_modules/sanity/*"]
+		},
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"exactOptionalPropertyTypes": true,
+		"noUncheckedIndexedAccess": true
+	},
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		"./env.ts"
+	],
+	"exclude": ["node_modules", "public/sw.js"]
 }

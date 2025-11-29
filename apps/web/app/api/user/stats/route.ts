@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { withEmailProvider } from "@/utils/middleware";
-import type { EmailProvider } from "@/utils/email/types";
+import { NextResponse } from 'next/server';
+import type { EmailProvider } from '@/utils/email/types';
+import { withEmailProvider } from '@/utils/middleware';
 
 export type StatsResponse = Awaited<ReturnType<typeof getStats>>;
 
@@ -9,12 +9,12 @@ async function getStats({ emailProvider }: { emailProvider: EmailProvider }) {
   const twentyFourHoursAgo = new Date(
     now.getFullYear(),
     now.getMonth(),
-    now.getDate() - 1,
+    now.getDate() - 1
   );
   const sevenDaysAgo = new Date(
     now.getFullYear(),
     now.getMonth(),
-    now.getDate() - 7,
+    now.getDate() - 7
   );
 
   const [
@@ -32,12 +32,12 @@ async function getStats({ emailProvider }: { emailProvider: EmailProvider }) {
     }),
     emailProvider.getMessagesByFields({
       after: twentyFourHoursAgo,
-      type: "sent",
+      type: 'sent',
       maxResults: 500,
     }),
     emailProvider.getMessagesByFields({
       after: twentyFourHoursAgo,
-      type: "inbox",
+      type: 'inbox',
       maxResults: 500,
     }),
 
@@ -49,12 +49,12 @@ async function getStats({ emailProvider }: { emailProvider: EmailProvider }) {
     }),
     emailProvider.getMessagesByFields({
       after: sevenDaysAgo,
-      type: "sent",
+      type: 'sent',
       maxResults: 500,
     }),
     emailProvider.getMessagesByFields({
       after: sevenDaysAgo,
-      type: "inbox",
+      type: 'inbox',
       maxResults: 500,
     }),
   ]);
@@ -70,7 +70,7 @@ async function getStats({ emailProvider }: { emailProvider: EmailProvider }) {
   };
 }
 
-export const GET = withEmailProvider("user/stats", async (request) => {
+export const GET = withEmailProvider('user/stats', async (request) => {
   const result = await getStats({ emailProvider: request.emailProvider });
 
   return NextResponse.json(result);

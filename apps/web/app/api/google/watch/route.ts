@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { watchEmails } from "./controller";
-import { withAuth } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
-import { createEmailProvider } from "@/utils/email/provider";
+import { NextResponse } from 'next/server';
+import { createEmailProvider } from '@/utils/email/provider';
+import { withAuth } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { watchEmails } from './controller';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-export const GET = withAuth("google/watch", async (request) => {
+export const GET = withAuth('google/watch', async (request) => {
   const userId = request.auth.userId;
   const results = [];
 
@@ -17,8 +17,8 @@ export const GET = withAuth("google/watch", async (request) => {
 
   if (emailAccounts.length === 0) {
     return NextResponse.json(
-      { message: "No email accounts found for this user." },
-      { status: 404 },
+      { message: 'No email accounts found for this user.' },
+      { status: 404 }
     );
   }
 
@@ -26,7 +26,7 @@ export const GET = withAuth("google/watch", async (request) => {
     try {
       const emailProvider = await createEmailProvider({
         emailAccountId,
-        provider: "google",
+        provider: 'google',
         logger: request.logger,
       });
       const expirationDate = await watchEmails({
@@ -37,29 +37,29 @@ export const GET = withAuth("google/watch", async (request) => {
       if (expirationDate) {
         results.push({
           emailAccountId,
-          status: "success",
+          status: 'success',
           expirationDate,
         });
       } else {
-        request.logger.error("Error watching inbox for account", {
+        request.logger.error('Error watching inbox for account', {
           emailAccountId,
         });
         results.push({
           emailAccountId,
-          status: "error",
-          message: "Failed to set up watch for this account.",
+          status: 'error',
+          message: 'Failed to set up watch for this account.',
         });
       }
     } catch (error) {
-      request.logger.error("Exception while watching inbox for account", {
+      request.logger.error('Exception while watching inbox for account', {
         emailAccountId,
         error,
       });
       results.push({
         emailAccountId,
-        status: "error",
+        status: 'error',
         message:
-          "An unexpected error occurred while setting up watch for this account.",
+          'An unexpected error occurred while setting up watch for this account.',
         errorDetails: error instanceof Error ? error.message : String(error),
       });
     }

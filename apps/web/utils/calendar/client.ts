@@ -1,11 +1,11 @@
-import { auth, calendar, type calendar_v3 } from "@googleapis/calendar";
-import { env } from "@/env";
-import { createScopedLogger } from "@/utils/logger";
-import { CALENDAR_SCOPES as GOOGLE_CALENDAR_SCOPES } from "@/utils/gmail/scopes";
-import { SafeError } from "@/utils/error";
-import prisma from "@/utils/prisma";
+import { auth, calendar, type calendar_v3 } from '@googleapis/calendar';
+import { env } from '@/env';
+import { SafeError } from '@/utils/error';
+import { CALENDAR_SCOPES as GOOGLE_CALENDAR_SCOPES } from '@/utils/gmail/scopes';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("calendar/client");
+const logger = createScopedLogger('calendar/client');
 
 type AuthOptions = {
   accessToken?: string | null;
@@ -22,7 +22,7 @@ const getAuth = ({ accessToken, refreshToken, expiresAt }: AuthOptions) => {
     access_token: accessToken,
     refresh_token: refreshToken,
     expiry_date: expiresAt,
-    scope: GOOGLE_CALENDAR_SCOPES.join(" "),
+    scope: GOOGLE_CALENDAR_SCOPES.join(' '),
   });
 
   return googleAuth;
@@ -48,19 +48,19 @@ export const getCalendarClientWithRefresh = async ({
   emailAccountId: string;
 }): Promise<calendar_v3.Calendar> => {
   if (!refreshToken) {
-    logger.error("No refresh token", { emailAccountId });
-    throw new SafeError("No refresh token");
+    logger.error('No refresh token', { emailAccountId });
+    throw new SafeError('No refresh token');
   }
 
   // Check if token is still valid
   if (expiresAt && expiresAt > Date.now()) {
     const auth = getAuth({ accessToken, refreshToken, expiresAt });
-    return calendar({ version: "v3", auth });
+    return calendar({ version: 'v3', auth });
   }
 
   // Token is expired or missing, need to refresh
   const auth = getAuth({ accessToken, refreshToken });
-  const cal = calendar({ version: "v3", auth });
+  const cal = calendar({ version: 'v3', auth });
 
   // may throw `invalid_grant` error
   try {
@@ -73,7 +73,7 @@ export const getCalendarClientWithRefresh = async ({
     const calendarConnection = await prisma.calendarConnection.findFirst({
       where: {
         emailAccountId,
-        provider: "google",
+        provider: 'google',
       },
       select: { id: true },
     });
@@ -88,7 +88,7 @@ export const getCalendarClientWithRefresh = async ({
         connectionId: calendarConnection.id,
       });
     } else {
-      logger.warn("No calendar connection found to update tokens", {
+      logger.warn('No calendar connection found to update tokens', {
         emailAccountId,
       });
     }
@@ -96,10 +96,10 @@ export const getCalendarClientWithRefresh = async ({
     return cal;
   } catch (error) {
     const isInvalidGrantError =
-      error instanceof Error && error.message.includes("invalid_grant");
+      error instanceof Error && error.message.includes('invalid_grant');
 
     if (isInvalidGrantError) {
-      logger.warn("Error refreshing Calendar access token", {
+      logger.warn('Error refreshing Calendar access token', {
         emailAccountId,
         error: error.message,
         errorDescription: (
@@ -115,14 +115,14 @@ export const getCalendarClientWithRefresh = async ({
 };
 
 export async function fetchGoogleCalendars(
-  calendarClient: calendar_v3.Calendar,
+  calendarClient: calendar_v3.Calendar
 ) {
   try {
     const response = await calendarClient.calendarList.list();
     return response.data.items || [];
   } catch (error) {
-    logger.error("Error fetching Google calendars", { error });
-    throw new SafeError("Failed to fetch calendars");
+    logger.error('Error fetching Google calendars', { error });
+    throw new SafeError('Failed to fetch calendars');
   }
 }
 
@@ -138,7 +138,7 @@ async function saveCalendarTokens({
   connectionId: string;
 }) {
   if (!tokens.access_token) {
-    logger.warn("No access token to save for calendar connection", {
+    logger.warn('No access token to save for calendar connection', {
       connectionId,
     });
     return;
@@ -154,9 +154,9 @@ async function saveCalendarTokens({
       },
     });
 
-    logger.info("Calendar tokens saved successfully", { connectionId });
+    logger.info('Calendar tokens saved successfully', { connectionId });
   } catch (error) {
-    logger.error("Failed to save calendar tokens", { error, connectionId });
+    logger.error('Failed to save calendar tokens', { error, connectionId });
     throw error;
   }
 }

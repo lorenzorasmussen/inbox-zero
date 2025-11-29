@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import { withError, type RequestWithLogger } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
-import { Frequency } from "@/generated/prisma/enums";
+import { NextResponse } from 'next/server';
+import { Frequency } from '@/generated/prisma/enums';
+import { type RequestWithLogger, withError } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
-export const GET = withError("unsubscribe", async (request) => {
+export const GET = withError('unsubscribe', async (request) => {
   return unsubscribe(request);
 });
 
@@ -13,10 +13,10 @@ export const POST = withError(async (request) => {
 
 async function unsubscribe(request: RequestWithLogger) {
   const url = new URL(request.url);
-  const encodedToken = url.searchParams.get("token");
+  const encodedToken = url.searchParams.get('token');
 
   if (!encodedToken) {
-    return NextResponse.json({ error: "Token is required" }, { status: 400 });
+    return NextResponse.json({ error: 'Token is required' }, { status: 400 });
   }
 
   const token = decodeURIComponent(encodedToken);
@@ -31,16 +31,16 @@ async function unsubscribe(request: RequestWithLogger) {
     return NextResponse.json(
       {
         error:
-          "Invalid unsubscribe token. You might have already unsubscribed.",
+          'Invalid unsubscribe token. You might have already unsubscribed.',
       },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
   if (emailToken.expiresAt < new Date()) {
     return NextResponse.json(
-      { error: "Unsubscribe token expired" },
-      { status: 400 },
+      { error: 'Unsubscribe token expired' },
+      { status: 400 }
     );
   }
 
@@ -59,8 +59,8 @@ async function unsubscribe(request: RequestWithLogger) {
     prisma.emailToken.delete({ where: { id: emailToken.id } }),
   ]);
 
-  if (userUpdate.status === "rejected") {
-    request.logger.error("Error updating user preferences", {
+  if (userUpdate.status === 'rejected') {
+    request.logger.error('Error updating user preferences', {
       email: emailToken.emailAccount.email,
       error: userUpdate.reason,
     });
@@ -68,21 +68,21 @@ async function unsubscribe(request: RequestWithLogger) {
       {
         success: false,
         message:
-          "Error unsubscribing. Visit Settings page to unsubscribe from emails.",
+          'Error unsubscribing. Visit Settings page to unsubscribe from emails.',
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 
-  if (tokenDelete.status === "rejected") {
-    request.logger.error("Error deleting token", {
+  if (tokenDelete.status === 'rejected') {
+    request.logger.error('Error deleting token', {
       email: emailToken.emailAccountId,
       tokenId: emailToken.id,
       error: tokenDelete.reason,
     });
   }
 
-  request.logger.info("User unsubscribed from emails", {
+  request.logger.info('User unsubscribed from emails', {
     email: emailToken.emailAccountId,
   });
 

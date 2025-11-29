@@ -1,7 +1,7 @@
-import type { FieldError } from "react-hook-form";
-import { ErrorMessage, ExplainText, Label } from "./Input";
-import { TooltipExplanation } from "@/components/TooltipExplanation";
-import { Switch } from "@/components/ui/switch";
+import type { FieldError } from 'react-hook-form';
+import { TooltipExplanation } from '@/components/TooltipExplanation';
+import { Switch } from '@/components/ui/switch';
+import { ErrorMessage, ExplainText, Label } from './Input';
 
 export interface ToggleProps {
   name: string;

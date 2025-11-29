@@ -3,7 +3,7 @@ interface GmailProps {
   height?: string | number;
 }
 
-export function Gmail({ width = "26", height = "23" }: GmailProps) {
+export function Gmail({ width = '26', height = '23' }: GmailProps) {
   return (
     <svg
       width={width}

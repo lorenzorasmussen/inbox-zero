@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/Input";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { testMcpAction } from "@/utils/actions/mcp";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { Input } from '@/components/Input';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { testMcpAction } from '@/utils/actions/mcp';
 import {
-  testMcpSchema,
   type McpAgentActionInput,
-} from "@/utils/actions/mcp.validation";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { useAction } from "next-safe-action/hooks";
+  testMcpSchema,
+} from '@/utils/actions/mcp.validation';
 
 export function McpAgentTest() {
   const { emailAccountId } = useAccount();
@@ -23,15 +23,15 @@ export function McpAgentTest() {
     {
       onSuccess: () => {
         toastSuccess({
-          description: "MCP agent test successful",
+          description: 'MCP agent test successful',
         });
       },
       onError: (error) => {
         toastError({
-          description: error.error.serverError || "Unknown error",
+          description: error.error.serverError || 'Unknown error',
         });
       },
-    },
+    }
   );
 
   const {
@@ -41,8 +41,8 @@ export function McpAgentTest() {
   } = useForm<McpAgentActionInput>({
     resolver: zodResolver(testMcpSchema),
     defaultValues: {
-      from: "john.smith@example.com",
-      subject: "Question about your services",
+      from: 'john.smith@example.com',
+      subject: 'Question about your services',
       content:
         "Hi there,\n\nI'm John Smith and I have a question about your services.\n\nCould you please help me with this?\n\nThanks!",
     },
@@ -52,7 +52,7 @@ export function McpAgentTest() {
     async (data) => {
       await executeAsync(data);
     },
-    [executeAsync],
+    [executeAsync]
   );
 
   return (
@@ -72,7 +72,7 @@ export function McpAgentTest() {
             name="from"
             label="From"
             placeholder="john.smith@example.com"
-            registerProps={register("from")}
+            registerProps={register('from')}
             error={errors.from}
           />
           <Input
@@ -80,7 +80,7 @@ export function McpAgentTest() {
             name="subject"
             label="Subject"
             placeholder="Question about your services"
-            registerProps={register("subject")}
+            registerProps={register('subject')}
             error={errors.subject}
           />
           <Input
@@ -90,7 +90,7 @@ export function McpAgentTest() {
             rows={3}
             label="Content"
             placeholder="e.g., 'billing issue', 'product inquiry', 'support request'"
-            registerProps={register("content")}
+            registerProps={register('content')}
             error={errors.content}
           />
           <Button type="submit" loading={isSubmitting}>

@@ -1,4 +1,4 @@
-import prisma from "@/utils/prisma";
+import prisma from '@/utils/prisma';
 
 export async function createPremiumForUser({ userId }: { userId: string }) {
   return await prisma.premium.create({

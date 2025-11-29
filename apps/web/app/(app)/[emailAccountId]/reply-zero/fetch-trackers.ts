@@ -1,6 +1,6 @@
-import prisma from "@/utils/prisma";
-import type { ThreadTrackerType } from "@/generated/prisma/enums";
-import { getDateFilter, type TimeRange } from "./date-filter";
+import type { ThreadTrackerType } from '@/generated/prisma/enums';
+import prisma from '@/utils/prisma';
+import { getDateFilter, type TimeRange } from './date-filter';
 
 const PAGE_SIZE = 20;
 
@@ -8,7 +8,7 @@ export async function getPaginatedThreadTrackers({
   emailAccountId,
   type,
   page,
-  timeRange = "all",
+  timeRange = 'all',
 }: {
   emailAccountId: string;
   type: ThreadTrackerType;
@@ -27,9 +27,9 @@ export async function getPaginatedThreadTrackers({
         sentAt: dateFilter,
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
-      distinct: ["threadId"],
+      distinct: ['threadId'],
       take: PAGE_SIZE,
       skip,
     }),

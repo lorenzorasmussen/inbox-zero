@@ -1,14 +1,14 @@
-import { env } from "@/env";
-import { createScopedLogger } from "@/utils/logger";
-import { CALENDAR_SCOPES } from "@/utils/outlook/scopes";
-import { SafeError } from "@/utils/error";
-import prisma from "@/utils/prisma";
 import {
-  Client,
   type AuthenticationProvider,
-} from "@microsoft/microsoft-graph-client";
+  Client,
+} from '@microsoft/microsoft-graph-client';
+import { env } from '@/env';
+import { SafeError } from '@/utils/error';
+import { createScopedLogger } from '@/utils/logger';
+import { CALENDAR_SCOPES } from '@/utils/outlook/scopes';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("outlook/calendar-client");
+const logger = createScopedLogger('outlook/calendar-client');
 
 class CalendarAuthProvider implements AuthenticationProvider {
   private readonly accessToken: string;
@@ -24,18 +24,18 @@ class CalendarAuthProvider implements AuthenticationProvider {
 
 export function getCalendarOAuth2Url(state: string): string {
   if (!env.MICROSOFT_CLIENT_ID) {
-    throw new Error("Microsoft login not enabled - missing client ID");
+    throw new Error('Microsoft login not enabled - missing client ID');
   }
 
   const baseUrl =
-    "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
+    'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
   const params = new URLSearchParams({
     client_id: env.MICROSOFT_CLIENT_ID,
-    response_type: "code",
+    response_type: 'code',
     redirect_uri: `${env.NEXT_PUBLIC_BASE_URL}/api/outlook/calendar/callback`,
-    scope: CALENDAR_SCOPES.join(" "),
+    scope: CALENDAR_SCOPES.join(' '),
     state,
-    prompt: "consent",
+    prompt: 'consent',
   });
 
   return `${baseUrl}?${params.toString()}`;
@@ -52,7 +52,7 @@ export const getCalendarClientWithRefresh = async ({
   expiresAt: number | null;
   emailAccountId: string;
 }): Promise<Client> => {
-  if (!refreshToken) throw new SafeError("No refresh token");
+  if (!refreshToken) throw new SafeError('No refresh token');
 
   // Check if token is still valid
   if (expiresAt && expiresAt > Date.now() && accessToken) {
@@ -63,41 +63,41 @@ export const getCalendarClientWithRefresh = async ({
   // Token is expired or missing, need to refresh
   try {
     if (!env.MICROSOFT_CLIENT_ID || !env.MICROSOFT_CLIENT_SECRET) {
-      throw new Error("Microsoft login not enabled - missing credentials");
+      throw new Error('Microsoft login not enabled - missing credentials');
     }
 
     const response = await fetch(
-      "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      'https://login.microsoftonline.com/common/oauth2/v2.0/token',
       {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
           client_id: env.MICROSOFT_CLIENT_ID,
           client_secret: env.MICROSOFT_CLIENT_SECRET,
           refresh_token: refreshToken,
-          grant_type: "refresh_token",
-          scope: CALENDAR_SCOPES.join(" "),
+          grant_type: 'refresh_token',
+          scope: CALENDAR_SCOPES.join(' '),
         }),
-      },
+      }
     );
 
     const tokens = await response.json();
 
     if (!response.ok) {
-      throw new Error(tokens.error_description || "Failed to refresh token");
+      throw new Error(tokens.error_description || 'Failed to refresh token');
     }
 
     if (!tokens.expires_in) {
-      throw new Error("Token response missing expires_in field");
+      throw new Error('Token response missing expires_in field');
     }
 
     // Find the calendar connection to update
     const calendarConnection = await prisma.calendarConnection.findFirst({
       where: {
         emailAccountId,
-        provider: "microsoft",
+        provider: 'microsoft',
       },
       select: { id: true },
     });
@@ -112,7 +112,7 @@ export const getCalendarClientWithRefresh = async ({
         connectionId: calendarConnection.id,
       });
     } else {
-      logger.warn("No calendar connection found to update tokens", {
+      logger.warn('No calendar connection found to update tokens', {
         emailAccountId,
       });
     }
@@ -121,10 +121,10 @@ export const getCalendarClientWithRefresh = async ({
     return Client.initWithMiddleware({ authProvider });
   } catch (error) {
     const isInvalidGrantError =
-      error instanceof Error && error.message.includes("invalid_grant");
+      error instanceof Error && error.message.includes('invalid_grant');
 
     if (isInvalidGrantError) {
-      logger.warn("Error refreshing Calendar access token", {
+      logger.warn('Error refreshing Calendar access token', {
         emailAccountId,
         error: error.message,
       });
@@ -144,14 +144,14 @@ export async function fetchMicrosoftCalendars(calendarClient: Client): Promise<
 > {
   try {
     const response = await calendarClient
-      .api("/me/calendars")
-      .select("id,name,color,isDefaultCalendar,canEdit,owner")
+      .api('/me/calendars')
+      .select('id,name,color,isDefaultCalendar,canEdit,owner')
       .get();
 
     return response.value || [];
   } catch (error) {
-    logger.error("Error fetching Microsoft calendars", { error });
-    throw new SafeError("Failed to fetch calendars");
+    logger.error('Error fetching Microsoft calendars', { error });
+    throw new SafeError('Failed to fetch calendars');
   }
 }
 
@@ -167,7 +167,7 @@ async function saveCalendarTokens({
   connectionId: string;
 }) {
   if (!tokens.access_token) {
-    logger.warn("No access token to save for calendar connection", {
+    logger.warn('No access token to save for calendar connection', {
       connectionId,
     });
     return;
@@ -185,9 +185,9 @@ async function saveCalendarTokens({
       },
     });
 
-    logger.info("Calendar tokens saved successfully", { connectionId });
+    logger.info('Calendar tokens saved successfully', { connectionId });
   } catch (error) {
-    logger.error("Failed to save calendar tokens", { error, connectionId });
+    logger.error('Failed to save calendar tokens', { error, connectionId });
     throw error;
   }
 }

@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Suspense, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { BasicLayout } from "@/components/layouts/BasicLayout";
-import { ErrorPage } from "@/components/ErrorPage";
-import { env } from "@/env";
-import { useUser } from "@/hooks/useUser";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Loading } from "@/components/Loading";
-import { WELCOME_PATH } from "@/utils/config";
-import { CrispChatLoggedOutVisible } from "@/components/CrispChat";
-import { getAndClearAuthErrorCookie } from "@/utils/auth-cookies";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Suspense, useEffect } from 'react';
+import { CrispChatLoggedOutVisible } from '@/components/CrispChat';
+import { ErrorPage } from '@/components/ErrorPage';
+import { Loading } from '@/components/Loading';
+import { LoadingContent } from '@/components/LoadingContent';
+import { BasicLayout } from '@/components/layouts/BasicLayout';
+import { Button } from '@/components/ui/button';
+import { env } from '@/env';
+import { useUser } from '@/hooks/useUser';
+import { getAndClearAuthErrorCookie } from '@/utils/auth-cookies';
+import { WELCOME_PATH } from '@/utils/config';
 
 export default function LogInErrorPage() {
   const { data, isLoading, error } = useUser();
@@ -25,7 +25,7 @@ export default function LogInErrorPage() {
       const authErrorCookie = getAndClearAuthErrorCookie();
 
       if (authErrorCookie) {
-        router.push("/accounts");
+        router.push('/accounts');
       } else {
         router.push(WELCOME_PATH);
       }

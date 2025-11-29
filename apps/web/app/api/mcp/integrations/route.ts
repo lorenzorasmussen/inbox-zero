@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { withEmailAccount } from "@/utils/middleware";
-import { MCP_INTEGRATIONS } from "@/utils/mcp/integrations";
-import prisma from "@/utils/prisma";
+import { NextResponse } from 'next/server';
+import { MCP_INTEGRATIONS } from '@/utils/mcp/integrations';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type GetIntegrationsResponse = Awaited<ReturnType<typeof getData>>;
 
-export const GET = withEmailAccount("mcp/integrations", async (request) => {
+export const GET = withEmailAccount('mcp/integrations', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
   return NextResponse.json(await getData(emailAccountId));
 });
@@ -30,7 +30,7 @@ async function getData(emailAccountId: string) {
     comingSoon: integration.comingSoon,
     authType: integration.authType,
     connection: connections.find(
-      (connection) => connection.integration.name === integration.name,
+      (connection) => connection.integration.name === integration.name
     ),
   }));
 

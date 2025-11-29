@@ -1,9 +1,9 @@
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import { GroupItemType } from "@/generated/prisma/enums";
-import { isDuplicateError } from "@/utils/prisma-helpers";
+import { GroupItemType } from '@/generated/prisma/enums';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { isDuplicateError } from '@/utils/prisma-helpers';
 
-const logger = createScopedLogger("rule/learned-patterns");
+const logger = createScopedLogger('rule/learned-patterns');
 
 /**
  * Saves a learned pattern for a rule
@@ -30,7 +30,7 @@ export async function saveLearnedPattern({
   });
 
   if (!rule) {
-    logger.error("Rule not found", { emailAccountId, ruleName });
+    logger.error('Rule not found', { emailAccountId, ruleName });
     return;
   }
 
@@ -94,8 +94,8 @@ export async function saveLearnedPatterns({
   });
 
   if (!rule) {
-    logger.error("Rule not found", { emailAccountId, ruleName });
-    return { error: "Rule not found" };
+    logger.error('Rule not found', { emailAccountId, ruleName });
+    return { error: 'Rule not found' };
   }
 
   let groupId = rule.groupId;
@@ -113,7 +113,7 @@ export async function saveLearnedPatterns({
       groupId = newGroup.id;
     } catch (error) {
       if (isDuplicateError(error)) {
-        logger.error("Group already exists", { emailAccountId, ruleName });
+        logger.error('Group already exists', { emailAccountId, ruleName });
         const newGroup2 = await prisma.group.create({
           data: {
             emailAccountId,
@@ -123,8 +123,8 @@ export async function saveLearnedPatterns({
         });
         groupId = newGroup2.id;
       } else {
-        logger.error("Error creating learned patterns group", { error });
-        return { error: "Error creating learned patterns group" };
+        logger.error('Error creating learned patterns group', { error });
+        return { error: 'Error creating learned patterns group' };
       }
     }
   }
@@ -156,7 +156,7 @@ export async function saveLearnedPatterns({
       });
     } catch (error) {
       const message = `${pattern.value} (${pattern.type}) ${
-        pattern.exclude ? "excluded" : ""
+        pattern.exclude ? 'excluded' : ''
       }`;
 
       if (isDuplicateError(error)) {
@@ -168,7 +168,7 @@ export async function saveLearnedPatterns({
   }
 
   if (errors.length > 0) {
-    return { error: errors.join(", ") };
+    return { error: errors.join(', ') };
   }
 
   return { success: true };

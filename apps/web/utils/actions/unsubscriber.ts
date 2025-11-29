@@ -1,12 +1,12 @@
-"use server";
+'use server';
 
-import prisma from "@/utils/prisma";
-import { setNewsletterStatusBody } from "@/utils/actions/unsubscriber.validation";
-import { extractEmailAddress } from "@/utils/email";
-import { actionClient } from "@/utils/actions/safe-action";
+import { actionClient } from '@/utils/actions/safe-action';
+import { setNewsletterStatusBody } from '@/utils/actions/unsubscriber.validation';
+import { extractEmailAddress } from '@/utils/email';
+import prisma from '@/utils/prisma';
 
 export const setNewsletterStatusAction = actionClient
-  .metadata({ name: "setNewsletterStatus" })
+  .metadata({ name: 'setNewsletterStatus' })
   .inputSchema(setNewsletterStatusBody)
   .action(
     async ({
@@ -26,5 +26,5 @@ export const setNewsletterStatusAction = actionClient
         },
         update: { status },
       });
-    },
+    }
   );

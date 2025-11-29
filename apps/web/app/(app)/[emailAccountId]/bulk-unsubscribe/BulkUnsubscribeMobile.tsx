@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import type React from "react";
-import Link from "next/link";
-import { usePostHog } from "posthog-js/react";
 import {
   ArchiveIcon,
   BadgeCheckIcon,
   EyeIcon,
   MailMinusIcon,
-} from "lucide-react";
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePostHog } from 'posthog-js/react';
+import type React from 'react';
 import {
-  useUnsubscribe,
   useApproveButton,
   useBulkArchive,
-} from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/hooks";
+  useUnsubscribe,
+} from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/hooks';
+import type { RowProps } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/types';
+import { ButtonLoader } from '@/components/Loading';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { extractEmailAddress, extractNameFromEmail } from "@/utils/email";
-import type { RowProps } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/types";
-import { Button } from "@/components/ui/button";
-import { ButtonLoader } from "@/components/Loading";
-import { NewsletterStatus } from "@/generated/prisma/enums";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/card';
+import { NewsletterStatus } from '@/generated/prisma/enums';
+import { extractEmailAddress, extractNameFromEmail } from '@/utils/email';
 
 export function BulkUnsubscribeMobile({
   tableRows,
@@ -65,14 +65,14 @@ export function BulkUnsubscribeRowMobile({
       refetchPremium,
       posthog,
       emailAccountId,
-    },
+    }
   );
   const { onBulkArchive, isBulkArchiving } = useBulkArchive({
     mutate,
     posthog,
     emailAccountId,
   });
-  const hasUnsubscribeLink = unsubscribeLink !== "#";
+  const hasUnsubscribeLink = unsubscribeLink !== '#';
 
   return (
     <Card className="overflow-hidden">
@@ -97,7 +97,7 @@ export function BulkUnsubscribeRowMobile({
           <Button
             size="sm"
             variant={
-              item.status === NewsletterStatus.APPROVED ? "green" : "secondary"
+              item.status === NewsletterStatus.APPROVED ? 'green' : 'secondary'
             }
             onClick={onApprove}
             disabled={!hasUnsubscribeAccess}
@@ -107,19 +107,19 @@ export function BulkUnsubscribeRowMobile({
             ) : (
               <BadgeCheckIcon className="mr-2 size-4" />
             )}
-            {item.status === NewsletterStatus.APPROVED ? "Approved" : "Keep"}
+            {item.status === NewsletterStatus.APPROVED ? 'Approved' : 'Keep'}
           </Button>
 
           <Button
             size="sm"
             variant={
-              item.status === NewsletterStatus.UNSUBSCRIBED ? "red" : "default"
+              item.status === NewsletterStatus.UNSUBSCRIBED ? 'red' : 'default'
             }
             asChild
           >
             <Link
               href={unsubscribeLink}
-              target={unsubscribeLink !== "#" ? "_blank" : undefined}
+              target={unsubscribeLink !== '#' ? '_blank' : undefined}
               onClick={onUnsubscribe}
               rel="noreferrer"
             >
@@ -131,11 +131,11 @@ export function BulkUnsubscribeRowMobile({
                 )}
                 {item.status === NewsletterStatus.UNSUBSCRIBED
                   ? hasUnsubscribeLink
-                    ? "Unsubscribed"
-                    : "Blocked"
+                    ? 'Unsubscribed'
+                    : 'Blocked'
                   : hasUnsubscribeLink
-                    ? "Unsubscribe"
-                    : "Block"}
+                    ? 'Unsubscribe'
+                    : 'Block'}
               </span>
             </Link>
           </Button>

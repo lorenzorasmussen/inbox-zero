@@ -1,17 +1,17 @@
-"use server";
+'use server';
 
-import prisma from "@/utils/prisma";
-import { assessUser } from "@/utils/assess";
-import { aiAnalyzeWritingStyle } from "@/utils/ai/knowledge/writing-style";
-import { formatBulletList } from "@/utils/string";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
-import { actionClient } from "@/utils/actions/safe-action";
-import { createEmailProvider } from "@/utils/email/provider";
-import { SafeError } from "@/utils/error";
+import { actionClient } from '@/utils/actions/safe-action';
+import { aiAnalyzeWritingStyle } from '@/utils/ai/knowledge/writing-style';
+import { assessUser } from '@/utils/assess';
+import { createEmailProvider } from '@/utils/email/provider';
+import { SafeError } from '@/utils/error';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import prisma from '@/utils/prisma';
+import { formatBulletList } from '@/utils/string';
 
 // to help with onboarding and provide the best flow to new users
 export const assessAction = actionClient
-  .metadata({ name: "assessUser" })
+  .metadata({ name: 'assessUser' })
   .action(async ({ ctx: { emailAccountId, provider, logger } }) => {
     const emailProvider = await createEmailProvider({
       emailAccountId,
@@ -36,7 +36,7 @@ export const assessAction = actionClient
   });
 
 export const analyzeWritingStyleAction = actionClient
-  .metadata({ name: "analyzeWritingStyle" })
+  .metadata({ name: 'analyzeWritingStyle' })
   .action(async ({ ctx: { emailAccountId, provider, logger } }) => {
     const emailAccount = await prisma.emailAccount.findUnique({
       where: { id: emailAccountId },
@@ -53,7 +53,7 @@ export const analyzeWritingStyleAction = actionClient
       },
     });
 
-    if (!emailAccount) throw new SafeError("Email account not found");
+    if (!emailAccount) throw new SafeError('Email account not found');
 
     if (emailAccount?.writingStyle) return { success: true, skipped: true };
 
@@ -68,7 +68,7 @@ export const analyzeWritingStyleAction = actionClient
     // analyze writing style
     const style = await aiAnalyzeWritingStyle({
       emails: sentMessages.map((email) =>
-        getEmailForLLM(email, { extractReply: true }),
+        getEmailForLLM(email, { extractReply: true })
       ),
       emailAccount: { ...emailAccount, account: { provider } },
     });
@@ -88,7 +88,7 @@ export const analyzeWritingStyleAction = actionClient
         : null,
     ]
       .filter(Boolean)
-      .join("\n");
+      .join('\n');
 
     await prisma.emailAccount.update({
       where: { id: emailAccountId },

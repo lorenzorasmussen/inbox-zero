@@ -1,8 +1,8 @@
-import Redis from "ioredis";
-import { env } from "@/env";
-import { createScopedLogger } from "@/utils/logger";
+import Redis from 'ioredis';
+import { env } from '@/env';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("ioredis");
+const logger = createScopedLogger('ioredis');
 
 // biome-ignore lint/complexity/noStaticOnlyClass: ignore
 class RedisSubscriber {
@@ -11,19 +11,19 @@ class RedisSubscriber {
   static getInstance(): Redis {
     if (!RedisSubscriber.instance) {
       if (!env.REDIS_URL) {
-        throw new Error("REDIS_URL is not set");
+        throw new Error('REDIS_URL is not set');
       }
 
-      logger.info("Initializing Redis subscriber connection");
+      logger.info('Initializing Redis subscriber connection');
       RedisSubscriber.instance = new Redis(env.REDIS_URL);
 
       // Handle connection events
-      RedisSubscriber.instance.on("error", (error) => {
-        logger.error("Redis connection error", { error });
+      RedisSubscriber.instance.on('error', (error) => {
+        logger.error('Redis connection error', { error });
       });
 
-      RedisSubscriber.instance.on("connect", () => {
-        logger.info("Redis connected successfully");
+      RedisSubscriber.instance.on('connect', () => {
+        logger.info('Redis connected successfully');
       });
     }
 
@@ -34,7 +34,7 @@ class RedisSubscriber {
     if (RedisSubscriber.instance) {
       RedisSubscriber.instance.disconnect();
       RedisSubscriber.instance = null;
-      logger.info("Redis disconnected");
+      logger.info('Redis disconnected');
     }
   }
 }

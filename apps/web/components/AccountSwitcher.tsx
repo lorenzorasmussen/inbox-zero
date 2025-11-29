@@ -1,9 +1,11 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { ChevronsUpDown, Plus } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
+import type { GetEmailAccountsResponse } from '@/app/api/user/email-accounts/route';
+import { ProfileImage } from '@/components/ProfileImage';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,17 +13,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { useAccounts } from "@/hooks/useAccounts";
-import type { GetEmailAccountsResponse } from "@/app/api/user/email-accounts/route";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { ProfileImage } from "@/components/ProfileImage";
+} from '@/components/ui/sidebar';
+import { useAccounts } from '@/hooks/useAccounts';
+import { useAccount } from '@/providers/EmailAccountProvider';
 export function AccountSwitcher() {
   const { data: accountsData } = useAccounts();
 
@@ -33,7 +33,7 @@ export function AccountSwitcher() {
 export function AccountSwitcherInternal({
   emailAccounts,
 }: {
-  emailAccounts: GetEmailAccountsResponse["emailAccounts"];
+  emailAccounts: GetEmailAccountsResponse['emailAccounts'];
 }) {
   const { isMobile } = useSidebar();
 
@@ -50,17 +50,17 @@ export function AccountSwitcherInternal({
     (emailAccountId: string) => {
       if (!activeEmailAccountId) return `/${emailAccountId}/setup`;
 
-      const basePath = pathname.split("?")[0] || "/";
+      const basePath = pathname.split('?')[0] || '/';
       const newBasePath = basePath.replace(
         activeEmailAccountId,
-        emailAccountId,
+        emailAccountId
       );
 
-      const tab = searchParams.get("tab");
+      const tab = searchParams.get('tab');
 
-      return `${newBasePath}${tab ? `?tab=${tab}` : ""}`;
+      return `${newBasePath}${tab ? `?tab=${tab}` : ''}`;
     },
-    [pathname, activeEmailAccountId, searchParams],
+    [pathname, activeEmailAccountId, searchParams]
   );
 
   if (isLoading) return null;
@@ -105,7 +105,7 @@ export function AccountSwitcherInternal({
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-80 rounded-lg"
             align="start"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">

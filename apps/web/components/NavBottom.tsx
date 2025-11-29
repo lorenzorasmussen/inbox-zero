@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   BarChartIcon,
   CalendarIcon,
   MailMinusIcon,
   SparklesIcon,
-} from "lucide-react";
-import { cn } from "@/utils";
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/utils';
 
 function NavBarBottom({
   links,
@@ -24,7 +24,7 @@ function NavBarBottom({
     <div
       className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background md:hidden"
       // safe area for iOS PWA
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <nav className="grid h-14 grid-cols-4">
         {links.map((link) => {
@@ -33,8 +33,8 @@ function NavBarBottom({
               key={link.path}
               href={link.path}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 hover:text-foreground",
-                link.isSelected ? "text-foreground" : "text-muted-foreground",
+                'flex flex-col items-center justify-center gap-1 hover:text-foreground',
+                link.isSelected ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
               <link.icon className="h-5 w-5" />
@@ -49,23 +49,23 @@ function NavBarBottom({
 
 const links = [
   {
-    path: "/automation",
-    label: "Assistant",
+    path: '/automation',
+    label: 'Assistant',
     icon: SparklesIcon,
   },
   {
-    path: "/bulk-unsubscribe",
-    label: "Unsubscriber",
+    path: '/bulk-unsubscribe',
+    label: 'Unsubscriber',
     icon: MailMinusIcon,
   },
   {
-    path: "/stats",
-    label: "Analytics",
+    path: '/stats',
+    label: 'Analytics',
     icon: BarChartIcon,
   },
   {
-    path: "/calendars",
-    label: "Calendars",
+    path: '/calendars',
+    label: 'Calendars',
     icon: CalendarIcon,
   },
 ];

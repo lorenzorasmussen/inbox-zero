@@ -1,23 +1,23 @@
-"use server";
+'use server';
 
-import { z } from "zod";
-import { after } from "next/server";
-import prisma from "@/utils/prisma";
-import { deleteUser } from "@/utils/user/delete";
-import { actionClient, actionClientUser } from "@/utils/actions/safe-action";
-import { SafeError } from "@/utils/error";
-import { updateAccountSeats } from "@/utils/premium/server";
-import { betterAuthConfig } from "@/utils/auth";
-import { headers } from "next/headers";
+import { headers } from 'next/headers';
+import { after } from 'next/server';
+import { z } from 'zod';
+import { actionClient, actionClientUser } from '@/utils/actions/safe-action';
 import {
   saveAboutBody,
   saveSignatureBody,
-} from "@/utils/actions/user.validation";
-import { clearLastEmailAccountCookie } from "@/utils/cookies.server";
-import { aliasPosthogUser } from "@/utils/posthog";
+} from '@/utils/actions/user.validation';
+import { betterAuthConfig } from '@/utils/auth';
+import { clearLastEmailAccountCookie } from '@/utils/cookies.server';
+import { SafeError } from '@/utils/error';
+import { aliasPosthogUser } from '@/utils/posthog';
+import { updateAccountSeats } from '@/utils/premium/server';
+import prisma from '@/utils/prisma';
+import { deleteUser } from '@/utils/user/delete';
 
 export const saveAboutAction = actionClient
-  .metadata({ name: "saveAbout" })
+  .metadata({ name: 'saveAbout' })
   .inputSchema(saveAboutBody)
   .action(async ({ parsedInput: { about }, ctx: { emailAccountId } }) => {
     await prisma.emailAccount.update({
@@ -27,7 +27,7 @@ export const saveAboutAction = actionClient
   });
 
 export const saveSignatureAction = actionClient
-  .metadata({ name: "saveSignature" })
+  .metadata({ name: 'saveSignature' })
   .inputSchema(saveSignatureBody)
   .action(async ({ parsedInput: { signature }, ctx: { emailAccountId } }) => {
     await prisma.emailAccount.update({
@@ -37,7 +37,7 @@ export const saveSignatureAction = actionClient
   });
 
 export const resetAnalyticsAction = actionClient
-  .metadata({ name: "resetAnalytics" })
+  .metadata({ name: 'resetAnalytics' })
   .action(async ({ ctx: { emailAccountId } }) => {
     await prisma.emailMessage.deleteMany({
       where: { emailAccountId },
@@ -45,10 +45,10 @@ export const resetAnalyticsAction = actionClient
   });
 
 export const deleteAccountAction = actionClientUser
-  .metadata({ name: "deleteAccount" })
+  .metadata({ name: 'deleteAccount' })
   .action(async ({ ctx: { userId, logger } }) => {
     await clearLastEmailAccountCookie().catch((error) => {
-      logger.error("Failed to clear last email account cookie", { error });
+      logger.error('Failed to clear last email account cookie', { error });
     });
 
     await betterAuthConfig.api
@@ -56,13 +56,13 @@ export const deleteAccountAction = actionClientUser
         headers: await headers(),
       })
       .catch((error) => {
-        logger.error("Failed to sign out", { error });
+        logger.error('Failed to sign out', { error });
       });
     await deleteUser({ userId });
   });
 
 export const deleteEmailAccountAction = actionClientUser
-  .metadata({ name: "deleteEmailAccount" })
+  .metadata({ name: 'deleteEmailAccount' })
   .inputSchema(z.object({ emailAccountId: z.string() }))
   .action(async ({ ctx: { userId }, parsedInput: { emailAccountId } }) => {
     const emailAccount = await prisma.emailAccount.findUnique({
@@ -74,8 +74,8 @@ export const deleteEmailAccountAction = actionClientUser
       },
     });
 
-    if (!emailAccount) throw new SafeError("Email account not found");
-    if (!emailAccount.accountId) throw new SafeError("Account id not found");
+    if (!emailAccount) throw new SafeError('Email account not found');
+    if (!emailAccount.accountId) throw new SafeError('Account id not found');
 
     const isPrimaryAccount = emailAccount.email === emailAccount.user.email;
 
@@ -83,7 +83,7 @@ export const deleteEmailAccountAction = actionClientUser
       // Check if there are other email accounts
       const otherEmailAccounts = await prisma.emailAccount.findMany({
         where: { userId, id: { not: emailAccountId } },
-        orderBy: { createdAt: "asc" },
+        orderBy: { createdAt: 'asc' },
         take: 1,
         select: {
           id: true,
@@ -95,7 +95,7 @@ export const deleteEmailAccountAction = actionClientUser
 
       if (otherEmailAccounts.length === 0) {
         throw new SafeError(
-          "Cannot delete your only email account. Go to the Settings page to delete your entire account.",
+          'Cannot delete your only email account. Go to the Settings page to delete your entire account.'
         );
       }
 

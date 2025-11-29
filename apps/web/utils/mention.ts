@@ -20,22 +20,22 @@ export function convertLabelsToDisplay(text: string): string {
  */
 function processMentions(
   text: string,
-  transformer: (match: string) => string,
+  transformer: (match: string) => string
 ): string {
-  let result = "";
+  let result = '';
   let i = 0;
 
   while (i < text.length) {
     // Look for @[
-    if (i < text.length - 1 && text[i] === "@" && text[i + 1] === "[") {
+    if (i < text.length - 1 && text[i] === '@' && text[i + 1] === '[') {
       // Found start of mention, find the matching closing bracket
       let bracketCount = 1;
       let j = i + 2;
 
       while (j < text.length && bracketCount > 0) {
-        if (text[j] === "[") {
+        if (text[j] === '[') {
           bracketCount++;
-        } else if (text[j] === "]") {
+        } else if (text[j] === ']') {
           bracketCount--;
         }
         j++;

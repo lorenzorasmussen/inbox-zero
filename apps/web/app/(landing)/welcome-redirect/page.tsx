@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/utils/auth";
-import { env } from "@/env";
-import prisma from "@/utils/prisma";
+import { redirect } from 'next/navigation';
+import { env } from '@/env';
+import { auth } from '@/utils/auth';
+import prisma from '@/utils/prisma';
 
 export default async function WelcomeRedirectPage(props: {
   searchParams: Promise<{ question?: string; force?: boolean }>;
@@ -9,7 +9,7 @@ export default async function WelcomeRedirectPage(props: {
   const searchParams = await props.searchParams;
   const session = await auth();
 
-  if (!session?.user) redirect("/login");
+  if (!session?.user) redirect('/login');
   if (!env.NEXT_PUBLIC_POSTHOG_ONBOARDING_SURVEY_ID)
     redirect(env.NEXT_PUBLIC_APP_HOME_PATH);
 
@@ -18,10 +18,10 @@ export default async function WelcomeRedirectPage(props: {
     select: { completedOnboardingAt: true, utms: true },
   });
 
-  if (!user) redirect("/login");
+  if (!user) redirect('/login');
 
   if (!searchParams.force && user.completedOnboardingAt)
     redirect(env.NEXT_PUBLIC_APP_HOME_PATH);
 
-  redirect("/onboarding");
+  redirect('/onboarding');
 }

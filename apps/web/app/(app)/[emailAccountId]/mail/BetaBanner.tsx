@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useLocalStorage } from "usehooks-ts";
-import { Banner } from "@/components/Banner";
+import { useLocalStorage } from 'usehooks-ts';
+import { Banner } from '@/components/Banner';
 
 export function BetaBanner() {
   const [bannerVisible, setBannerVisible] = useLocalStorage<
     boolean | undefined
-  >("mailBetaBannerVisibile", true);
+  >('mailBetaBannerVisibile', true);
 
-  if (bannerVisible && typeof window !== "undefined")
+  if (bannerVisible && typeof window !== 'undefined')
     return (
       <Banner
         title="Beta"

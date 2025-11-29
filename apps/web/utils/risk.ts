@@ -1,13 +1,13 @@
-import type { RulesResponse } from "@/app/api/user/rules/route";
-import { isAIRule, type RuleConditions } from "@/utils/condition";
-import { ActionType } from "@/generated/prisma/enums";
-import { TEMPLATE_VARIABLE_PATTERN } from "@/utils/template";
+import type { RulesResponse } from '@/app/api/user/rules/route';
+import { ActionType } from '@/generated/prisma/enums';
+import { isAIRule, type RuleConditions } from '@/utils/condition';
+import { TEMPLATE_VARIABLE_PATTERN } from '@/utils/template';
 
 const RISK_LEVELS = {
-  VERY_HIGH: "very-high",
-  HIGH: "high",
-  MEDIUM: "medium",
-  LOW: "low",
+  VERY_HIGH: 'very-high',
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
 } as const;
 
 export type RiskLevel = (typeof RISK_LEVELS)[keyof typeof RISK_LEVELS];
@@ -23,7 +23,7 @@ export type RiskAction = {
 
 export function getActionRiskLevel(
   action: RiskAction,
-  rule: RuleConditions,
+  rule: RuleConditions
 ): {
   level: RiskLevel;
   message: string;
@@ -36,7 +36,7 @@ export function getActionRiskLevel(
   if (!highRiskActions.some((type) => type === action.type)) {
     return {
       level: RISK_LEVELS.LOW,
-      message: "Low Risk: No email sending action is performed.",
+      message: 'Low Risk: No email sending action is performed.',
     };
   }
 
@@ -47,20 +47,20 @@ export function getActionRiskLevel(
 
   const hasFullyDynamicContent = hasAnyFieldWithStatus(
     contentFields,
-    "fully-dynamic",
+    'fully-dynamic'
   );
   const hasPartiallyDynamicContent = hasAnyFieldWithStatus(
     contentFields,
-    "partially-dynamic",
+    'partially-dynamic'
   );
 
   const hasFullyDynamicRecipient = hasAnyFieldWithStatus(
     recipientFields,
-    "fully-dynamic",
+    'fully-dynamic'
   );
   const hasPartiallyDynamicRecipient = hasAnyFieldWithStatus(
     recipientFields,
-    "partially-dynamic",
+    'partially-dynamic'
   );
 
   // All rules are now automated, so we always check for dynamic content risks
@@ -68,7 +68,7 @@ export function getActionRiskLevel(
     const level = isAIRule(rule) ? RISK_LEVELS.VERY_HIGH : RISK_LEVELS.HIGH;
     return {
       level,
-      message: `${level === RISK_LEVELS.VERY_HIGH ? "Very High" : "High"} Risk: The AI can generate any content and send it to any address. A malicious actor could trick the AI to send spam or other unwanted emails on your behalf.`,
+      message: `${level === RISK_LEVELS.VERY_HIGH ? 'Very High' : 'High'} Risk: The AI can generate any content and send it to any address. A malicious actor could trick the AI to send spam or other unwanted emails on your behalf.`,
     };
   }
 
@@ -76,7 +76,7 @@ export function getActionRiskLevel(
     return {
       level: RISK_LEVELS.HIGH,
       message:
-        "High Risk: The AI can send emails to any address. A malicious actor could use this to send spam or other unwanted emails on your behalf.",
+        'High Risk: The AI can send emails to any address. A malicious actor could use this to send spam or other unwanted emails on your behalf.',
     };
   }
 
@@ -84,7 +84,7 @@ export function getActionRiskLevel(
     return {
       level: RISK_LEVELS.HIGH,
       message:
-        "High Risk: The AI can automatically generate and send any email content. A malicious actor could potentially trick the AI into generating unwanted or inappropriate content.",
+        'High Risk: The AI can automatically generate and send any email content. A malicious actor could potentially trick the AI into generating unwanted or inappropriate content.',
     };
   }
 
@@ -92,19 +92,19 @@ export function getActionRiskLevel(
     return {
       level: RISK_LEVELS.MEDIUM,
       message:
-        "Medium Risk: The AI can generate content or recipients using templates. While more constrained than fully dynamic content, review the templates carefully.",
+        'Medium Risk: The AI can generate content or recipients using templates. While more constrained than fully dynamic content, review the templates carefully.',
     };
   }
 
   return {
     level: RISK_LEVELS.LOW,
-    message: "Low Risk: All content and recipients are static.",
+    message: 'Low Risk: All content and recipients are static.',
   };
 }
 
 function hasAnyFieldWithStatus(
   fields: (string | null)[],
-  status: "fully-dynamic" | "partially-dynamic",
+  status: 'fully-dynamic' | 'partially-dynamic'
 ) {
   return fields.some((field) => field === status);
 }
@@ -120,7 +120,7 @@ function compareRiskLevels(a: RiskLevel, b: RiskLevel): RiskLevel {
 }
 
 export function getRiskLevel(
-  rule: Pick<RulesResponse[number], "actions"> & RuleConditions,
+  rule: Pick<RulesResponse[number], 'actions'> & RuleConditions
 ): {
   level: RiskLevel;
   message: string;
@@ -139,17 +139,17 @@ export function getRiskLevel(
     },
     {
       level: RISK_LEVELS.LOW,
-      message: "Low Risk: All content and recipients are static.",
-    },
+      message: 'Low Risk: All content and recipients are static.',
+    }
   );
 }
 
 function getFieldsDynamicStatus(action: RiskAction) {
   const checkFieldStatus = (field: string | null) => {
     if (!field) return null;
-    if (isFullyDynamicField(field)) return "fully-dynamic";
-    if (isPartiallyDynamicField(field)) return "partially-dynamic";
-    return "static";
+    if (isFullyDynamicField(field)) return 'fully-dynamic';
+    if (isPartiallyDynamicField(field)) return 'partially-dynamic';
+    return 'static';
   };
 
   return {
@@ -164,7 +164,7 @@ function getFieldsDynamicStatus(action: RiskAction) {
 // Helper functions
 export function isFullyDynamicField(field: string) {
   const trimmed = field.trim();
-  return trimmed.startsWith("{{") && trimmed.endsWith("}}");
+  return trimmed.startsWith('{{') && trimmed.endsWith('}}');
 }
 
 export function isPartiallyDynamicField(field: string) {

@@ -1,25 +1,25 @@
-import { useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationPrevious,
   PaginationLink,
   PaginationNext,
-} from "@/components/ui/pagination";
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 export function TablePagination({ totalPages }: { totalPages: number }) {
   const searchParams = useSearchParams();
-  const page = Number.parseInt(searchParams.get("page") || "1");
+  const page = Number.parseInt(searchParams.get('page') || '1');
   const hrefForPage = useCallback(
     (value: number) => {
       const params = new URLSearchParams(searchParams);
-      params.set("page", value.toString());
+      params.set('page', value.toString());
       const asString = params.toString();
-      return asString ? `?${asString}` : "";
+      return asString ? `?${asString}` : '';
     },
-    [searchParams],
+    [searchParams]
   );
 
   if (totalPages <= 1) return null;

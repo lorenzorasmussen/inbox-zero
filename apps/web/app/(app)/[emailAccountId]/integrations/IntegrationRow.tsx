@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import type { GetIntegrationsResponse } from "@/app/api/mcp/integrations/route";
-import type { GetMcpAuthUrlResponse } from "@/app/api/mcp/[integration]/auth-url/route";
-import { Toggle } from "@/components/Toggle";
-import { TypographyP } from "@/components/Typography";
-import { Button } from "@/components/ui/button";
-import { TableRow, TableCell } from "@/components/ui/table";
+import clsx from 'clsx';
+import { ChevronDown, ChevronRight, MoreVertical } from 'lucide-react';
+import { useState } from 'react';
+import type { GetMcpAuthUrlResponse } from '@/app/api/mcp/[integration]/auth-url/route';
+import type { GetIntegrationsResponse } from '@/app/api/mcp/integrations/route';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Toggle } from '@/components/Toggle';
+import { TypographyP } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown, ChevronRight, MoreVertical } from "lucide-react";
-import clsx from "clsx";
-import { toastError, toastSuccess } from "@/components/Toast";
+} from '@/components/ui/dropdown-menu';
+import { TableCell, TableRow } from '@/components/ui/table';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
   disconnectMcpConnectionAction,
   toggleMcpConnectionAction,
   toggleMcpToolAction,
-} from "@/utils/actions/mcp";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { fetchWithAccount } from "@/utils/fetch";
-import { RequestAccessDialog } from "./RequestAccessDialog";
-import { truncate } from "@/utils/string";
+} from '@/utils/actions/mcp';
+import { fetchWithAccount } from '@/utils/fetch';
+import { truncate } from '@/utils/string';
+import { RequestAccessDialog } from './RequestAccessDialog';
 
 interface IntegrationRowProps {
-  integration: GetIntegrationsResponse["integrations"][number];
+  integration: GetIntegrationsResponse['integrations'][number];
   onConnectionChange: () => void;
 }
 
@@ -49,10 +49,10 @@ export function IntegrationRow({
   const tools = conn?.tools || [];
 
   const handleConnect = async () => {
-    if (integration.authType === "api-token") {
+    if (integration.authType === 'api-token') {
       toastError({
-        title: "Error connecting to integration",
-        description: "API token connections are not supported yet",
+        title: 'Error connecting to integration',
+        description: 'API token connections are not supported yet',
       });
       return;
     }
@@ -64,7 +64,7 @@ export function IntegrationRow({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get authorization URL");
+        throw new Error('Failed to get authorization URL');
       }
 
       const data: GetMcpAuthUrlResponse = await response.json();
@@ -72,12 +72,12 @@ export function IntegrationRow({
     } catch (error) {
       console.error(
         `Failed to initiate ${integration.name} connection:`,
-        error,
+        error
       );
       toastError({
         title: `Error connecting to ${integration.name}`,
         description:
-          "Please try again or contact support if the issue persists.",
+          'Please try again or contact support if the issue persists.',
       });
     }
   };
@@ -93,19 +93,19 @@ export function IntegrationRow({
 
       if (result?.serverError) {
         toastError({
-          title: "Error toggling connection",
+          title: 'Error toggling connection',
           description: result.serverError,
         });
       } else {
         toastSuccess({
-          description: `${integration.displayName} ${enabled ? "enabled" : "disabled"}`,
+          description: `${integration.displayName} ${enabled ? 'enabled' : 'disabled'}`,
         });
         onConnectionChange();
       }
     } catch (error) {
       toastError({
-        title: "Error toggling connection",
-        description: error instanceof Error ? error.message : "Unknown error",
+        title: 'Error toggling connection',
+        description: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -119,17 +119,17 @@ export function IntegrationRow({
 
       if (result?.serverError) {
         toastError({
-          title: "Error toggling tool",
+          title: 'Error toggling tool',
           description: result.serverError,
         });
       } else {
-        toastSuccess({ description: "Tool updated" });
+        toastSuccess({ description: 'Tool updated' });
         onConnectionChange();
       }
     } catch (error) {
       toastError({
-        title: "Error toggling tool",
-        description: error instanceof Error ? error.message : "Unknown error",
+        title: 'Error toggling tool',
+        description: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   };
@@ -137,7 +137,7 @@ export function IntegrationRow({
   const handleDisconnect = async () => {
     if (
       !confirm(
-        "Are you sure you want to disconnect this integration? This will remove all associated tools.",
+        'Are you sure you want to disconnect this integration? This will remove all associated tools.'
       )
     ) {
       return;
@@ -154,20 +154,20 @@ export function IntegrationRow({
 
       if (result?.serverError) {
         toastError({
-          title: "Error disconnecting",
+          title: 'Error disconnecting',
           description: result.serverError,
         });
       } else {
         toastSuccess({
-          title: "Disconnected successfully",
+          title: 'Disconnected successfully',
           description: `Disconnected from ${integration.displayName}`,
         });
         onConnectionChange();
       }
     } catch (error) {
       toastError({
-        title: "Error disconnecting",
-        description: error instanceof Error ? error.message : "Unknown error",
+        title: 'Error disconnecting',
+        description: error instanceof Error ? error.message : 'Unknown error',
       });
     } finally {
       setDisconnecting(false);
@@ -181,26 +181,26 @@ export function IntegrationRow({
         <TableCell>
           {integration.comingSoon ? (
             <RequestAccessDialog integrationName={integration.displayName} />
-          ) : integration.authType === "oauth" ||
-            integration.authType === "api-token" ? (
+          ) : integration.authType === 'oauth' ||
+            integration.authType === 'api-token' ? (
             <div className="flex items-center gap-2">
               {connected ? (
                 <div className="flex items-center gap-2">
                   <span
                     className={
                       isActive
-                        ? "text-green-600 text-sm"
-                        : "text-gray-500 text-sm"
+                        ? 'text-green-600 text-sm'
+                        : 'text-gray-500 text-sm'
                     }
                   >
-                    {isActive ? "✓ Connected" : "○ Connected (Disabled)"}
+                    {isActive ? '✓ Connected' : '○ Connected (Disabled)'}
                   </span>
                 </div>
               ) : (
                 <Button size="sm" variant="outline" onClick={handleConnect}>
-                  {integration.authType === "api-token"
-                    ? "Connect with API Key"
-                    : "Connect"}
+                  {integration.authType === 'api-token'
+                    ? 'Connect with API Key'
+                    : 'Connect'}
                 </Button>
               )}
             </div>
@@ -259,7 +259,7 @@ export function IntegrationRow({
                   disabled={disconnecting}
                   className="text-red-600"
                 >
-                  {disconnecting ? "Disconnecting..." : "Disconnect"}
+                  {disconnecting ? 'Disconnecting...' : 'Disconnect'}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -276,8 +276,8 @@ export function IntegrationRow({
 
 interface ToolsListProps {
   tools: NonNullable<
-    GetIntegrationsResponse["integrations"][number]["connection"]
-  >["tools"];
+    GetIntegrationsResponse['integrations'][number]['connection']
+  >['tools'];
   onToggleTool: (toolId: string, isEnabled: boolean) => void;
 }
 
@@ -292,20 +292,20 @@ function ToolsList({ tools, onToggleTool }: ToolsListProps) {
             <div
               key={tool.id}
               className={clsx(
-                "flex items-start gap-4 p-3 rounded-lg border",
+                'flex items-start gap-4 p-3 rounded-lg border',
                 tool.isEnabled
-                  ? "bg-card border-border"
-                  : "bg-muted border-muted",
+                  ? 'bg-card border-border'
+                  : 'bg-muted border-muted'
               )}
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span
                     className={clsx(
-                      "font-mono text-sm font-medium",
+                      'font-mono text-sm font-medium',
                       tool.isEnabled
-                        ? "text-foreground"
-                        : "text-muted-foreground",
+                        ? 'text-foreground'
+                        : 'text-muted-foreground'
                     )}
                   >
                     {tool.name}

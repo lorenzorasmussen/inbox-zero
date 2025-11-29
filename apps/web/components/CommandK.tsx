@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import { ArchiveIcon, PenLineIcon } from "lucide-react";
-import { useAtomValue } from "jotai";
+import { useAtomValue } from 'jotai';
+import { ArchiveIcon, PenLineIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import { useNavigation } from '@/components/SideNav';
 import {
   CommandDialog,
   CommandEmpty,
@@ -12,13 +13,12 @@ import {
   CommandItem,
   CommandList,
   CommandShortcut,
-} from "@/components/ui/command";
-import { useNavigation } from "@/components/SideNav";
-import { useComposeModal } from "@/providers/ComposeModalProvider";
-import { refetchEmailListAtom } from "@/store/email";
-import { archiveEmails } from "@/store/archive-queue";
-import { useDisplayedEmail } from "@/hooks/useDisplayedEmail";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from '@/components/ui/command';
+import { useDisplayedEmail } from '@/hooks/useDisplayedEmail';
+import { useComposeModal } from '@/providers/ComposeModalProvider';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { archiveEmails } from '@/store/archive-queue';
+import { refetchEmailListAtom } from '@/store/email';
 
 export function CommandK() {
   const [open, setOpen] = React.useState(false);
@@ -47,32 +47,32 @@ export function CommandK() {
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
+      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((open) => !open);
       } else if (
-        (e.key === "e" || e.key === "E") &&
+        (e.key === 'e' || e.key === 'E') &&
         !(e.metaKey || e.ctrlKey)
       ) {
         // only archive if the focus is on the body, to prevent when typing in an input
-        if (document?.activeElement?.tagName === "BODY") {
+        if (document?.activeElement?.tagName === 'BODY') {
           e.preventDefault();
           onArchive();
         }
       } else if (
-        (e.key === "c" || e.key === "C") &&
+        (e.key === 'c' || e.key === 'C') &&
         !(e.metaKey || e.ctrlKey)
       ) {
         // only open compose if the focus is on the body, to prevent when typing in an input
-        if (document?.activeElement?.tagName === "BODY") {
+        if (document?.activeElement?.tagName === 'BODY') {
           e.preventDefault();
           onOpenComposeModal();
         }
       }
     };
 
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
   }, [onArchive, onOpenComposeModal]);
 
   const navigation = useNavigation();
@@ -84,7 +84,7 @@ export function CommandK() {
       commandProps={{
         onKeyDown: (e) => {
           // allow closing modal
-          if (e.key !== "Escape") {
+          if (e.key !== 'Escape') {
             // stop propagation to prevent keyboard shortcuts from firing on the page
             e.stopPropagation();
           }

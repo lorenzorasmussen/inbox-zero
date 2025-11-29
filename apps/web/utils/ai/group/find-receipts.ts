@@ -1,40 +1,40 @@
-import type { gmail_v1 } from "@googleapis/gmail";
-import uniq from "lodash/uniq";
-import uniqBy from "lodash/uniqBy";
-import { queryBatchMessagesPages } from "@/utils/gmail/message";
-import { GroupItemType } from "@/generated/prisma/enums";
-import { findMatchingGroupItem } from "@/utils/group/find-matching-group";
-import { generalizeSubject } from "@/utils/string";
-import type { ParsedMessage } from "@/utils/types";
+import type { gmail_v1 } from '@googleapis/gmail';
+import uniq from 'lodash/uniq';
+import uniqBy from 'lodash/uniqBy';
+import { GroupItemType } from '@/generated/prisma/enums';
+import { queryBatchMessagesPages } from '@/utils/gmail/message';
+import { findMatchingGroupItem } from '@/utils/group/find-matching-group';
+import { generalizeSubject } from '@/utils/string';
+import type { ParsedMessage } from '@/utils/types';
 
 // Predefined lists of receipt senders and subjects
 const defaultReceiptSenders = [
-  "invoice+statements",
-  "receipt@",
-  "invoice@",
-  "billing@",
+  'invoice+statements',
+  'receipt@',
+  'invoice@',
+  'billing@',
 ];
 const defaultReceiptSubjects = [
-  "Invoice #",
-  "Payment Receipt",
-  "Payment #",
-  "Purchase Order #",
-  "Purchase Order Number",
-  "Your receipt from",
-  "Your invoice from",
-  "Receipt for subscription payment",
-  "Invoice is Available",
-  "Invoice Available",
-  "order confirmation",
-  "billing statement",
-  "Invoice - ",
-  "Invoice submission",
-  "sent you a purchase order",
-  "Billing Statement Available",
-  "payment was successfully processed",
-  "Payment received",
-  "Successful payment",
-  "Purchase receipt",
+  'Invoice #',
+  'Payment Receipt',
+  'Payment #',
+  'Purchase Order #',
+  'Purchase Order Number',
+  'Your receipt from',
+  'Your invoice from',
+  'Receipt for subscription payment',
+  'Invoice is Available',
+  'Invoice Available',
+  'order confirmation',
+  'billing statement',
+  'Invoice - ',
+  'Invoice submission',
+  'sent you a purchase order',
+  'Billing Statement Available',
+  'payment was successfully processed',
+  'Payment received',
+  'Successful payment',
+  'Purchase receipt',
 ];
 
 // Find additional receipts from the user's inbox that don't match the predefined lists
@@ -46,13 +46,13 @@ export async function findReceipts(gmail: gmail_v1.Gmail, userEmail: string) {
   const filteredSenders = senders.filter(
     (sender) =>
       !findMatchingGroupItem(
-        { from: sender, subject: "" },
+        { from: sender, subject: '' },
         defaultReceiptSenders.map((sender) => ({
           type: GroupItemType.FROM,
           value: sender,
           exclude: false,
-        })),
-      ) && !sender?.includes(userEmail),
+        }))
+      ) && !sender?.includes(userEmail)
   );
 
   const sendersList = uniq([...filteredSenders, ...defaultReceiptSenders]);
@@ -66,7 +66,7 @@ export async function findReceipts(gmail: gmail_v1.Gmail, userEmail: string) {
           type: GroupItemType.SUBJECT,
           value: subject,
           exclude: false,
-        })),
+        }))
       ) &&
       !findMatchingGroupItem(
         email,
@@ -74,8 +74,8 @@ export async function findReceipts(gmail: gmail_v1.Gmail, userEmail: string) {
           type: GroupItemType.FROM,
           value: sender,
           exclude: false,
-        })),
-      ),
+        }))
+      )
   );
 
   const subjectsList = uniq([
@@ -95,10 +95,10 @@ export async function findReceipts(gmail: gmail_v1.Gmail, userEmail: string) {
   ];
 }
 
-const receiptSenders = ["invoice", "receipt", "payment"];
+const receiptSenders = ['invoice', 'receipt', 'payment'];
 
 async function findReceiptSenders(gmail: gmail_v1.Gmail) {
-  const query = `from:(${receiptSenders.join(" OR ")})`;
+  const query = `from:(${receiptSenders.join(' OR ')})`;
   const messages = await queryBatchMessagesPages(gmail, {
     query,
     maxResults: 100,
@@ -108,17 +108,17 @@ async function findReceiptSenders(gmail: gmail_v1.Gmail) {
 }
 
 const receiptSubjects = [
-  "invoice",
-  "receipt",
-  "payment",
-  "purchase",
+  'invoice',
+  'receipt',
+  'payment',
+  'purchase',
   '"purchase order"',
   '"order confirmation"',
   '"billing statement"',
 ];
 
 async function findReceiptSubjects(gmail: gmail_v1.Gmail) {
-  const query = `subject:(${receiptSubjects.join(" OR ")})`;
+  const query = `subject:(${receiptSubjects.join(' OR ')})`;
   const messages = await queryBatchMessagesPages(gmail, {
     query,
     maxResults: 100,
@@ -129,7 +129,7 @@ async function findReceiptSubjects(gmail: gmail_v1.Gmail) {
       from: message.headers.from,
       subject: generalizeSubject(message.headers.subject),
     })),
-    (message) => message.from,
+    (message) => message.from
   );
 }
 
@@ -140,7 +140,7 @@ export function isReceiptSender(sender: string) {
 export function isReceiptSubject(subject: string) {
   const lowerSubject = subject?.toLowerCase();
   return defaultReceiptSubjects.some((receipt) =>
-    lowerSubject?.includes(receipt?.toLowerCase()),
+    lowerSubject?.includes(receipt?.toLowerCase())
   );
 }
 
@@ -154,6 +154,6 @@ export function isReceipt(message: ParsedMessage) {
 export function isMaybeReceipt(message: ParsedMessage) {
   const lowerSubject = message.headers.subject?.toLowerCase();
   return receiptSubjects.some((subject) =>
-    lowerSubject?.includes(subject?.toLowerCase()),
+    lowerSubject?.includes(subject?.toLowerCase())
   );
 }

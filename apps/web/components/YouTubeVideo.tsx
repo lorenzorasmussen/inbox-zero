@@ -1,5 +1,5 @@
-import YouTube from "react-youtube";
-import { cn } from "@/utils";
+import YouTube from 'react-youtube';
+import { cn } from '@/utils';
 
 export function YouTubeVideo(props: {
   videoId: string;
@@ -18,7 +18,7 @@ export function YouTubeVideo(props: {
     <YouTube
       videoId={props.videoId}
       title={props.title}
-      className={cn("aspect-video h-full w-full rounded-lg", props.className)}
+      className={cn('aspect-video h-full w-full rounded-lg', props.className)}
       iframeClassName={props.iframeClassName}
       opts={{
         ...props.opts,

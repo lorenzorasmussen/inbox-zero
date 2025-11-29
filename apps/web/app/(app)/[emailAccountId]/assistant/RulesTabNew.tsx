@@ -1,5 +1,5 @@
-import { Rules } from "@/app/(app)/[emailAccountId]/assistant/Rules";
-import { AddRuleDialog } from "@/app/(app)/[emailAccountId]/assistant/AddRuleDialog";
+import { AddRuleDialog } from '@/app/(app)/[emailAccountId]/assistant/AddRuleDialog';
+import { Rules } from '@/app/(app)/[emailAccountId]/assistant/Rules';
 
 export function RulesTab() {
   return (

@@ -1,20 +1,20 @@
 {
-  "recommendations": [
-    "biomejs.biome",
-    "bradlc.vscode-tailwindcss",
-    "esbenp.prettier-vscode",
-    "ms-vscode.vscode-typescript-next",
-    "prisma.prisma",
-    "ms-vscode.vscode-json",
-    "formulahendry.auto-rename-tag",
-    "christian-kohler.path-intellisense",
-    "ms-vscode.vscode-eslint",
-    "austenc.tailwind-docs",
-    "wmaurer.change-case",
-    "mikestead.dotenv",
-    "github.vscode-pull-request-github",
-    "cardinal90.multi-cursor-case-preserve",
-    "chakrounanas.turbo-console-log",
-    "unifiedjs.vscode-mdx"
-  ]
+	"recommendations": [
+		"biomejs.biome",
+		"bradlc.vscode-tailwindcss",
+		"esbenp.prettier-vscode",
+		"ms-vscode.vscode-typescript-next",
+		"prisma.prisma",
+		"ms-vscode.vscode-json",
+		"formulahendry.auto-rename-tag",
+		"christian-kohler.path-intellisense",
+		"ms-vscode.vscode-eslint",
+		"austenc.tailwind-docs",
+		"wmaurer.change-case",
+		"mikestead.dotenv",
+		"github.vscode-pull-request-github",
+		"cardinal90.multi-cursor-case-preserve",
+		"chakrounanas.turbo-console-log",
+		"unifiedjs.vscode-mdx"
+	]
 }

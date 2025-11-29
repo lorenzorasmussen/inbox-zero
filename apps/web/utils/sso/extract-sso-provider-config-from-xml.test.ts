@@ -1,16 +1,16 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the env module for dynamic access
 const mockEnv = {
   env: {
-    NEXT_PUBLIC_BASE_URL: "https://example.com",
+    NEXT_PUBLIC_BASE_URL: 'https://example.com',
   },
 };
 
 // Store the original function for dynamic import
-let extractSSOProviderConfigFromXML: typeof import("./extract-sso-provider-config-from-xml").extractSSOProviderConfigFromXML;
+let extractSSOProviderConfigFromXML: typeof import('./extract-sso-provider-config-from-xml').extractSSOProviderConfigFromXML;
 
-describe("extractSSOProviderConfigFromXML", () => {
+describe('extractSSOProviderConfigFromXML', () => {
   const validIdpMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -77,10 +77,10 @@ describe("extractSSOProviderConfigFromXML", () => {
 
   beforeEach(async () => {
     vi.resetModules();
-    vi.doMock("@/env", () => mockEnv);
+    vi.doMock('@/env', () => mockEnv);
 
     // Dynamically import the module after setting up the mock
-    const module = await import("./extract-sso-provider-config-from-xml");
+    const module = await import('./extract-sso-provider-config-from-xml');
     extractSSOProviderConfigFromXML = module.extractSSOProviderConfigFromXML;
   });
 
@@ -88,56 +88,56 @@ describe("extractSSOProviderConfigFromXML", () => {
     vi.resetModules();
   });
 
-  describe("successful extraction", () => {
-    it("should extract SSO config from valid prefixed XML", () => {
+  describe('successful extraction', () => {
+    it('should extract SSO config from valid prefixed XML', () => {
       const result = extractSSOProviderConfigFromXML(
         validIdpMetadata,
-        "test-provider",
+        'test-provider'
       );
 
       expect(result).toEqual({
-        issuer: "https://idp.example.com",
-        entryPoint: "https://idp.example.com/sso",
-        cert: "-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END CERTIFICATE-----",
-        spMetadata: expect.stringContaining("https://example.com"),
+        issuer: 'https://idp.example.com',
+        entryPoint: 'https://idp.example.com/sso',
+        cert: '-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END CERTIFICATE-----',
+        spMetadata: expect.stringContaining('https://example.com'),
       });
-      expect(result.spMetadata).toContain("test-provider");
+      expect(result.spMetadata).toContain('test-provider');
     });
 
-    it("should extract SSO config from valid unprefixed XML", () => {
+    it('should extract SSO config from valid unprefixed XML', () => {
       const result = extractSSOProviderConfigFromXML(
         validIdpMetadataUnprefixed,
-        "test-provider",
+        'test-provider'
       );
 
       expect(result).toEqual({
-        issuer: "https://idp.example.com",
-        entryPoint: "https://idp.example.com/sso",
-        cert: "-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END CERTIFICATE-----",
-        spMetadata: expect.stringContaining("https://example.com"),
+        issuer: 'https://idp.example.com',
+        entryPoint: 'https://idp.example.com/sso',
+        cert: '-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END CERTIFICATE-----',
+        spMetadata: expect.stringContaining('https://example.com'),
       });
     });
 
-    it("should prefer HTTP-POST service when multiple services available", () => {
+    it('should prefer HTTP-POST service when multiple services available', () => {
       const result = extractSSOProviderConfigFromXML(
         validIdpMetadataMultipleServices,
-        "test-provider",
+        'test-provider'
       );
 
-      expect(result.entryPoint).toBe("https://idp.example.com/sso");
+      expect(result.entryPoint).toBe('https://idp.example.com/sso');
     });
 
-    it("should prefer signing key when multiple keys available", () => {
+    it('should prefer signing key when multiple keys available', () => {
       const result = extractSSOProviderConfigFromXML(
         validIdpMetadataMultipleKeys,
-        "test-provider",
+        'test-provider'
       );
 
-      expect(result.cert).toContain("SIGNING_CERT");
-      expect(result.cert).not.toContain("ENCRYPTION_CERT");
+      expect(result.cert).toContain('SIGNING_CERT');
+      expect(result.cert).not.toContain('ENCRYPTION_CERT');
     });
 
-    it("should fall back to first key when no signing key found", () => {
+    it('should fall back to first key when no signing key found', () => {
       const metadataWithoutSigning = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -154,12 +154,12 @@ describe("extractSSOProviderConfigFromXML", () => {
 
       const result = extractSSOProviderConfigFromXML(
         metadataWithoutSigning,
-        "test-provider",
+        'test-provider'
       );
-      expect(result.cert).toContain("FALLBACK_CERT");
+      expect(result.cert).toContain('FALLBACK_CERT');
     });
 
-    it("should fall back to first service when no HTTP-POST service found", () => {
+    it('should fall back to first service when no HTTP-POST service found', () => {
       const metadataWithoutHttpPost = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -176,73 +176,73 @@ describe("extractSSOProviderConfigFromXML", () => {
 
       const result = extractSSOProviderConfigFromXML(
         metadataWithoutHttpPost,
-        "test-provider",
+        'test-provider'
       );
-      expect(result.entryPoint).toBe("https://idp.example.com/redirect");
+      expect(result.entryPoint).toBe('https://idp.example.com/redirect');
     });
 
-    it("should properly encode providerId in ACS URL", () => {
+    it('should properly encode providerId in ACS URL', () => {
       const result = extractSSOProviderConfigFromXML(
         validIdpMetadata,
-        "test provider with spaces & special chars",
+        'test provider with spaces & special chars'
       );
 
       expect(result.spMetadata).toContain(
-        "test%20provider%20with%20spaces%20%26%20special%20chars",
+        'test%20provider%20with%20spaces%20%26%20special%20chars'
       );
     });
 
-    it("should handle base URL with trailing slash", async () => {
+    it('should handle base URL with trailing slash', async () => {
       // Reset modules and set up mock with trailing slash
       vi.resetModules();
-      vi.doMock("@/env", () => ({
+      vi.doMock('@/env', () => ({
         env: {
-          NEXT_PUBLIC_BASE_URL: "https://example.com/",
+          NEXT_PUBLIC_BASE_URL: 'https://example.com/',
         },
       }));
 
       // Dynamically import the module with the new mock
-      const module = await import("./extract-sso-provider-config-from-xml");
+      const module = await import('./extract-sso-provider-config-from-xml');
       const { extractSSOProviderConfigFromXML: extractWithTrailingSlash } =
         module;
 
       const result = extractWithTrailingSlash(
         validIdpMetadata,
-        "test-provider",
+        'test-provider'
       );
 
       expect(result.spMetadata).toContain(
-        "https://example.com/api/auth/sso/saml2/callback/test-provider",
+        'https://example.com/api/auth/sso/saml2/callback/test-provider'
       );
-      expect(result.spMetadata).not.toContain("https://example.com//api");
+      expect(result.spMetadata).not.toContain('https://example.com//api');
     });
   });
 
-  describe("error cases", () => {
-    it("should throw error for invalid XML", () => {
+  describe('error cases', () => {
+    it('should throw error for invalid XML', () => {
       expect(() => {
-        extractSSOProviderConfigFromXML("invalid xml", "test-provider");
-      }).toThrow("Missing or invalid EntityDescriptor in SAML metadata");
+        extractSSOProviderConfigFromXML('invalid xml', 'test-provider');
+      }).toThrow('Missing or invalid EntityDescriptor in SAML metadata');
     });
 
-    it("should throw error for null/undefined metadata", () => {
+    it('should throw error for null/undefined metadata', () => {
       expect(() => {
-        extractSSOProviderConfigFromXML("", "test-provider");
-      }).toThrow("Missing or invalid EntityDescriptor in SAML metadata");
+        extractSSOProviderConfigFromXML('', 'test-provider');
+      }).toThrow('Missing or invalid EntityDescriptor in SAML metadata');
     });
 
-    it("should throw error when EntityDescriptor is missing", () => {
+    it('should throw error when EntityDescriptor is missing', () => {
       const invalidMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <root>
   <other>content</other>
 </root>`;
 
       expect(() => {
-        extractSSOProviderConfigFromXML(invalidMetadata, "test-provider");
-      }).toThrow("Missing or invalid EntityDescriptor in SAML metadata");
+        extractSSOProviderConfigFromXML(invalidMetadata, 'test-provider');
+      }).toThrow('Missing or invalid EntityDescriptor in SAML metadata');
     });
 
-    it("should throw error when entityID is missing", () => {
+    it('should throw error when entityID is missing', () => {
       const invalidMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -258,21 +258,21 @@ describe("extractSSOProviderConfigFromXML", () => {
 </md:EntityDescriptor>`;
 
       expect(() => {
-        extractSSOProviderConfigFromXML(invalidMetadata, "test-provider");
-      }).toThrow("Missing or invalid entityID in EntityDescriptor");
+        extractSSOProviderConfigFromXML(invalidMetadata, 'test-provider');
+      }).toThrow('Missing or invalid entityID in EntityDescriptor');
     });
 
-    it("should throw error when IDPSSODescriptor is missing", () => {
+    it('should throw error when IDPSSODescriptor is missing', () => {
       const invalidMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
 </md:EntityDescriptor>`;
 
       expect(() => {
-        extractSSOProviderConfigFromXML(invalidMetadata, "test-provider");
-      }).toThrow("Missing or invalid IDPSSODescriptor in EntityDescriptor");
+        extractSSOProviderConfigFromXML(invalidMetadata, 'test-provider');
+      }).toThrow('Missing or invalid IDPSSODescriptor in EntityDescriptor');
     });
 
-    it("should throw error when KeyDescriptor is missing", () => {
+    it('should throw error when KeyDescriptor is missing', () => {
       const invalidMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -281,11 +281,11 @@ describe("extractSSOProviderConfigFromXML", () => {
 </md:EntityDescriptor>`;
 
       expect(() => {
-        extractSSOProviderConfigFromXML(invalidMetadata, "test-provider");
-      }).toThrow("No KeyDescriptor found in IDPSSODescriptor");
+        extractSSOProviderConfigFromXML(invalidMetadata, 'test-provider');
+      }).toThrow('No KeyDescriptor found in IDPSSODescriptor');
     });
 
-    it("should throw error when KeyInfo is missing", () => {
+    it('should throw error when KeyInfo is missing', () => {
       const invalidMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -296,11 +296,11 @@ describe("extractSSOProviderConfigFromXML", () => {
 </md:EntityDescriptor>`;
 
       expect(() => {
-        extractSSOProviderConfigFromXML(invalidMetadata, "test-provider");
-      }).toThrow("Missing or invalid KeyInfo in KeyDescriptor");
+        extractSSOProviderConfigFromXML(invalidMetadata, 'test-provider');
+      }).toThrow('Missing or invalid KeyInfo in KeyDescriptor');
     });
 
-    it("should throw error when X509Data is missing", () => {
+    it('should throw error when X509Data is missing', () => {
       const invalidMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -313,11 +313,11 @@ describe("extractSSOProviderConfigFromXML", () => {
 </md:EntityDescriptor>`;
 
       expect(() => {
-        extractSSOProviderConfigFromXML(invalidMetadata, "test-provider");
-      }).toThrow("Missing or invalid X509Data in KeyInfo");
+        extractSSOProviderConfigFromXML(invalidMetadata, 'test-provider');
+      }).toThrow('Missing or invalid X509Data in KeyInfo');
     });
 
-    it("should throw error when X509Certificate is missing", () => {
+    it('should throw error when X509Certificate is missing', () => {
       const invalidMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -332,11 +332,11 @@ describe("extractSSOProviderConfigFromXML", () => {
 </md:EntityDescriptor>`;
 
       expect(() => {
-        extractSSOProviderConfigFromXML(invalidMetadata, "test-provider");
-      }).toThrow("Missing or invalid X509Data in KeyInfo");
+        extractSSOProviderConfigFromXML(invalidMetadata, 'test-provider');
+      }).toThrow('Missing or invalid X509Data in KeyInfo');
     });
 
-    it("should throw error when SingleSignOnService is missing", () => {
+    it('should throw error when SingleSignOnService is missing', () => {
       const invalidMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -351,11 +351,11 @@ describe("extractSSOProviderConfigFromXML", () => {
 </md:EntityDescriptor>`;
 
       expect(() => {
-        extractSSOProviderConfigFromXML(invalidMetadata, "test-provider");
-      }).toThrow("No SingleSignOnService found in IDPSSODescriptor");
+        extractSSOProviderConfigFromXML(invalidMetadata, 'test-provider');
+      }).toThrow('No SingleSignOnService found in IDPSSODescriptor');
     });
 
-    it("should throw error when no valid service location found", () => {
+    it('should throw error when no valid service location found', () => {
       const invalidMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -371,13 +371,13 @@ describe("extractSSOProviderConfigFromXML", () => {
 </md:EntityDescriptor>`;
 
       expect(() => {
-        extractSSOProviderConfigFromXML(invalidMetadata, "test-provider");
-      }).toThrow("No valid SingleSignOnService location found");
+        extractSSOProviderConfigFromXML(invalidMetadata, 'test-provider');
+      }).toThrow('No valid SingleSignOnService location found');
     });
   });
 
-  describe("edge cases", () => {
-    it("should handle certificate with whitespace", () => {
+  describe('edge cases', () => {
+    it('should handle certificate with whitespace', () => {
       const metadataWithWhitespace = `<?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -394,14 +394,14 @@ describe("extractSSOProviderConfigFromXML", () => {
 
       const result = extractSSOProviderConfigFromXML(
         metadataWithWhitespace,
-        "test-provider",
+        'test-provider'
       );
       expect(result.cert).toBe(
-        "-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END CERTIFICATE-----",
+        '-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END CERTIFICATE-----'
       );
     });
 
-    it("should handle mixed namespace formats", () => {
+    it('should handle mixed namespace formats', () => {
       const mixedNamespaceMetadata = `<?xml version="1.0" encoding="UTF-8"?>
 <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">
   <md:IDPSSODescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
@@ -418,10 +418,10 @@ describe("extractSSOProviderConfigFromXML", () => {
 
       const result = extractSSOProviderConfigFromXML(
         mixedNamespaceMetadata,
-        "test-provider",
+        'test-provider'
       );
-      expect(result.issuer).toBe("https://idp.example.com");
-      expect(result.entryPoint).toBe("https://idp.example.com/sso");
+      expect(result.issuer).toBe('https://idp.example.com');
+      expect(result.entryPoint).toBe('https://idp.example.com/sso');
     });
   });
 });

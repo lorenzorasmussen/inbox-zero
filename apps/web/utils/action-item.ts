@@ -1,20 +1,20 @@
-import { ActionType } from "@/generated/prisma/enums";
-import type { Action, ExecutedAction, Prisma } from "@/generated/prisma/client";
+import type { Action, ExecutedAction, Prisma } from '@/generated/prisma/client';
+import { ActionType } from '@/generated/prisma/enums';
 
 export const actionInputs: Record<
   ActionType,
   {
     fields: {
       name:
-        | "labelId"
-        | "subject"
-        | "content"
-        | "to"
-        | "cc"
-        | "bcc"
-        | "url"
-        | "folderName"
-        | "folderId";
+        | 'labelId'
+        | 'subject'
+        | 'content'
+        | 'to'
+        | 'cc'
+        | 'bcc'
+        | 'url'
+        | 'folderName'
+        | 'folderId';
       label: string;
       textArea?: boolean;
       expandable?: boolean;
@@ -26,8 +26,8 @@ export const actionInputs: Record<
   [ActionType.LABEL]: {
     fields: [
       {
-        name: "labelId",
-        label: "Label",
+        name: 'labelId',
+        label: 'Label',
       },
     ],
   },
@@ -35,28 +35,28 @@ export const actionInputs: Record<
   [ActionType.DRAFT_EMAIL]: {
     fields: [
       {
-        name: "subject",
-        label: "Subject",
+        name: 'subject',
+        label: 'Subject',
         expandable: true,
       },
       {
-        name: "content",
-        label: "Content",
+        name: 'content',
+        label: 'Content',
         textArea: true,
       },
       {
-        name: "to",
-        label: "To",
+        name: 'to',
+        label: 'To',
         expandable: true,
       },
       {
-        name: "cc",
-        label: "CC",
+        name: 'cc',
+        label: 'CC',
         expandable: true,
       },
       {
-        name: "bcc",
-        label: "BCC",
+        name: 'bcc',
+        label: 'BCC',
         expandable: true,
       },
     ],
@@ -64,18 +64,18 @@ export const actionInputs: Record<
   [ActionType.REPLY]: {
     fields: [
       {
-        name: "content",
-        label: "Content",
+        name: 'content',
+        label: 'Content',
         textArea: true,
       },
       {
-        name: "cc",
-        label: "CC",
+        name: 'cc',
+        label: 'CC',
         expandable: true,
       },
       {
-        name: "bcc",
-        label: "BCC",
+        name: 'bcc',
+        label: 'BCC',
         expandable: true,
       },
     ],
@@ -83,26 +83,26 @@ export const actionInputs: Record<
   [ActionType.SEND_EMAIL]: {
     fields: [
       {
-        name: "subject",
-        label: "Subject",
+        name: 'subject',
+        label: 'Subject',
       },
       {
-        name: "content",
-        label: "Content",
+        name: 'content',
+        label: 'Content',
         textArea: true,
       },
       {
-        name: "to",
-        label: "To",
+        name: 'to',
+        label: 'To',
       },
       {
-        name: "cc",
-        label: "CC",
+        name: 'cc',
+        label: 'CC',
         expandable: true,
       },
       {
-        name: "bcc",
-        label: "BCC",
+        name: 'bcc',
+        label: 'BCC',
         expandable: true,
       },
     ],
@@ -110,22 +110,22 @@ export const actionInputs: Record<
   [ActionType.FORWARD]: {
     fields: [
       {
-        name: "content",
-        label: "Extra Content",
+        name: 'content',
+        label: 'Extra Content',
         textArea: true,
       },
       {
-        name: "to",
-        label: "To",
+        name: 'to',
+        label: 'To',
       },
       {
-        name: "cc",
-        label: "CC",
+        name: 'cc',
+        label: 'CC',
         expandable: true,
       },
       {
-        name: "bcc",
-        label: "BCC",
+        name: 'bcc',
+        label: 'BCC',
         expandable: true,
       },
     ],
@@ -134,9 +134,9 @@ export const actionInputs: Record<
   [ActionType.CALL_WEBHOOK]: {
     fields: [
       {
-        name: "url",
-        label: "URL",
-        placeholder: "https://example.com/webhook",
+        name: 'url',
+        label: 'URL',
+        placeholder: 'https://example.com/webhook',
       },
     ],
   },
@@ -144,8 +144,8 @@ export const actionInputs: Record<
   [ActionType.MOVE_FOLDER]: {
     fields: [
       {
-        name: "folderName",
-        label: "Folder name",
+        name: 'folderName',
+        label: 'Folder name',
       },
     ],
   },
@@ -180,22 +180,22 @@ export function getActionFields(fields: Action | ExecutedAction | undefined) {
 
 type ActionFieldsSelection = Pick<
   Prisma.ActionCreateInput,
-  | "type"
-  | "label"
-  | "labelId"
-  | "subject"
-  | "content"
-  | "to"
-  | "cc"
-  | "bcc"
-  | "url"
-  | "folderName"
-  | "folderId"
-  | "delayInMinutes"
+  | 'type'
+  | 'label'
+  | 'labelId'
+  | 'subject'
+  | 'content'
+  | 'to'
+  | 'cc'
+  | 'bcc'
+  | 'url'
+  | 'folderName'
+  | 'folderId'
+  | 'delayInMinutes'
 >;
 
 export function sanitizeActionFields(
-  action: Partial<ActionFieldsSelection> & { type: ActionType },
+  action: Partial<ActionFieldsSelection> & { type: ActionType }
 ): ActionFieldsSelection {
   const base: ActionFieldsSelection = {
     type: action.type,

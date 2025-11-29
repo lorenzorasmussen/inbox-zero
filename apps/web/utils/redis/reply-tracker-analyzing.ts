@@ -1,4 +1,4 @@
-import { redis } from "@/utils/redis";
+import { redis } from '@/utils/redis';
 
 function getKey({ emailAccountId }: { emailAccountId: string }) {
   return `reply-tracker:analyzing:${emailAccountId}`;
@@ -11,7 +11,7 @@ export async function startAnalyzingReplyTracker({
 }) {
   const key = getKey({ emailAccountId });
   // expire in 5 minutes
-  await redis.set(key, "true", { ex: 5 * 60 });
+  await redis.set(key, 'true', { ex: 5 * 60 });
 }
 
 export async function stopAnalyzingReplyTracker({
@@ -30,5 +30,5 @@ export async function isAnalyzingReplyTracker({
 }) {
   const key = getKey({ emailAccountId });
   const result = await redis.get(key);
-  return result === "true";
+  return result === 'true';
 }

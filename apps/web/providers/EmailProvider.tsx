@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useMemo } from "react";
-import { useLabels } from "@/hooks/useLabels";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { OUTLOOK_COLOR_MAP } from "@/utils/outlook/label";
+import { createContext, useContext, useMemo } from 'react';
+import { useLabels } from '@/hooks/useLabels';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
   isGoogleProvider,
   isMicrosoftProvider,
-} from "@/utils/email/provider-types";
+} from '@/utils/email/provider-types';
+import { OUTLOOK_COLOR_MAP } from '@/utils/outlook/label';
 
 export type EmailLabel = {
   id: string;
@@ -35,18 +35,19 @@ const EmailContext = createContext<Context>({
 
 export const useEmail = () => useContext<Context>(EmailContext);
 
-function mapLabelColor(provider: string, label: any): EmailLabel["color"] {
+function mapLabelColor(provider: string, label: any): EmailLabel['color'] {
   if (!provider) {
     return undefined;
   }
 
   if (isGoogleProvider(provider)) {
     return label.color;
-  } else if (isMicrosoftProvider(provider)) {
+  }
+  if (isMicrosoftProvider(provider)) {
     const presetColor = label.color as string;
     const backgroundColor =
       OUTLOOK_COLOR_MAP[presetColor as keyof typeof OUTLOOK_COLOR_MAP] ||
-      "#95A5A6"; // Default gray if preset not found
+      '#95A5A6'; // Default gray if preset not found
 
     return {
       backgroundColor,
@@ -83,7 +84,7 @@ export function EmailProvider(props: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({ userLabels, labelsIsLoading: isLoading || accountIsLoading }),
-    [userLabels, isLoading, accountIsLoading],
+    [userLabels, isLoading, accountIsLoading]
   );
 
   return (

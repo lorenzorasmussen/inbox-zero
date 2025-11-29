@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { redis } from "@/utils/redis";
+import { z } from 'zod';
+import { redis } from '@/utils/redis';
 
 const categorizationProgressSchema = z.object({
   totalItems: z.number().int().min(0),
@@ -37,7 +37,7 @@ export async function saveCategorizationTotalItems({
       ...existingProgress,
       totalItems: (existingProgress?.totalItems || 0) + totalItems,
     },
-    { ex: 2 * 60 },
+    { ex: 2 * 60 }
   );
 }
 

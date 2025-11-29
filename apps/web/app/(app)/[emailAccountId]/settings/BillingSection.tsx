@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { FormSection, FormSectionLeft } from "@/components/Form";
-import { usePremium } from "@/components/PremiumAlert";
-import { ManageSubscription } from "@/app/(app)/premium/ManageSubscription";
-import { LoadingContent } from "@/components/LoadingContent";
-import { MessageText } from "@/components/Typography";
+import { ManageSubscription } from '@/app/(app)/premium/ManageSubscription';
+import { FormSection, FormSectionLeft } from '@/components/Form';
+import { LoadingContent } from '@/components/LoadingContent';
+import { usePremium } from '@/components/PremiumAlert';
+import { MessageText } from '@/components/Typography';
 
 export function BillingSection() {
   const { premium, isLoading } = usePremium();

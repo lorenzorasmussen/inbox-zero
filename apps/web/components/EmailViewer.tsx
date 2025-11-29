@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { useDisplayedEmail } from "@/hooks/useDisplayedEmail";
-import { EmailThread } from "@/components/email-list/EmailThread";
-import { useThread } from "@/hooks/useThread";
-import { LoadingContent } from "@/components/LoadingContent";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { isGoogleProvider } from "@/utils/email/provider-types";
+import { useCallback } from 'react';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { EmailThread } from '@/components/email-list/EmailThread';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { useDisplayedEmail } from '@/hooks/useDisplayedEmail';
+import { useThread } from '@/hooks/useThread';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { isGoogleProvider } from '@/utils/email/provider-types';
 
 export function EmailViewer() {
   const { provider } = useAccount();
@@ -63,11 +63,11 @@ export function ThreadContent({
     { id: threadId },
     {
       includeDrafts: true,
-    },
+    }
   );
 
   return (
-    <ErrorBoundary extra={{ component: "ThreadContent", threadId }}>
+    <ErrorBoundary extra={{ component: 'ThreadContent', threadId }}>
       <LoadingContent loading={isLoading} error={error}>
         {data && (
           <EmailThread

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { motion } from "motion/react";
-import { cn } from "@/utils";
+import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useState } from 'react';
+import { cn } from '@/utils';
 
 export function ExpandableText({
   text,
@@ -26,10 +26,10 @@ export function ExpandableText({
       <div className="relative overflow-hidden">
         {/* Always render the full text but add a mask when collapsed */}
         <motion.div
-          initial={{ height: "4rem" }}
-          animate={{ height: isExpanded ? "auto" : "4rem" }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className={isExpanded ? "" : "overflow-hidden"}
+          initial={{ height: '4rem' }}
+          animate={{ height: isExpanded ? 'auto' : '4rem' }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className={isExpanded ? '' : 'overflow-hidden'}
         >
           {text}
         </motion.div>
@@ -74,7 +74,7 @@ function TextWrapper({
   className?: string;
 }) {
   return (
-    <div className={cn("whitespace-pre-wrap break-words", className)}>
+    <div className={cn('whitespace-pre-wrap break-words', className)}>
       {children}
     </div>
   );

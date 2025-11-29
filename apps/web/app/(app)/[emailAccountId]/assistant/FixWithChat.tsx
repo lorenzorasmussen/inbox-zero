@@ -1,33 +1,33 @@
-import { MessageCircleIcon } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import type { ParsedMessage } from "@/utils/types";
-import type { RunRulesResult } from "@/utils/ai/choose-rule/run-rules";
+import { MessageCircleIcon } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  NEW_RULE_ID as CONST_NEW_RULE_ID,
+  NONE_RULE_ID as CONST_NONE_RULE_ID,
+  NEW_RULE_ID,
+  NONE_RULE_ID,
+} from '@/app/(app)/[emailAccountId]/assistant/consts';
+import { ResultsDisplay } from '@/app/(app)/[emailAccountId]/assistant/ResultDisplay';
+import type { MessageContext } from '@/app/api/chat/validation';
+import type { RulesResponse } from '@/app/api/user/rules/route';
+import { ButtonList } from '@/components/ButtonList';
+import { Label } from '@/components/Input';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { LoadingContent } from "@/components/LoadingContent";
-import { useRules } from "@/hooks/useRules";
-import { useModal } from "@/hooks/useModal";
-import { NEW_RULE_ID } from "@/app/(app)/[emailAccountId]/assistant/consts";
-import { Label } from "@/components/Input";
-import { ButtonList } from "@/components/ButtonList";
-import type { RulesResponse } from "@/app/api/user/rules/route";
-import { ResultsDisplay } from "@/app/(app)/[emailAccountId]/assistant/ResultDisplay";
-import { NONE_RULE_ID } from "@/app/(app)/[emailAccountId]/assistant/consts";
-import { useSidebar } from "@/components/ui/sidebar";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { useChat } from "@/providers/ChatProvider";
-import {
-  NEW_RULE_ID as CONST_NEW_RULE_ID,
-  NONE_RULE_ID as CONST_NONE_RULE_ID,
-} from "@/app/(app)/[emailAccountId]/assistant/consts";
-import type { MessageContext } from "@/app/api/chat/validation";
+} from '@/components/ui/dialog';
+import { useSidebar } from '@/components/ui/sidebar';
+import { Textarea } from '@/components/ui/textarea';
+import { useModal } from '@/hooks/useModal';
+import { useRules } from '@/hooks/useRules';
+import { useChat } from '@/providers/ChatProvider';
+import type { RunRulesResult } from '@/utils/ai/choose-rule/run-rules';
+import type { ParsedMessage } from '@/utils/types';
 
 export function FixWithChat({
   setInput,
@@ -41,7 +41,7 @@ export function FixWithChat({
   const { data, isLoading, error } = useRules();
   const { isModalOpen, setIsModalOpen } = useModal();
   const [selectedRuleId, setSelectedRuleId] = useState<string | null>(null);
-  const [explanation, setExplanation] = useState("");
+  const [explanation, setExplanation] = useState('');
   const [showExplanation, setShowExplanation] = useState(false);
 
   const { setOpen } = useSidebar();
@@ -49,8 +49,8 @@ export function FixWithChat({
 
   const selectedRuleName = useMemo(() => {
     if (!data) return null;
-    if (selectedRuleId === NEW_RULE_ID) return "New rule";
-    if (selectedRuleId === NONE_RULE_ID) return "None";
+    if (selectedRuleId === NEW_RULE_ID) return 'New rule';
+    if (selectedRuleId === NONE_RULE_ID) return 'None';
     return data.find((r) => r.id === selectedRuleId)?.name ?? null;
   }, [data, selectedRuleId]);
 
@@ -67,7 +67,7 @@ export function FixWithChat({
     if (selectedRuleId === CONST_NEW_RULE_ID) {
       input = explanation?.trim()
         ? `Create a new rule for emails like this: ${explanation.trim()}`
-        : "Create a new rule for emails like this: ";
+        : 'Create a new rule for emails like this: ';
     } else if (selectedRuleId === CONST_NONE_RULE_ID) {
       input = explanation?.trim()
         ? `This email shouldn't have matched any rule because ${explanation.trim()}`
@@ -75,14 +75,14 @@ export function FixWithChat({
     } else {
       const rulePart = selectedRuleName
         ? `the "${selectedRuleName}" rule`
-        : "a different rule";
+        : 'a different rule';
       input = explanation?.trim()
         ? `This email should have matched ${rulePart} because ${explanation.trim()}`
         : `This email should have matched ${rulePart} because `;
     }
 
     const context: MessageContext = {
-      type: "fix-rule",
+      type: 'fix-rule',
       message: {
         id: message.id,
         threadId: message.threadId,
@@ -95,30 +95,30 @@ export function FixWithChat({
           subject: message.headers.subject,
           cc: message.headers.cc,
           date: message.headers.date,
-          "reply-to": message.headers["reply-to"],
+          'reply-to': message.headers['reply-to'],
         },
         internalDate: message.internalDate,
       },
       results: results.map((r) => ({
         ruleName: r.rule?.name ?? null,
-        reason: r.reason ?? "",
+        reason: r.reason ?? '',
       })),
       expected:
         selectedRuleId === CONST_NEW_RULE_ID
-          ? "new"
+          ? 'new'
           : selectedRuleId === CONST_NONE_RULE_ID
-            ? "none"
-            : { name: selectedRuleName || "Unknown" },
+            ? 'none'
+            : { name: selectedRuleName || 'Unknown' },
     };
     setContext(context);
 
     setInput(input);
-    setOpen((arr) => [...arr, "chat-sidebar"]);
+    setOpen((arr) => [...arr, 'chat-sidebar']);
     setIsModalOpen(false);
 
     // Reset state
     setSelectedRuleId(null);
-    setExplanation("");
+    setExplanation('');
     setShowExplanation(false);
   };
 
@@ -127,7 +127,7 @@ export function FixWithChat({
     if (!open) {
       // Reset state when closing
       setSelectedRuleId(null);
-      setExplanation("");
+      setExplanation('');
       setShowExplanation(false);
     }
   };
@@ -159,11 +159,11 @@ export function FixWithChat({
                 <span className="text-sm font-medium">Selected rule:</span>
                 <Badge variant="secondary">
                   {selectedRuleId === NEW_RULE_ID
-                    ? "✨ New rule"
+                    ? '✨ New rule'
                     : selectedRuleId === NONE_RULE_ID
-                      ? "❌ None"
+                      ? '❌ None'
                       : data.find((r) => r.id === selectedRuleId)?.name ||
-                        "Unknown"}
+                        'Unknown'}
                 </Badge>
               </div>
 
@@ -194,7 +194,7 @@ export function FixWithChat({
                   onClick={() => {
                     setShowExplanation(false);
                     setSelectedRuleId(null);
-                    setExplanation("");
+                    setExplanation('');
                   }}
                 >
                   Back
@@ -233,8 +233,8 @@ function RuleMismatch({
           title="Which rule did you expect it to match?"
           emptyMessage="You haven't created any rules yet!"
           items={[
-            { id: NONE_RULE_ID, name: "❌ None" },
-            { id: NEW_RULE_ID, name: "✨ New rule" },
+            { id: NONE_RULE_ID, name: '❌ None' },
+            { id: NEW_RULE_ID, name: '✨ New rule' },
             ...rules,
           ]}
           onSelect={onSelectExpectedRuleId}

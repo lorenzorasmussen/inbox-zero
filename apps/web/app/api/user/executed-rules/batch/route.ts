@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
-import { withEmailAccount } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 const batchRequestSchema = z.object({ messageIds: z.array(z.string()) });
 
@@ -29,7 +29,7 @@ async function getData({
       status: true,
       createdAt: true,
     },
-    orderBy: { id: "asc" },
+    orderBy: { id: 'asc' },
   });
 
   // Convert to a map for easy lookup by messageId
@@ -46,17 +46,17 @@ async function getData({
 }
 
 export const GET = withEmailAccount(
-  "user/executed-rules/batch",
+  'user/executed-rules/batch',
   async (request) => {
     const emailAccountId = request.auth.emailAccountId;
 
     const { searchParams } = new URL(request.url);
 
     const parsed = batchRequestSchema.safeParse({
-      messageIds: searchParams.get("messageIds")?.split(",") || [],
+      messageIds: searchParams.get('messageIds')?.split(',') || [],
     });
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
 
     const result = await getData({
@@ -64,5 +64,5 @@ export const GET = withEmailAccount(
       messageIds: parsed.data.messageIds,
     });
     return NextResponse.json(result);
-  },
+  }
 );

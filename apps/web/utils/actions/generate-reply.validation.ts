@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 const messageSchema = z
   .object({
@@ -11,7 +11,7 @@ const messageSchema = z
     date: z.string(),
   })
   .refine((data) => data.textPlain || data.textHtml, {
-    message: "At least one of textPlain or textHtml is required",
+    message: 'At least one of textPlain or textHtml is required',
   });
 
 export const generateReplySchema = z.object({

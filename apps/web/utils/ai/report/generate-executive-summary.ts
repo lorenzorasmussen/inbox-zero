@@ -1,59 +1,59 @@
-import { z } from "zod";
-import { createGenerateObject } from "@/utils/llms";
-import type { gmail_v1 } from "@googleapis/gmail";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailSummary } from "@/utils/ai/report/summarize-emails";
-import { createScopedLogger } from "@/utils/logger";
-import { getModel } from "@/utils/llms/model";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { z } from 'zod';
+import type { EmailSummary } from '@/utils/ai/report/summarize-emails';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("email-report-executive-summary");
+const logger = createScopedLogger('email-report-executive-summary');
 
 const executiveSummarySchema = z.object({
   userProfile: z.object({
     persona: z
       .string()
       .describe(
-        "1-5 word persona identification (e.g., 'Tech Startup Founder')",
+        "1-5 word persona identification (e.g., 'Tech Startup Founder')"
       ),
     confidence: z
       .number()
       .min(0)
       .max(100)
-      .describe("Confidence level in persona identification (0-100)"),
+      .describe('Confidence level in persona identification (0-100)'),
   }),
   topInsights: z
     .array(
       z.object({
         insight: z.string().describe("Key insight about user's email behavior"),
         priority: z
-          .enum(["high", "medium", "low"])
-          .describe("Priority level of this insight"),
-        icon: z.string().describe("Single emoji representing this insight"),
-      }),
+          .enum(['high', 'medium', 'low'])
+          .describe('Priority level of this insight'),
+        icon: z.string().describe('Single emoji representing this insight'),
+      })
     )
-    .describe("3-5 most important findings from the analysis"),
+    .describe('3-5 most important findings from the analysis'),
   quickActions: z
     .array(
       z.object({
         action: z
           .string()
-          .describe("Specific action the user can take immediately"),
+          .describe('Specific action the user can take immediately'),
         difficulty: z
-          .enum(["easy", "medium", "hard"])
-          .describe("How difficult this action is to implement"),
+          .enum(['easy', 'medium', 'hard'])
+          .describe('How difficult this action is to implement'),
         impact: z
-          .enum(["high", "medium", "low"])
-          .describe("Expected impact of this action"),
-      }),
+          .enum(['high', 'medium', 'low'])
+          .describe('Expected impact of this action'),
+      })
     )
-    .describe("4-6 immediate actions the user can take"),
+    .describe('4-6 immediate actions the user can take'),
 });
 
 export async function aiGenerateExecutiveSummary(
   emailSummaries: EmailSummary[],
   sentEmailSummaries: EmailSummary[],
   gmailLabels: gmail_v1.Schema$Label[],
-  emailAccount: EmailAccountWithAI,
+  emailAccount: EmailAccountWithAI
 ): Promise<z.infer<typeof executiveSummarySchema>> {
   const system = `You are a professional persona identification expert. Your primary task is to accurately identify the user's professional role based on their email patterns.
 
@@ -88,21 +88,21 @@ ${emailSummaries
   .slice(0, 30)
   .map(
     (email, i) =>
-      `${i + 1}. From: ${email.sender} | Subject: ${email.subject} | Category: ${email.category} | Summary: ${email.summary}`,
+      `${i + 1}. From: ${email.sender} | Subject: ${email.subject} | Category: ${email.category} | Summary: ${email.summary}`
   )
-  .join("\n")}
+  .join('\n')}
 
 **Sent Emails (${sentEmailSummaries.length} emails):**
 ${sentEmailSummaries
   .slice(0, 15)
   .map(
     (email, i) =>
-      `${i + 1}. To: ${email.sender} | Subject: ${email.subject} | Category: ${email.category} | Summary: ${email.summary}`,
+      `${i + 1}. To: ${email.sender} | Subject: ${email.subject} | Category: ${email.category} | Summary: ${email.summary}`
   )
-  .join("\n")}
+  .join('\n')}
 
 **Current Gmail Labels:**
-${gmailLabels.map((label) => `- ${label.name} (${label.messagesTotal || 0} emails)`).join("\n")}
+${gmailLabels.map((label) => `- ${label.name} (${label.messagesTotal || 0} emails)`).join('\n')}
 
 ---
 
@@ -141,7 +141,7 @@ Generate:
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "email-report-executive-summary",
+    label: 'email-report-executive-summary',
     modelOptions,
   });
 

@@ -1,30 +1,30 @@
-import type { ParsedMessage } from "@/utils/types";
-import type { ExecutedAction } from "@/generated/prisma/client";
+import type { ExecutedAction } from '@/generated/prisma/client';
+import type { ParsedMessage } from '@/utils/types';
 
 export type EmailForAction = Pick<
   ParsedMessage,
-  | "threadId"
-  | "id"
-  | "headers"
-  | "textPlain"
-  | "textHtml"
-  | "snippet"
-  | "attachments"
-  | "internalDate"
-  | "rawRecipients"
+  | 'threadId'
+  | 'id'
+  | 'headers'
+  | 'textPlain'
+  | 'textHtml'
+  | 'snippet'
+  | 'attachments'
+  | 'internalDate'
+  | 'rawRecipients'
 >;
 
 export type ActionItem = {
-  id: ExecutedAction["id"];
-  type: ExecutedAction["type"];
-  label?: ExecutedAction["label"];
-  subject?: ExecutedAction["subject"];
-  content?: ExecutedAction["content"];
-  to?: ExecutedAction["to"];
-  cc?: ExecutedAction["cc"];
-  bcc?: ExecutedAction["bcc"];
-  url?: ExecutedAction["url"];
-  folderName?: ExecutedAction["folderName"];
-  folderId?: ExecutedAction["folderId"];
+  id: ExecutedAction['id'];
+  type: ExecutedAction['type'];
+  label?: ExecutedAction['label'];
+  subject?: ExecutedAction['subject'];
+  content?: ExecutedAction['content'];
+  to?: ExecutedAction['to'];
+  cc?: ExecutedAction['cc'];
+  bcc?: ExecutedAction['bcc'];
+  url?: ExecutedAction['url'];
+  folderName?: ExecutedAction['folderName'];
+  folderId?: ExecutedAction['folderId'];
   delayInMinutes?: number | null;
 };

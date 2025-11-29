@@ -1,7 +1,7 @@
-import { isDefined } from "@/utils/types";
-import { createScopedLogger } from "@/utils/logger";
+import { createScopedLogger } from '@/utils/logger';
+import { isDefined } from '@/utils/types';
 
-const logger = createScopedLogger("gmail/batch");
+const logger = createScopedLogger('gmail/batch');
 
 const BATCH_LIMIT = 100;
 
@@ -10,35 +10,35 @@ const BATCH_LIMIT = 100;
 export async function getBatch(
   ids: string[],
   endpoint: string, // e.g. /gmail/v1/users/me/messages
-  accessToken: string,
+  accessToken: string
 ) {
   if (!ids.length) return [];
   if (ids.length > BATCH_LIMIT) {
     throw new Error(
-      `Request count exceeds the limit. Received: ${ids.length}, Limit: ${BATCH_LIMIT}`,
+      `Request count exceeds the limit. Received: ${ids.length}, Limit: ${BATCH_LIMIT}`
     );
   }
 
-  let batchRequestBody = "";
+  let batchRequestBody = '';
   for (const id of ids) {
     batchRequestBody += `--batch_boundary\nContent-Type: application/http\n\nGET ${endpoint}/${id}\n\n`;
   }
-  batchRequestBody += "--batch_boundary--";
+  batchRequestBody += '--batch_boundary--';
 
-  const res = await fetch("https://gmail.googleapis.com/batch/gmail/v1", {
-    method: "POST",
+  const res = await fetch('https://gmail.googleapis.com/batch/gmail/v1', {
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "multipart/mixed; boundary=batch_boundary",
-      "Accept-Encoding": "gzip",
-      "User-Agent": "Inbox-Zero (gzip)",
+      'Content-Type': 'multipart/mixed; boundary=batch_boundary',
+      'Accept-Encoding': 'gzip',
+      'User-Agent': 'Inbox-Zero (gzip)',
     },
     body: batchRequestBody,
   });
 
   const textRes = await res.text();
 
-  const batch = parseBatchResponse(textRes, res.headers.get("Content-Type"));
+  const batch = parseBatchResponse(textRes, res.headers.get('Content-Type'));
 
   return batch;
 }
@@ -52,8 +52,8 @@ function parseBatchResponse(batchResponse: string, contentType: string | null) {
   const boundary = boundaryMatch ? boundaryMatch[1] : null;
 
   if (!boundary) {
-    logger.error("No boundary found in response", { batchResponse });
-    throw new Error("parseBatchResponse: No boundary found in response");
+    logger.error('No boundary found in response', { batchResponse });
+    throw new Error('parseBatchResponse: No boundary found in response');
   }
 
   const parts = batchResponse.split(`--${boundary}`);
@@ -64,7 +64,7 @@ function parseBatchResponse(batchResponse: string, contentType: string | null) {
     if (!part.trim()) return;
 
     // Find where the JSON part of the response starts
-    const jsonStartIndex = part.indexOf("{");
+    const jsonStartIndex = part.indexOf('{');
     if (jsonStartIndex === -1) return; // Skip if no JSON data found
 
     // Extract the JSON string
@@ -76,7 +76,7 @@ function parseBatchResponse(batchResponse: string, contentType: string | null) {
 
       return data;
     } catch (error) {
-      logger.error("Error parsing JSON", { error });
+      logger.error('Error parsing JSON', { error });
     }
   });
 
@@ -89,8 +89,8 @@ function checkBatchResponseForError(batchResponse: string) {
 
     if (jsonResponse.error) {
       throw new Error(
-        "parseBatchResponse: Error in batch response",
-        jsonResponse.error,
+        'parseBatchResponse: Error in batch response',
+        jsonResponse.error
       );
     }
   } catch {

@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { MailIcon } from "lucide-react";
-import { CardBasic } from "@/components/ui/card";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { OnboardingWrapper } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper";
-import { ContinueButton } from "@/app/(app)/[emailAccountId]/onboarding/ContinueButton";
+import { MailIcon } from 'lucide-react';
+import Image from 'next/image';
+import { ContinueButton } from '@/app/(app)/[emailAccountId]/onboarding/ContinueButton';
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { OnboardingWrapper } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { CardBasic } from '@/components/ui/card';
 
 export function StepIntro({ onNext }: { onNext: () => void }) {
   return (

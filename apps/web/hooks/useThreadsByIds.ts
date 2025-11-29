@@ -1,15 +1,15 @@
-import useSWR from "swr";
-import type { ThreadsBatchResponse } from "@/app/api/threads/batch/route";
+import useSWR from 'swr';
+import type { ThreadsBatchResponse } from '@/app/api/threads/batch/route';
 
 export function useThreadsByIds(
   { threadIds }: { threadIds: string[] },
-  options?: { keepPreviousData?: boolean },
+  options?: { keepPreviousData?: boolean }
 ) {
-  const searchParams = new URLSearchParams({ threadIds: threadIds.join(",") });
+  const searchParams = new URLSearchParams({ threadIds: threadIds.join(',') });
   const url = `/api/threads/batch?${searchParams.toString()}`;
   const { data, isLoading, error, mutate } = useSWR<ThreadsBatchResponse>(
     threadIds.length ? url : null,
-    options,
+    options
   );
 
   // Return null data when there are no threadIds

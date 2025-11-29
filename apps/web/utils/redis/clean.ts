@@ -1,9 +1,9 @@
-import { redis } from "@/utils/redis";
-import type { CleanThread } from "@/utils/redis/clean.types";
-import { isDefined } from "@/utils/types";
-import { createScopedLogger } from "@/utils/logger";
+import { createScopedLogger } from '@/utils/logger';
+import { redis } from '@/utils/redis';
+import type { CleanThread } from '@/utils/redis/clean.types';
+import { isDefined } from '@/utils/types';
 
-const logger = createScopedLogger("redis/clean");
+const logger = createScopedLogger('redis/clean');
 
 const EXPIRATION = 60 * 60 * 6; // 6 hours
 
@@ -36,7 +36,7 @@ export async function saveThread({
   const cleanThread: CleanThread = {
     ...thread,
     emailAccountId,
-    status: "processing",
+    status: 'processing',
     createdAt: new Date().toISOString(),
   };
 
@@ -57,7 +57,7 @@ export async function updateThread({
 }) {
   const thread = await getThread({ emailAccountId, jobId, threadId });
   if (!thread) {
-    logger.warn("Thread not found", { threadId, emailAccountId, jobId });
+    logger.warn('Thread not found', { threadId, emailAccountId, jobId });
     return;
   }
 
@@ -126,7 +126,7 @@ export async function getThreadsByJobId({
   if (keysToFetch.length === 0) return [];
 
   const threads = await Promise.all(
-    keysToFetch.map((key) => redis.get<CleanThread>(key)),
+    keysToFetch.map((key) => redis.get<CleanThread>(key))
   );
   return threads.filter(isDefined);
 }

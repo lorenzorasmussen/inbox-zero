@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from '@/components/ui/card';
 
 export function SettingCard({
   title,
@@ -17,8 +17,8 @@ export function SettingCard({
         <div
           className={
             collapseOnMobile
-              ? "flex flex-col gap-4 md:flex-row md:items-center"
-              : "flex items-center gap-4"
+              ? 'flex flex-col gap-4 md:flex-row md:items-center'
+              : 'flex items-center gap-4'
           }
         >
           <div className="flex-1">

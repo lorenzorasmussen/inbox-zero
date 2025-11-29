@@ -1,15 +1,15 @@
-import type { Message } from "@microsoft/microsoft-graph-types";
-import type { OutlookClient } from "@/utils/outlook/client";
-import { createScopedLogger } from "@/utils/logger";
-import { convertMessage } from "@/utils/outlook/message";
-import { withOutlookRetry } from "@/utils/outlook/retry";
+import type { Message } from '@microsoft/microsoft-graph-types';
+import { createScopedLogger } from '@/utils/logger';
+import type { OutlookClient } from '@/utils/outlook/client';
+import { convertMessage } from '@/utils/outlook/message';
+import { withOutlookRetry } from '@/utils/outlook/retry';
 
-const logger = createScopedLogger("outlook/draft");
+const logger = createScopedLogger('outlook/draft');
 
 export async function getDraft(draftId: string, client: OutlookClient) {
   try {
     const response: Message = await withOutlookRetry(() =>
-      client.getClient().api(`/me/messages/${draftId}`).get(),
+      client.getClient().api(`/me/messages/${draftId}`).get()
     );
     const message = convertMessage(response);
     return message;
@@ -21,7 +21,7 @@ export async function getDraft(draftId: string, client: OutlookClient) {
     // Handle Outlook's "object not found in the store" error
     if (
       error instanceof Error &&
-      error.message.includes("not found in the store")
+      error.message.includes('not found in the store')
     ) {
       return null;
     }
@@ -32,20 +32,20 @@ export async function getDraft(draftId: string, client: OutlookClient) {
 
 export async function deleteDraft(client: OutlookClient, draftId: string) {
   try {
-    logger.info("Deleting draft", { draftId });
+    logger.info('Deleting draft', { draftId });
     await withOutlookRetry(() =>
-      client.getClient().api(`/me/messages/${draftId}`).delete(),
+      client.getClient().api(`/me/messages/${draftId}`).delete()
     );
-    logger.info("Successfully deleted draft", { draftId });
+    logger.info('Successfully deleted draft', { draftId });
   } catch (error) {
     if (isNotFoundError(error)) {
-      logger.warn("Draft not found or already deleted, skipping deletion.", {
+      logger.warn('Draft not found or already deleted, skipping deletion.', {
         draftId,
       });
       return;
     }
 
-    logger.error("Failed to delete draft", { draftId, error });
+    logger.error('Failed to delete draft', { draftId, error });
     throw error;
   }
 }
@@ -55,7 +55,7 @@ function isNotFoundError(error: unknown): boolean {
   return (
     err?.statusCode === 404 ||
     err?.code === 404 ||
-    err?.code === "ErrorItemNotFound" ||
-    err?.code === "itemNotFound"
+    err?.code === 'ErrorItemNotFound' ||
+    err?.code === 'itemNotFound'
   );
 }

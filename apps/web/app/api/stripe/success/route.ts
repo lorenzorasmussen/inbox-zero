@@ -1,11 +1,11 @@
-import { after } from "next/server";
-import { redirect } from "next/navigation";
-import { syncStripeDataToDb } from "@/ee/billing/stripe/sync-stripe";
-import { withAuth } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
-import { trackStripeCheckoutCompleted } from "@/utils/posthog";
+import { redirect } from 'next/navigation';
+import { after } from 'next/server';
+import { syncStripeDataToDb } from '@/ee/billing/stripe/sync-stripe';
+import { withAuth } from '@/utils/middleware';
+import { trackStripeCheckoutCompleted } from '@/utils/posthog';
+import prisma from '@/utils/prisma';
 
-export const GET = withAuth("stripe/success", async (request) => {
+export const GET = withAuth('stripe/success', async (request) => {
   const userId = request.auth.userId;
 
   after(async () => {
@@ -22,9 +22,9 @@ export const GET = withAuth("stripe/success", async (request) => {
     select: { premium: { select: { stripeCustomerId: true } } },
   });
 
-  if (!user?.premium?.stripeCustomerId) redirect("/premium");
+  if (!user?.premium?.stripeCustomerId) redirect('/premium');
 
   await syncStripeDataToDb({ customerId: user.premium.stripeCustomerId });
 
-  redirect("/setup");
+  redirect('/setup');
 });

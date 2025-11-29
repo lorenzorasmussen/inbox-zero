@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { withEmailAccount } from "@/utils/middleware";
-import { getUserCategories } from "@/utils/category.server";
+import { NextResponse } from 'next/server';
+import { getUserCategories } from '@/utils/category.server';
+import { withEmailAccount } from '@/utils/middleware';
 
 export type UserCategoriesResponse = Awaited<ReturnType<typeof getCategories>>;
 
@@ -9,7 +9,7 @@ async function getCategories({ emailAccountId }: { emailAccountId: string }) {
   return { result };
 }
 
-export const GET = withEmailAccount("user/categories", async (request) => {
+export const GET = withEmailAccount('user/categories', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
   const result = await getCategories({ emailAccountId });
   return NextResponse.json(result);

@@ -1,19 +1,19 @@
-import { z } from "zod";
-import { createGenerateObject } from "@/utils/llms";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailSummary } from "@/utils/ai/report/summarize-emails";
-import { getModel } from "@/utils/llms/model";
+import { z } from 'zod';
+import type { EmailSummary } from '@/utils/ai/report/summarize-emails';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
 
 const userPersonaSchema = z.object({
   professionalIdentity: z.object({
-    persona: z.string().describe("Professional persona identification"),
+    persona: z.string().describe('Professional persona identification'),
     supportingEvidence: z
       .array(z.string())
-      .describe("Evidence supporting this persona identification"),
+      .describe('Evidence supporting this persona identification'),
   }),
   currentPriorities: z
     .array(z.string())
-    .describe("Current professional priorities based on email content"),
+    .describe('Current professional priorities based on email content'),
 });
 export type UserPersona = z.infer<typeof userPersonaSchema>;
 
@@ -22,7 +22,7 @@ export async function aiBuildUserPersona(
   emailAccount: EmailAccountWithAI,
   sentEmailSummaries?: EmailSummary[],
   gmailSignature?: string,
-  gmailTemplates?: string[],
+  gmailTemplates?: string[]
 ): Promise<z.infer<typeof userPersonaSchema>> {
   const system = `You are a highly skilled AI analyst tasked with generating a focused professional persona of a user based on their email activity.
 
@@ -35,27 +35,27 @@ Focus on understanding the user's role and what they're currently focused on pro
   const prompt = `### Input Data
 
 **Received Email Summaries:**  
-${emailSummaries.map((summary, index) => `Email ${index + 1} Summary: ${summary.summary} (Category: ${summary.category})`).join("\n")}
+${emailSummaries.map((summary, index) => `Email ${index + 1} Summary: ${summary.summary} (Category: ${summary.category})`).join('\n')}
 
 ${
   sentEmailSummaries && sentEmailSummaries.length > 0
     ? `
 **Sent Email Summaries:**
-${sentEmailSummaries.map((summary, index) => `Sent ${index + 1} Summary: ${summary.summary} (Category: ${summary.category})`).join("\n")}
+${sentEmailSummaries.map((summary, index) => `Sent ${index + 1} Summary: ${summary.summary} (Category: ${summary.category})`).join('\n')}
 `
-    : ""
+    : ''
 }
 
 **User's Signature:**  
-${gmailSignature || "[No signature data available – analyze based on email content only]"}
+${gmailSignature || '[No signature data available – analyze based on email content only]'}
 
 ${
   gmailTemplates && gmailTemplates.length > 0
     ? `
 **User's Gmail Templates:**
-${gmailTemplates.map((template, index) => `Template ${index + 1}: ${template}`).join("\n")}
+${gmailTemplates.map((template, index) => `Template ${index + 1}: ${template}`).join('\n')}
 `
-    : ""
+    : ''
 }
 
 ---
@@ -68,7 +68,7 @@ Analyze the data and identify:
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "email-report-user-persona",
+    label: 'email-report-user-persona',
     modelOptions,
   });
 

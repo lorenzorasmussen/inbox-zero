@@ -1,20 +1,20 @@
-import { Overview } from "./overview";
-import { MessagePart } from "./message-part";
-import type { UseChatHelpers } from "@ai-sdk/react";
-import type { ChatMessage } from "@/components/assistant-chat/types";
+import type { UseChatHelpers } from '@ai-sdk/react';
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import { Message, MessageContent } from "@/components/ai-elements/message";
-import { Loader } from "@/components/ai-elements/loader";
+} from '@/components/ai-elements/conversation';
+import { Loader } from '@/components/ai-elements/loader';
+import { Message, MessageContent } from '@/components/ai-elements/message';
+import type { ChatMessage } from '@/components/assistant-chat/types';
+import { MessagePart } from './message-part';
+import { Overview } from './overview';
 
 interface MessagesProps {
-  status: UseChatHelpers<ChatMessage>["status"];
+  status: UseChatHelpers<ChatMessage>['status'];
   messages: Array<ChatMessage>;
-  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
-  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
+  setMessages: UseChatHelpers<ChatMessage>['setMessages'];
+  regenerate: UseChatHelpers<ChatMessage>['regenerate'];
   isArtifactVisible: boolean;
   setInput: (input: string) => void;
 }
@@ -32,7 +32,7 @@ export function Messages({ status, messages, setInput }: MessagesProps) {
                 <MessagePart
                   key={`${message.id}-${index}`}
                   part={part}
-                  isStreaming={status === "streaming"}
+                  isStreaming={status === 'streaming'}
                   messageId={message.id}
                   partIndex={index}
                 />
@@ -41,9 +41,9 @@ export function Messages({ status, messages, setInput }: MessagesProps) {
           </Message>
         ))}
 
-        {status === "submitted" &&
+        {status === 'submitted' &&
           messages.length > 0 &&
-          messages[messages.length - 1].role === "user" && (
+          messages[messages.length - 1].role === 'user' && (
             <Message from="assistant">
               <MessageContent>
                 <div className="flex items-center gap-2 text-muted-foreground">

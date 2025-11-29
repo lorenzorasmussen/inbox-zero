@@ -1,37 +1,37 @@
-"use server";
+'use server';
 
-import { after } from "next/server";
+import { after } from 'next/server';
+import type { CleanThreadBody } from '@/app/api/clean/route';
+import { env } from '@/env';
+import { CleanAction } from '@/generated/prisma/enums';
+import { getGmailClientForEmail } from '@/utils/account';
 import {
+  changeKeepToDoneSchema,
   cleanInboxSchema,
   undoCleanInboxSchema,
-  changeKeepToDoneSchema,
-} from "@/utils/actions/clean.validation";
-import { bulkPublishToQstash } from "@/utils/upstash";
-import { env } from "@/env";
+} from '@/utils/actions/clean.validation';
+import { actionClient } from '@/utils/actions/safe-action';
+import { getUnhandledCount } from '@/utils/assess';
+import { ONE_DAY_MS } from '@/utils/date';
+import { createEmailProvider } from '@/utils/email/provider';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import { SafeError } from '@/utils/error';
 import {
+  GmailLabel,
   getLabel,
   getOrCreateInboxZeroLabel,
-  GmailLabel,
   labelThread,
-} from "@/utils/gmail/label";
-import type { CleanThreadBody } from "@/app/api/clean/route";
-import { isDefined } from "@/utils/types";
-import { inboxZeroLabels } from "@/utils/label";
-import prisma from "@/utils/prisma";
-import { CleanAction } from "@/generated/prisma/enums";
-import { updateThread } from "@/utils/redis/clean";
-import { getUnhandledCount } from "@/utils/assess";
-import { getGmailClientForEmail } from "@/utils/account";
-import { actionClient } from "@/utils/actions/safe-action";
-import { SafeError } from "@/utils/error";
-import { createEmailProvider } from "@/utils/email/provider";
-import { isGoogleProvider } from "@/utils/email/provider-types";
-import { getUserPremium } from "@/utils/user/get";
-import { isActivePremium } from "@/utils/premium";
-import { ONE_DAY_MS } from "@/utils/date";
+} from '@/utils/gmail/label';
+import { inboxZeroLabels } from '@/utils/label';
+import { isActivePremium } from '@/utils/premium';
+import prisma from '@/utils/prisma';
+import { updateThread } from '@/utils/redis/clean';
+import { isDefined } from '@/utils/types';
+import { bulkPublishToQstash } from '@/utils/upstash';
+import { getUserPremium } from '@/utils/user/get';
 
 export const cleanInboxAction = actionClient
-  .metadata({ name: "cleanInbox" })
+  .metadata({ name: 'cleanInbox' })
   .inputSchema(cleanInboxSchema)
   .action(
     async ({
@@ -40,13 +40,13 @@ export const cleanInboxAction = actionClient
     }) => {
       if (!isGoogleProvider(provider)) {
         throw new SafeError(
-          "Clean inbox is only supported for Google accounts",
+          'Clean inbox is only supported for Google accounts'
         );
       }
 
       const premium = await getUserPremium({ userId });
-      if (!premium) throw new SafeError("User not premium");
-      if (!isActivePremium(premium)) throw new SafeError("Premium not active");
+      if (!premium) throw new SafeError('User not premium');
+      if (!isActivePremium(premium)) throw new SafeError('Premium not active');
 
       const emailProvider = await createEmailProvider({
         emailAccountId,
@@ -56,18 +56,18 @@ export const cleanInboxAction = actionClient
 
       const [markedDoneLabel, processedLabel] = await Promise.all([
         emailProvider.getOrCreateInboxZeroLabel(
-          action === CleanAction.ARCHIVE ? "archived" : "marked_read",
+          action === CleanAction.ARCHIVE ? 'archived' : 'marked_read'
         ),
-        emailProvider.getOrCreateInboxZeroLabel("processed"),
+        emailProvider.getOrCreateInboxZeroLabel('processed'),
       ]);
 
       const markedDoneLabelId = markedDoneLabel?.id;
       if (!markedDoneLabelId)
-        throw new SafeError("Failed to create archived label");
+        throw new SafeError('Failed to create archived label');
 
       const processedLabelId = processedLabel?.id;
       if (!processedLabelId)
-        throw new SafeError("Failed to create processed label");
+        throw new SafeError('Failed to create processed label');
 
       // create a cleanup job
       const job = await prisma.cleanupJob.create({
@@ -122,7 +122,7 @@ export const cleanInboxAction = actionClient
                   before: new Date(Date.now() - daysOld * ONE_DAY_MS),
                 }),
                 labelIds:
-                  type === "inbox"
+                  type === 'inbox'
                     ? [GmailLabel.INBOX]
                     : [GmailLabel.INBOX, GmailLabel.UNREAD],
                 excludeLabelNames: [inboxZeroLabels.processed.name],
@@ -130,7 +130,7 @@ export const cleanInboxAction = actionClient
               maxResults: Math.min(maxEmails || 100, 100),
             });
 
-          logger.info("Fetched threads", {
+          logger.info('Fetched threads', {
             threadCount: threads.length,
             nextPageToken,
           });
@@ -141,7 +141,7 @@ export const cleanInboxAction = actionClient
 
           const url = `${env.WEBHOOK_URL || env.NEXT_PUBLIC_BASE_URL}/api/clean`;
 
-          logger.info("Pushing to Qstash", {
+          logger.info('Pushing to Qstash', {
             threadCount: threads.length,
             nextPageToken,
           });
@@ -184,7 +184,7 @@ export const cleanInboxAction = actionClient
       after(() => process());
 
       return { jobId: job.id };
-    },
+    }
   );
 
 function isMaxEmailsReached(totalEmailsProcessed: number, maxEmails?: number) {
@@ -193,7 +193,7 @@ function isMaxEmailsReached(totalEmailsProcessed: number, maxEmails?: number) {
 }
 
 export const undoCleanInboxAction = actionClient
-  .metadata({ name: "undoCleanInbox" })
+  .metadata({ name: 'undoCleanInbox' })
   .inputSchema(undoCleanInboxSchema)
   .action(
     async ({
@@ -231,7 +231,7 @@ export const undoCleanInboxAction = actionClient
         // We need to get the thread first to get the jobId
         const thread = await prisma.cleanupThread.findFirst({
           where: { emailAccountId, threadId },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
         });
 
         if (thread) {
@@ -246,7 +246,7 @@ export const undoCleanInboxAction = actionClient
           });
         }
       } catch (error) {
-        logger.error("Failed to update Redis for undone thread", {
+        logger.error('Failed to update Redis for undone thread', {
           error,
           threadId,
         });
@@ -254,11 +254,11 @@ export const undoCleanInboxAction = actionClient
       }
 
       return { success: true };
-    },
+    }
   );
 
 export const changeKeepToDoneAction = actionClient
-  .metadata({ name: "changeKeepToDone" })
+  .metadata({ name: 'changeKeepToDone' })
   .inputSchema(changeKeepToDoneSchema)
   .action(
     async ({
@@ -269,7 +269,7 @@ export const changeKeepToDoneAction = actionClient
 
       // Get the label to add (archived or marked_read)
       const actionLabel = await getOrCreateInboxZeroLabel({
-        key: action === CleanAction.ARCHIVE ? "archived" : "marked_read",
+        key: action === CleanAction.ARCHIVE ? 'archived' : 'marked_read',
         gmail,
       });
 
@@ -289,7 +289,7 @@ export const changeKeepToDoneAction = actionClient
         // We need to get the thread first to get the jobId
         const thread = await prisma.cleanupThread.findFirst({
           where: { emailAccountId, threadId },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
         });
 
         if (thread) {
@@ -305,13 +305,13 @@ export const changeKeepToDoneAction = actionClient
             threadId,
             update: {
               archive: action === CleanAction.ARCHIVE,
-              status: "completed",
+              status: 'completed',
               undone: true,
             },
           });
         }
       } catch (error) {
-        logger.error("Failed to update Redis for changed thread:", {
+        logger.error('Failed to update Redis for changed thread:', {
           error,
           threadId,
         });
@@ -319,5 +319,5 @@ export const changeKeepToDoneAction = actionClient
       }
 
       return { success: true };
-    },
+    }
   );

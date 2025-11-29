@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { memo, useEffect } from "react";
-import { resetTotalThreads, useQueueState } from "@/store/archive-queue";
-import { ProgressPanel } from "@/components/ProgressPanel";
+import { memo, useEffect } from 'react';
+import { ProgressPanel } from '@/components/ProgressPanel';
+import { resetTotalThreads, useQueueState } from '@/store/archive-queue';
 
 export const ArchiveProgress = memo(() => {
   const { totalThreads, activeThreads } = useQueueState();

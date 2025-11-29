@@ -1,5 +1,5 @@
-import type { ParsedMessageHeaders } from "@/utils/types";
-import { extractEmailAddress } from "@/utils/email";
+import { extractEmailAddress } from '@/utils/email';
+import type { ParsedMessageHeaders } from '@/utils/types';
 
 export interface ReplyAllRecipients {
   to: string;
@@ -18,10 +18,10 @@ export interface ReplyAllRecipients {
 export function buildReplyAllRecipients(
   headers: ParsedMessageHeaders,
   overrideTo: string | undefined,
-  currentUserEmail: string,
+  currentUserEmail: string
 ): ReplyAllRecipients {
   // Determine the primary recipient (TO field)
-  const replyToRaw = overrideTo || headers["reply-to"] || headers.from;
+  const replyToRaw = overrideTo || headers['reply-to'] || headers.from;
   const replyTo = extractEmailAddress(replyToRaw);
 
   // Extract current user's email
@@ -33,7 +33,7 @@ export function buildReplyAllRecipients(
   // Add original CC recipients if they exist
   if (headers.cc) {
     const originalCcAddresses = headers.cc
-      .split(",")
+      .split(',')
       .map((addr) => extractEmailAddress(addr.trim()))
       .filter((addr) => addr && addr !== replyTo && addr !== currentUser);
 
@@ -45,7 +45,7 @@ export function buildReplyAllRecipients(
   // Add original TO recipients to CC (excluding the reply-to address and current user)
   if (headers.to) {
     const originalToAddresses = headers.to
-      .split(",")
+      .split(',')
       .map((addr) => extractEmailAddress(addr.trim()))
       .filter((addr) => addr && addr !== replyTo && addr !== currentUser);
 
@@ -65,5 +65,5 @@ export function buildReplyAllRecipients(
  * Returns undefined if the array is empty.
  */
 export function formatCcList(ccList: string[]): string | undefined {
-  return ccList.length > 0 ? ccList.join(", ") : undefined;
+  return ccList.length > 0 ? ccList.join(', ') : undefined;
 }

@@ -1,55 +1,55 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ActionType, ScheduledActionStatus } from "@/generated/prisma/enums";
-import { executeScheduledAction } from "./executor";
-import prisma from "@/utils/__mocks__/prisma";
-import { createScopedLogger } from "@/utils/logger";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ActionType, ScheduledActionStatus } from '@/generated/prisma/enums';
+import prisma from '@/utils/__mocks__/prisma';
+import { createScopedLogger } from '@/utils/logger';
+import { executeScheduledAction } from './executor';
 
 // Run with: pnpm test utils/scheduled-actions/executor.test.ts
 
-const logger = createScopedLogger("test");
+const logger = createScopedLogger('test');
 
-vi.mock("server-only", () => ({}));
-vi.mock("@/utils/prisma");
-vi.mock("@/utils/user/get", () => ({
+vi.mock('server-only', () => ({}));
+vi.mock('@/utils/prisma');
+vi.mock('@/utils/user/get', () => ({
   getEmailAccountWithAiAndTokens: vi.fn(),
 }));
-vi.mock("@/utils/ai/actions", () => ({
+vi.mock('@/utils/ai/actions', () => ({
   runActionFunction: vi.fn(),
 }));
-vi.mock("@/utils/email/provider", () => ({
+vi.mock('@/utils/email/provider', () => ({
   createEmailProvider: vi.fn().mockResolvedValue({
     getMessage: vi.fn().mockResolvedValue({
-      id: "msg-123",
-      threadId: "thread-123",
+      id: 'msg-123',
+      threadId: 'thread-123',
       headers: {},
-      textPlain: "test content",
-      textHtml: "<p>test content</p>",
+      textPlain: 'test content',
+      textHtml: '<p>test content</p>',
       attachments: [],
-      internalDate: "1234567890",
-      snippet: "",
-      historyId: "",
+      internalDate: '1234567890',
+      snippet: '',
+      historyId: '',
       inline: [],
       isReplyInThread: false,
-      subject: "Test Subject",
-      date: "2024-01-01T00:00:00Z",
+      subject: 'Test Subject',
+      date: '2024-01-01T00:00:00Z',
     }),
   }),
 }));
 
-describe("executor", () => {
+describe('executor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe("executeScheduledAction", () => {
+  describe('executeScheduledAction', () => {
     const mockScheduledAction = {
-      id: "scheduled-action-123",
-      executedRuleId: "rule-123",
+      id: 'scheduled-action-123',
+      executedRuleId: 'rule-123',
       actionType: ActionType.ARCHIVE,
-      messageId: "msg-123",
-      threadId: "thread-123",
-      emailAccountId: "account-123",
-      scheduledFor: new Date("2024-01-01T12:00:00Z"),
+      messageId: 'msg-123',
+      threadId: 'thread-123',
+      emailAccountId: 'account-123',
+      scheduledFor: new Date('2024-01-01T12:00:00Z'),
       status: ScheduledActionStatus.PENDING,
       label: null,
       subject: null,
@@ -64,13 +64,13 @@ describe("executor", () => {
       executedActionId: null,
     } as any;
 
-    it("should successfully execute action and mark as completed", async () => {
+    it('should successfully execute action and mark as completed', async () => {
       prisma.scheduledAction.update.mockResolvedValue({
         ...mockScheduledAction,
         status: ScheduledActionStatus.COMPLETED,
       } as any);
       prisma.executedAction.create.mockResolvedValue({
-        id: "executed-action-123",
+        id: 'executed-action-123',
         type: ActionType.ARCHIVE,
         label: null,
         labelId: null,
@@ -78,7 +78,7 @@ describe("executor", () => {
         folderId: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-        executedRuleId: "rule-123",
+        executedRuleId: 'rule-123',
         subject: null,
         content: null,
         to: null,
@@ -89,79 +89,79 @@ describe("executor", () => {
         wasDraftSent: null,
       });
       prisma.executedRule.findUnique.mockResolvedValue({
-        id: "rule-123",
+        id: 'rule-123',
         createdAt: new Date(),
         updatedAt: new Date(),
-        messageId: "msg-123",
-        threadId: "thread-123",
-        emailAccountId: "account-123",
-        status: "PENDING",
+        messageId: 'msg-123',
+        threadId: 'thread-123',
+        emailAccountId: 'account-123',
+        status: 'PENDING',
         automated: true,
         reason: null,
         ruleId: null,
       } as any);
       prisma.scheduledAction.count.mockResolvedValue(0);
       prisma.executedRule.update.mockResolvedValue({
-        id: "rule-123",
+        id: 'rule-123',
         createdAt: new Date(),
         updatedAt: new Date(),
-        messageId: "msg-123",
-        threadId: "thread-123",
-        emailAccountId: "account-123",
-        status: "APPLIED",
+        messageId: 'msg-123',
+        threadId: 'thread-123',
+        emailAccountId: 'account-123',
+        status: 'APPLIED',
         automated: true,
         reason: null,
         ruleId: null,
         matchMetadata: null,
       });
 
-      const { runActionFunction } = await import("@/utils/ai/actions");
+      const { runActionFunction } = await import('@/utils/ai/actions');
       const { getEmailAccountWithAiAndTokens } = await import(
-        "@/utils/user/get"
+        '@/utils/user/get'
       );
 
       (runActionFunction as any).mockResolvedValue(undefined);
       (getEmailAccountWithAiAndTokens as any).mockResolvedValue({
-        id: "account-123",
-        userId: "user-123",
-        email: "test@example.com",
+        id: 'account-123',
+        userId: 'user-123',
+        email: 'test@example.com',
         tokens: {
-          access_token: "token",
-          refresh_token: "refresh",
+          access_token: 'token',
+          refresh_token: 'refresh',
           expires_at: Date.now() + 3_600_000,
         },
       });
 
-      const { createEmailProvider } = await import("@/utils/email/provider");
+      const { createEmailProvider } = await import('@/utils/email/provider');
       const mockEmailProvider = await createEmailProvider({
-        emailAccountId: "account-123",
-        provider: "google",
+        emailAccountId: 'account-123',
+        provider: 'google',
       });
 
       const result = await executeScheduledAction(
         mockScheduledAction,
         mockEmailProvider,
-        logger,
+        logger
       );
 
       expect(result.success).toBe(true);
       expect(prisma.scheduledAction.update).toHaveBeenCalledWith({
-        where: { id: "scheduled-action-123" },
+        where: { id: 'scheduled-action-123' },
         data: {
           status: ScheduledActionStatus.COMPLETED,
           executedAt: expect.any(Date),
-          executedActionId: "executed-action-123",
+          executedActionId: 'executed-action-123',
         },
       });
     });
 
-    it("should handle execution errors and mark as failed", async () => {
+    it('should handle execution errors and mark as failed', async () => {
       prisma.scheduledAction.update.mockResolvedValue({
         ...mockScheduledAction,
         status: ScheduledActionStatus.FAILED,
       } as any);
       prisma.executedAction.create.mockResolvedValue({
-        id: "executed-action-123",
+        id: 'executed-action-123',
         type: ActionType.ARCHIVE,
         label: null,
         labelId: null,
@@ -169,7 +169,7 @@ describe("executor", () => {
         folderId: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-        executedRuleId: "rule-123",
+        executedRuleId: 'rule-123',
         subject: null,
         content: null,
         to: null,
@@ -180,83 +180,83 @@ describe("executor", () => {
         wasDraftSent: null,
       });
       prisma.executedRule.findUnique.mockResolvedValue({
-        id: "rule-123",
+        id: 'rule-123',
         createdAt: new Date(),
         updatedAt: new Date(),
-        messageId: "msg-123",
-        threadId: "thread-123",
-        emailAccountId: "account-123",
-        status: "PENDING",
+        messageId: 'msg-123',
+        threadId: 'thread-123',
+        emailAccountId: 'account-123',
+        status: 'PENDING',
         automated: true,
         reason: null,
         ruleId: null,
       } as any);
 
-      const { runActionFunction } = await import("@/utils/ai/actions");
+      const { runActionFunction } = await import('@/utils/ai/actions');
       const { getEmailAccountWithAiAndTokens } = await import(
-        "@/utils/user/get"
+        '@/utils/user/get'
       );
 
       (runActionFunction as any).mockRejectedValue(
-        new Error("Execution failed"),
+        new Error('Execution failed')
       );
       (getEmailAccountWithAiAndTokens as any).mockResolvedValue({
-        id: "account-123",
-        userId: "user-123",
-        email: "test@example.com",
+        id: 'account-123',
+        userId: 'user-123',
+        email: 'test@example.com',
         tokens: {
-          access_token: "token",
-          refresh_token: "refresh",
+          access_token: 'token',
+          refresh_token: 'refresh',
           expires_at: Date.now() + 3_600_000,
         },
       });
 
-      const { createEmailProvider } = await import("@/utils/email/provider");
+      const { createEmailProvider } = await import('@/utils/email/provider');
       const mockEmailProvider = await createEmailProvider({
-        emailAccountId: "account-123",
-        provider: "google",
+        emailAccountId: 'account-123',
+        provider: 'google',
       });
 
       const result = await executeScheduledAction(
         mockScheduledAction,
         mockEmailProvider,
-        logger,
+        logger
       );
 
       expect(result.success).toBe(false);
       expect(prisma.scheduledAction.update).toHaveBeenCalledWith({
-        where: { id: "scheduled-action-123" },
+        where: { id: 'scheduled-action-123' },
         data: {
           status: ScheduledActionStatus.FAILED,
         },
       });
     });
 
-    it("should handle account not found errors", async () => {
+    it('should handle account not found errors', async () => {
       prisma.scheduledAction.update.mockResolvedValue({
         ...mockScheduledAction,
         status: ScheduledActionStatus.EXECUTING,
       } as any);
 
       const { getEmailAccountWithAiAndTokens } = await import(
-        "@/utils/user/get"
+        '@/utils/user/get'
       );
       (getEmailAccountWithAiAndTokens as any).mockResolvedValue(null);
 
-      const { createEmailProvider } = await import("@/utils/email/provider");
+      const { createEmailProvider } = await import('@/utils/email/provider');
       const mockEmailProvider = await createEmailProvider({
-        emailAccountId: "account-123",
-        provider: "google",
+        emailAccountId: 'account-123',
+        provider: 'google',
       });
 
       await executeScheduledAction(
         mockScheduledAction,
         mockEmailProvider,
-        logger,
+        logger
       );
 
       expect(prisma.scheduledAction.update).toHaveBeenCalledWith({
-        where: { id: "scheduled-action-123" },
+        where: { id: 'scheduled-action-123' },
         data: {
           status: ScheduledActionStatus.FAILED,
         },

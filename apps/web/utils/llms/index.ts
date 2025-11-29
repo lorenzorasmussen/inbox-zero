@@ -1,24 +1,21 @@
+import type { LanguageModelV2 } from '@ai-sdk/provider';
 import {
   APICallError,
-  type ModelMessage,
-  type Tool,
-  type JSONValue,
   generateObject,
   generateText,
+  type JSONValue,
+  type ModelMessage,
+  NoObjectGeneratedError,
   RetryError,
-  streamText,
-  smoothStream,
-  stepCountIs,
   type StreamTextOnFinishCallback,
   type StreamTextOnStepFinishCallback,
-  NoObjectGeneratedError,
+  smoothStream,
+  stepCountIs,
+  streamText,
+  type Tool,
   TypeValidationError,
-} from "ai";
-import { jsonrepair } from "jsonrepair";
-import type { LanguageModelV2 } from "@ai-sdk/provider";
-import { saveAiUsage } from "@/utils/usage";
-import type { EmailAccountWithAI, UserAIFields } from "@/utils/llms/types";
-import { addUserErrorMessage, ErrorType } from "@/utils/error-messages";
+} from 'ai';
+import { jsonrepair } from 'jsonrepair';
 import {
   captureException,
   isAnthropicInsufficientBalanceError,
@@ -28,12 +25,15 @@ import {
   isOpenAIAPIKeyDeactivatedError,
   isOpenAIRetryError,
   isServiceUnavailableError,
-} from "@/utils/error";
-import { sleep } from "@/utils/sleep";
-import { getModel, type ModelType } from "@/utils/llms/model";
-import { createScopedLogger } from "@/utils/logger";
+} from '@/utils/error';
+import { addUserErrorMessage, ErrorType } from '@/utils/error-messages';
+import { getModel, type ModelType } from '@/utils/llms/model';
+import type { EmailAccountWithAI, UserAIFields } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import { sleep } from '@/utils/sleep';
+import { saveAiUsage } from '@/utils/usage';
 
-const logger = createScopedLogger("llms");
+const logger = createScopedLogger('llms');
 
 const MAX_LOG_LENGTH = 200;
 
@@ -48,7 +48,7 @@ export function createGenerateText({
   label,
   modelOptions,
 }: {
-  emailAccount: Pick<EmailAccountWithAI, "email" | "id">;
+  emailAccount: Pick<EmailAccountWithAI, 'email' | 'id'>;
   label: string;
   modelOptions: ReturnType<typeof getModel>;
 }): typeof generateText {
@@ -56,7 +56,7 @@ export function createGenerateText({
     const [options, ...restArgs] = args;
 
     const generate = async (model: LanguageModelV2) => {
-      logger.trace("Generating text", {
+      logger.trace('Generating text', {
         label,
         system: options.system?.slice(0, MAX_LOG_LENGTH),
         prompt: options.prompt?.slice(0, MAX_LOG_LENGTH),
@@ -68,7 +68,7 @@ export function createGenerateText({
           ...commonOptions,
           model,
         },
-        ...restArgs,
+        ...restArgs
       );
 
       if (result.usage) {
@@ -83,7 +83,7 @@ export function createGenerateText({
 
       if (args[0].tools) {
         const toolCallInput = result.toolCalls?.[0]?.input;
-        logger.trace("Result", {
+        logger.trace('Result', {
           label,
           result: toolCallInput,
         });
@@ -99,7 +99,7 @@ export function createGenerateText({
         modelOptions.backupModel &&
         (isServiceUnavailableError(error) || isAWSThrottlingError(error))
       ) {
-        logger.warn("Using backup model", {
+        logger.warn('Using backup model', {
           error,
           model: modelOptions.backupModel,
         });
@@ -112,7 +112,7 @@ export function createGenerateText({
             emailAccount.email,
             emailAccount.id,
             label,
-            modelOptions.modelName,
+            modelOptions.modelName
           );
           throw error;
         }
@@ -123,7 +123,7 @@ export function createGenerateText({
         emailAccount.email,
         emailAccount.id,
         label,
-        modelOptions.modelName,
+        modelOptions.modelName
       );
       throw error;
     }
@@ -135,7 +135,7 @@ export function createGenerateObject({
   label,
   modelOptions,
 }: {
-  emailAccount: Pick<EmailAccountWithAI, "email" | "id">;
+  emailAccount: Pick<EmailAccountWithAI, 'email' | 'id'>;
   label: string;
   modelOptions: ReturnType<typeof getModel>;
 }): typeof generateObject {
@@ -148,14 +148,14 @@ export function createGenerateObject({
         const [options, ...restArgs] = args;
 
         if (attempt > 0) {
-          logger.info("Retrying generateObject after validation error", {
+          logger.info('Retrying generateObject after validation error', {
             label,
             attempt,
             maxRetries,
           });
         }
 
-        logger.trace("Generating object", {
+        logger.trace('Generating object', {
           label,
           system: options.system?.slice(0, MAX_LOG_LENGTH),
           prompt: options.prompt?.slice(0, MAX_LOG_LENGTH),
@@ -163,24 +163,24 @@ export function createGenerateObject({
         });
 
         if (
-          !options.system?.includes("JSON") &&
-          typeof options.prompt === "string" &&
-          !options.prompt?.includes("JSON")
+          !options.system?.includes('JSON') &&
+          typeof options.prompt === 'string' &&
+          !options.prompt?.includes('JSON')
         ) {
-          logger.warn("Missing JSON in prompt", { label });
+          logger.warn('Missing JSON in prompt', { label });
         }
 
         const result = await generateObject(
           {
             experimental_repairText: async ({ text }) => {
-              logger.info("Repairing text", { label, attempt });
+              logger.info('Repairing text', { label, attempt });
               const fixed = jsonrepair(text);
               return fixed;
             },
             ...options,
             ...commonOptions,
           },
-          ...restArgs,
+          ...restArgs
         );
 
         if (result.usage) {
@@ -193,7 +193,7 @@ export function createGenerateObject({
           });
         }
 
-        logger.trace("Generated object", {
+        logger.trace('Generated object', {
           label,
           result: result.object,
           attempt,
@@ -209,7 +209,7 @@ export function createGenerateObject({
           TypeValidationError.isInstance(error);
 
         if (isValidationError && attempt < maxRetries) {
-          logger.warn("Validation error, will retry", {
+          logger.warn('Validation error, will retry', {
             label,
             attempt,
             maxRetries,
@@ -228,7 +228,7 @@ export function createGenerateObject({
           emailAccount.email,
           emailAccount.id,
           label,
-          modelOptions.modelName,
+          modelOptions.modelName
         );
         throw error;
       }
@@ -262,7 +262,7 @@ export async function chatCompletionStream({
 }) {
   const { provider, model, modelName, providerOptions } = getModel(
     userAi,
-    modelType,
+    modelType
   );
 
   const result = streamText({
@@ -272,7 +272,7 @@ export async function chatCompletionStream({
     stopWhen: maxSteps ? stepCountIs(maxSteps) : undefined,
     providerOptions,
     ...commonOptions,
-    experimental_transform: smoothStream({ chunking: "word" }),
+    experimental_transform: smoothStream({ chunking: 'word' }),
     onStepFinish,
     onFinish: async (result) => {
       const usagePromise = saveAiUsage({
@@ -288,23 +288,23 @@ export async function chatCompletionStream({
       try {
         await Promise.all([usagePromise, finishPromise]);
       } catch (error) {
-        logger.error("Error in onFinish callback", {
+        logger.error('Error in onFinish callback', {
           label,
           userEmail,
           error,
         });
-        logger.trace("Result", { result });
+        logger.trace('Result', { result });
         captureException(
           error,
           {
             extra: { label },
           },
-          userEmail,
+          userEmail
         );
       }
     },
     onError: (error) => {
-      logger.error("Error in chat completion stream", {
+      logger.error('Error in chat completion stream', {
         label,
         userEmail,
         error,
@@ -314,7 +314,7 @@ export async function chatCompletionStream({
         {
           extra: { label },
         },
-        userEmail,
+        userEmail
       );
     },
   });
@@ -327,9 +327,9 @@ async function handleError(
   userEmail: string,
   emailAccountId: string,
   label: string,
-  modelName: string,
+  modelName: string
 ) {
-  logger.error("Error in LLM call", {
+  logger.error('Error in LLM call', {
     error,
     userEmail,
     emailAccountId,
@@ -342,7 +342,7 @@ async function handleError(
       return await addUserErrorMessage(
         userEmail,
         ErrorType.INCORRECT_OPENAI_API_KEY,
-        error.message,
+        error.message
       );
     }
 
@@ -350,7 +350,7 @@ async function handleError(
       return await addUserErrorMessage(
         userEmail,
         ErrorType.INVALID_OPENAI_MODEL,
-        error.message,
+        error.message
       );
     }
 
@@ -358,7 +358,7 @@ async function handleError(
       return await addUserErrorMessage(
         userEmail,
         ErrorType.OPENAI_API_KEY_DEACTIVATED,
-        error.message,
+        error.message
       );
     }
 
@@ -366,7 +366,7 @@ async function handleError(
       return await addUserErrorMessage(
         userEmail,
         ErrorType.OPENAI_RETRY_ERROR,
-        error.message,
+        error.message
       );
     }
 
@@ -374,7 +374,7 @@ async function handleError(
       return await addUserErrorMessage(
         userEmail,
         ErrorType.ANTHROPIC_INSUFFICIENT_BALANCE,
-        error.message,
+        error.message
       );
     }
   }
@@ -391,7 +391,7 @@ export async function withRetry<T>(
     retryIf: (error: unknown) => boolean;
     maxRetries: number;
     delayMs: number;
-  },
+  }
 ): Promise<T> {
   let attempts = 0;
   let lastError: unknown;
@@ -404,7 +404,7 @@ export async function withRetry<T>(
       lastError = error;
 
       if (retryIf(error)) {
-        logger.warn("Operation failed. Retrying...", {
+        logger.warn('Operation failed. Retrying...', {
           attempts,
           error,
         });

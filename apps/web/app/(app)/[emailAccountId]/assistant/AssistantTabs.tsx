@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { XIcon } from "lucide-react";
-import { useCallback } from "react";
-import { useQueryState } from "nuqs";
-import { History } from "@/app/(app)/[emailAccountId]/assistant/History";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Rules } from "@/app/(app)/[emailAccountId]/assistant/Rules";
-import { Process } from "@/app/(app)/[emailAccountId]/assistant/Process";
-import { RulesPrompt } from "@/app/(app)/[emailAccountId]/assistant/RulesPrompt";
-import { TabsToolbar } from "@/components/TabsToolbar";
-import { TypographyP } from "@/components/Typography";
-import { RuleTab } from "@/app/(app)/[emailAccountId]/assistant/RuleTab";
-import { Button } from "@/components/ui/button";
+import { XIcon } from 'lucide-react';
+import { useQueryState } from 'nuqs';
+import { useCallback } from 'react';
+import { History } from '@/app/(app)/[emailAccountId]/assistant/History';
+import { Process } from '@/app/(app)/[emailAccountId]/assistant/Process';
+import { Rules } from '@/app/(app)/[emailAccountId]/assistant/Rules';
+import { RulesPrompt } from '@/app/(app)/[emailAccountId]/assistant/RulesPrompt';
+import { RuleTab } from '@/app/(app)/[emailAccountId]/assistant/RuleTab';
+import { TabsToolbar } from '@/components/TabsToolbar';
+import { TypographyP } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export function AssistantTabs() {
   return (
@@ -61,7 +61,7 @@ export function AssistantTabs() {
 }
 
 function CloseArtifactButton() {
-  const [_tab, setTab] = useQueryState("tab");
+  const [_tab, setTab] = useQueryState('tab');
 
   const onClose = useCallback(() => setTab(null), [setTab]);
 

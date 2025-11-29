@@ -1,9 +1,9 @@
-import { z } from "zod";
-import { CleanAction } from "@/generated/prisma/enums";
+import { z } from 'zod';
+import { CleanAction } from '@/generated/prisma/enums';
 
 export const cleanInboxSchema = z.object({
   daysOld: z.number().default(7),
-  instructions: z.string().default(""),
+  instructions: z.string().default(''),
   action: z.enum([CleanAction.ARCHIVE, CleanAction.MARK_READ]),
   maxEmails: z.number().optional(),
   skips: z.object({

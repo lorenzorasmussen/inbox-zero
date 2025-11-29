@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import type { Category } from "@/generated/prisma/client";
+import { LoadingMiniSpinner } from '@/components/Loading';
+import { toastError, toastSuccess } from '@/components/Toast';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { changeSenderCategoryAction } from "@/utils/actions/categorize";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { useAiCategorizationQueueItem } from "@/store/ai-categorize-sender-queue";
-import { LoadingMiniSpinner } from "@/components/Loading";
+} from '@/components/ui/select';
+import type { Category } from '@/generated/prisma/client';
+import { useAiCategorizationQueueItem } from '@/store/ai-categorize-sender-queue';
+import { changeSenderCategoryAction } from '@/utils/actions/categorize';
 
 export function CategorySelect({
   emailAccountId,
@@ -22,13 +22,13 @@ export function CategorySelect({
 }: {
   emailAccountId: string;
   sender: string;
-  senderCategory: Pick<Category, "id"> | null;
-  categories: Pick<Category, "id" | "name">[];
+  senderCategory: Pick<Category, 'id'> | null;
+  categories: Pick<Category, 'id' | 'name'>[];
   onSuccess?: (categoryId: string) => void;
 }) {
   const item = useAiCategorizationQueueItem(sender);
 
-  if (item?.status && item?.status !== "completed") {
+  if (item?.status && item?.status !== 'completed') {
     return (
       <span className="flex items-center text-muted-foreground">
         <LoadingMiniSpinner />
@@ -39,7 +39,7 @@ export function CategorySelect({
 
   return (
     <Select
-      defaultValue={item?.categoryId || senderCategory?.id || ""}
+      defaultValue={item?.categoryId || senderCategory?.id || ''}
       onValueChange={async (value) => {
         const result = await changeSenderCategoryAction(emailAccountId, {
           sender,
@@ -49,7 +49,7 @@ export function CategorySelect({
         if (result?.serverError) {
           toastError({ description: result.serverError });
         } else {
-          toastSuccess({ description: "Category changed" });
+          toastSuccess({ description: 'Category changed' });
           onSuccess?.(value);
         }
       }}

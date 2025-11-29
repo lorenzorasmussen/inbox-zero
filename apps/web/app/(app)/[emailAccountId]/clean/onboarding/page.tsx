@@ -1,15 +1,15 @@
-import { Card, CardTitle } from "@/components/ui/card";
-import { IntroStep } from "@/app/(app)/[emailAccountId]/clean/IntroStep";
-import { ActionSelectionStep } from "@/app/(app)/[emailAccountId]/clean/ActionSelectionStep";
-import { CleanInstructionsStep } from "@/app/(app)/[emailAccountId]/clean/CleanInstructionsStep";
-import { TimeRangeStep } from "@/app/(app)/[emailAccountId]/clean/TimeRangeStep";
-import { ConfirmationStep } from "@/app/(app)/[emailAccountId]/clean/ConfirmationStep";
-import { getUnhandledCount } from "@/utils/assess";
-import { CleanStep } from "@/app/(app)/[emailAccountId]/clean/types";
-import { CleanAction } from "@/generated/prisma/enums";
-import { createEmailProvider } from "@/utils/email/provider";
-import { checkUserOwnsEmailAccount } from "@/utils/email-account";
-import prisma from "@/utils/prisma";
+import { ActionSelectionStep } from '@/app/(app)/[emailAccountId]/clean/ActionSelectionStep';
+import { CleanInstructionsStep } from '@/app/(app)/[emailAccountId]/clean/CleanInstructionsStep';
+import { ConfirmationStep } from '@/app/(app)/[emailAccountId]/clean/ConfirmationStep';
+import { IntroStep } from '@/app/(app)/[emailAccountId]/clean/IntroStep';
+import { TimeRangeStep } from '@/app/(app)/[emailAccountId]/clean/TimeRangeStep';
+import { CleanStep } from '@/app/(app)/[emailAccountId]/clean/types';
+import { Card, CardTitle } from '@/components/ui/card';
+import { CleanAction } from '@/generated/prisma/enums';
+import { getUnhandledCount } from '@/utils/assess';
+import { createEmailProvider } from '@/utils/email/provider';
+import { checkUserOwnsEmailAccount } from '@/utils/email-account';
+import prisma from '@/utils/prisma';
 
 export default async function CleanPage(props: {
   params: Promise<{ emailAccountId: string }>;
@@ -73,11 +73,11 @@ export default async function CleanPage(props: {
             }
             instructions={searchParams.instructions}
             skips={{
-              reply: searchParams.skipReply === "true",
-              starred: searchParams.skipStarred === "true",
-              calendar: searchParams.skipCalendar === "true",
-              receipt: searchParams.skipReceipt === "true",
-              attachment: searchParams.skipAttachment === "true",
+              reply: searchParams.skipReply === 'true',
+              starred: searchParams.skipStarred === 'true',
+              calendar: searchParams.skipCalendar === 'true',
+              receipt: searchParams.skipReceipt === 'true',
+              attachment: searchParams.skipAttachment === 'true',
             }}
             reuseSettings={false}
           />
@@ -86,7 +86,7 @@ export default async function CleanPage(props: {
       // first / default step
       default:
         return (
-          <IntroStep unhandledCount={unhandledCount} cleanAction={"ARCHIVE"} />
+          <IntroStep unhandledCount={unhandledCount} cleanAction={'ARCHIVE'} />
         );
     }
   };

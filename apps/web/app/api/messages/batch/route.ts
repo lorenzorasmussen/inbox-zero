@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import { withEmailProvider } from "@/utils/middleware";
-import { messagesBatchQuery } from "@/app/api/messages/validation";
-import { parseReply } from "@/utils/mail";
-import type { EmailProvider } from "@/utils/email/types";
+import { NextResponse } from 'next/server';
+import { messagesBatchQuery } from '@/app/api/messages/validation';
+import type { EmailProvider } from '@/utils/email/types';
+import { parseReply } from '@/utils/mail';
+import { withEmailProvider } from '@/utils/middleware';
 
 export type MessagesBatchResponse = {
   messages: Awaited<ReturnType<typeof getMessagesBatch>>;
@@ -22,23 +22,23 @@ async function getMessagesBatch({
   if (parseReplies) {
     return messages.map((message) => ({
       ...message,
-      textPlain: parseReply(message.textPlain || ""),
-      textHtml: parseReply(message.textHtml || ""),
+      textPlain: parseReply(message.textPlain || ''),
+      textHtml: parseReply(message.textHtml || ''),
     }));
   }
 
   return messages;
 }
 
-export const GET = withEmailProvider("messages/batch", async (request) => {
+export const GET = withEmailProvider('messages/batch', async (request) => {
   const { emailProvider } = request;
 
   const { searchParams } = new URL(request.url);
-  const ids = searchParams.get("ids");
-  const parseReplies = searchParams.get("parseReplies");
+  const ids = searchParams.get('ids');
+  const parseReplies = searchParams.get('parseReplies');
   const query = messagesBatchQuery.parse({
-    ids: ids ? ids.split(",") : [],
-    parseReplies: parseReplies === "true",
+    ids: ids ? ids.split(',') : [],
+    parseReplies: parseReplies === 'true',
   });
 
   const messages = await getMessagesBatch({

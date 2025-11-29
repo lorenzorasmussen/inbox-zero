@@ -1,79 +1,79 @@
-import { Suspense } from "react";
-import type { Metadata } from "next";
-import Script from "next/script";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { AxiomWebVitals } from "next-axiom";
-import { GoogleTagManager } from "@next/third-parties/google";
-import { Analytics as DubAnalytics } from "@dub/analytics/react";
-import { Geist } from "next/font/google";
-import localFont from "next/font/local";
-import type { WebApplication, WithContext } from "schema-dts";
-import "../styles/globals.css";
-import { PostHogPageview, PostHogProvider } from "@/providers/PostHogProvider";
-import { env } from "@/env";
-import { GlobalProviders } from "@/providers/GlobalProviders";
-import { UTM } from "@/app/utm";
-import { startupImage } from "@/app/startup-image";
-import { Toaster } from "@/components/Toast";
+import { Analytics as DubAnalytics } from '@dub/analytics/react';
+import { GoogleTagManager } from '@next/third-parties/google';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import type { Metadata } from 'next';
+import { Geist } from 'next/font/google';
+import localFont from 'next/font/local';
+import Script from 'next/script';
+import { AxiomWebVitals } from 'next-axiom';
+import { Suspense } from 'react';
+import type { WebApplication, WithContext } from 'schema-dts';
+import '../styles/globals.css';
+import { startupImage } from '@/app/startup-image';
+import { UTM } from '@/app/utm';
+import { Toaster } from '@/components/Toast';
+import { env } from '@/env';
+import { GlobalProviders } from '@/providers/GlobalProviders';
+import { PostHogPageview, PostHogProvider } from '@/providers/PostHogProvider';
 
 const aeonikFont = localFont({
-  src: "../styles/aeonik-medium.woff",
-  variable: "--font-title",
+  src: '../styles/aeonik-medium.woff',
+  variable: '--font-title',
   preload: true,
-  display: "swap",
+  display: 'swap',
 });
 const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist",
-  weight: ["400", "500", "600", "700"], // font-normal, font-medium, font-semibold, font-bold
-  display: "swap",
+  subsets: ['latin'],
+  variable: '--font-geist',
+  weight: ['400', '500', '600', '700'], // font-normal, font-medium, font-semibold, font-bold
+  display: 'swap',
 });
 
-const title = "Inbox Zero | Automate and clean your inbox";
+const title = 'Inbox Zero | Automate and clean your inbox';
 const description =
-  "Your AI executive assistant to reach inbox zero fast. Automate emails, bulk unsubscribe, block cold emails, and analytics. Open-source";
+  'Your AI executive assistant to reach inbox zero fast. Automate emails, bulk unsubscribe, block cold emails, and analytics. Open-source';
 
 // JSON-LD structured data
 const jsonLd: WithContext<WebApplication> = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "Inbox Zero",
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Inbox Zero',
   url: env.NEXT_PUBLIC_BASE_URL,
   description,
-  applicationCategory: "ProductivityApplication",
-  operatingSystem: "Web Browser",
+  applicationCategory: 'ProductivityApplication',
+  operatingSystem: 'Web Browser',
   offers: {
-    "@type": "Offer",
-    price: "20.00",
-    priceCurrency: "USD",
+    '@type': 'Offer',
+    price: '20.00',
+    priceCurrency: 'USD',
     priceSpecification: {
-      "@type": "UnitPriceSpecification",
+      '@type': 'UnitPriceSpecification',
       price: 20,
-      priceCurrency: "USD",
-      billingDuration: "P1M",
+      priceCurrency: 'USD',
+      billingDuration: 'P1M',
     },
-    availability: "https://schema.org/InStock",
+    availability: 'https://schema.org/InStock',
   },
   featureList: [
-    "AI Email Assistant",
-    "Email Automation",
-    "Bulk Unsubscribe",
-    "Cold Email Blocking",
-    "Email Analytics",
-    "Newsletter Management",
+    'AI Email Assistant',
+    'Email Automation',
+    'Bulk Unsubscribe',
+    'Cold Email Blocking',
+    'Email Analytics',
+    'Newsletter Management',
   ],
   publisher: {
-    "@type": "Organization",
-    name: "Inbox Zero",
+    '@type': 'Organization',
+    name: 'Inbox Zero',
     url: env.NEXT_PUBLIC_BASE_URL,
     logo: {
-      "@type": "ImageObject",
+      '@type': 'ImageObject',
       url: `${env.NEXT_PUBLIC_BASE_URL}/icon.png`,
     },
     sameAs: [
-      "https://x.com/inboxzero_ai",
-      "https://github.com/elie222/inbox-zero",
+      'https://x.com/inboxzero_ai',
+      'https://github.com/elie222/inbox-zero',
     ],
   },
 };
@@ -84,14 +84,14 @@ export const metadata: Metadata = {
   openGraph: {
     title,
     description,
-    siteName: "Inbox Zero",
-    type: "website",
+    siteName: 'Inbox Zero',
+    type: 'website',
   },
   twitter: {
-    card: "summary_large_image",
+    card: 'summary_large_image',
     title,
     description,
-    creator: "@inboxzero_ai",
+    creator: '@inboxzero_ai',
   },
   metadataBase: new URL(env.NEXT_PUBLIC_BASE_URL),
   // issues with robots.txt: https://github.com/vercel/next.js/issues/58615#issuecomment-1852457285
@@ -100,11 +100,11 @@ export const metadata: Metadata = {
     follow: true,
   },
   // pwa
-  applicationName: "Inbox Zero",
+  applicationName: 'Inbox Zero',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "Inbox Zero",
+    statusBarStyle: 'default',
+    title: 'Inbox Zero',
     startupImage,
   },
   formatDetection: {
@@ -112,14 +112,14 @@ export const metadata: Metadata = {
   },
   // safe area for iOS PWA
   other: {
-    "mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "white-translucent",
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'white-translucent',
   },
 };
 
 export const viewport = {
-  themeColor: "#FFF",
+  themeColor: '#FFF',
 };
 
 export default async function RootLayout({
@@ -130,7 +130,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
       <body
-        className={`h-full ${env.NEXT_PUBLIC_USE_AEONIK_FONT ? aeonikFont.variable : ""} ${geist.variable} font-sans antialiased`}
+        className={`h-full ${env.NEXT_PUBLIC_USE_AEONIK_FONT ? aeonikFont.variable : ''} ${geist.variable} font-sans antialiased`}
       >
         <Script
           id="json-ld"
@@ -157,7 +157,7 @@ export default async function RootLayout({
         {env.NEXT_PUBLIC_DUB_REFER_DOMAIN && (
           <DubAnalytics
             apiHost="/_proxy/dub"
-            scriptProps={{ src: "/_proxy/dub/script.js" }}
+            scriptProps={{ src: '/_proxy/dub/script.js' }}
             domainsConfig={{ refer: env.NEXT_PUBLIC_DUB_REFER_DOMAIN }}
           />
         )}

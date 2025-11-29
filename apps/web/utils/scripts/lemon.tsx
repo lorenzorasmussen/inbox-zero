@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { env } from "@/env";
-import Script from "next/script";
+import Script from 'next/script';
+import { env } from '@/env';
 
 export function LemonScript() {
   if (!env.NEXT_PUBLIC_LEMON_STORE_ID) return null;
@@ -11,7 +11,7 @@ export function LemonScript() {
       src="/vendor/lemon/affiliate.js"
       defer
       onError={(e) => {
-        console.error("Failed to load Lemon Squeezy affiliate script:", e);
+        console.error('Failed to load Lemon Squeezy affiliate script:', e);
       }}
       onLoad={() => {
         if (!window) return;

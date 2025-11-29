@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Crisp } from "crisp-sdk-web";
-import { env } from "@/env";
-import { useSidebar } from "@/components/ui/sidebar";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import { Crisp } from 'crisp-sdk-web';
+import { useEffect, useState } from 'react';
+import { useSidebar } from '@/components/ui/sidebar';
+import { env } from '@/env';
+import { useAccount } from '@/providers/EmailAccountProvider';
 
 const CrispChat = () => {
   const { state } = useSidebar();
 
   const [isConfigured, setIsConfigured] = useState(false);
-  const isChatOpen = state.includes("chat-sidebar");
+  const isChatOpen = state.includes('chat-sidebar');
 
   useEffect(() => {
     if (!env.NEXT_PUBLIC_CRISP_WEBSITE_ID) return;

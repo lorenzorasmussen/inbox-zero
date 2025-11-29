@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { CheckIcon, PenIcon, XIcon } from "lucide-react";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { OnboardingWrapper } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper";
-import { useCallback } from "react";
-import { enableDraftRepliesAction } from "@/utils/actions/rule";
-import { toastError } from "@/components/Toast";
-import { OnboardingButton } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingButton";
+import { CheckIcon, PenIcon, XIcon } from 'lucide-react';
+import Image from 'next/image';
+import { useCallback } from 'react';
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { OnboardingButton } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingButton';
+import { OnboardingWrapper } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper';
+import { toastError } from '@/components/Toast';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { enableDraftRepliesAction } from '@/utils/actions/rule';
 
 export function StepDraft({
   emailAccountId,
@@ -21,18 +21,18 @@ export function StepDraft({
   const onSetDraftReplies = useCallback(
     async (value: string) => {
       const result = await enableDraftRepliesAction(emailAccountId, {
-        enable: value === "yes",
+        enable: value === 'yes',
       });
 
       if (result?.serverError) {
         toastError({
-          description: `There was an error: ${result.serverError || ""}`,
+          description: `There was an error: ${result.serverError || ''}`,
         });
       }
 
       onNext();
     },
-    [onNext, emailAccountId],
+    [onNext, emailAccountId]
   );
 
   return (
@@ -57,13 +57,13 @@ export function StepDraft({
             <OnboardingButton
               text="Yes, please"
               icon={<CheckIcon className="size-4" />}
-              onClick={() => onSetDraftReplies("yes")}
+              onClick={() => onSetDraftReplies('yes')}
             />
 
             <OnboardingButton
               text="No, thanks"
               icon={<XIcon className="size-4" />}
-              onClick={() => onSetDraftReplies("no")}
+              onClick={() => onSetDraftReplies('no')}
             />
           </div>
         </OnboardingWrapper>

@@ -1,35 +1,35 @@
-import { NextResponse } from "next/server";
-import { withEmailProvider } from "@/utils/middleware";
-import { attachmentQuery } from "@/app/api/messages/validation";
+import { NextResponse } from 'next/server';
+import { attachmentQuery } from '@/app/api/messages/validation';
+import { withEmailProvider } from '@/utils/middleware';
 
-export const GET = withEmailProvider("messages/attachment", async (request) => {
+export const GET = withEmailProvider('messages/attachment', async (request) => {
   const { emailProvider } = request;
 
   const { searchParams } = new URL(request.url);
 
   const query = attachmentQuery.parse({
-    messageId: searchParams.get("messageId"),
-    attachmentId: searchParams.get("attachmentId"),
-    mimeType: searchParams.get("mimeType"),
-    filename: searchParams.get("filename"),
+    messageId: searchParams.get('messageId'),
+    attachmentId: searchParams.get('attachmentId'),
+    mimeType: searchParams.get('mimeType'),
+    filename: searchParams.get('filename'),
   });
 
   const attachmentData = await emailProvider.getAttachment(
     query.messageId,
-    query.attachmentId,
+    query.attachmentId
   );
 
   if (!attachmentData.data) {
-    return NextResponse.json({ error: "No data" }, { status: 404 });
+    return NextResponse.json({ error: 'No data' }, { status: 404 });
   }
 
-  const decodedData = Buffer.from(attachmentData.data, "base64");
+  const decodedData = Buffer.from(attachmentData.data, 'base64');
 
   const headers = new Headers();
-  headers.set("Content-Type", query.mimeType);
+  headers.set('Content-Type', query.mimeType);
   headers.set(
-    "Content-Disposition",
-    `attachment; filename="${query.filename}"`,
+    'Content-Disposition',
+    `attachment; filename="${query.filename}"`
   );
 
   return new NextResponse(decodedData, { headers });

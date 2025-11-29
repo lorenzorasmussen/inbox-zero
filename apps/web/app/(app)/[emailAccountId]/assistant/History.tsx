@@ -1,12 +1,18 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { ExternalLinkIcon } from "lucide-react";
-import { useQueryState, parseAsInteger, parseAsString } from "nuqs";
-import { LoadingContent } from "@/components/LoadingContent";
-import type { GetExecutedRulesResponse } from "@/app/api/user/executed-rules/history/route";
-import { AlertBasic } from "@/components/Alert";
-import { Card } from "@/components/ui/card";
+import { ExternalLinkIcon } from 'lucide-react';
+import Link from 'next/link';
+import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
+import { DateCell } from '@/app/(app)/[emailAccountId]/assistant/DateCell';
+import { FixWithChat } from '@/app/(app)/[emailAccountId]/assistant/FixWithChat';
+import { ResultsDisplay } from '@/app/(app)/[emailAccountId]/assistant/ResultDisplay';
+import { RulesSelect } from '@/app/(app)/[emailAccountId]/assistant/RulesSelect';
+import type { GetExecutedRulesResponse } from '@/app/api/user/executed-rules/history/route';
+import { AlertBasic } from '@/components/Alert';
+import { Badge } from '@/components/Badge';
+import { LoadingContent } from '@/components/LoadingContent';
+import { TablePagination } from '@/components/TablePagination';
+import { Card } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -14,25 +20,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { TablePagination } from "@/components/TablePagination";
-import { Badge } from "@/components/Badge";
-import { RulesSelect } from "@/app/(app)/[emailAccountId]/assistant/RulesSelect";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { useChat } from "@/providers/ChatProvider";
-import { useExecutedRules } from "@/hooks/useExecutedRules";
-import { decodeSnippet } from "@/utils/gmail/decode";
-import type { ParsedMessage } from "@/utils/types";
-import { ViewEmailButton } from "@/components/ViewEmailButton";
-import { FixWithChat } from "@/app/(app)/[emailAccountId]/assistant/FixWithChat";
-import { ResultsDisplay } from "@/app/(app)/[emailAccountId]/assistant/ResultDisplay";
-import { DateCell } from "@/app/(app)/[emailAccountId]/assistant/DateCell";
-import { isGoogleProvider } from "@/utils/email/provider-types";
-import { getEmailUrlForMessage } from "@/utils/url";
+} from '@/components/ui/table';
+import { ViewEmailButton } from '@/components/ViewEmailButton';
+import { useExecutedRules } from '@/hooks/useExecutedRules';
+import { useChat } from '@/providers/ChatProvider';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import { decodeSnippet } from '@/utils/gmail/decode';
+import type { ParsedMessage } from '@/utils/types';
+import { getEmailUrlForMessage } from '@/utils/url';
 
 export function History() {
-  const [page] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [ruleId] = useQueryState("ruleId", parseAsString.withDefault("all"));
+  const [page] = useQueryState('page', parseAsInteger.withDefault(1));
+  const [ruleId] = useQueryState('ruleId', parseAsString.withDefault('all'));
 
   const { data, isLoading, error } = useExecutedRules({ page, ruleId });
 
@@ -47,9 +47,9 @@ export function History() {
             <AlertBasic
               title="No history"
               description={
-                ruleId === "all"
-                  ? "No emails have been processed yet."
-                  : "No emails have been processed for this rule."
+                ruleId === 'all'
+                  ? 'No emails have been processed yet.'
+                  : 'No emails have been processed for this rule.'
               }
             />
           )}
@@ -63,7 +63,7 @@ function HistoryTable({
   data,
   totalPages,
 }: {
-  data: GetExecutedRulesResponse["results"];
+  data: GetExecutedRulesResponse['results'];
   totalPages: number;
 }) {
   const { userEmail } = useAccount();
@@ -161,7 +161,7 @@ function RuleCell({
   message,
   setInput,
 }: {
-  executedRules: GetExecutedRulesResponse["results"][number]["executedRules"];
+  executedRules: GetExecutedRulesResponse['results'][number]['executedRules'];
   message: ParsedMessage;
   setInput: (input: string) => void;
 }) {

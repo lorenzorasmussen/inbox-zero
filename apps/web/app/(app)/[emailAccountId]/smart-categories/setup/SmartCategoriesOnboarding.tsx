@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useOnboarding } from "@/components/OnboardingModal";
+import { ArchiveIcon, TagsIcon, ZapIcon } from 'lucide-react';
+import { useOnboarding } from '@/components/OnboardingModal';
+import { Button } from '@/components/ui/button';
+import { CardBasic } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { CardBasic } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { TagsIcon, ArchiveIcon, ZapIcon } from "lucide-react";
+} from '@/components/ui/dialog';
 
 export function SmartCategoriesOnboarding() {
-  const { isOpen, setIsOpen, onClose } = useOnboarding("SmartCategories");
+  const { isOpen, setIsOpen, onClose } = useOnboarding('SmartCategories');
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

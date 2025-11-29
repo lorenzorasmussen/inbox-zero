@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { Toggle } from "@/components/Toggle";
-import { enableDraftRepliesAction } from "@/utils/actions/rule";
-import { toastError } from "@/components/Toast";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { useRules } from "@/hooks/useRules";
-import { ActionType, SystemType } from "@/generated/prisma/enums";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import { SettingCard } from "@/components/SettingCard";
+import { useCallback } from 'react';
+import { LoadingContent } from '@/components/LoadingContent';
+import { SettingCard } from '@/components/SettingCard';
+import { toastError } from '@/components/Toast';
+import { Toggle } from '@/components/Toggle';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ActionType, SystemType } from '@/generated/prisma/enums';
+import { useRules } from '@/hooks/useRules';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { enableDraftRepliesAction } from '@/utils/actions/rule';
 
 export function DraftReplies() {
   const { enabled, toggleDraftReplies, loading, error } = useDraftReplies();
@@ -20,11 +20,11 @@ export function DraftReplies() {
         await toggleDraftReplies(enable);
       } catch (error) {
         toastError({
-          description: `There was an error: ${error instanceof Error ? error.message : "Unknown error"}`,
+          description: `There was an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         });
       }
     },
-    [toggleDraftReplies],
+    [toggleDraftReplies]
   );
 
   return (
@@ -53,10 +53,10 @@ export function useDraftReplies() {
   const { emailAccountId } = useAccount();
 
   const toReplyRule = data?.find(
-    (rule) => rule.systemType === SystemType.TO_REPLY,
+    (rule) => rule.systemType === SystemType.TO_REPLY
   );
   const isEnabled = toReplyRule?.actions.some(
-    (action) => action.type === ActionType.DRAFT_EMAIL,
+    (action) => action.type === ActionType.DRAFT_EMAIL
   );
 
   const toggleDraftReplies = useCallback(
@@ -69,7 +69,7 @@ export function useDraftReplies() {
             ...rule,
             actions: enable
               ? rule.actions.some(
-                  (action) => action.type === ActionType.DRAFT_EMAIL,
+                  (action) => action.type === ActionType.DRAFT_EMAIL
                 )
                 ? rule.actions
                 : [
@@ -95,7 +95,7 @@ export function useDraftReplies() {
                   ]
               : // Remove DRAFT_EMAIL action if disabling
                 rule.actions.filter(
-                  (action) => action.type !== ActionType.DRAFT_EMAIL,
+                  (action) => action.type !== ActionType.DRAFT_EMAIL
                 ),
           };
         }
@@ -120,7 +120,7 @@ export function useDraftReplies() {
         throw error;
       }
     },
-    [data, mutate, emailAccountId],
+    [data, mutate, emailAccountId]
   );
 
   return {

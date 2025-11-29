@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
+import Link from 'next/link';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 
 type NavItem = {
   name: string;
   href: string;
   icon: LucideIcon | ((props: any) => React.ReactNode);
-  target?: "_blank";
+  target?: '_blank';
   count?: number;
   hideInMail?: boolean;
   active?: boolean;

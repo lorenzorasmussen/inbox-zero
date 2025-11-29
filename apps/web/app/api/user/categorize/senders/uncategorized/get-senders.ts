@@ -1,4 +1,4 @@
-import prisma from "@/utils/prisma";
+import prisma from '@/utils/prisma';
 
 export async function getSenders({
   emailAccountId,
@@ -17,7 +17,7 @@ export async function getSenders({
     select: {
       from: true,
     },
-    distinct: ["from"],
+    distinct: ['from'],
     skip: offset,
     take: limit,
   });

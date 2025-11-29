@@ -1,12 +1,11 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { SectionDescription } from "@/components/Typography";
-import { TypographyH3 } from "@/components/Typography";
-import { Button } from "@/components/ui/button";
-import { useStep } from "@/app/(app)/[emailAccountId]/clean/useStep";
-import { CleanAction } from "@/generated/prisma/enums";
-import { PremiumAlertWithData } from "@/components/PremiumAlert";
+import Image from 'next/image';
+import { useStep } from '@/app/(app)/[emailAccountId]/clean/useStep';
+import { PremiumAlertWithData } from '@/components/PremiumAlert';
+import { SectionDescription, TypographyH3 } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { CleanAction } from '@/generated/prisma/enums';
 
 export function IntroStep({
   unhandledCount,
@@ -41,8 +40,8 @@ export function IntroStep({
         ) : (
           <>
             <SectionDescription className="mx-auto mt-2 max-w-prose">
-              You have {unhandledCount.toLocaleString()}{" "}
-              {cleanAction === CleanAction.ARCHIVE ? "unarchived" : "unread"}{" "}
+              You have {unhandledCount.toLocaleString()}{' '}
+              {cleanAction === CleanAction.ARCHIVE ? 'unarchived' : 'unread'}{' '}
               emails in your inbox.
             </SectionDescription>
             <SectionDescription className="mx-auto mt-2 max-w-prose">

@@ -1,5 +1,5 @@
-import { Header } from "@/components/new-landing/sections/Header";
-import { Footer } from "@/components/new-landing/sections/Footer";
+import { Footer } from '@/components/new-landing/sections/Footer';
+import { Header } from '@/components/new-landing/sections/Header';
 
 export function BlogHeader() {
   return (

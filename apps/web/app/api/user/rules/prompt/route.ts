@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { withEmailAccount } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type RulesPromptResponse = Awaited<ReturnType<typeof getRulesPrompt>>;
 
@@ -11,7 +11,7 @@ async function getRulesPrompt({ emailAccountId }: { emailAccountId: string }) {
   });
 }
 
-export const GET = withEmailAccount("user/rules/prompt", async (request) => {
+export const GET = withEmailAccount('user/rules/prompt', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
 
   const result = await getRulesPrompt({ emailAccountId });

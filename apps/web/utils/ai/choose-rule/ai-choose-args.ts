@@ -1,14 +1,14 @@
-import { z } from "zod";
-import { InvalidArgumentError } from "ai";
-import { createGenerateObject, withRetry } from "@/utils/llms";
-import { stringifyEmail } from "@/utils/stringify-email";
-import { createScopedLogger } from "@/utils/logger";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM, RuleWithActions } from "@/utils/types";
-import { LogicalOperator } from "@/generated/prisma/enums";
-import type { ActionType } from "@/generated/prisma/enums";
-import { getModel, type ModelType } from "@/utils/llms/model";
-import { getUserInfoPrompt } from "@/utils/ai/helpers";
+import { InvalidArgumentError } from 'ai';
+import { z } from 'zod';
+import type { ActionType } from '@/generated/prisma/enums';
+import { LogicalOperator } from '@/generated/prisma/enums';
+import { getUserInfoPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject, withRetry } from '@/utils/llms';
+import { getModel, type ModelType } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import { stringifyEmail } from '@/utils/stringify-email';
+import type { EmailForLLM, RuleWithActions } from '@/utils/types';
 
 /**
  * AI Argument Generator for Email Actions
@@ -62,30 +62,30 @@ export async function aiGenerateArgs({
   }[];
   modelType: ModelType;
 }): Promise<ActionArgResponse | undefined> {
-  const logger = createScopedLogger("AI Choose Args").with({
+  const logger = createScopedLogger('AI Choose Args').with({
     email: emailAccount.email,
     ruleId: selectedRule.id,
     ruleName: selectedRule.name,
   });
 
-  logger.info("Generating args for rule");
+  logger.info('Generating args for rule');
 
   // If no parameters, skip
   if (parameters.length === 0) {
-    logger.info("Skipping. No parameters for rule");
+    logger.info('Skipping. No parameters for rule');
     return;
   }
 
   const system = getSystemPrompt();
   const prompt = getPrompt({ email, selectedRule, emailAccount });
 
-  logger.info("Calling chat completion tools");
+  logger.info('Calling chat completion tools');
   // logger.trace("Parameters:", zodToJsonSchema(parameters));
 
   const modelOptions = getModel(emailAccount.user, modelType);
 
   const generateObject = createGenerateObject({
-    label: "Args for rule",
+    label: 'Args for rule',
     emailAccount,
     modelOptions,
   });
@@ -96,24 +96,24 @@ export async function aiGenerateArgs({
         ...modelOptions,
         system,
         prompt,
-        schemaDescription: "The arguments for the rule",
+        schemaDescription: 'The arguments for the rule',
         schema: z.object(
           Object.fromEntries(
-            parameters.map((p) => [`${p.type}-${p.actionId}`, p.parameters]),
-          ),
+            parameters.map((p) => [`${p.type}-${p.actionId}`, p.parameters])
+          )
         ),
       }),
     {
       retryIf: (error: unknown) => InvalidArgumentError.isInstance(error),
       maxRetries: 3,
       delayMs: 1000,
-    },
+    }
   );
 
   const result = aiResponse.object;
 
   if (!result) {
-    logger.warn("No tool call found", { aiResponse });
+    logger.warn('No tool call found', { aiResponse });
     return;
   }
 
@@ -171,9 +171,7 @@ function printConditions(condition: RuleWithActions) {
   }
 
   return result.join(
-    condition.conditionalOperator === LogicalOperator.AND
-      ? "\nAND\n"
-      : "\nOR\n",
+    condition.conditionalOperator === LogicalOperator.AND ? '\nAND\n' : '\nOR\n'
   );
 }
 
@@ -191,5 +189,5 @@ function printStaticConditions(condition: RuleWithActions) {
   if (condition.body) {
     result.push(`Body: ${condition.body}`);
   }
-  return result.join("\n");
+  return result.join('\n');
 }

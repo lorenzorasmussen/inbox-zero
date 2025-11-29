@@ -1,4 +1,4 @@
-import { SystemType } from "@/generated/prisma/enums";
+import { SystemType } from '@/generated/prisma/enums';
 
 export const CONVERSATION_STATUS_TYPES: SystemType[] = [
   SystemType.TO_REPLY,
@@ -8,13 +8,13 @@ export const CONVERSATION_STATUS_TYPES: SystemType[] = [
 ];
 
 export type ConversationStatus =
-  | "TO_REPLY"
-  | "FYI"
-  | "AWAITING_REPLY"
-  | "ACTIONED";
+  | 'TO_REPLY'
+  | 'FYI'
+  | 'AWAITING_REPLY'
+  | 'ACTIONED';
 
 export function isConversationStatusType(
-  systemType: SystemType | null | undefined,
+  systemType: SystemType | null | undefined
 ): systemType is ConversationStatus {
   if (!systemType) return false;
 

@@ -1,9 +1,9 @@
-import pRetry from "p-retry";
-import { createScopedLogger } from "@/utils/logger";
-import { sleep } from "@/utils/sleep";
-import { isFetchError } from "@/utils/retry/is-fetch-error";
+import pRetry from 'p-retry';
+import { createScopedLogger } from '@/utils/logger';
+import { isFetchError } from '@/utils/retry/is-fetch-error';
+import { sleep } from '@/utils/sleep';
 
-const logger = createScopedLogger("outlook-retry");
+const logger = createScopedLogger('outlook-retry');
 
 interface ErrorInfo {
   status?: number;
@@ -18,7 +18,7 @@ interface ErrorInfo {
  */
 export async function withOutlookRetry<T>(
   operation: () => Promise<T>,
-  maxRetries = 5,
+  maxRetries = 5
 ): Promise<T> {
   return pRetry(operation, {
     retries: maxRetries,
@@ -28,7 +28,7 @@ export async function withOutlookRetry<T>(
         isRetryableError(errorInfo);
 
       if (!retryable) {
-        logger.warn("Non-retryable error encountered", {
+        logger.warn('Non-retryable error encountered', {
           error,
           status: errorInfo.status,
           code: errorInfo.code,
@@ -43,23 +43,23 @@ export async function withOutlookRetry<T>(
             string,
             string
           >
-        )?.["retry-after"] ??
+        )?.['retry-after'] ??
         (
           (err?.response as Record<string, unknown>)?.headers as Record<
             string,
             string
           >
-        )?.["Retry-After"];
+        )?.['Retry-After'];
 
       const delayMs = calculateRetryDelay(
         isRateLimit,
         isServerError,
         isConflictError,
         error.attemptNumber,
-        retryAfterHeader,
+        retryAfterHeader
       );
 
-      logger.warn("Microsoft Graph error. Will retry", {
+      logger.warn('Microsoft Graph error. Will retry', {
         delaySeconds: Math.ceil(delayMs / 1000),
         attemptNumber: error.attemptNumber,
         maxRetries,
@@ -103,7 +103,7 @@ export function extractErrorInfo(error: unknown): ErrorInfo {
     (err?.message as string) ??
     ((err?.error as Record<string, unknown>)?.message as string) ??
     (err?.body as string) ??
-    "";
+    '';
 
   const errorMessage = String(primaryMessage);
 
@@ -124,7 +124,7 @@ export function isRetryableError(errorInfo: ErrorInfo): {
   // Rate limit detection: 429 status or "TooManyRequests" code
   const isRateLimit =
     status === 429 ||
-    code === "TooManyRequests" ||
+    code === 'TooManyRequests' ||
     /rate limit/i.test(errorMessage) ||
     /quota exceeded/i.test(errorMessage);
 
@@ -133,16 +133,16 @@ export function isRetryableError(errorInfo: ErrorInfo): {
     status === 502 ||
     status === 503 ||
     status === 504 ||
-    code === "ServiceNotAvailable" ||
-    code === "ServerBusy" ||
+    code === 'ServiceNotAvailable' ||
+    code === 'ServerBusy' ||
     /502|503|504|server error|temporarily unavailable|service unavailable/i.test(
-      errorMessage,
+      errorMessage
     );
 
   // Conflict errors from stale change keys (412)
   const isConflictError =
     status === 412 ||
-    code === "ErrorIrresolvableConflict" ||
+    code === 'ErrorIrresolvableConflict' ||
     /change key/i.test(errorMessage);
 
   return {
@@ -165,7 +165,7 @@ export function calculateRetryDelay(
   isServerError: boolean,
   isConflictError: boolean,
   attemptNumber: number,
-  retryAfterHeader?: string,
+  retryAfterHeader?: string
 ): number {
   // Handle Retry-After header
   if (retryAfterHeader) {

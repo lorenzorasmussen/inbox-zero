@@ -1,5 +1,5 @@
-import { Paragraph } from "@/components/new-landing/common/Typography";
-import { cva, cx } from "class-variance-authority";
+import { cva, cx } from 'class-variance-authority';
+import { Paragraph } from '@/components/new-landing/common/Typography';
 
 interface CardContentProps {
   children: React.ReactNode;
@@ -7,7 +7,7 @@ interface CardContentProps {
 }
 
 export function CardContent({ children, className }: CardContentProps) {
-  return <div className={cx("p-6", className)}>{children}</div>;
+  return <div className={cx('p-6', className)}>{children}</div>;
 }
 
 interface CardHeaderProps {
@@ -36,8 +36,8 @@ export function CardHeader({
       {title ? (
         <h2
           className={cx(
-            "font-title text-xl leading-6",
-            title || addon ? "mt-5" : "",
+            'font-title text-xl leading-6',
+            title || addon ? 'mt-5' : ''
           )}
         >
           {title}
@@ -54,7 +54,7 @@ export function CardHeader({
 
 interface CardProps {
   children: React.ReactNode;
-  variant?: "default" | "extra-rounding" | "circle";
+  variant?: 'default' | 'extra-rounding' | 'circle';
   icon?: React.ReactNode;
   addon?: React.ReactNode;
   title?: string;
@@ -65,7 +65,7 @@ interface CardProps {
 
 export function Card({
   children,
-  variant = "default",
+  variant = 'default',
   icon,
   addon,
   title,
@@ -75,17 +75,17 @@ export function Card({
 }: CardProps) {
   const cardVariants = cva(
     [
-      "text-left flex flex-col border border-[#E7E7E780] bg-white shadow-[0px_3px_12.9px_0px_#97979714]",
+      'text-left flex flex-col border border-[#E7E7E780] bg-white shadow-[0px_3px_12.9px_0px_#97979714]',
     ],
     {
       variants: {
         variant: {
-          circle: "rounded-full",
-          "extra-rounding": "rounded-[32px]",
-          default: "rounded-[20px]",
+          circle: 'rounded-full',
+          'extra-rounding': 'rounded-[32px]',
+          default: 'rounded-[20px]',
         },
       },
-    },
+    }
   );
   return (
     <div className={cardVariants({ variant, className })}>

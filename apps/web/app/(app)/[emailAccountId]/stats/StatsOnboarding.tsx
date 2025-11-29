@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { ArchiveIcon, Layers3Icon, BarChartBigIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArchiveIcon, BarChartBigIcon, Layers3Icon } from 'lucide-react';
+import { useOnboarding } from '@/components/OnboardingModal';
+import { Button } from '@/components/ui/button';
+import { CardBasic } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { useOnboarding } from "@/components/OnboardingModal";
-import { CardBasic } from "@/components/ui/card";
+} from '@/components/ui/dialog';
 
 export function StatsOnboarding() {
-  const { isOpen, setIsOpen, onClose } = useOnboarding("Stats");
+  const { isOpen, setIsOpen, onClose } = useOnboarding('Stats');
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

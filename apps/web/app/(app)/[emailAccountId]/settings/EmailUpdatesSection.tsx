@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { FormSection, FormSectionLeft } from "@/components/Form";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Select } from "@/components/Select";
-import { Frequency } from "@/generated/prisma/enums";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback, useMemo } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { FormSection, FormSectionLeft } from '@/components/Form';
+import { Select } from '@/components/Select';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Frequency } from '@/generated/prisma/enums';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { updateEmailSettingsAction } from '@/utils/actions/settings';
 import {
   type SaveEmailUpdateSettingsBody,
   saveEmailUpdateSettingsBody,
-} from "@/utils/actions/settings.validation";
-import { updateEmailSettingsAction } from "@/utils/actions/settings";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from '@/utils/actions/settings.validation';
 
 export function EmailUpdatesSection({
   summaryEmailFrequency,
@@ -54,7 +54,7 @@ function SummaryUpdateSectionForm({
     resolver: zodResolver(saveEmailUpdateSettingsBody),
     defaultValues: {
       summaryEmailFrequency:
-        summaryEmailFrequency === "WEEKLY" ? "WEEKLY" : "NEVER",
+        summaryEmailFrequency === 'WEEKLY' ? 'WEEKLY' : 'NEVER',
     },
   });
 
@@ -64,29 +64,29 @@ function SummaryUpdateSectionForm({
 
       if (res?.serverError) {
         toastError({
-          description: "There was an error updating the settings.",
+          description: 'There was an error updating the settings.',
         });
       } else {
-        toastSuccess({ description: "Settings updated!" });
+        toastSuccess({ description: 'Settings updated!' });
       }
 
       mutate();
     },
-    [emailAccountId, mutate],
+    [emailAccountId, mutate]
   );
 
   const options: { label: string; value: Frequency }[] = useMemo(
     () => [
       {
-        label: "Never",
+        label: 'Never',
         value: Frequency.NEVER,
       },
       {
-        label: "Weekly",
+        label: 'Weekly',
         value: Frequency.WEEKLY,
       },
     ],
-    [],
+    []
   );
 
   return (
@@ -100,7 +100,7 @@ function SummaryUpdateSectionForm({
       <Select
         label="Summary Email"
         options={options}
-        {...register("summaryEmailFrequency")}
+        {...register('summaryEmailFrequency')}
         error={errors.summaryEmailFrequency}
       />
 

@@ -3,7 +3,7 @@ function getGmailBaseUrl(emailAddress?: string | null) {
 }
 
 function getOutlookBaseUrl() {
-  return "https://outlook.live.com/mail/0";
+  return 'https://outlook.live.com/mail/0';
 }
 
 const PROVIDER_CONFIG: Record<
@@ -11,7 +11,7 @@ const PROVIDER_CONFIG: Record<
   {
     buildUrl: (
       messageOrThreadId: string,
-      emailAddress?: string | null,
+      emailAddress?: string | null
     ) => string;
     selectId: (messageId: string, threadId: string) => string;
   }
@@ -38,15 +38,15 @@ const PROVIDER_CONFIG: Record<
 } as const;
 
 function getProviderConfig(
-  provider?: string,
+  provider?: string
 ): (typeof PROVIDER_CONFIG)[keyof typeof PROVIDER_CONFIG] {
-  return PROVIDER_CONFIG[provider ?? "default"];
+  return PROVIDER_CONFIG[provider ?? 'default'];
 }
 
 export function getEmailUrl(
   messageOrThreadId: string,
   emailAddress?: string | null,
-  provider?: string,
+  provider?: string
 ): string {
   const config = getProviderConfig(provider);
   return config.buildUrl(messageOrThreadId, emailAddress);
@@ -61,7 +61,7 @@ export function getEmailUrlForMessage(
   messageId: string,
   threadId: string,
   emailAddress?: string | null,
-  provider?: string,
+  provider?: string
 ) {
   const config = getProviderConfig(provider);
   const idToUse = config?.selectId(messageId, threadId);
@@ -72,20 +72,20 @@ export function getEmailUrlForMessage(
 // Keep the old function name for backward compatibility
 export function getGmailUrl(
   messageOrThreadId: string,
-  emailAddress?: string | null,
+  emailAddress?: string | null
 ) {
-  return getEmailUrl(messageOrThreadId, emailAddress, "google");
+  return getEmailUrl(messageOrThreadId, emailAddress, 'google');
 }
 
 export function getGmailSearchUrl(from: string, emailAddress?: string | null) {
   return `${getGmailBaseUrl(
-    emailAddress,
+    emailAddress
   )}/#advanced-search/from=${encodeURIComponent(from)}`;
 }
 
 export function getGmailBasicSearchUrl(emailAddress: string, query: string) {
   return `${getGmailBaseUrl(emailAddress)}/#search/${encodeURIComponent(
-    query,
+    query
   )}`;
 }
 

@@ -1,9 +1,9 @@
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import { getStripe } from "@/ee/billing/stripe";
-import { ReferralStatus } from "@/generated/prisma/enums";
+import { getStripe } from '@/ee/billing/stripe';
+import { ReferralStatus } from '@/generated/prisma/enums';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("referral-tracking");
+const logger = createScopedLogger('referral-tracking');
 
 const REWARD_AMOUNT_CENTS = 2000; // $20 credit
 
@@ -32,12 +32,12 @@ export async function completeReferralAndGrantReward(userId: string) {
     });
 
     if (!referral) {
-      logger.info("No referral found for user", { userId });
+      logger.info('No referral found for user', { userId });
       return;
     }
 
     if (referral.status === ReferralStatus.COMPLETED) {
-      logger.info("Referral already rewarded", {
+      logger.info('Referral already rewarded', {
         userId,
         referralId: referral.id,
       });
@@ -47,7 +47,7 @@ export async function completeReferralAndGrantReward(userId: string) {
     // Check if referrer has a Stripe customer ID
     const stripeCustomerId = referral.referrerUser.premium?.stripeCustomerId;
     if (!stripeCustomerId) {
-      logger.warn("Referrer has no Stripe customer ID", {
+      logger.warn('Referrer has no Stripe customer ID', {
         referralId: referral.id,
         referrerUserId: referral.referrerUserId,
       });
@@ -68,7 +68,7 @@ export async function completeReferralAndGrantReward(userId: string) {
           stripeCustomerId,
           {
             amount: -REWARD_AMOUNT_CENTS, // Negative amount for credit
-            currency: "usd",
+            currency: 'usd',
             description: `Referral credit - ${referral.id}`,
             metadata: {
               referral_id: referral.id,
@@ -78,7 +78,7 @@ export async function completeReferralAndGrantReward(userId: string) {
           },
           {
             idempotencyKey: `referral_${stripeCustomerId}_${referral.id}`,
-          },
+          }
         );
 
       // Update referral with reward information
@@ -92,7 +92,7 @@ export async function completeReferralAndGrantReward(userId: string) {
         },
       });
 
-      logger.info("Completed referral and granted Stripe credit", {
+      logger.info('Completed referral and granted Stripe credit', {
         referralId: referral.id,
         stripeBalanceTransactionId: balanceTransaction.id,
         referrerUserId: referral.referrerUserId,
@@ -100,7 +100,7 @@ export async function completeReferralAndGrantReward(userId: string) {
 
       return;
     } catch (stripeError) {
-      logger.error("Failed to create Stripe balance transaction", {
+      logger.error('Failed to create Stripe balance transaction', {
         error: stripeError,
         referralId: referral.id,
         stripeCustomerId,
@@ -117,7 +117,7 @@ export async function completeReferralAndGrantReward(userId: string) {
       throw stripeError;
     }
   } catch (error) {
-    logger.error("Error completing referral", { error, userId });
+    logger.error('Error completing referral', { error, userId });
     throw error;
   }
 }

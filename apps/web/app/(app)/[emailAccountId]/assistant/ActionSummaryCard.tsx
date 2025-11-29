@@ -1,14 +1,14 @@
-import { TagIcon } from "lucide-react";
-import type { CreateRuleBody } from "@/utils/actions/rule.validation";
-import { ActionType } from "@/generated/prisma/enums";
-import { CardBasic } from "@/components/ui/card";
+import { TagIcon } from 'lucide-react';
 import {
-  ACTION_TYPE_TEXT_COLORS,
   ACTION_TYPE_ICONS,
-} from "@/app/(app)/[emailAccountId]/assistant/constants";
-import { TooltipExplanation } from "@/components/TooltipExplanation";
-import { getEmailTerminology } from "@/utils/terminology";
-import type { EmailLabel } from "@/providers/EmailProvider";
+  ACTION_TYPE_TEXT_COLORS,
+} from '@/app/(app)/[emailAccountId]/assistant/constants';
+import { TooltipExplanation } from '@/components/TooltipExplanation';
+import { CardBasic } from '@/components/ui/card';
+import { ActionType } from '@/generated/prisma/enums';
+import type { EmailLabel } from '@/providers/EmailProvider';
+import type { CreateRuleBody } from '@/utils/actions/rule.validation';
+import { getEmailTerminology } from '@/utils/terminology';
 
 export function ActionSummaryCard({
   action,
@@ -16,7 +16,7 @@ export function ActionSummaryCard({
   provider,
   labels,
 }: {
-  action: CreateRuleBody["actions"][number];
+  action: CreateRuleBody['actions'][number];
   typeOptions: { label: string; value: ActionType }[];
   provider: string;
   labels: EmailLabel[];
@@ -37,30 +37,30 @@ export function ActionSummaryCard({
 
   switch (action.type) {
     case ActionType.LABEL: {
-      const labelId = action.labelId?.value || "";
+      const labelId = action.labelId?.value || '';
       const labelName = labelId
         ? labels.find((label) => label.id === labelId)?.name
-        : action.labelId?.name || "";
+        : action.labelId?.name || '';
 
       if (action.labelId?.ai) {
         summaryContent = labelName
           ? `AI ${terminology.label.action}: ${labelName}`
           : `AI ${terminology.label.action}`;
       } else {
-        summaryContent = `${terminology.label.action} as "${labelName || "unset"}"`;
+        summaryContent = `${terminology.label.action} as "${labelName || 'unset'}"`;
       }
       break;
     }
 
     case ActionType.DRAFT_EMAIL: {
       if (action.content?.setManually) {
-        const contentValue = action.content?.value || "";
+        const contentValue = action.content?.value || '';
         summaryContent = (
           <>
             <span>Draft reply</span>
             {action.to?.value && (
               <span className="text-muted-foreground">
-                {" "}
+                {' '}
                 to {action.to.value}
               </span>
             )}
@@ -86,7 +86,7 @@ export function ActionSummaryCard({
                 <span>AI draft reply</span>
                 {action.to?.value && (
                   <span className="text-muted-foreground">
-                    {" "}
+                    {' '}
                     to {action.to.value}
                   </span>
                 )}
@@ -108,13 +108,13 @@ export function ActionSummaryCard({
 
     case ActionType.REPLY: {
       if (action.content?.setManually) {
-        const contentValue = action.content?.value || "";
+        const contentValue = action.content?.value || '';
         summaryContent = (
           <>
             <span>Reply</span>
             {action.to?.value && (
               <span className="text-muted-foreground">
-                {" "}
+                {' '}
                 to {action.to.value}
               </span>
             )}
@@ -138,7 +138,7 @@ export function ActionSummaryCard({
             <span>AI reply</span>
             {action.to?.value && (
               <span className="text-muted-foreground">
-                {" "}
+                {' '}
                 to {action.to.value}
               </span>
             )}
@@ -155,7 +155,7 @@ export function ActionSummaryCard({
     case ActionType.FORWARD:
       summaryContent = (
         <>
-          <span>Forward to {action.to?.value || "unset"}</span>
+          <span>Forward to {action.to?.value || 'unset'}</span>
           {action.content?.value && (
             <span className="mt-2 block text-muted-foreground">
               {action.content.value}
@@ -169,10 +169,10 @@ export function ActionSummaryCard({
     case ActionType.SEND_EMAIL:
       summaryContent = (
         <>
-          <span>Send email to {action.to?.value || "unset"}</span>
+          <span>Send email to {action.to?.value || 'unset'}</span>
           {action.subject?.value && (
             <span className="text-muted-foreground">
-              {" "}
+              {' '}
               - "{action.subject.value}"
             </span>
           )}
@@ -182,25 +182,25 @@ export function ActionSummaryCard({
       break;
 
     case ActionType.CALL_WEBHOOK:
-      summaryContent = `Call webhook: ${action.url?.value || "unset"}`;
+      summaryContent = `Call webhook: ${action.url?.value || 'unset'}`;
       tooltipText =
-        "Sends email details and rule execution data to your webhook endpoint when this rule is triggered.";
+        'Sends email details and rule execution data to your webhook endpoint when this rule is triggered.';
       break;
 
     case ActionType.ARCHIVE:
-      summaryContent = "Skip Inbox";
+      summaryContent = 'Skip Inbox';
       break;
 
     case ActionType.MARK_READ:
-      summaryContent = "Mark as read";
+      summaryContent = 'Mark as read';
       break;
 
     case ActionType.MARK_SPAM:
-      summaryContent = "Mark as spam";
+      summaryContent = 'Mark as spam';
       break;
 
     case ActionType.MOVE_FOLDER:
-      summaryContent = `Folder: ${action.folderName?.value || "unset"}`;
+      summaryContent = `Folder: ${action.folderName?.value || 'unset'}`;
       break;
 
     default:
@@ -209,7 +209,7 @@ export function ActionSummaryCard({
 
   const Icon = ACTION_TYPE_ICONS[action.type] || TagIcon;
   const textColorClass =
-    ACTION_TYPE_TEXT_COLORS[action.type] || "text-gray-500";
+    ACTION_TYPE_TEXT_COLORS[action.type] || 'text-gray-500';
 
   return (
     <CardBasic className="flex items-center justify-between p-4">
@@ -230,7 +230,7 @@ export function ActionSummaryCard({
 function EmailField({
   label,
   value,
-  className = "mt-1",
+  className = 'mt-1',
 }: {
   label: string;
   value: string;
@@ -262,15 +262,15 @@ function OptionalEmailFields({
 }
 
 function formatDelay(delayInMinutes: number | null | undefined): string {
-  if (!delayInMinutes) return "";
+  if (!delayInMinutes) return '';
 
   if (delayInMinutes < 60) {
-    return ` after ${delayInMinutes} minute${delayInMinutes === 1 ? "" : "s"}`;
-  } else if (delayInMinutes < 1440) {
-    const hours = Math.floor(delayInMinutes / 60);
-    return ` after ${hours} hour${hours === 1 ? "" : "s"}`;
-  } else {
-    const days = Math.floor(delayInMinutes / 1440);
-    return ` after ${days} day${days === 1 ? "" : "s"}`;
+    return ` after ${delayInMinutes} minute${delayInMinutes === 1 ? '' : 's'}`;
   }
+  if (delayInMinutes < 1440) {
+    const hours = Math.floor(delayInMinutes / 60);
+    return ` after ${hours} hour${hours === 1 ? '' : 's'}`;
+  }
+  const days = Math.floor(delayInMinutes / 1440);
+  return ` after ${days} day${days === 1 ? '' : 's'}`;
 }

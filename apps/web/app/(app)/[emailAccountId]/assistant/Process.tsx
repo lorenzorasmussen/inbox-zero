@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useQueryState } from "nuqs";
-import { ProcessRulesContent } from "@/app/(app)/[emailAccountId]/assistant/ProcessRules";
-import { Toggle } from "@/components/Toggle";
-import { CardDescription } from "@/components/ui/card";
+import { useQueryState } from 'nuqs';
+import { ProcessRulesContent } from '@/app/(app)/[emailAccountId]/assistant/ProcessRules';
+import { Toggle } from '@/components/Toggle';
+import { CardDescription } from '@/components/ui/card';
 
 export function Process() {
-  const [mode, setMode] = useQueryState("mode");
-  const isApplyMode = mode === "apply";
+  const [mode, setMode] = useQueryState('mode');
+  const isApplyMode = mode === 'apply';
 
   return (
     <>
@@ -15,8 +15,8 @@ export function Process() {
         <div className="flex flex-col space-y-1.5">
           <CardDescription>
             {isApplyMode
-              ? "Run your rules on previous emails"
-              : "Check how your rules perform against previous emails"}
+              ? 'Run your rules on previous emails'
+              : 'Check how your rules perform against previous emails'}
           </CardDescription>
         </div>
 
@@ -26,7 +26,7 @@ export function Process() {
             label="Test"
             labelRight="Apply"
             enabled={isApplyMode}
-            onChange={(enabled) => setMode(enabled ? "apply" : "test")}
+            onChange={(enabled) => setMode(enabled ? 'apply' : 'test')}
           />
         </div>
       </div>

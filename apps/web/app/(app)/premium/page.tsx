@@ -1,4 +1,4 @@
-import { AppPricingLazy } from "@/app/(app)/premium/AppPricingLazy";
+import { AppPricingLazy } from '@/app/(app)/premium/AppPricingLazy';
 
 export default function Premium() {
   return (

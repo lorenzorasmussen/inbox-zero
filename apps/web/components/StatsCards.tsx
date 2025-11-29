@@ -1,5 +1,5 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { cn } from "@/utils";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/utils';
 
 export function StatsCards(props: {
   stats: {
@@ -12,8 +12,8 @@ export function StatsCards(props: {
   return (
     <div
       className={cn(
-        "grid gap-2 md:grid-cols-2 md:gap-4",
-        props.stats.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4",
+        'grid gap-2 md:grid-cols-2 md:gap-4',
+        props.stats.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'
       )}
     >
       {props.stats.map((stat) => {

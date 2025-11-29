@@ -1,6 +1,6 @@
-import type React from "react";
-import { BarList as TremorBarList, Flex, Text } from "@tremor/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Flex, Text, BarList as TremorBarList } from '@tremor/react';
+import type React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const BarList = (props: {
   title: string;

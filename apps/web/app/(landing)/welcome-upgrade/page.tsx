@@ -1,8 +1,8 @@
-import { Footer } from "@/app/(landing)/home/Footer";
-import { WelcomeUpgradeNav } from "@/app/(landing)/welcome-upgrade/WelcomeUpgradeNav";
-import { WelcomeUpgradeHeader } from "@/app/(landing)/welcome-upgrade/WelcomeUpgradeHeader";
-import { Testimonial } from "@/app/(landing)/welcome-upgrade/Testimonial";
-import { AppPricingLazy } from "@/app/(app)/premium/AppPricingLazy";
+import { AppPricingLazy } from '@/app/(app)/premium/AppPricingLazy';
+import { Footer } from '@/app/(landing)/home/Footer';
+import { Testimonial } from '@/app/(landing)/welcome-upgrade/Testimonial';
+import { WelcomeUpgradeHeader } from '@/app/(landing)/welcome-upgrade/WelcomeUpgradeHeader';
+import { WelcomeUpgradeNav } from '@/app/(landing)/welcome-upgrade/WelcomeUpgradeNav';
 
 export default function WelcomeUpgradePage() {
   return (

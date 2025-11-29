@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { checkPermissionsAction } from "@/utils/actions/permissions";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { useOrgAccess } from "@/hooks/useOrgAccess";
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useOrgAccess } from '@/hooks/useOrgAccess';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { checkPermissionsAction } from '@/utils/actions/permissions';
+import { prefixPath } from '@/utils/path';
 
 const permissionsChecked: Record<string, boolean> = {};
 
@@ -23,9 +23,9 @@ export function PermissionsCheck() {
 
     checkPermissionsAction(emailAccountId).then((result) => {
       if (result?.data?.hasAllPermissions === false)
-        router.replace(prefixPath(emailAccountId, "/permissions/error"));
+        router.replace(prefixPath(emailAccountId, '/permissions/error'));
       if (result?.data?.hasRefreshToken === false)
-        router.replace(prefixPath(emailAccountId, "/permissions/consent"));
+        router.replace(prefixPath(emailAccountId, '/permissions/consent'));
     });
   }, [router, emailAccountId, isAccountOwner]);
 

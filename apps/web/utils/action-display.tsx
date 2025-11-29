@@ -1,19 +1,19 @@
-import { ActionType } from "@/generated/prisma/enums";
-import { getEmailTerminology } from "@/utils/terminology";
 import {
   ArchiveIcon,
+  FileTextIcon,
   FolderInputIcon,
   ForwardIcon,
-  ReplyIcon,
-  ShieldCheckIcon,
-  SendIcon,
-  TagIcon,
-  WebhookIcon,
-  FileTextIcon,
   MailIcon,
   NewspaperIcon,
-} from "lucide-react";
-import { truncate } from "@/utils/string";
+  ReplyIcon,
+  SendIcon,
+  ShieldCheckIcon,
+  TagIcon,
+  WebhookIcon,
+} from 'lucide-react';
+import { ActionType } from '@/generated/prisma/enums';
+import { truncate } from '@/utils/string';
+import { getEmailTerminology } from '@/utils/terminology';
 
 export function getActionDisplay(
   action: {
@@ -25,7 +25,7 @@ export function getActionDisplay(
     to?: string | null;
   },
   provider: string,
-  labels: Array<{ id: string; name: string }>,
+  labels: Array<{ id: string; name: string }>
 ): string {
   const terminology = getEmailTerminology(provider);
   switch (action.type) {
@@ -33,7 +33,7 @@ export function getActionDisplay(
       if (action.content) {
         return `Draft Reply: ${truncate(action.content, 10)}`;
       }
-      return "Draft Reply";
+      return 'Draft Reply';
     case ActionType.LABEL: {
       let labelName: string | null | undefined = null;
 
@@ -55,27 +55,27 @@ export function getActionDisplay(
         : terminology.label.action;
     }
     case ActionType.ARCHIVE:
-      return "Skip Inbox";
+      return 'Skip Inbox';
     case ActionType.MARK_READ:
-      return "Mark Read";
+      return 'Mark Read';
     case ActionType.MARK_SPAM:
-      return "Mark Spam";
+      return 'Mark Spam';
     case ActionType.REPLY:
-      return "Reply";
+      return 'Reply';
     case ActionType.SEND_EMAIL:
       return action.to
         ? `Send Email to ${truncate(action.to, 8)}`
-        : "Send Email";
+        : 'Send Email';
     case ActionType.FORWARD:
-      return action.to ? `Forward to ${truncate(action.to, 8)}` : "Forward";
+      return action.to ? `Forward to ${truncate(action.to, 8)}` : 'Forward';
     case ActionType.MOVE_FOLDER:
       return action.folderName
         ? `Move to '${action.folderName}' folder`
-        : "Move to folder";
+        : 'Move to folder';
     case ActionType.DIGEST:
-      return "Digest";
+      return 'Digest';
     case ActionType.CALL_WEBHOOK:
-      return "Call Webhook";
+      return 'Call Webhook';
     default: {
       const exhaustiveCheck: never = action.type;
       return exhaustiveCheck;

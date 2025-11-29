@@ -1,9 +1,9 @@
-import prisma from "@/utils/prisma";
-import { captureException } from "@/utils/error";
-import { createScopedLogger } from "@/utils/logger";
-import type { EmailProvider } from "@/utils/email/types";
+import type { EmailProvider } from '@/utils/email/types';
+import { captureException } from '@/utils/error';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("google/watch");
+const logger = createScopedLogger('google/watch');
 
 export async function watchEmails({
   emailAccountId,
@@ -12,7 +12,7 @@ export async function watchEmails({
   emailAccountId: string;
   emailProvider: EmailProvider;
 }) {
-  logger.info("Watching emails", { emailAccountId });
+  logger.info('Watching emails', { emailAccountId });
   const res = await emailProvider.watchEmails();
 
   if (res?.expirationDate) {
@@ -23,7 +23,7 @@ export async function watchEmails({
     });
     return expirationDate;
   }
-  logger.error("Error watching inbox", { emailAccountId });
+  logger.error('Error watching inbox', { emailAccountId });
 }
 
 export async function unwatchEmails({
@@ -34,15 +34,15 @@ export async function unwatchEmails({
   emailProvider: EmailProvider;
 }) {
   try {
-    logger.info("Unwatching emails", { emailAccountId });
+    logger.info('Unwatching emails', { emailAccountId });
     await emailProvider.unwatchEmails();
   } catch (error) {
-    if (error instanceof Error && error.message.includes("invalid_grant")) {
-      logger.warn("Error unwatching emails, invalid grant", { emailAccountId });
+    if (error instanceof Error && error.message.includes('invalid_grant')) {
+      logger.warn('Error unwatching emails, invalid grant', { emailAccountId });
       return;
     }
 
-    logger.error("Error unwatching emails", { emailAccountId, error });
+    logger.error('Error unwatching emails', { emailAccountId, error });
     captureException(error);
   }
 

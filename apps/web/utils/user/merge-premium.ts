@@ -1,8 +1,8 @@
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
-import { isOnHigherTier } from "@/utils/premium";
+import { createScopedLogger } from '@/utils/logger';
+import { isOnHigherTier } from '@/utils/premium';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("user/merge-premium");
+const logger = createScopedLogger('user/merge-premium');
 
 /**
  * Transfer premium subscription from source user to target user during account merge
@@ -15,7 +15,7 @@ export async function transferPremiumDuringMerge({
   sourceUserId: string;
   targetUserId: string;
 }) {
-  logger.info("Starting premium transfer during user merge", {
+  logger.info('Starting premium transfer during user merge', {
     sourceUserId,
     targetUserId,
   });
@@ -47,7 +47,7 @@ export async function transferPremiumDuringMerge({
     });
 
     if (!sourceUser) {
-      logger.warn("Source user not found", { sourceUserId });
+      logger.warn('Source user not found', { sourceUserId });
       return;
     }
 
@@ -68,7 +68,7 @@ export async function transferPremiumDuringMerge({
     });
 
     if (!targetUser) {
-      logger.error("Target user not found", { targetUserId });
+      logger.error('Target user not found', { targetUserId });
       throw new Error(`Target user ${targetUserId} not found`);
     }
 
@@ -81,7 +81,7 @@ export async function transferPremiumDuringMerge({
       const targetTier = targetUser.premium?.tier;
 
       logger.warn(
-        "Both users have premium subscriptions - choosing higher tier",
+        'Both users have premium subscriptions - choosing higher tier',
         {
           sourcePremiumId: sourceUser.premiumId,
           targetPremiumId: targetUser.premiumId,
@@ -89,7 +89,7 @@ export async function transferPremiumDuringMerge({
           targetTier,
           sourceUserId,
           targetUserId,
-        },
+        }
       );
 
       // If same premium or source has higher tier, use source premium
@@ -107,22 +107,22 @@ export async function transferPremiumDuringMerge({
           prisma.user.update({
             where: { id: targetUserId },
             data: { premiumId: sourceUser.premiumId },
-          }),
+          })
         );
 
         logger.info(
           "Target user's premium subscription replaced with source user's higher tier premium",
-          { chosenTier: sourceTier },
+          { chosenTier: sourceTier }
         );
       } else {
         logger.info(
-          "Target user keeps their premium subscription (higher or equal tier)",
-          { chosenTier: targetTier },
+          'Target user keeps their premium subscription (higher or equal tier)',
+          { chosenTier: targetTier }
         );
       }
     } else if (sourceUser.premiumId && sourceUser.premium) {
       // Only source user has premium - transfer to target
-      logger.info("Transferring premium subscription from source to target", {
+      logger.info('Transferring premium subscription from source to target', {
         premiumId: sourceUser.premiumId,
         sourceUserId,
         targetUserId,
@@ -133,17 +133,17 @@ export async function transferPremiumDuringMerge({
         prisma.user.update({
           where: { id: targetUserId },
           data: { premiumId: sourceUser.premiumId },
-        }),
+        })
       );
     } else if (targetUser.premiumId) {
       // Only target user has premium - no action needed, they keep their premium
-      logger.info("Target user already has premium, no transfer needed", {
+      logger.info('Target user already has premium, no transfer needed', {
         targetPremiumId: targetUser.premiumId,
         targetUserId,
       });
     } else {
       // Neither user has premium
-      logger.info("Neither user has premium subscription", {
+      logger.info('Neither user has premium subscription', {
         sourceUserId,
         targetUserId,
       });
@@ -151,7 +151,7 @@ export async function transferPremiumDuringMerge({
 
     // Handle premium admin transfer (user is a premium admin)
     if (sourceUser.premiumAdminId && sourceUser.premiumAdmin) {
-      logger.info("Transferring premium admin rights", {
+      logger.info('Transferring premium admin rights', {
         premiumId: sourceUser.premiumAdminId,
         sourceUserId,
         targetUserId,
@@ -159,11 +159,11 @@ export async function transferPremiumDuringMerge({
 
       if (targetUser.premiumAdminId) {
         logger.warn(
-          "Target user already has premium admin rights, will merge",
+          'Target user already has premium admin rights, will merge',
           {
             sourcePremiumAdminId: sourceUser.premiumAdminId,
             targetPremiumAdminId: targetUser.premiumAdminId,
-          },
+          }
         );
       }
 
@@ -176,7 +176,7 @@ export async function transferPremiumDuringMerge({
               connect: { id: targetUserId },
             },
           },
-        }),
+        })
       );
 
       // Update target user's premiumAdminId if they don't have one
@@ -185,14 +185,14 @@ export async function transferPremiumDuringMerge({
           prisma.user.update({
             where: { id: targetUserId },
             data: { premiumAdminId: sourceUser.premiumAdminId },
-          }),
+          })
         );
       }
     }
 
     // Execute all premium transfer operations
     if (operations.length > 0) {
-      logger.info("Executing premium transfer operations", {
+      logger.info('Executing premium transfer operations', {
         operationCount: operations.length,
         sourceUserId,
         targetUserId,
@@ -200,15 +200,15 @@ export async function transferPremiumDuringMerge({
 
       await Promise.all(operations);
 
-      logger.info("Premium transfer completed successfully", {
+      logger.info('Premium transfer completed successfully', {
         sourceUserId,
         targetUserId,
       });
     } else {
-      logger.info("No premium to transfer", { sourceUserId, targetUserId });
+      logger.info('No premium to transfer', { sourceUserId, targetUserId });
     }
   } catch (error) {
-    logger.error("Failed to transfer premium during user merge", {
+    logger.error('Failed to transfer premium during user merge', {
       sourceUserId,
       targetUserId,
       error: error instanceof Error ? error.message : String(error),

@@ -1,14 +1,14 @@
-import { useState } from "react";
 import {
   Check,
+  ChevronRight,
   ChevronsUpDown,
   FolderIcon,
-  ChevronRight,
   Loader2,
   X,
-} from "lucide-react";
-import { cn } from "@/utils";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import { useState } from 'react';
+import type { FieldError } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -16,14 +16,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from '@/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { FOLDER_SEPARATOR, type OutlookFolder } from "@/utils/outlook/folders";
-import type { FieldError } from "react-hook-form";
+} from '@/components/ui/popover';
+import { cn } from '@/utils';
+import { FOLDER_SEPARATOR, type OutlookFolder } from '@/utils/outlook/folders';
 
 interface FolderItemProps {
   folder: OutlookFolder;
@@ -51,8 +51,8 @@ function FolderItem({
       >
         <Check
           className={cn(
-            "mr-2 h-4 w-4",
-            value.id === folder.id ? "opacity-100" : "opacity-0",
+            'mr-2 h-4 w-4',
+            value.id === folder.id ? 'opacity-100' : 'opacity-0'
           )}
         />
         <div className="flex items-center gap-2">
@@ -65,7 +65,7 @@ function FolderItem({
         </div>
       </CommandItem>
       {folder.childFolders?.map((child) => (
-        <div key={child.id} className={""}>
+        <div key={child.id} className={''}>
           <FolderItem
             folder={child}
             level={level + 1}
@@ -92,15 +92,15 @@ export function FolderSelector({
   isLoading,
   value,
   onChangeValue,
-  placeholder = "Select a folder...",
+  placeholder = 'Select a folder...',
   error,
 }: FolderSelectorProps) {
   const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const findFolderById = (
     folderList: OutlookFolder[],
-    targetId: string,
+    targetId: string
   ): OutlookFolder | null => {
     for (const folder of folderList) {
       if (folder.id === targetId) {
@@ -120,14 +120,14 @@ export function FolderSelector({
     : null;
 
   const filteredFolders =
-    searchQuery.trim() === ""
+    searchQuery.trim() === ''
       ? folders.map((folder) => ({ folder, displayPath: folder.displayName }))
       : filterFoldersRecursively(folders, searchQuery.toLowerCase());
 
   function filterFoldersRecursively(
     folderList: OutlookFolder[],
     query: string,
-    parentPath = "",
+    parentPath = ''
   ): { folder: OutlookFolder; displayPath: string }[] {
     const results: { folder: OutlookFolder; displayPath: string }[] = [];
 
@@ -142,7 +142,7 @@ export function FolderSelector({
         const childResults = filterFoldersRecursively(
           folder.childFolders,
           query,
-          currentPath,
+          currentPath
         );
         results.push(...childResults);
       }
@@ -153,12 +153,12 @@ export function FolderSelector({
 
   const buildFolderPath = (folderId: string): string => {
     const folder = findFolderById(folders, folderId);
-    if (!folder) return "";
+    if (!folder) return '';
 
     const findPath = (
       folderList: OutlookFolder[],
       targetId: string,
-      currentPath: string[] = [],
+      currentPath: string[] = []
     ): string[] | null => {
       for (const f of folderList) {
         const newPath = [...currentPath, f.displayName];
@@ -211,7 +211,7 @@ export function FolderSelector({
               ) : value.id ? (
                 <div className="flex items-center gap-2">
                   <FolderIcon className="h-4 w-4" />
-                  <span>{value.name || selectedFolder?.displayName || ""}</span>
+                  <span>{value.name || selectedFolder?.displayName || ''}</span>
                 </div>
               ) : (
                 placeholder
@@ -225,7 +225,7 @@ export function FolderSelector({
                   className="h-6 w-6 p-0 hover:bg-muted"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChangeValue({ name: "", id: "" });
+                    onChangeValue({ name: '', id: '' });
                   }}
                   title="Clear folder selection"
                 >

@@ -1,16 +1,16 @@
-"use server";
+'use server';
 
-import { after } from "next/server";
+import { updateContactCompanySize, updateContactRole } from '@inboxzero/loops';
+import { after } from 'next/server';
 import {
   saveOnboardingAnswersBody,
   saveOnboardingFeaturesSchema,
-} from "@/utils/actions/onboarding.validation";
-import { actionClientUser } from "@/utils/actions/safe-action";
-import prisma from "@/utils/prisma";
-import { updateContactCompanySize, updateContactRole } from "@inboxzero/loops";
+} from '@/utils/actions/onboarding.validation';
+import { actionClientUser } from '@/utils/actions/safe-action';
+import prisma from '@/utils/prisma';
 
 export const completedOnboardingAction = actionClientUser
-  .metadata({ name: "completedOnboarding" })
+  .metadata({ name: 'completedOnboarding' })
   .action(async ({ ctx: { userId } }) => {
     await prisma.user.updateMany({
       where: { id: userId, completedOnboardingAt: null },
@@ -19,7 +19,7 @@ export const completedOnboardingAction = actionClientUser
   });
 
 export const saveOnboardingAnswersAction = actionClientUser
-  .metadata({ name: "saveOnboardingAnswers" })
+  .metadata({ name: 'saveOnboardingAnswers' })
   .inputSchema(saveOnboardingAnswersBody)
   .action(
     async ({
@@ -45,28 +45,28 @@ export const saveOnboardingAnswersAction = actionClientUser
 
           const answerKey =
             questionIndex === 0
-              ? "$survey_response"
+              ? '$survey_response'
               : `$survey_response_${questionIndex}`;
           const answer = answers[answerKey];
 
-          return answer && answer !== "" ? answer : null;
+          return answer && answer !== '' ? answer : null;
         };
 
         // Extract features (multiple choice)
-        const featuresAnswer = getAnswerByKey("features");
+        const featuresAnswer = getAnswerByKey('features');
         if (featuresAnswer) {
-          if (typeof featuresAnswer === "string") {
+          if (typeof featuresAnswer === 'string') {
             const features = featuresAnswer
-              .split(",")
+              .split(',')
               .map((s) => s.trim())
               .filter(Boolean)
-              .filter((s) => s !== "undefined");
+              .filter((s) => s !== 'undefined');
             if (features.length > 0) {
               result.surveyFeatures = features;
             }
           } else if (Array.isArray(featuresAnswer)) {
             const features = featuresAnswer.filter(
-              (f) => f && f !== "undefined",
+              (f) => f && f !== 'undefined'
             );
             if (features.length > 0) {
               result.surveyFeatures = features;
@@ -75,31 +75,31 @@ export const saveOnboardingAnswersAction = actionClientUser
         }
 
         // Extract other single choice/text answers - only set if not undefined/null/empty
-        const roleAnswer = getAnswerByKey("role");
-        if (roleAnswer && roleAnswer !== "undefined") {
+        const roleAnswer = getAnswerByKey('role');
+        if (roleAnswer && roleAnswer !== 'undefined') {
           result.surveyRole = roleAnswer;
         }
 
-        const goalAnswer = getAnswerByKey("goal");
-        if (goalAnswer && goalAnswer !== "undefined") {
+        const goalAnswer = getAnswerByKey('goal');
+        if (goalAnswer && goalAnswer !== 'undefined') {
           result.surveyGoal = goalAnswer;
         }
 
-        const companySizeAnswer = getAnswerByKey("company_size");
-        if (companySizeAnswer && companySizeAnswer !== "undefined") {
+        const companySizeAnswer = getAnswerByKey('company_size');
+        if (companySizeAnswer && companySizeAnswer !== 'undefined') {
           const numericValue = Number(companySizeAnswer);
           if (!Number.isNaN(numericValue)) {
             result.surveyCompanySize = numericValue;
           }
         }
 
-        const sourceAnswer = getAnswerByKey("source");
-        if (sourceAnswer && sourceAnswer !== "undefined") {
+        const sourceAnswer = getAnswerByKey('source');
+        if (sourceAnswer && sourceAnswer !== 'undefined') {
           result.surveySource = sourceAnswer;
         }
 
-        const improvementsAnswer = getAnswerByKey("improvements");
-        if (improvementsAnswer && improvementsAnswer !== "undefined") {
+        const improvementsAnswer = getAnswerByKey('improvements');
+        if (improvementsAnswer && improvementsAnswer !== 'undefined') {
           result.surveyImprovements = improvementsAnswer;
         }
 
@@ -114,7 +114,7 @@ export const saveOnboardingAnswersAction = actionClientUser
             email: userEmail,
             role: extractedAnswers.surveyRole,
           }).catch((error) => {
-            logger.error("Loops: Error updating role", { error });
+            logger.error('Loops: Error updating role', { error });
           });
         }
 
@@ -123,7 +123,7 @@ export const saveOnboardingAnswersAction = actionClientUser
             email: userEmail,
             companySize: extractedAnswers.surveyCompanySize,
           }).catch((error) => {
-            logger.error("Loops: Error updating company size", { error });
+            logger.error('Loops: Error updating company size', { error });
           });
         }
       });
@@ -140,11 +140,11 @@ export const saveOnboardingAnswersAction = actionClientUser
           surveyImprovements: extractedAnswers.surveyImprovements,
         },
       });
-    },
+    }
   );
 
 export const saveOnboardingFeaturesAction = actionClientUser
-  .metadata({ name: "saveOnboardingFeatures" })
+  .metadata({ name: 'saveOnboardingFeatures' })
   .inputSchema(saveOnboardingFeaturesSchema)
   .action(async ({ ctx: { userId }, parsedInput: { features } }) => {
     await prisma.user.update({

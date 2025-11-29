@@ -1,29 +1,29 @@
-import { NextResponse } from "next/server";
-import { withEmailProvider } from "@/utils/middleware";
-import { type ThreadsQuery, threadsQuery } from "@/app/api/threads/validation";
-import { isDefined } from "@/utils/types";
-import prisma from "@/utils/prisma";
-import { isIgnoredSender } from "@/utils/filter-ignored-senders";
-import type { EmailProvider } from "@/utils/email/types";
+import { NextResponse } from 'next/server';
+import { type ThreadsQuery, threadsQuery } from '@/app/api/threads/validation';
+import type { EmailProvider } from '@/utils/email/types';
+import { isIgnoredSender } from '@/utils/filter-ignored-senders';
+import { withEmailProvider } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { isDefined } from '@/utils/types';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export const maxDuration = 30;
 
-export const GET = withEmailProvider("threads", async (request) => {
+export const GET = withEmailProvider('threads', async (request) => {
   const { emailProvider } = request;
   const { emailAccountId } = request.auth;
 
   const { searchParams } = new URL(request.url);
-  const limit = searchParams.get("limit");
-  const fromEmail = searchParams.get("fromEmail");
-  const type = searchParams.get("type");
-  const nextPageToken = searchParams.get("nextPageToken");
-  const q = searchParams.get("q");
-  const labelId = searchParams.get("labelId");
-  const after = searchParams.get("after");
-  const before = searchParams.get("before");
-  const isUnread = searchParams.get("isUnread");
+  const limit = searchParams.get('limit');
+  const fromEmail = searchParams.get('fromEmail');
+  const type = searchParams.get('type');
+  const nextPageToken = searchParams.get('nextPageToken');
+  const q = searchParams.get('q');
+  const labelId = searchParams.get('labelId');
+  const after = searchParams.get('after');
+  const before = searchParams.get('before');
+  const isUnread = searchParams.get('isUnread');
 
   const query = threadsQuery.parse({
     limit,
@@ -45,10 +45,10 @@ export const GET = withEmailProvider("threads", async (request) => {
     });
     return NextResponse.json(threads);
   } catch (error) {
-    request.logger.error("Error fetching threads", { error, emailAccountId });
+    request.logger.error('Error fetching threads', { error, emailAccountId });
     return NextResponse.json(
-      { error: "Failed to fetch threads" },
-      { status: 500 },
+      { error: 'Failed to fetch threads' },
+      { status: 500 }
     );
   }
 });
@@ -105,7 +105,7 @@ async function getThreads({
         snippet: thread.snippet,
         plan,
       };
-    }),
+    })
   );
 
   return {

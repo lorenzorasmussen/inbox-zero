@@ -1,22 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { NextRequest, NextResponse } from "next/server";
-import { ZodError, type ZodIssue } from "zod";
+import { NextRequest, NextResponse } from 'next/server';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ZodError, type ZodIssue } from 'zod';
+import { EMAIL_ACCOUNT_HEADER } from '@/utils/config';
 import {
-  withError,
+  type NextHandler,
+  type RequestWithAuth,
   withAuth,
   withEmailAccount,
-  type RequestWithAuth,
-  type NextHandler,
-} from "./middleware";
-import { EMAIL_ACCOUNT_HEADER } from "@/utils/config";
+  withError,
+} from './middleware';
 
 // --- Mocks ---
 
 // Mock server-only as per rule
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
 // Mock external dependencies
-vi.mock("better-auth", () => {
+vi.mock('better-auth', () => {
   // Define the mock function INSIDE the factory
   const mockAuthFn = vi.fn();
   return {
@@ -31,15 +31,15 @@ vi.mock("better-auth", () => {
 });
 
 // Mock the auth function from @/utils/auth
-vi.mock("@/utils/auth", () => ({
+vi.mock('@/utils/auth', () => ({
   auth: vi.fn(),
 }));
 
-vi.mock("@/utils/redis/account-validation");
+vi.mock('@/utils/redis/account-validation');
 
 // Mock specific functions from @/utils/error, keep original SafeError
-vi.mock("@/utils/error", async (importActual) => {
-  const actual = await importActual<typeof import("@/utils/error")>();
+vi.mock('@/utils/error', async (importActual) => {
+  const actual = await importActual<typeof import('@/utils/error')>();
   return {
     ...actual, // Keep original exports like SafeError
     captureException: vi.fn(), // Mock only specific functions
@@ -47,12 +47,12 @@ vi.mock("@/utils/error", async (importActual) => {
   };
 });
 
-vi.mock("@/utils/error.server");
+vi.mock('@/utils/error.server');
 
 // Import from the local path as before
-import { auth } from "@/utils/auth";
-import { getEmailAccount } from "@/utils/redis/account-validation";
-import { captureException, checkCommonErrors, SafeError } from "@/utils/error";
+import { auth } from '@/utils/auth';
+import { captureException, checkCommonErrors, SafeError } from '@/utils/error';
+import { getEmailAccount } from '@/utils/redis/account-validation';
 
 // This should now correctly reference mockAuthFn
 const mockAuth = vi.mocked(auth);
@@ -63,9 +63,9 @@ const mockCaptureException = vi.mocked(captureException);
 
 // Helper to create a mock NextRequest
 const createMockRequest = (
-  method = "GET",
-  url = "http://localhost/test",
-  headers?: Record<string, string>,
+  method = 'GET',
+  url = 'http://localhost/test',
+  headers?: Record<string, string>
 ): NextRequest => {
   const request = new NextRequest(url, {
     method,
@@ -78,7 +78,7 @@ const createMockRequest = (
 
 // --- Test Suite ---
 
-describe("Middleware", () => {
+describe('Middleware', () => {
   let mockReq: NextRequest;
   const mockContext = { params: Promise.resolve({}) };
 
@@ -88,8 +88,8 @@ describe("Middleware", () => {
   });
 
   // --- withError Tests ---
-  describe("withError", () => {
-    it("should call the handler and return its response on success", async () => {
+  describe('withError', () => {
+    it('should call the handler and return its response on success', async () => {
       const mockResponse = NextResponse.json({ success: true });
       const handler = vi.fn().mockResolvedValue(mockResponse);
       const wrappedHandler = withError(handler);
@@ -102,9 +102,9 @@ describe("Middleware", () => {
       expect(responseBody).toEqual({ success: true });
     });
 
-    it("should return 400 for ZodError", async () => {
+    it('should return 400 for ZodError', async () => {
       const zodError = new ZodError([
-        { path: ["field"], message: "Required" },
+        { path: ['field'], message: 'Required' },
       ] as ZodIssue[]);
       const handler = vi.fn().mockRejectedValue(zodError);
       const wrappedHandler = withError(handler);
@@ -119,8 +119,8 @@ describe("Middleware", () => {
       });
     });
 
-    it("should return 400 for SafeError", async () => {
-      const safeError = new SafeError("User-friendly message");
+    it('should return 400 for SafeError', async () => {
+      const safeError = new SafeError('User-friendly message');
       const handler = vi.fn().mockRejectedValue(safeError);
       const wrappedHandler = withError(handler);
 
@@ -129,15 +129,15 @@ describe("Middleware", () => {
 
       expect(response.status).toBe(400);
       expect(responseBody).toEqual({
-        error: "User-friendly message",
+        error: 'User-friendly message',
         isKnownError: true,
       });
     });
 
-    it("should handle common errors using checkCommonErrors", async () => {
-      const commonError = { message: "API Error", code: 409, type: "Conflict" };
+    it('should handle common errors using checkCommonErrors', async () => {
+      const commonError = { message: 'API Error', code: 409, type: 'Conflict' };
       mockCheckCommonErrors.mockReturnValue(commonError);
-      const handler = vi.fn().mockRejectedValue(new Error("Some API error"));
+      const handler = vi.fn().mockRejectedValue(new Error('Some API error'));
       const wrappedHandler = withError(handler);
 
       const response = await wrappedHandler(mockReq, mockContext);
@@ -151,8 +151,8 @@ describe("Middleware", () => {
       });
     });
 
-    it("should return 500 and capture unhandled errors", async () => {
-      const unexpectedError = new Error("Something went very wrong");
+    it('should return 500 and capture unhandled errors', async () => {
+      const unexpectedError = new Error('Something went very wrong');
       mockCheckCommonErrors.mockReturnValue(null); // Ensure it's not a common error
       const handler = vi.fn().mockRejectedValue(unexpectedError);
       const wrappedHandler = withError(handler);
@@ -165,19 +165,19 @@ describe("Middleware", () => {
         extra: { url: mockReq.url },
       });
       expect(response.status).toBe(500);
-      expect(responseBody).toEqual({ error: "An unexpected error occurred" });
+      expect(responseBody).toEqual({ error: 'An unexpected error occurred' });
     });
   });
 
   // --- withAuth Tests ---
-  describe("withAuth", () => {
-    const mockUserId = "user-123";
+  describe('withAuth', () => {
+    const mockUserId = 'user-123';
 
-    it("should call the handler with auth info if session exists", async () => {
+    it('should call the handler with auth info if session exists', async () => {
       mockAuth.mockResolvedValue({ user: { id: mockUserId } } as any);
       // Adjust handler mock signature
       const handler = vi.fn(async (_req: RequestWithAuth, _ctx: any) =>
-        NextResponse.json({ ok: true }),
+        NextResponse.json({ ok: true })
       );
       const wrappedHandler = withAuth(handler);
 
@@ -188,11 +188,11 @@ describe("Middleware", () => {
         expect.objectContaining({
           auth: { userId: mockUserId },
         }),
-        mockContext,
+        mockContext
       );
     });
 
-    it("should return 401 if session does not exist", async () => {
+    it('should return 401 if session does not exist', async () => {
       mockAuth.mockResolvedValue(null as any);
       const handler: NextHandler<RequestWithAuth> = vi.fn();
       const wrappedHandler = withAuth(handler);
@@ -204,35 +204,35 @@ describe("Middleware", () => {
       expect(handler).not.toHaveBeenCalled();
       expect(response.status).toBe(401);
       expect(responseBody).toEqual({
-        error: "Unauthorized",
+        error: 'Unauthorized',
         isKnownError: true,
       });
     });
   });
 
   // --- withEmailAccount Tests ---
-  describe("withEmailAccount", () => {
+  describe('withEmailAccount', () => {
     type RequestWithAuthAndEmail = RequestWithAuth & {
       auth: { emailAccountId: string; email: string };
     };
 
-    const mockUserId = "user-123";
-    const mockAccountId = "acc-456";
-    const mockEmail = "test@example.com";
+    const mockUserId = 'user-123';
+    const mockAccountId = 'acc-456';
+    const mockEmail = 'test@example.com';
 
     beforeEach(() => {
       // Mock auth middleware part for these tests
       mockAuth.mockResolvedValue({ user: { id: mockUserId } } as any);
     });
 
-    it("should call handler with email account info if header exists and account is valid", async () => {
-      mockReq = createMockRequest("GET", "http://localhost/api/test", {
+    it('should call handler with email account info if header exists and account is valid', async () => {
+      mockReq = createMockRequest('GET', 'http://localhost/api/test', {
         [EMAIL_ACCOUNT_HEADER]: mockAccountId,
       });
       mockGetEmailAccount.mockResolvedValue(mockEmail);
 
       const handler = vi.fn(async (_req: RequestWithAuthAndEmail, _ctx: any) =>
-        NextResponse.json({ success: true }),
+        NextResponse.json({ success: true })
       );
       const wrappedHandler = withEmailAccount(handler);
 
@@ -250,21 +250,21 @@ describe("Middleware", () => {
             email: mockEmail,
           },
         }),
-        mockContext,
+        mockContext
       );
     });
 
-    it("should return 403 if email account header is missing", async () => {
+    it('should return 403 if email account header is missing', async () => {
       // No header added to mockReq in beforeEach
       // Provide a typed mock implementation to satisfy the wrapper
       const handler = vi.fn(
         async (
           _req: RequestWithAuthAndEmail,
-          _ctx: { params: Promise<Record<string, string>> },
+          _ctx: { params: Promise<Record<string, string>> }
         ): Promise<NextResponse> => {
           // Implementation won't run, just for types
           return NextResponse.json({});
-        },
+        }
       );
       const wrappedHandler = withEmailAccount(handler);
 
@@ -276,13 +276,13 @@ describe("Middleware", () => {
       expect(handler).not.toHaveBeenCalled();
       expect(response.status).toBe(403);
       expect(responseBody).toEqual({
-        error: "Email account ID is required",
+        error: 'Email account ID is required',
         isKnownError: true,
       });
     });
 
-    it("should return 403 if email account ID is invalid", async () => {
-      mockReq = createMockRequest("GET", "http://localhost/api/test", {
+    it('should return 403 if email account ID is invalid', async () => {
+      mockReq = createMockRequest('GET', 'http://localhost/api/test', {
         [EMAIL_ACCOUNT_HEADER]: mockAccountId,
       });
       mockGetEmailAccount.mockResolvedValue(null); // Simulate invalid account
@@ -291,11 +291,11 @@ describe("Middleware", () => {
       const handler = vi.fn(
         async (
           _req: RequestWithAuthAndEmail,
-          _ctx: { params: Promise<Record<string, string>> },
+          _ctx: { params: Promise<Record<string, string>> }
         ): Promise<NextResponse> => {
           // Implementation won't run, just for types
           return NextResponse.json({});
-        },
+        }
       );
       const wrappedHandler = withEmailAccount(handler);
 
@@ -310,7 +310,7 @@ describe("Middleware", () => {
       expect(handler).not.toHaveBeenCalled();
       expect(response.status).toBe(403);
       expect(responseBody).toEqual({
-        error: "Invalid account ID",
+        error: 'Invalid account ID',
         isKnownError: true,
       });
     });

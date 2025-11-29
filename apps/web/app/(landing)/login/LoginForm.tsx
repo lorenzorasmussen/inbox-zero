@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { Button } from "@/components/Button";
-import { Button as UIButton } from "@/components/ui/button";
-import { SectionDescription } from "@/components/Typography";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { Button } from '@/components/Button';
+import { SectionDescription } from '@/components/Typography';
+import { Button as UIButton } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { signIn } from "@/utils/auth-client";
-import { WELCOME_PATH } from "@/utils/config";
+} from '@/components/ui/dialog';
+import { signIn } from '@/utils/auth-client';
+import { WELCOME_PATH } from '@/utils/config';
 
 export function LoginForm() {
   const searchParams = useSearchParams();
-  const next = searchParams?.get("next");
-  const error = searchParams?.get("error");
+  const next = searchParams?.get('next');
+  const error = searchParams?.get('error');
 
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [loadingMicrosoft, setLoadingMicrosoft] = useState(false);
@@ -28,10 +28,10 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     setLoadingGoogle(true);
     await signIn.social({
-      provider: "google",
-      errorCallbackURL: "/login/error",
+      provider: 'google',
+      errorCallbackURL: '/login/error',
       callbackURL: next && next.length > 0 ? next : WELCOME_PATH,
-      ...(error === "RequiresReconsent" ? { consent: true } : {}),
+      ...(error === 'RequiresReconsent' ? { consent: true } : {}),
     });
     setLoadingGoogle(false);
   };
@@ -39,10 +39,10 @@ export function LoginForm() {
   const handleMicrosoftSignIn = async () => {
     setLoadingMicrosoft(true);
     await signIn.social({
-      provider: "microsoft",
-      errorCallbackURL: "/login/error",
+      provider: 'microsoft',
+      errorCallbackURL: '/login/error',
       callbackURL: next && next.length > 0 ? next : WELCOME_PATH,
-      ...(error === "RequiresReconsent" ? { consent: true } : {}),
+      ...(error === 'RequiresReconsent' ? { consent: true } : {}),
     });
     setLoadingMicrosoft(false);
   };
@@ -70,13 +70,13 @@ export function LoginForm() {
           </DialogHeader>
           <SectionDescription>
             Inbox Zero{"'"}s use and transfer of information received from
-            Google APIs to any other app will adhere to{" "}
+            Google APIs to any other app will adhere to{' '}
             <a
               href="https://developers.google.com/terms/api-services-user-data-policy"
               className="underline underline-offset-4 hover:text-gray-900"
             >
               Google API Services User Data
-            </a>{" "}
+            </a>{' '}
             Policy, including the Limited Use requirements.
           </SectionDescription>
           <div>

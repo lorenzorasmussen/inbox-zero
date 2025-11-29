@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { useAction } from "next-safe-action/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/Input";
-import { toastSuccess, toastError } from "@/components/Toast";
-import { adminHashEmailAction } from "@/utils/actions/admin";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { Input } from '@/components/Input';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { adminHashEmailAction } from '@/utils/actions/admin';
 import {
-  hashEmailBody,
   type HashEmailBody,
-} from "@/utils/actions/admin.validation";
+  hashEmailBody,
+} from '@/utils/actions/admin.validation';
 
 export const AdminHashEmail = () => {
   const {
@@ -39,14 +39,14 @@ export const AdminHashEmail = () => {
     (data) => {
       hashEmail({ email: data.email });
     },
-    [hashEmail],
+    [hashEmail]
   );
 
   const copyToClipboard = () => {
     if (result.data?.hash) {
       navigator.clipboard.writeText(result.data.hash);
       toastSuccess({
-        description: "Hash copied to clipboard",
+        description: 'Hash copied to clipboard',
       });
     }
   };
@@ -63,7 +63,7 @@ export const AdminHashEmail = () => {
             name="email"
             label="Value to Hash"
             placeholder="user@example.com"
-            registerProps={register("email")}
+            registerProps={register('email')}
             error={errors.email}
           />
 

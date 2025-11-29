@@ -1,30 +1,30 @@
-import { useCallback, useMemo, useState, useRef, useEffect } from "react";
 import {
+  ChevronsDownUpIcon,
+  ChevronsUpDownIcon,
   ForwardIcon,
   ReplyIcon,
-  ChevronsUpDownIcon,
-  ChevronsDownUpIcon,
-} from "lucide-react";
-import { Tooltip } from "@/components/Tooltip";
-import { extractNameFromEmail } from "@/utils/email";
-import { formatShortDate } from "@/utils/date";
-import { ComposeEmailFormLazy } from "@/app/(app)/[emailAccountId]/compose/ComposeEmailFormLazy";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import type { ParsedMessage } from "@/utils/types";
-import { forwardEmailHtml, forwardEmailSubject } from "@/utils/gmail/forward";
-import { extractEmailReply } from "@/utils/parse/extract-reply.client";
-import type { ReplyingToEmail } from "@/app/(app)/[emailAccountId]/compose/ComposeEmailForm";
-import { createReplyContent } from "@/utils/gmail/reply";
-import { cn } from "@/utils";
-import { generateNudgeReplyAction } from "@/utils/actions/generate-reply";
-import type { ThreadMessage } from "@/components/email-list/types";
-import { EmailDetails } from "@/components/email-list/EmailDetails";
-import { HtmlEmail, PlainEmail } from "@/components/email-list/EmailContents";
-import { EmailAttachments } from "@/components/email-list/EmailAttachments";
-import { Loading } from "@/components/Loading";
-import { MessageText } from "@/components/Typography";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { ReplyingToEmail } from '@/app/(app)/[emailAccountId]/compose/ComposeEmailForm';
+import { ComposeEmailFormLazy } from '@/app/(app)/[emailAccountId]/compose/ComposeEmailFormLazy';
+import { EmailAttachments } from '@/components/email-list/EmailAttachments';
+import { HtmlEmail, PlainEmail } from '@/components/email-list/EmailContents';
+import { EmailDetails } from '@/components/email-list/EmailDetails';
+import type { ThreadMessage } from '@/components/email-list/types';
+import { Loading } from '@/components/Loading';
+import { Tooltip } from '@/components/Tooltip';
+import { MessageText } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { cn } from '@/utils';
+import { generateNudgeReplyAction } from '@/utils/actions/generate-reply';
+import { formatShortDate } from '@/utils/date';
+import { extractNameFromEmail } from '@/utils/email';
+import { forwardEmailHtml, forwardEmailSubject } from '@/utils/gmail/forward';
+import { createReplyContent } from '@/utils/gmail/reply';
+import { extractEmailReply } from '@/utils/parse/extract-reply.client';
+import type { ParsedMessage } from '@/utils/types';
 
 export function EmailMessage({
   message,
@@ -68,8 +68,8 @@ export function EmailMessage({
     // biome-ignore lint/a11y/useKeyWithClickEvents: ignore
     <li
       className={cn(
-        "bg-background p-4 shadow sm:rounded-lg",
-        !expanded && "cursor-pointer",
+        'bg-background p-4 shadow sm:rounded-lg',
+        !expanded && 'cursor-pointer'
       )}
       onClick={onExpand}
     >
@@ -90,7 +90,7 @@ export function EmailMessage({
           {message.textHtml ? (
             <HtmlEmail html={message.textHtml} />
           ) : (
-            <PlainEmail text={message.textPlain || ""} />
+            <PlainEmail text={message.textPlain || ''} />
           )}
 
           {message.attachments && <EmailAttachments message={message} />}
@@ -136,10 +136,10 @@ function TopBar({
         <div className="flex items-center">
           <h3 className="text-base font-medium">
             <span className="text-foreground">
-              {message.labelIds?.includes("SENT")
-                ? "Me"
+              {message.labelIds?.includes('SENT')
+                ? 'Me'
                 : extractNameFromEmail(message.headers.from)}
-            </span>{" "}
+            </span>{' '}
             {expanded && <span className="text-muted-foreground">wrote</span>}
           </h3>
         </div>
@@ -215,14 +215,14 @@ function ReplyPanel({
     if (defaultShowReply && replyRef.current) {
       // hacky using setTimeout
       setTimeout(() => {
-        replyRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+        replyRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }, 500);
     }
   }, [defaultShowReply]);
 
   useEffect(() => {
     async function generateReply() {
-      const isSent = message.labelIds?.includes("SENT");
+      const isSent = message.labelIds?.includes('SENT');
 
       // Doesn't need a nudge if it's not sent
       if (!isSent) return;
@@ -244,9 +244,9 @@ function ReplyPanel({
       });
       if (result?.serverError) {
         console.error(result);
-        setReply("");
+        setReply('');
       } else {
-        setReply(result?.data?.text || "");
+        setReply(result?.data?.text || '');
       }
       setIsGeneratingReply(false);
     }
@@ -264,11 +264,11 @@ function ReplyPanel({
         // Convert nudge text into HTML paragraphs
         const replyHtml = reply
           ? reply
-              .split("\n")
+              .split('\n')
               .filter((line) => line.trim())
               .map((line) => `<p>${line}</p>`)
-              .join("")
-          : "";
+              .join('')
+          : '';
 
         return prepareReplyingToEmail(message, replyHtml);
       }
@@ -316,9 +316,9 @@ function ReplyPanel({
 
 const prepareReplyingToEmail = (
   message: ParsedMessage,
-  content = "",
+  content = ''
 ): ReplyingToEmail => {
-  const sentFromUser = message.labelIds?.includes("SENT");
+  const sentFromUser = message.labelIds?.includes('SENT');
 
   const { html } = createReplyContent({ message });
 
@@ -329,36 +329,36 @@ const prepareReplyingToEmail = (
     subject: sentFromUser
       ? message.headers.subject
       : `Re: ${message.headers.subject}`,
-    headerMessageId: message.headers["message-id"]!,
+    headerMessageId: message.headers['message-id']!,
     threadId: message.threadId!,
     // Keep original CC
     cc: message.headers.cc,
     // Keep original BCC if available
-    bcc: sentFromUser ? message.headers.bcc : "",
+    bcc: sentFromUser ? message.headers.bcc : '',
     references: message.headers.references,
-    draftHtml: content || "",
+    draftHtml: content || '',
     quotedContentHtml: html,
   };
 };
 
 const prepareForwardingEmail = (message: ParsedMessage): ReplyingToEmail => ({
-  to: "",
+  to: '',
   subject: forwardEmailSubject(message.headers.subject),
-  headerMessageId: "",
+  headerMessageId: '',
   threadId: message.threadId!,
-  cc: "",
-  references: "",
-  draftHtml: forwardEmailHtml({ content: "", message }),
-  quotedContentHtml: "",
+  cc: '',
+  references: '',
+  draftHtml: forwardEmailHtml({ content: '', message }),
+  quotedContentHtml: '',
 });
 
 function prepareDraftReplyEmail(draft: ParsedMessage): ReplyingToEmail {
-  const splitHtml = extractEmailReply(draft.textHtml || "");
+  const splitHtml = extractEmailReply(draft.textHtml || '');
 
   return {
     to: draft.headers.to,
     subject: draft.headers.subject,
-    headerMessageId: draft.headers["message-id"]!,
+    headerMessageId: draft.headers['message-id']!,
     threadId: draft.threadId!,
     cc: draft.headers.cc,
     bcc: draft.headers.bcc,

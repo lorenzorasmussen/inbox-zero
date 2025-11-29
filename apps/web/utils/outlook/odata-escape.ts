@@ -11,8 +11,8 @@
  * escapeODataString("test' or 1=1 --") // returns "test'' or 1=1 --"
  */
 export function escapeODataString(value: string): string {
-  if (typeof value !== "string") {
-    return "";
+  if (typeof value !== 'string') {
+    return '';
   }
   // Replace single quotes with doubled single quotes
   // Note: equals signs and other special chars are valid in OData string literals

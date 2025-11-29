@@ -1,17 +1,17 @@
-import type { gmail_v1 } from "@googleapis/gmail";
-import prisma from "@/utils/prisma";
-import { ColdEmailStatus, SystemType } from "@/generated/prisma/enums";
-import { extractEmailAddress } from "@/utils/email";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailProvider } from "@/utils/email/types";
-import { GmailLabel } from "@/utils/gmail/label";
-import { getRuleLabel } from "@/utils/rule/consts";
-import type { Logger } from "@/utils/logger";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { ColdEmailStatus, SystemType } from '@/generated/prisma/enums';
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
 import {
-  isGmailRateLimitExceededError,
-  isGmailQuotaExceededError,
   isGmailInsufficientPermissionsError,
-} from "@/utils/error";
+  isGmailQuotaExceededError,
+  isGmailRateLimitExceededError,
+} from '@/utils/error';
+import { GmailLabel } from '@/utils/gmail/label';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { getRuleLabel } from '@/utils/rule/consts';
 
 const SYSTEM_LABELS = [
   GmailLabel.INBOX,
@@ -33,7 +33,7 @@ export async function handleLabelRemovedEvent(
     emailAccount: EmailAccountWithAI;
     provider: EmailProvider;
   },
-  logger: Logger,
+  logger: Logger
 ) {
   const messageId = message.message?.id;
   const threadId = message.message?.threadId;
@@ -41,7 +41,7 @@ export async function handleLabelRemovedEvent(
   const allRemovedLabelIds = message.labelIds || [];
 
   if (!messageId || !threadId) {
-    logger.error("Skipping label removal - missing messageId or threadId", {
+    logger.error('Skipping label removal - missing messageId or threadId', {
       hasMessage: !!message.message,
       hasLabelIds: allRemovedLabelIds.length > 0,
       labelIds: allRemovedLabelIds,
@@ -52,11 +52,11 @@ export async function handleLabelRemovedEvent(
   // Filter out system labels early - we don't learn from system label removals
   // (e.g., archiving removes INBOX, starring adds/removes STARRED, etc.)
   const removedLabelIds = allRemovedLabelIds.filter(
-    (labelId) => !SYSTEM_LABELS.includes(labelId),
+    (labelId) => !SYSTEM_LABELS.includes(labelId)
   );
 
   if (removedLabelIds.length === 0) {
-    logger.trace("No non-system labels removed, skipping", {
+    logger.trace('No non-system labels removed, skipping', {
       messageId,
       threadId,
       systemLabelsRemoved: allRemovedLabelIds,
@@ -64,7 +64,7 @@ export async function handleLabelRemovedEvent(
     return;
   }
 
-  logger.info("Processing label removal for learning", {
+  logger.info('Processing label removal for learning', {
     labelCount: removedLabelIds.length,
     removedLabels: removedLabelIds,
   });
@@ -82,8 +82,8 @@ export async function handleLabelRemovedEvent(
       error?: { message?: string };
     };
     const errorMessage = errorObj?.message || errorObj?.error?.message;
-    if (errorMessage === "Requested entity was not found.") {
-      logger.warn("Message not found - may have been deleted or trashed", {
+    if (errorMessage === 'Requested entity was not found.') {
+      logger.warn('Message not found - may have been deleted or trashed', {
         messageId,
         threadId,
         allRemovedLabels: allRemovedLabelIds,
@@ -93,22 +93,22 @@ export async function handleLabelRemovedEvent(
     }
 
     if (isGmailRateLimitExceededError(error)) {
-      logger.warn("Rate limit exceeded", { messageId });
+      logger.warn('Rate limit exceeded', { messageId });
       return;
     }
 
     if (isGmailQuotaExceededError(error)) {
-      logger.warn("Quota exceeded", { messageId });
+      logger.warn('Quota exceeded', { messageId });
       return;
     }
 
     if (isGmailInsufficientPermissionsError(error)) {
-      logger.warn("Insufficient permissions to access message", { messageId });
+      logger.warn('Insufficient permissions to access message', { messageId });
       return;
     }
 
     // Unexpected errors - return early to prevent further processing
-    logger.error("Error getting sender for label removal", {
+    logger.error('Error getting sender for label removal', {
       messageId,
       error,
     });
@@ -122,7 +122,7 @@ export async function handleLabelRemovedEvent(
     const labelName = label?.name;
 
     if (!labelName) {
-      logger.info("Skipping label removal - missing label name", {
+      logger.info('Skipping label removal - missing label name', {
         labelId,
       });
       continue;
@@ -138,7 +138,7 @@ export async function handleLabelRemovedEvent(
         logger,
       });
     } catch (error) {
-      logger.error("Error learning from label removal", {
+      logger.error('Error learning from label removal', {
         error,
         labelName,
         removedLabelIds,
@@ -166,12 +166,12 @@ async function learnFromRemovedLabel({
 
   // Can't learn patterns without knowing who to exclude
   if (!sender) {
-    logger.info("No sender found, skipping learning");
+    logger.info('No sender found, skipping learning');
     return;
   }
 
   if (labelName === getRuleLabel(SystemType.COLD_EMAIL)) {
-    logger.info("Processing Cold Email label removal");
+    logger.info('Processing Cold Email label removal');
 
     await prisma.coldEmail.upsert({
       where: {

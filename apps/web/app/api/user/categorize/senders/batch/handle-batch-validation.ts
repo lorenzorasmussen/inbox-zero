@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const aiCategorizeSendersSchema = z.object({
   emailAccountId: z.string(),

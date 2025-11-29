@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { LoadingContent } from "@/components/LoadingContent";
-import { TypographyP } from "@/components/Typography";
+import { IntegrationRow } from '@/app/(app)/[emailAccountId]/integrations/IntegrationRow';
+import { LoadingContent } from '@/components/LoadingContent';
+import { TypographyP } from '@/components/Typography';
+import { Card } from '@/components/ui/card';
 import {
   Table,
-  TableRow,
   TableBody,
   TableCell,
-  TableHeader,
   TableHead,
-} from "@/components/ui/table";
-import { useIntegrations } from "@/hooks/useIntegrations";
-import { IntegrationRow } from "@/app/(app)/[emailAccountId]/integrations/IntegrationRow";
-import { Card } from "@/components/ui/card";
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { useIntegrations } from '@/hooks/useIntegrations';
 
 export function Integrations() {
   const { data, isLoading, error, mutate } = useIntegrations();

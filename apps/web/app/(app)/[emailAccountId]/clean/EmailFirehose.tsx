@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import { parseAsString, useQueryState } from "nuqs";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EmailItem } from "./EmailFirehoseItem";
-import { useEmailStream } from "./useEmailStream";
-import type { CleanThread } from "@/utils/redis/clean.types";
-import { CleanAction } from "@/generated/prisma/enums";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { parseAsString, useQueryState } from 'nuqs';
+import { useEffect, useRef, useState } from 'react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CleanAction } from '@/generated/prisma/enums';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import type { CleanThread } from '@/utils/redis/clean.types';
+import { EmailItem } from './EmailFirehoseItem';
+import { useEmailStream } from './useEmailStream';
 
 export function EmailFirehose({
   threads,
@@ -26,10 +26,10 @@ export function EmailFirehose({
 
   const [isPaused, _setIsPaused] = useState(false);
   const [userHasScrolled, setUserHasScrolled] = useState(false);
-  const [tab] = useQueryState("tab", parseAsString.withDefault("archived"));
+  const [tab] = useQueryState('tab', parseAsString.withDefault('archived'));
   // Track undo state for all threads
   const [undoStates, setUndoStates] = useState<
-    Record<string, "undoing" | "undone">
+    Record<string, 'undoing' | 'undone'>
   >({});
 
   const { emails } = useEmailStream(emailAccountId, isPaused, threads, tab);
@@ -64,14 +64,14 @@ export function EmailFirehose({
   useEffect(() => {
     if (
       !isPaused &&
-      tab === "feed" &&
+      tab === 'feed' &&
       parentRef.current &&
       emails.length > 0 &&
       !userHasScrolled
     ) {
       // Set flag to indicate programmatic scrolling
       isProgrammaticScrollRef.current = true;
-      virtualizer.scrollToIndex(emails.length - 1, { align: "end" });
+      virtualizer.scrollToIndex(emails.length - 1, { align: 'end' });
 
       // Clear flag after scrolling is likely complete
       setTimeout(() => {
@@ -85,7 +85,7 @@ export function EmailFirehose({
       <Tabs defaultValue="done" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="done">
-            {action === CleanAction.ARCHIVE ? "Archived" : "Marked read"}
+            {action === CleanAction.ARCHIVE ? 'Archived' : 'Marked read'}
           </TabsTrigger>
           <TabsTrigger value="keep">Kept</TabsTrigger>
         </TabsList>
@@ -117,13 +117,13 @@ export function EmailFirehose({
                     setUndoing={(threadId) => {
                       setUndoStates((prev) => ({
                         ...prev,
-                        [threadId]: "undoing",
+                        [threadId]: 'undoing',
                       }));
                     }}
                     setUndone={(threadId) => {
                       setUndoStates((prev) => ({
                         ...prev,
-                        [threadId]: "undone",
+                        [threadId]: 'undone',
                       }));
                     }}
                   />
@@ -134,8 +134,8 @@ export function EmailFirehose({
             <div className="flex h-full flex-col items-center justify-center py-20 text-muted-foreground">
               {stats.total ? (
                 <span>
-                  {stats.total} emails processed. {stats.done}{" "}
-                  {action === CleanAction.ARCHIVE ? "archived" : "marked read"}.
+                  {stats.total} emails processed. {stats.done}{' '}
+                  {action === CleanAction.ARCHIVE ? 'archived' : 'marked read'}.
                 </span>
               ) : (
                 <span>No emails yet</span>

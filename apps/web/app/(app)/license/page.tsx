@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { useCallback, use } from "react";
-import { useAction } from "next-safe-action/hooks";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
-import { activateLicenseKeyAction } from "@/utils/actions/premium";
-import { AlertBasic } from "@/components/Alert";
-import { usePremium } from "@/components/PremiumAlert";
-import { toastError, toastSuccess } from "@/components/Toast";
-import type { ActivateLicenseKeyOptions } from "@/utils/actions/premium.validation";
-import { PageWrapper } from "@/components/PageWrapper";
-import { PageHeader } from "@/components/PageHeader";
+import { useAction } from 'next-safe-action/hooks';
+import { use, useCallback } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { AlertBasic } from '@/components/Alert';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { PageHeader } from '@/components/PageHeader';
+import { PageWrapper } from '@/components/PageWrapper';
+import { usePremium } from '@/components/PremiumAlert';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { activateLicenseKeyAction } from '@/utils/actions/premium';
+import type { ActivateLicenseKeyOptions } from '@/utils/actions/premium.validation';
 
 export default function LicensePage(props: {
-  searchParams: Promise<{ "license-key"?: string }>;
+  searchParams: Promise<{ 'license-key'?: string }>;
 }) {
   const searchParams = use(props.searchParams);
-  const licenseKey = searchParams["license-key"];
+  const licenseKey = searchParams['license-key'];
 
   const { premium } = usePremium();
 
@@ -46,12 +46,12 @@ function ActivateLicenseForm(props: { licenseKey?: string }) {
     activateLicenseKeyAction,
     {
       onSuccess: () => {
-        toastSuccess({ description: "License activated!" });
+        toastSuccess({ description: 'License activated!' });
       },
       onError: () => {
-        toastError({ description: "Error activating license!" });
+        toastError({ description: 'Error activating license!' });
       },
-    },
+    }
   );
 
   const {
@@ -66,7 +66,7 @@ function ActivateLicenseForm(props: { licenseKey?: string }) {
     (data) => {
       activateLicenseKey({ licenseKey: data.licenseKey });
     },
-    [activateLicenseKey],
+    [activateLicenseKey]
   );
 
   return (
@@ -75,7 +75,7 @@ function ActivateLicenseForm(props: { licenseKey?: string }) {
         type="text"
         name="licenseKey"
         label="License Key"
-        registerProps={register("licenseKey", { required: true })}
+        registerProps={register('licenseKey', { required: true })}
         error={errors.licenseKey}
       />
       <Button type="submit" loading={isExecuting}>

@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { forwardRef } from "react";
-import { cn } from "@/utils";
+import Link from 'next/link';
+import { forwardRef } from 'react';
+import { cn } from '@/utils';
 
 const PageHeading = forwardRef<
   HTMLHeadingElement,
@@ -9,13 +9,13 @@ const PageHeading = forwardRef<
   <h1
     ref={ref}
     className={cn(
-      "font-title text-2xl leading-7 text-primary dark:text-foreground sm:truncate lg:text-3xl",
-      className,
+      'font-title text-2xl leading-7 text-primary dark:text-foreground sm:truncate lg:text-3xl',
+      className
     )}
     {...props}
   />
 ));
-PageHeading.displayName = "PageHeading";
+PageHeading.displayName = 'PageHeading';
 
 const PageSubHeading = forwardRef<
   HTMLParagraphElement,
@@ -23,11 +23,11 @@ const PageSubHeading = forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-muted-foreground text-sm", className)}
+    className={cn('text-muted-foreground text-sm', className)}
     {...props}
   />
 ));
-PageSubHeading.displayName = "PageSubHeading";
+PageSubHeading.displayName = 'PageSubHeading';
 
 const SectionHeader = forwardRef<
   HTMLHeadingElement,
@@ -35,11 +35,11 @@ const SectionHeader = forwardRef<
 >(({ className, ...props }, ref) => (
   <h4
     ref={ref}
-    className={cn("font-title text-base leading-7 text-foreground", className)}
+    className={cn('font-title text-base leading-7 text-foreground', className)}
     {...props}
   />
 ));
-SectionHeader.displayName = "SectionHeader";
+SectionHeader.displayName = 'SectionHeader';
 
 const SectionDescription = forwardRef<
   HTMLParagraphElement,
@@ -48,13 +48,13 @@ const SectionDescription = forwardRef<
   <p
     ref={ref}
     className={cn(
-      "mt-1 text-sm leading-6 text-slate-700 dark:text-foreground",
-      className,
+      'mt-1 text-sm leading-6 text-slate-700 dark:text-foreground',
+      className
     )}
     {...props}
   />
 ));
-SectionDescription.displayName = "SectionDescription";
+SectionDescription.displayName = 'SectionDescription';
 
 const MessageText = forwardRef<
   HTMLParagraphElement,
@@ -62,11 +62,11 @@ const MessageText = forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-slate-700 dark:text-foreground", className)}
+    className={cn('text-sm text-slate-700 dark:text-foreground', className)}
     {...props}
   />
 ));
-MessageText.displayName = "MessageText";
+MessageText.displayName = 'MessageText';
 
 const TypographyH3 = forwardRef<
   HTMLHeadingElement,
@@ -74,19 +74,19 @@ const TypographyH3 = forwardRef<
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn("scroll-m-20 font-title text-2xl", className)}
+    className={cn('scroll-m-20 font-title text-2xl', className)}
     {...props}
   />
 ));
-TypographyH3.displayName = "TypographyH3";
+TypographyH3.displayName = 'TypographyH3';
 
 const TypographyH4 = forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-  <h4 ref={ref} className={cn("font-title text-lg", className)} {...props} />
+  <h4 ref={ref} className={cn('font-title text-lg', className)} {...props} />
 ));
-TypographyH4.displayName = "TypographyH4";
+TypographyH4.displayName = 'TypographyH4';
 
 const TypographyP = forwardRef<
   HTMLParagraphElement,
@@ -94,11 +94,11 @@ const TypographyP = forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("leading-7 text-muted-foreground", className)}
+    className={cn('leading-7 text-muted-foreground', className)}
     {...props}
   />
 ));
-TypographyP.displayName = "TypographyP";
+TypographyP.displayName = 'TypographyP';
 
 type LinkProps = React.ComponentProps<typeof Link>;
 const TextLink = forwardRef<HTMLAnchorElement, LinkProps>(
@@ -107,16 +107,16 @@ const TextLink = forwardRef<HTMLAnchorElement, LinkProps>(
       <Link
         ref={ref}
         className={cn(
-          "font-semibold text-blue-600 hover:underline dark:text-primary",
-          className,
+          'font-semibold text-blue-600 hover:underline dark:text-primary',
+          className
         )}
         {...props}
       />
     );
-  },
+  }
 );
 
-TextLink.displayName = "TextLink";
+TextLink.displayName = 'TextLink';
 
 export {
   PageHeading,

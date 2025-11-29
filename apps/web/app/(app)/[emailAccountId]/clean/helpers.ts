@@ -1,4 +1,4 @@
-import prisma from "utils/prisma";
+import prisma from 'utils/prisma';
 
 export async function getJobById({
   emailAccountId,
@@ -19,6 +19,6 @@ export async function getLastJob({
 }) {
   return await prisma.cleanupJob.findFirst({
     where: { emailAccountId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 }

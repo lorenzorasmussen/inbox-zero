@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { hasCronSecret, hasPostCronSecret } from "@/utils/cron";
-import { withError } from "@/utils/middleware";
-import { captureException } from "@/utils/error";
-import { hasAiAccess } from "@/utils/premium";
-import { createScopedLogger } from "@/utils/logger";
-import { createEmailProvider } from "@/utils/email/provider";
+import { NextResponse } from 'next/server';
+import { hasCronSecret, hasPostCronSecret } from '@/utils/cron';
+import { createEmailProvider } from '@/utils/email/provider';
+import { captureException } from '@/utils/error';
+import { createScopedLogger } from '@/utils/logger';
+import { withError } from '@/utils/middleware';
+import { hasAiAccess } from '@/utils/premium';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("api/google/watch/all");
+const logger = createScopedLogger('api/google/watch/all');
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
 async function watchAllEmails() {
@@ -19,7 +19,7 @@ async function watchAllEmails() {
         premium: {
           OR: [
             { lemonSqueezyRenewsAt: { gt: new Date() } },
-            { stripeSubscriptionStatus: { in: ["active", "trialing"] } },
+            { stripeSubscriptionStatus: { in: ['active', 'trialing'] } },
           ],
         },
       },
@@ -43,26 +43,26 @@ async function watchAllEmails() {
       },
     },
     orderBy: {
-      watchEmailsExpirationDate: { sort: "asc", nulls: "first" },
+      watchEmailsExpirationDate: { sort: 'asc', nulls: 'first' },
     },
   });
 
-  logger.info("Watching email accounts", { count: emailAccounts.length });
+  logger.info('Watching email accounts', { count: emailAccounts.length });
 
   for (const emailAccount of emailAccounts) {
     try {
-      logger.info("Watching emails for account", {
+      logger.info('Watching emails for account', {
         emailAccountId: emailAccount.id,
         email: emailAccount.email,
       });
 
       const userHasAiAccess = hasAiAccess(
         emailAccount.user.premium?.tier || null,
-        emailAccount.user.aiApiKey,
+        emailAccount.user.aiApiKey
       );
 
       if (!userHasAiAccess) {
-        logger.info("User does not have access to AI or cold email", {
+        logger.info('User does not have access to AI or cold email', {
           email: emailAccount.email,
         });
         if (
@@ -92,7 +92,7 @@ async function watchAllEmails() {
         !emailAccount.account?.access_token ||
         !emailAccount.account?.refresh_token
       ) {
-        logger.info("User has no access token or refresh token", {
+        logger.info('User has no access token or refresh token', {
           email: emailAccount.email,
         });
         continue;
@@ -100,20 +100,20 @@ async function watchAllEmails() {
 
       const emailProvider = await createEmailProvider({
         emailAccountId: emailAccount.id,
-        provider: "google",
+        provider: 'google',
       });
 
       await emailProvider.watchEmails();
     } catch (error) {
       if (error instanceof Error) {
         const warn = [
-          "invalid_grant",
-          "Mail service not enabled",
-          "Insufficient Permission",
+          'invalid_grant',
+          'Mail service not enabled',
+          'Insufficient Permission',
         ];
 
         if (warn.some((w) => error.message.includes(w))) {
-          logger.warn("Not watching emails for user", {
+          logger.warn('Not watching emails for user', {
             email: emailAccount.email,
             error,
           });
@@ -121,19 +121,19 @@ async function watchAllEmails() {
         }
       }
 
-      logger.error("Error for user", { email: emailAccount.email, error });
+      logger.error('Error for user', { email: emailAccount.email, error });
     }
   }
 
   return NextResponse.json({ success: true });
 }
 
-export const GET = withError("google/watch/all", async (request) => {
+export const GET = withError('google/watch/all', async (request) => {
   if (!hasCronSecret(request)) {
     captureException(
-      new Error("Unauthorized cron request: api/google/watch/all"),
+      new Error('Unauthorized cron request: api/google/watch/all')
     );
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   return watchAllEmails();
@@ -142,9 +142,9 @@ export const GET = withError("google/watch/all", async (request) => {
 export const POST = withError(async (request) => {
   if (!(await hasPostCronSecret(request))) {
     captureException(
-      new Error("Unauthorized cron request: api/google/watch/all"),
+      new Error('Unauthorized cron request: api/google/watch/all')
     );
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   return watchAllEmails();

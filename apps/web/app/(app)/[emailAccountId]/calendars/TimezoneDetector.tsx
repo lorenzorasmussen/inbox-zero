@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useLocalStorage } from "usehooks-ts";
-import { useCalendars } from "@/hooks/useCalendars";
-import { useAction } from "next-safe-action/hooks";
-import { updateEmailAccountTimezoneAction } from "@/utils/actions/calendar";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import { useAction } from 'next-safe-action/hooks';
+import { useEffect, useState } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
+import { toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { toastSuccess } from "@/components/Toast";
+} from '@/components/ui/dialog';
+import { useCalendars } from '@/hooks/useCalendars';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { updateEmailAccountTimezoneAction } from '@/utils/actions/calendar';
 
 export type DismissedPrompt = {
   saved: string;
@@ -37,13 +37,13 @@ export function TimezoneDetector() {
     updateEmailAccountTimezoneAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Timezone updated!" });
+        toastSuccess({ description: 'Timezone updated!' });
         setShowDialog(false);
       },
       onSettled: () => {
         mutate();
       },
-    },
+    }
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: executeUpdateTimezone is stable from useAction and causes infinite loops if included
@@ -79,7 +79,7 @@ export function TimezoneDetector() {
       const updated = addDismissedPrompt(
         dismissedPrompts,
         data.timezone,
-        currentTimezone,
+        currentTimezone
       );
       setDismissedPrompts(updated);
     }
@@ -99,7 +99,7 @@ export function TimezoneDetector() {
           <DialogTitle>Timezone Change Detected</DialogTitle>
           <DialogDescription>
             Your saved timezone is <strong>{data.timezone}</strong>, but we
-            detected that your current timezone is{" "}
+            detected that your current timezone is{' '}
             <strong>{detectedTimezone}</strong>. Would you like to update your
             timezone?
           </DialogDescription>
@@ -127,7 +127,7 @@ export function TimezoneDetector() {
 export function shouldShowTimezonePrompt(
   savedTimezone: string,
   detectedTimezone: string,
-  dismissedPrompts: DismissedPrompt[],
+  dismissedPrompts: DismissedPrompt[]
 ): boolean {
   // If timezones match, don't show prompt
   if (savedTimezone === detectedTimezone) {
@@ -142,7 +142,7 @@ export function shouldShowTimezonePrompt(
     (prompt) =>
       prompt.saved === savedTimezone &&
       prompt.detected === detectedTimezone &&
-      now - prompt.dismissedAt < expiryMs,
+      now - prompt.dismissedAt < expiryMs
   );
 
   return !recentlyDismissed;
@@ -154,12 +154,12 @@ export function shouldShowTimezonePrompt(
 export function addDismissedPrompt(
   dismissedPrompts: DismissedPrompt[],
   savedTimezone: string,
-  detectedTimezone: string,
+  detectedTimezone: string
 ): DismissedPrompt[] {
   // Remove any old dismissals for this combination
   const filtered = dismissedPrompts.filter(
     (prompt) =>
-      !(prompt.saved === savedTimezone && prompt.detected === detectedTimezone),
+      !(prompt.saved === savedTimezone && prompt.detected === detectedTimezone)
   );
 
   // Add the new dismissal

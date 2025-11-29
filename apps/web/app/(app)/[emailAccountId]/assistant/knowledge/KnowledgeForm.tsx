@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import { useRef } from "react";
-import type { KeyedMutator } from "swr";
-import { CrownIcon } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/Input";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  createKnowledgeBody,
-  type CreateKnowledgeBody,
-  updateKnowledgeBody,
-  type UpdateKnowledgeBody,
-} from "@/utils/actions/knowledge.validation";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CrownIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useRef } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import type { KeyedMutator } from 'swr';
+import type { GetKnowledgeResponse } from '@/app/api/knowledge/route';
+import { AlertWithButton } from '@/components/Alert';
+import { Tiptap, type TiptapHandle } from '@/components/editor/Tiptap';
+import { Input } from '@/components/Input';
+import { usePremium } from '@/components/PremiumAlert';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import type { Knowledge } from '@/generated/prisma/client';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { cn } from '@/utils';
 import {
   createKnowledgeAction,
   updateKnowledgeAction,
-} from "@/utils/actions/knowledge";
-import { toastError, toastSuccess } from "@/components/Toast";
-import type { GetKnowledgeResponse } from "@/app/api/knowledge/route";
-import type { Knowledge } from "@/generated/prisma/client";
-import { Tiptap, type TiptapHandle } from "@/components/editor/Tiptap";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/utils";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { usePremium } from "@/components/PremiumAlert";
-import { hasTierAccess } from "@/utils/premium";
-import { AlertWithButton } from "@/components/Alert";
-import { KNOWLEDGE_BASIC_MAX_ITEMS } from "@/utils/config";
+} from '@/utils/actions/knowledge';
+import {
+  type CreateKnowledgeBody,
+  createKnowledgeBody,
+  type UpdateKnowledgeBody,
+  updateKnowledgeBody,
+} from '@/utils/actions/knowledge.validation';
+import { KNOWLEDGE_BASIC_MAX_ITEMS } from '@/utils/config';
+import { hasTierAccess } from '@/utils/premium';
 
 export function KnowledgeForm({
   closeDialog,
@@ -46,7 +46,7 @@ export function KnowledgeForm({
 
   const hasFullAccess = hasTierAccess({
     tier: tier || null,
-    minimumTier: "BUSINESS_PLUS_MONTHLY",
+    minimumTier: 'BUSINESS_PLUS_MONTHLY',
   });
 
   const {
@@ -56,7 +56,7 @@ export function KnowledgeForm({
     formState: { errors, isSubmitting },
   } = useForm<CreateKnowledgeBody | UpdateKnowledgeBody>({
     resolver: zodResolver(
-      editingItem ? updateKnowledgeBody : createKnowledgeBody,
+      editingItem ? updateKnowledgeBody : createKnowledgeBody
     ),
     defaultValues: editingItem
       ? {
@@ -65,8 +65,8 @@ export function KnowledgeForm({
           content: editingItem.content,
         }
       : {
-          title: "How to draft replies",
-          content: "",
+          title: 'How to draft replies',
+          content: '',
         },
   });
 
@@ -77,26 +77,26 @@ export function KnowledgeForm({
 
     const submitData = {
       ...data,
-      content: markdownContent ?? "",
+      content: markdownContent ?? '',
     };
 
     const result = editingItem
       ? await updateKnowledgeAction(
           emailAccountId,
-          submitData as UpdateKnowledgeBody,
+          submitData as UpdateKnowledgeBody
         )
       : await createKnowledgeAction(emailAccountId, submitData);
 
     if (result?.serverError) {
       toastError({
-        title: `Error ${editingItem ? "updating" : "creating"} knowledge base entry`,
-        description: result.serverError || "",
+        title: `Error ${editingItem ? 'updating' : 'creating'} knowledge base entry`,
+        description: result.serverError || '',
       });
       return;
     }
 
     toastSuccess({
-      description: `Knowledge base entry ${editingItem ? "updated" : "created"} successfully`,
+      description: `Knowledge base entry ${editingItem ? 'updated' : 'created'} successfully`,
     });
 
     refetch();
@@ -129,13 +129,13 @@ export function KnowledgeForm({
         type="text"
         name="title"
         label="Title"
-        registerProps={register("title")}
+        registerProps={register('title')}
         error={errors.title}
       />
       <div>
         <Label
           htmlFor="content"
-          className={cn(errors.content && "text-destructive")}
+          className={cn(errors.content && 'text-destructive')}
         >
           Content (supports markdown)
         </Label>
@@ -146,7 +146,7 @@ export function KnowledgeForm({
             <div className="max-h-[600px] overflow-y-auto">
               <Tiptap
                 ref={editorRef}
-                initialContent={field.value ?? ""}
+                initialContent={field.value ?? ''}
                 className="mt-1"
                 autofocus={false}
               />
@@ -160,7 +160,7 @@ export function KnowledgeForm({
         )}
       </div>
       <Button type="submit" loading={isSubmitting}>
-        {editingItem ? "Update" : "Create"}
+        {editingItem ? 'Update' : 'Create'}
       </Button>
     </form>
   );

@@ -1,4 +1,4 @@
-import { Referrals } from "@/components/ReferralDialog";
+import { Referrals } from '@/components/ReferralDialog';
 
 export default function ReferPage() {
   return (

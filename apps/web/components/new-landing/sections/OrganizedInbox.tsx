@@ -1,12 +1,12 @@
+import Image from 'next/image';
 import {
   Section,
   SectionContent,
-} from "@/components/new-landing/common/Section";
+} from '@/components/new-landing/common/Section';
 import {
   SectionHeading,
   SectionSubtitle,
-} from "@/components/new-landing/common/Typography";
-import Image from "next/image";
+} from '@/components/new-landing/common/Typography';
 
 interface OrganizedInboxProps {
   title: React.ReactNode;

@@ -1,14 +1,14 @@
-import { z } from "zod";
-import { createGenerateObject } from "@/utils/llms";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
+import { z } from 'zod';
+import { getUserInfoPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
 import {
   stringifyEmailFromBody,
   stringifyEmailSimple,
-} from "@/utils/stringify-email";
-import { preprocessBooleanLike } from "@/utils/zod";
-import { getModel } from "@/utils/llms/model";
-import { getUserInfoPrompt } from "@/utils/ai/helpers";
+} from '@/utils/stringify-email';
+import type { EmailForLLM } from '@/utils/types';
+import { preprocessBooleanLike } from '@/utils/zod';
 
 export async function aiCheckIfNeedsReply({
   emailAccount,
@@ -21,11 +21,11 @@ export async function aiCheckIfNeedsReply({
 }) {
   // If messageToSend somehow is null/undefined, default to no reply needed.
   if (!messageToSend)
-    return { needsReply: false, rationale: "No message provided" };
+    return { needsReply: false, rationale: 'No message provided' };
 
   const userMessageForPrompt = messageToSend;
 
-  const system = "You are an AI assistant that checks if a reply is needed.";
+  const system = 'You are an AI assistant that checks if a reply is needed.';
 
   const prompt = `${getUserInfoPrompt({ emailAccount })}
 
@@ -42,9 +42,9 @@ ${
 <previous_messages>
 ${threadContextMessages
   .map((message) => `<message>${stringifyEmailFromBody(message)}</message>`)
-  .join("\n")}
+  .join('\n')}
 </previous_messages>`
-    : ""
+    : ''
 }
 
 Decide if the message we are sending needs a reply. Respond with a JSON object with the following fields:
@@ -56,7 +56,7 @@ Decide if the message we are sending needs a reply. Respond with a JSON object w
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Check if needs reply",
+    label: 'Check if needs reply',
     modelOptions,
   });
 
@@ -67,10 +67,10 @@ Decide if the message we are sending needs a reply. Respond with a JSON object w
     schema: z.object({
       rationale: z
         .string()
-        .describe("Brief one-line explanation for the decision."),
+        .describe('Brief one-line explanation for the decision.'),
       needsReply: z.preprocess(
         preprocessBooleanLike,
-        z.boolean().describe("Whether a reply is needed."),
+        z.boolean().describe('Whether a reply is needed.')
       ),
     }),
   });

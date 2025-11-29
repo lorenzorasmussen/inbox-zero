@@ -1,21 +1,21 @@
-import groupBy from "lodash/groupBy";
-import sortBy from "lodash/sortBy";
-import { capitalCase } from "capital-case";
-import { HoverCard } from "@/components/HoverCard";
-import { Badge } from "@/components/Badge";
-import { conditionTypesToString } from "@/utils/condition";
-import { ExecutedRuleStatus, LogicalOperator } from "@/generated/prisma/enums";
-import type { ActionType } from "@/generated/prisma/enums";
-import type { Rule } from "@/generated/prisma/client";
-import { Button } from "@/components/ui/button";
-import { MessageText } from "@/components/Typography";
-import { EyeIcon } from "lucide-react";
-import { useRuleDialog } from "@/app/(app)/[emailAccountId]/assistant/RuleDialog";
-import type { RunRulesResult } from "@/utils/ai/choose-rule/run-rules";
-import { sortActionsByPriority } from "@/utils/action-sort";
-import { getActionDisplay, getActionIcon } from "@/utils/action-display";
-import { getActionColor } from "@/components/PlanBadge";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import { capitalCase } from 'capital-case';
+import groupBy from 'lodash/groupBy';
+import sortBy from 'lodash/sortBy';
+import { EyeIcon } from 'lucide-react';
+import { useRuleDialog } from '@/app/(app)/[emailAccountId]/assistant/RuleDialog';
+import { Badge } from '@/components/Badge';
+import { HoverCard } from '@/components/HoverCard';
+import { getActionColor } from '@/components/PlanBadge';
+import { MessageText } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import type { Rule } from '@/generated/prisma/client';
+import type { ActionType } from '@/generated/prisma/enums';
+import { ExecutedRuleStatus, LogicalOperator } from '@/generated/prisma/enums';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { getActionDisplay, getActionIcon } from '@/utils/action-display';
+import { sortActionsByPriority } from '@/utils/action-sort';
+import type { RunRulesResult } from '@/utils/ai/choose-rule/run-rules';
+import { conditionTypesToString } from '@/utils/condition';
 
 export function ResultsDisplay({
   results,
@@ -33,7 +33,7 @@ export function ResultsDisplay({
     ([, batchResults]) => {
       const createdAt = batchResults[0]?.createdAt;
       return createdAt ? -new Date(createdAt) : 0; // Negative for descending order
-    },
+    }
   );
 
   return (
@@ -44,7 +44,7 @@ export function ResultsDisplay({
             <div className="my-1 text-xs text-muted-foreground">Previous:</div>
           )}
           <div
-            className={showFullContent ? "flex flex-col gap-4" : "flex gap-1"}
+            className={showFullContent ? 'flex flex-col gap-4' : 'flex gap-1'}
           >
             {batchResults.map((result, resultIndex) => (
               <ResultDisplay
@@ -79,11 +79,11 @@ function ResultDisplay({
 
   return (
     <HoverCard content={<ResultDisplayContent result={result} />}>
-      <Badge color={rule ? "green" : "red"} className="whitespace-nowrap">
+      <Badge color={rule ? 'green' : 'red'} className="whitespace-nowrap">
         {rule
           ? rule.name
           : status === ExecutedRuleStatus.SKIPPED
-            ? "No match found"
+            ? 'No match found'
             : capitalCase(status)}
         <EyeIcon className="ml-1.5 size-3.5 opacity-70" />
       </Badge>
@@ -106,7 +106,7 @@ export function ResultDisplayContent({ result }: { result: RunRulesResult }) {
             <Badge color="blue">{conditionTypesToString(rule)}</Badge>
           </>
         ) : (
-          status === ExecutedRuleStatus.SKIPPED && "No match found"
+          status === ExecutedRuleStatus.SKIPPED && 'No match found'
         )}
       </div>
       <div className="mt-2">
@@ -193,12 +193,12 @@ function Actions({
       {sortActionsByPriority(actions).map((action) => {
         const Icon = getActionIcon(action.type);
         const fields = [
-          { key: "to", value: action.to },
-          { key: "cc", value: action.cc },
-          { key: "bcc", value: action.bcc },
-          { key: "subject", value: action.subject },
-          { key: "content", value: action.content },
-          { key: "url", value: action.url },
+          { key: 'to', value: action.to },
+          { key: 'cc', value: action.cc },
+          { key: 'bcc', value: action.bcc },
+          { key: 'subject', value: action.subject },
+          { key: 'content', value: action.content },
+          { key: 'url', value: action.url },
         ].filter((field) => field.value);
 
         return (
@@ -214,7 +214,7 @@ function Actions({
               <div className="ml-1 text-sm text-muted-foreground space-y-0.5">
                 {fields.map((field) => (
                   <div key={field.key} className="whitespace-pre-wrap">
-                    <span className="font-medium capitalize">{field.key}:</span>{" "}
+                    <span className="font-medium capitalize">{field.key}:</span>{' '}
                     {field.value}
                   </div>
                 ))}
@@ -232,7 +232,7 @@ function PrettyConditions({
 }: {
   rule: Pick<
     Rule,
-    "from" | "to" | "subject" | "body" | "instructions" | "conditionalOperator"
+    'from' | 'to' | 'subject' | 'body' | 'instructions' | 'conditionalOperator'
   >;
 }) {
   const conditions: string[] = [];
@@ -243,13 +243,13 @@ function PrettyConditions({
   if (rule.subject) staticConditions.push(`Subject: "${rule.subject}"`);
   if (rule.to) staticConditions.push(`To: ${rule.to}`);
   if (rule.body) staticConditions.push(`Body: "${rule.body}"`);
-  if (staticConditions.length) conditions.push(staticConditions.join(", "));
+  if (staticConditions.length) conditions.push(staticConditions.join(', '));
 
   // AI condition
   if (rule.instructions) conditions.push(rule.instructions);
 
   const operator =
-    rule.conditionalOperator === LogicalOperator.AND ? "AND" : "OR";
+    rule.conditionalOperator === LogicalOperator.AND ? 'AND' : 'OR';
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">

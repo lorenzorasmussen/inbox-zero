@@ -1,8 +1,8 @@
-import type { OutlookClient } from "@/utils/outlook/client";
-import { createScopedLogger } from "@/utils/logger";
-import { withOutlookRetry } from "@/utils/outlook/retry";
+import { createScopedLogger } from '@/utils/logger';
+import type { OutlookClient } from '@/utils/outlook/client';
+import { withOutlookRetry } from '@/utils/outlook/retry';
 
-const logger = createScopedLogger("outlook/spam");
+const logger = createScopedLogger('outlook/spam');
 
 export async function markSpam(client: OutlookClient, threadId: string) {
   try {
@@ -12,7 +12,7 @@ export async function markSpam(client: OutlookClient, threadId: string) {
     const escapedThreadId = threadId.replace(/'/g, "''");
     const messages = await client
       .getClient()
-      .api("/me/messages")
+      .api('/me/messages')
       .filter(`conversationId eq '${escapedThreadId}'`)
       .get();
 
@@ -21,12 +21,12 @@ export async function markSpam(client: OutlookClient, threadId: string) {
       try {
         return await withOutlookRetry(() =>
           client.getClient().api(`/me/messages/${message.id}/move`).post({
-            destinationId: "junkemail",
-          }),
+            destinationId: 'junkemail',
+          })
         );
       } catch (error) {
         // Log the error but don't fail the entire operation
-        logger.warn("Failed to move message to spam", {
+        logger.warn('Failed to move message to spam', {
           messageId: message.id,
           threadId,
           error: error instanceof Error ? error.message : error,
@@ -38,7 +38,7 @@ export async function markSpam(client: OutlookClient, threadId: string) {
     await Promise.allSettled(movePromises);
   } catch (error) {
     // If the filter fails, try a different approach
-    logger.warn("Filter failed, trying alternative approach", {
+    logger.warn('Filter failed, trying alternative approach', {
       threadId,
       error,
     });
@@ -47,14 +47,14 @@ export async function markSpam(client: OutlookClient, threadId: string) {
       // Try to get messages by conversationId using a different endpoint
       const messages = await client
         .getClient()
-        .api("/me/messages")
-        .select("id")
+        .api('/me/messages')
+        .select('id')
         .get();
 
       // Filter messages by conversationId manually
       const threadMessages = messages.value.filter(
         (message: { conversationId: string }) =>
-          message.conversationId === threadId,
+          message.conversationId === threadId
       );
 
       if (threadMessages.length > 0) {
@@ -64,12 +64,12 @@ export async function markSpam(client: OutlookClient, threadId: string) {
             try {
               return await withOutlookRetry(() =>
                 client.getClient().api(`/me/messages/${message.id}/move`).post({
-                  destinationId: "junkemail",
-                }),
+                  destinationId: 'junkemail',
+                })
               );
             } catch (moveError) {
               // Log the error but don't fail the entire operation
-              logger.warn("Failed to move message to spam", {
+              logger.warn('Failed to move message to spam', {
                 messageId: message.id,
                 threadId,
                 error:
@@ -77,7 +77,7 @@ export async function markSpam(client: OutlookClient, threadId: string) {
               });
               return null;
             }
-          },
+          }
         );
 
         await Promise.allSettled(movePromises);
@@ -85,12 +85,12 @@ export async function markSpam(client: OutlookClient, threadId: string) {
         // If no messages found, try treating threadId as a messageId
         await withOutlookRetry(() =>
           client.getClient().api(`/me/messages/${threadId}/move`).post({
-            destinationId: "junkemail",
-          }),
+            destinationId: 'junkemail',
+          })
         );
       }
     } catch (directError) {
-      logger.error("Failed to mark message as spam", {
+      logger.error('Failed to mark message as spam', {
         threadId,
         error: directError,
       });

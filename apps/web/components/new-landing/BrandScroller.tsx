@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { Paragraph } from "@/components/new-landing/common/Typography";
-import { type Brand, BRANDS_LIST } from "@/utils/brands";
-import { userCount } from "@/utils/config";
-import { cx } from "class-variance-authority";
-import Image from "next/image";
-import { BlurFade } from "@/components/new-landing/common/BlurFade";
+import { cx } from 'class-variance-authority';
+import Image from 'next/image';
+import { BlurFade } from '@/components/new-landing/common/BlurFade';
+import { Paragraph } from '@/components/new-landing/common/Typography';
+import { BRANDS_LIST, type Brand } from '@/utils/brands';
+import { userCount } from '@/utils/config';
 
 interface BrandScrollerProps {
   brandList?: Brand[];
@@ -24,8 +24,8 @@ export const BrandScroller = ({
           {new Array(4).fill(0).map((_, i) => (
             <div
               className={cx(
-                "flex shrink-0 justify-around [margin-right:var(--gap)] [gap:var(--gap)] flex-row [--duration:100s] opacity-90",
-                animate ? "animate-marquee" : "",
+                'flex shrink-0 justify-around [margin-right:var(--gap)] [gap:var(--gap)] flex-row [--duration:100s] opacity-90',
+                animate ? 'animate-marquee' : ''
               )}
               key={i}
             >
@@ -36,7 +36,7 @@ export const BrandScroller = ({
                     alt={alt}
                     width={100}
                     height={100}
-                    className={cx("w-auto", height || "h-5 sm:h-6 md:h-8")}
+                    className={cx('w-auto', height || 'h-5 sm:h-6 md:h-8')}
                   />
                 </div>
               ))}

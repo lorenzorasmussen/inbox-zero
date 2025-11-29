@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Hero } from "@/app/(landing)/home/Hero";
+import { useEffect, useState } from 'react';
+import { Hero } from '@/app/(landing)/home/Hero';
 import {
+  type HeroVariant,
   useHeroVariant,
   useHeroVariantEnabled,
-  type HeroVariant,
-} from "@/hooks/useFeatureFlags";
+} from '@/hooks/useFeatureFlags';
 
 const copy: {
   [key in HeroVariant]: {
@@ -15,14 +15,14 @@ const copy: {
   };
 } = {
   control: {
-    title: "Meet Your AI Email Assistant That Actually Works",
+    title: 'Meet Your AI Email Assistant That Actually Works',
     subtitle:
-      "Cut your email time in half. Inbox Zero organizes your inbox, drafts responses, and helps you reach inbox zero fast. For Gmail and Outlook.",
+      'Cut your email time in half. Inbox Zero organizes your inbox, drafts responses, and helps you reach inbox zero fast. For Gmail and Outlook.',
   },
-  "clean-up-in-minutes": {
-    title: "Clean Up Your Inbox In Minutes",
+  'clean-up-in-minutes': {
+    title: 'Clean Up Your Inbox In Minutes',
     subtitle:
-      "Bulk unsubscribe from newsletters, automate your emails with AI, block cold emails, and view your analytics. Open-source.",
+      'Bulk unsubscribe from newsletters, automate your emails with AI, block cold emails, and view your analytics. Open-source.',
   },
 };
 
@@ -52,7 +52,7 @@ export function HeroAB() {
       title={
         <span
           className={`transition-opacity duration-300 ease-out ${
-            isHydrated && isFlagEnabled ? "opacity-100" : "opacity-0"
+            isHydrated && isFlagEnabled ? 'opacity-100' : 'opacity-0'
           }`}
         >
           {title}
@@ -61,7 +61,7 @@ export function HeroAB() {
       subtitle={
         <span
           className={`transition-opacity duration-300 ease-out ${
-            isHydrated && isFlagEnabled ? "opacity-100" : "opacity-0"
+            isHydrated && isFlagEnabled ? 'opacity-100' : 'opacity-0'
           }`}
         >
           {subtitle}

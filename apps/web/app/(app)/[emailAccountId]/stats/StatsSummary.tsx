@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import type { DateRange } from "react-day-picker";
-import { useOrgSWR } from "@/hooks/useOrgSWR";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   MailCheckIcon,
   MailOpenIcon,
   MailsIcon,
   SendHorizonalIcon,
-} from "lucide-react";
+} from 'lucide-react';
+import type { DateRange } from 'react-day-picker';
 import type {
   StatsByWeekParams,
   StatsByWeekResponse,
-} from "@/app/api/user/stats/by-period/route";
-import { getDateRangeParams } from "./params";
-import { formatStat } from "@/utils/stats";
-import { StatsCards } from "@/components/StatsCards";
+} from '@/app/api/user/stats/by-period/route';
+import { LoadingContent } from '@/components/LoadingContent';
+import { StatsCards } from '@/components/StatsCards';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useOrgSWR } from '@/hooks/useOrgSWR';
+import { formatStat } from '@/utils/stats';
+import { getDateRangeParams } from './params';
 
 export function StatsSummary(props: {
   dateRange?: DateRange;
@@ -25,7 +25,7 @@ export function StatsSummary(props: {
   const { dateRange } = props;
 
   const params: StatsByWeekParams = {
-    period: "week",
+    period: 'week',
     ...getDateRangeParams(dateRange),
   };
 
@@ -47,27 +47,27 @@ export function StatsSummary(props: {
           <StatsCards
             stats={[
               {
-                name: "Received",
+                name: 'Received',
                 value: formatStat(data.allCount),
-                subvalue: "emails",
+                subvalue: 'emails',
                 icon: <MailsIcon className="h-4 w-4" />,
               },
               {
-                name: "Read",
+                name: 'Read',
                 value: formatStat(data.readCount),
-                subvalue: "emails",
+                subvalue: 'emails',
                 icon: <MailOpenIcon className="h-4 w-4" />,
               },
               {
-                name: "Archived",
+                name: 'Archived',
                 value: formatStat(data.allCount - data.inboxCount),
-                subvalue: "emails",
+                subvalue: 'emails',
                 icon: <MailCheckIcon className="h-4 w-4" />,
               },
               {
-                name: "Sent",
+                name: 'Sent',
                 value: formatStat(data.sentCount),
-                subvalue: "emails",
+                subvalue: 'emails',
                 icon: <SendHorizonalIcon className="h-4 w-4" />,
               },
             ]}

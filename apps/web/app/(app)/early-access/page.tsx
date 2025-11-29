@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { EarlyAccessFeatures } from "@/app/(app)/early-access/EarlyAccessFeatures";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { EarlyAccessFeatures } from '@/app/(app)/early-access/EarlyAccessFeatures';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { isGoogleProvider } from "@/utils/email/provider-types";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from '@/components/ui/card';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { isGoogleProvider } from '@/utils/email/provider-types';
 
 export default function RequestAccessPage() {
   const { provider } = useAccount();

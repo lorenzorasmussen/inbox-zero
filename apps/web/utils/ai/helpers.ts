@@ -1,6 +1,6 @@
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { stringifyEmail } from "@/utils/stringify-email";
-import type { EmailForLLM } from "@/utils/types";
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { stringifyEmail } from '@/utils/stringify-email';
+import type { EmailForLLM } from '@/utils/types';
 
 export function getTodayForLLM(date: Date = new Date()) {
   return `Today's date and time is: ${date.toISOString()}.`;
@@ -8,29 +8,29 @@ export function getTodayForLLM(date: Date = new Date()) {
 
 export const getUserInfoPrompt = ({
   emailAccount,
-  prefix = "The user you are acting on behalf of is:",
+  prefix = 'The user you are acting on behalf of is:',
 }: {
   emailAccount: EmailAccountWithAI & { name?: string | null };
   prefix?: string;
 }) => {
   const info = [
     {
-      label: "email",
+      label: 'email',
       value: emailAccount.email,
     },
     {
-      label: "name",
+      label: 'name',
       value: emailAccount.name,
     },
     {
-      label: "about",
+      label: 'about',
       value: emailAccount.about,
     },
   ].filter((i) => i.value);
 
-  return `${prefix || ""}
+  return `${prefix || ''}
 <user_info>
-${info.map((i) => `<${i.label}>${i.value}</${i.label}>`).join("\n")}
+${info.map((i) => `<${i.label}>${i.value}</${i.label}>`).join('\n')}
 </user_info>`.trim();
 };
 
@@ -45,9 +45,9 @@ ${rules
     (rule) => `<rule>
   <name>${rule.name}</name>
   <criteria>${rule.instructions}</criteria>
-</rule>`,
+</rule>`
   )
-  .join("\n")}
+  .join('\n')}
 </user_rules>`;
 };
 
@@ -64,5 +64,5 @@ export const getEmailListPrompt = ({
 
   return messagesToUse
     .map((email) => `<email>${stringifyEmail(email, messageMaxLength)}</email>`)
-    .join("\n");
+    .join('\n');
 };

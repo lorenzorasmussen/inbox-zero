@@ -1,5 +1,5 @@
-import { BlurFade } from "@/components/new-landing/common/BlurFade";
-import { cx } from "class-variance-authority";
+import { cx } from 'class-variance-authority';
+import { BlurFade } from '@/components/new-landing/common/BlurFade';
 
 interface WordRevealProps {
   children?: string;
@@ -14,9 +14,9 @@ export function WordReveal({
   words,
   duration = 0.06,
   delay = 0,
-  spaceBetween = "w-3",
+  spaceBetween = 'w-3',
 }: WordRevealProps) {
-  const wordsToReveal = children ? children.split(" ") : words || [];
+  const wordsToReveal = children ? children.split(' ') : words || [];
 
   return (
     <>
@@ -29,7 +29,7 @@ export function WordReveal({
         >
           {word}
           {index < wordsToReveal.length - 1 && (
-            <span className={cx("inline-block", spaceBetween)}> </span>
+            <span className={cx('inline-block', spaceBetween)}> </span>
           )}
         </BlurFade>
       ))}

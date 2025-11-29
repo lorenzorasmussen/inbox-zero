@@ -1,5 +1,10 @@
-"use client";
+'use client';
 
+import { cva, type VariantProps } from 'class-variance-authority';
+import { ArrowUpRight } from 'lucide-react';
+import { LayoutGroup, motion } from 'motion/react';
+import Link from 'next/link';
+import { type Dispatch, type SetStateAction, useId } from 'react';
 /*
  * Adapted from: https://github.com/dubinc/dub
  *
@@ -8,36 +13,31 @@
  *
  * This file may have been modified from the original.
  */
-import { cn } from "@/utils";
-import { cva, type VariantProps } from "class-variance-authority";
-import { LayoutGroup, motion } from "motion/react";
-import Link from "next/link";
-import { type Dispatch, type SetStateAction, useId } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { cn } from '@/utils';
 
-const tabSelectButtonVariants = cva("p-4 transition-colors duration-75", {
+const tabSelectButtonVariants = cva('p-4 transition-colors duration-75', {
   variants: {
     variant: {
       default:
-        "text-content-subtle data-[selected=true]:text-content-emphasis data-[selected=false]:hover:text-content-default",
+        'text-content-subtle data-[selected=true]:text-content-emphasis data-[selected=false]:hover:text-content-default',
       accent:
-        "text-content-subtle transition-[color,font-weight] data-[selected=true]:text-blue-600 data-[selected=false]:hover:text-content-default data-[selected=true]:font-medium",
+        'text-content-subtle transition-[color,font-weight] data-[selected=true]:text-blue-600 data-[selected=false]:hover:text-content-default data-[selected=true]:font-medium',
     },
   },
   defaultVariants: {
-    variant: "default",
+    variant: 'default',
   },
 });
 
-const tabSelectIndicatorVariants = cva("absolute bottom-0 w-full px-1.5", {
+const tabSelectIndicatorVariants = cva('absolute bottom-0 w-full px-1.5', {
   variants: {
     variant: {
-      default: "text-bg-inverted",
-      accent: "text-blue-600",
+      default: 'text-bg-inverted',
+      accent: 'text-blue-600',
     },
   },
   defaultVariants: {
-    variant: "default",
+    variant: 'default',
   },
 });
 
@@ -56,16 +56,16 @@ export function TabSelect<T extends string>({
   const layoutGroupId = useId();
 
   return (
-    <div className={cn("flex text-sm", className)}>
+    <div className={cn('flex text-sm', className)}>
       <LayoutGroup id={layoutGroupId}>
         {options.map(({ id, label, href, target }) => {
           const isSelected = id === selected;
-          const As = href ? Link : "div";
+          const As = href ? Link : 'div';
           return (
             <As
               key={id}
               className="relative"
-              href={href ?? "#"}
+              href={href ?? '#'}
               target={target ?? undefined}
             >
               <button
@@ -73,12 +73,12 @@ export function TabSelect<T extends string>({
                 {...(onSelect && !href && { onClick: () => onSelect(id) })}
                 className={cn(
                   tabSelectButtonVariants({ variant }),
-                  target === "_blank" && "group flex items-center gap-1.5",
+                  target === '_blank' && 'group flex items-center gap-1.5'
                 )}
                 data-selected={isSelected}
               >
                 {label}
-                {target === "_blank" && <ArrowUpRight className="size-2.5" />}
+                {target === '_blank' && <ArrowUpRight className="size-2.5" />}
               </button>
               {isSelected && (
                 <motion.div

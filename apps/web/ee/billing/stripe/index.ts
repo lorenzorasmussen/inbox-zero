@@ -1,19 +1,19 @@
-import Stripe from "stripe";
-import { env } from "@/env";
-import { createScopedLogger } from "@/utils/logger";
+import Stripe from 'stripe';
+import { env } from '@/env';
+import { createScopedLogger } from '@/utils/logger';
 
 let stripe: Stripe | null = null;
 
-const logger = createScopedLogger("ee/billing/stripe/index");
+const logger = createScopedLogger('ee/billing/stripe/index');
 
 export const getStripe = () => {
-  if (!env.STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY is not set");
+  if (!env.STRIPE_SECRET_KEY) throw new Error('STRIPE_SECRET_KEY is not set');
   if (!stripe) {
     stripe = new Stripe(env.STRIPE_SECRET_KEY, {
       appInfo: {
-        name: "Inbox Zero",
-        version: "1.0.0",
-        url: "https://www.getinboxzero.com",
+        name: 'Inbox Zero',
+        version: '1.0.0',
+        url: 'https://www.getinboxzero.com',
       },
       typescript: true,
     });
@@ -30,14 +30,14 @@ export const updateStripeSubscriptionItemQuantity = async ({
 }) => {
   const quantityToSet = Math.max(1, quantity);
 
-  logger.info("Updating Stripe subscription item quantity", {
+  logger.info('Updating Stripe subscription item quantity', {
     subscriptionItemId,
     quantityAttempted: quantityToSet,
   });
 
   if (!subscriptionItemId) {
-    logger.error("Missing subscriptionItemId for updating quantity");
-    throw new Error("Subscription Item ID is required to update quantity.");
+    logger.error('Missing subscriptionItemId for updating quantity');
+    throw new Error('Subscription Item ID is required to update quantity.');
   }
 
   try {
@@ -48,7 +48,7 @@ export const updateStripeSubscriptionItemQuantity = async ({
       await stripe.subscriptionItems.retrieve(subscriptionItemId);
 
     if (currentItem.quantity === quantityToSet) {
-      logger.info("Quantity unchanged, skipping update", {
+      logger.info('Quantity unchanged, skipping update', {
         subscriptionItemId,
         currentQuantity: currentItem.quantity,
         requestedQuantity: quantityToSet,
@@ -56,7 +56,7 @@ export const updateStripeSubscriptionItemQuantity = async ({
       return currentItem;
     }
 
-    logger.info("Quantity changed, updating Stripe", {
+    logger.info('Quantity changed, updating Stripe', {
       subscriptionItemId,
       currentQuantity: currentItem.quantity,
       newQuantity: quantityToSet,
@@ -66,12 +66,12 @@ export const updateStripeSubscriptionItemQuantity = async ({
       subscriptionItemId,
       {
         quantity: quantityToSet,
-      },
+      }
     );
 
     return updatedItem;
   } catch (error) {
-    logger.error("Failed to update Stripe subscription item quantity", {
+    logger.error('Failed to update Stripe subscription item quantity', {
       subscriptionItemId,
       quantityAttempted: quantityToSet,
       error,

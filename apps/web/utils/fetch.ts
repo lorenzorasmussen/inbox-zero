@@ -1,4 +1,4 @@
-import { EMAIL_ACCOUNT_HEADER } from "@/utils/config";
+import { EMAIL_ACCOUNT_HEADER } from '@/utils/config';
 
 /**
  * A wrapper around the native fetch function that automatically adds the

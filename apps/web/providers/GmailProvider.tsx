@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useMemo } from "react";
-import { useLabels } from "@/hooks/useLabels";
+import { createContext, useContext, useMemo } from 'react';
+import { useLabels } from '@/hooks/useLabels';
 
 export type GmailLabel = {
   id: string;
@@ -48,7 +48,7 @@ export function GmailProvider(props: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({ userLabels, labelsIsLoading: isLoading }),
-    [userLabels, isLoading],
+    [userLabels, isLoading]
   );
 
   return (

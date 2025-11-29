@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
-import type { Properties } from "posthog-js";
-import { survey } from "@/app/(landing)/welcome/survey";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/Input";
-import { env } from "@/env";
+import { useRouter, useSearchParams } from 'next/navigation';
+import type { Properties } from 'posthog-js';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { survey } from '@/app/(landing)/welcome/survey';
+import { Input } from '@/components/Input';
+import { Button } from '@/components/ui/button';
+import { env } from '@/env';
+import { useOnboardingAnalytics } from '@/hooks/useAnalytics';
+import { useSignUpEvent } from '@/hooks/useSignupEvent';
 import {
   completedOnboardingAction,
   saveOnboardingAnswersAction,
-} from "@/utils/actions/onboarding";
-import { useOnboardingAnalytics } from "@/hooks/useAnalytics";
-import { useSignUpEvent } from "@/hooks/useSignupEvent";
+} from '@/utils/actions/onboarding';
 
 const surveyId = env.NEXT_PUBLIC_POSTHOG_ONBOARDING_SURVEY_ID;
 
-type Inputs = Record<"$survey_response" | `$survey_response_${number}`, string>;
+type Inputs = Record<'$survey_response' | `$survey_response_${number}`, string>;
 
 export const OnboardingForm = (props: { questionIndex: number }) => {
   const { questionIndex } = props;
@@ -28,7 +28,7 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
   const searchParams = useSearchParams();
   const [showOtherInput, setShowOtherInput] = useState(false);
 
-  const analytics = useOnboardingAnalytics("welcome");
+  const analytics = useOnboardingAnalytics('welcome');
 
   useSignUpEvent();
 
@@ -47,7 +47,7 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
 
   const name =
     questionIndex === 0
-      ? "$survey_response"
+      ? '$survey_response'
       : (`$survey_response_${questionIndex}` as const);
 
   const isFinalQuestion = questionIndex === survey.questions.length - 1;
@@ -55,9 +55,9 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
   const submitPosthog = useCallback(
     (responses: Properties) => {
       analytics.onComplete();
-      posthog.capture("survey sent", { ...responses, $survey_id: surveyId });
+      posthog.capture('survey sent', { ...responses, $survey_id: surveyId });
     },
-    [posthog, analytics],
+    [posthog, analytics]
   );
 
   const onSubmit: SubmitHandler<Inputs> = useCallback(
@@ -65,15 +65,15 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
       const answer = data[name];
 
       // ask user to fill in other input
-      if (answer === "Other") {
+      if (answer === 'Other') {
         setShowOtherInput(true);
-        setValue(name, "");
+        setValue(name, '');
         return;
       }
       setShowOtherInput(false);
 
       const newSeachParams = new URLSearchParams(searchParams);
-      newSeachParams.set("question", (questionIndex + 1).toString());
+      newSeachParams.set('question', (questionIndex + 1).toString());
       newSeachParams.set(name, answer);
 
       analytics.onNext(questionIndex + 1);
@@ -90,7 +90,7 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
         submitPosthog(responses);
         await completedOnboardingAction();
 
-        router.push("/welcome-upgrade");
+        router.push('/welcome-upgrade');
       } else {
         router.push(`/welcome?${newSeachParams}`);
       }
@@ -104,7 +104,7 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
       setValue,
       isFinalQuestion,
       analytics,
-    ],
+    ]
   );
 
   const question = survey.questions[questionIndex];
@@ -119,20 +119,20 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
               <Button
                 key={answer}
                 variant={
-                  watch(name)?.includes(answer) ? "secondary" : "outline"
+                  watch(name)?.includes(answer) ? 'secondary' : 'outline'
                 }
                 type="button"
                 // quick and dirty radio button implementation
                 onClick={(e) => {
-                  if (question.type === "multiple_choice") {
-                    const values = new Set(getValues(name)?.split(","));
+                  if (question.type === 'multiple_choice') {
+                    const values = new Set(getValues(name)?.split(','));
                     if (values.has(answer)) {
                       values.delete(answer);
                     } else {
                       values.add(answer);
                     }
 
-                    const newValue = Array.from(values).join(",");
+                    const newValue = Array.from(values).join(',');
                     setValue(name, newValue);
                   } else {
                     setValue(name, answer);
@@ -154,7 +154,7 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
             )}
           </div>
         )}
-        {question.type === "open" && (
+        {question.type === 'open' && (
           <div>
             <Input
               type="text"
@@ -175,11 +175,11 @@ export const OnboardingForm = (props: { questionIndex: number }) => {
           </div>
         )}
 
-        {(question.type === "multiple_choice" ||
+        {(question.type === 'multiple_choice' ||
           showOtherInput ||
           question.skippable) && (
           <Button className="mt-4 w-full" type="submit" loading={isSubmitting}>
-            {question.skippable ? "Skip" : "Next"}
+            {question.skippable ? 'Skip' : 'Next'}
           </Button>
         )}
 
@@ -233,11 +233,11 @@ function getResponses(seachParams: URLSearchParams): Record<string, string> {
   const responses = survey.questions.reduce(
     (acc, _q, i) => {
       const name =
-        i === 0 ? "$survey_response" : (`$survey_response_${i}` as const);
-      acc[name] = seachParams.get(name) ?? "";
+        i === 0 ? '$survey_response' : (`$survey_response_${i}` as const);
+      acc[name] = seachParams.get(name) ?? '';
       return acc;
     },
-    {} as Record<string, string>,
+    {} as Record<string, string>
   );
 
   return responses;

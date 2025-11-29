@@ -1,35 +1,35 @@
-import { RedisSubscriber } from "@/utils/redis/subscriber";
-import { withAuth } from "@/utils/middleware";
-import { NextResponse } from "next/server";
-import { getEmailAccount } from "@/utils/redis/account-validation";
+import { NextResponse } from 'next/server';
+import { withAuth } from '@/utils/middleware';
+import { getEmailAccount } from '@/utils/redis/account-validation';
+import { RedisSubscriber } from '@/utils/redis/subscriber';
 
 export const maxDuration = 300;
 
 // 5 minutes in milliseconds
 const INACTIVITY_TIMEOUT = 5 * 60 * 1000;
 
-export const GET = withAuth("email-stream", async (request) => {
+export const GET = withAuth('email-stream', async (request) => {
   const { userId } = request.auth;
 
   const url = new URL(request.url);
-  const emailAccountId = url.searchParams.get("emailAccountId");
+  const emailAccountId = url.searchParams.get('emailAccountId');
 
   if (!emailAccountId) {
     request.logger.warn(
-      "Bad Request: Email Account ID missing from query parameters.",
+      'Bad Request: Email Account ID missing from query parameters.'
     );
     return NextResponse.json(
-      { error: "Email account ID is required" },
-      { status: 400 },
+      { error: 'Email account ID is required' },
+      { status: 400 }
     );
   }
 
   const email = await getEmailAccount({ userId, emailAccountId });
 
   if (!email)
-    return NextResponse.json({ error: "Invalid account ID" }, { status: 403 });
+    return NextResponse.json({ error: 'Invalid account ID' }, { status: 403 });
 
-  request.logger.info("Processing GET request for email stream", {
+  request.logger.info('Processing GET request for email stream', {
     userId,
     emailAccountId,
   });
@@ -39,19 +39,19 @@ export const GET = withAuth("email-stream", async (request) => {
 
   redisSubscriber.psubscribe(pattern, (err) => {
     if (err)
-      request.logger.error("Error subscribing to threads", { error: err });
+      request.logger.error('Error subscribing to threads', { error: err });
   });
 
   // Set headers for SSE
   const headers = new Headers({
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache, no-transform",
-    "Content-Encoding": "none",
-    Connection: "keep-alive",
-    "X-Accel-Buffering": "no", // For anyone using Nginx
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    'Content-Encoding': 'none',
+    Connection: 'keep-alive',
+    'X-Accel-Buffering': 'no', // For anyone using Nginx
   });
 
-  request.logger.info("Creating SSE stream", { emailAccountId });
+  request.logger.info('Creating SSE stream', { emailAccountId });
 
   const encoder = new TextEncoder();
 
@@ -64,7 +64,7 @@ export const GET = withAuth("email-stream", async (request) => {
       const resetInactivityTimer = () => {
         if (inactivityTimer) clearTimeout(inactivityTimer);
         inactivityTimer = setTimeout(() => {
-          request.logger.info("Stream closed due to inactivity", {
+          request.logger.info('Stream closed due to inactivity', {
             emailAccountId,
           });
           if (!isControllerClosed) {
@@ -78,16 +78,16 @@ export const GET = withAuth("email-stream", async (request) => {
       // Start initial inactivity timer
       resetInactivityTimer();
 
-      redisSubscriber.on("pmessage", (_pattern, _channel, message) => {
+      redisSubscriber.on('pmessage', (_pattern, _channel, message) => {
         // Only enqueue if controller is not closed
         if (!isControllerClosed) {
           try {
             controller.enqueue(
-              encoder.encode(`event: thread\ndata: ${message}\n\n`),
+              encoder.encode(`event: thread\ndata: ${message}\n\n`)
             );
             resetInactivityTimer(); // Reset timer on message
           } catch (error) {
-            request.logger.error("Error enqueueing message", { error });
+            request.logger.error('Error enqueueing message', { error });
             // If we hit an error, mark controller as closed and clean up
             isControllerClosed = true;
             redisSubscriber.punsubscribe(pattern);
@@ -95,8 +95,8 @@ export const GET = withAuth("email-stream", async (request) => {
         }
       });
 
-      request.signal.addEventListener("abort", () => {
-        request.logger.info("Cleaning up Redis subscription", {
+      request.signal.addEventListener('abort', () => {
+        request.logger.info('Cleaning up Redis subscription', {
           emailAccountId,
         });
         clearTimeout(inactivityTimer);

@@ -1,24 +1,24 @@
-import { useState } from "react";
-import { useQueryState } from "nuqs";
+import { EyeIcon, FileDiffIcon, SparklesIcon, TrashIcon } from 'lucide-react';
+import { useQueryState } from 'nuqs';
+import { useState } from 'react';
+import { RuleDialog } from '@/app/(app)/[emailAccountId]/assistant/RuleDialog';
+import { ExpandableText } from '@/components/ExpandableText';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { useDialogState } from '@/hooks/useDialogState';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { deleteRuleAction } from '@/utils/actions/rule';
 import type {
-  UpdateAboutTool,
-  UpdateRuleConditionsTool,
-  UpdateRuleActionsTool,
-  UpdateLearnedPatternsTool,
   AddToKnowledgeBaseTool,
   CreateRuleTool,
-} from "@/utils/ai/assistant/chat";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { EyeIcon, SparklesIcon, TrashIcon, FileDiffIcon } from "lucide-react";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { Tooltip } from "@/components/Tooltip";
-import { deleteRuleAction } from "@/utils/actions/rule";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { ExpandableText } from "@/components/ExpandableText";
-import { RuleDialog } from "@/app/(app)/[emailAccountId]/assistant/RuleDialog";
-import { useDialogState } from "@/hooks/useDialogState";
-import { getEmailTerminology } from "@/utils/terminology";
+  UpdateAboutTool,
+  UpdateLearnedPatternsTool,
+  UpdateRuleActionsTool,
+  UpdateRuleConditionsTool,
+} from '@/utils/ai/assistant/chat';
+import { getEmailTerminology } from '@/utils/terminology';
 
 export function BasicToolInfo({ text }: { text: string }) {
   return (
@@ -32,7 +32,7 @@ export function CreatedRuleToolCard({
   args,
   ruleId,
 }: {
-  args: CreateRuleTool["input"];
+  args: CreateRuleTool['input'];
   ruleId?: string;
 }) {
   const conditionsArray = [
@@ -45,7 +45,7 @@ export function CreatedRuleToolCard({
       <ToolCardHeader
         title={
           <>
-            {ruleId ? "New rule created:" : "Creating rule:"} {args.name}
+            {ruleId ? 'New rule created:' : 'Creating rule:'} {args.name}
           </>
         }
         actions={ruleId && <RuleActions ruleId={ruleId} />}
@@ -61,7 +61,7 @@ export function CreatedRuleToolCard({
           )}
           {conditionsArray.length > 1 && (
             <div className="my-2 font-mono text-xs">
-              {args.condition.conditionalOperator || "AND"}
+              {args.condition.conditionalOperator || 'AND'}
             </div>
           )}
           {args.condition.static && (
@@ -89,7 +89,7 @@ export function CreatedRuleToolCard({
           {args.actions.map((action, i) => (
             <div key={i} className="rounded-md bg-muted p-2 text-sm">
               <div className="font-medium capitalize">
-                {action.type.toLowerCase().replace("_", " ")}
+                {action.type.toLowerCase().replace('_', ' ')}
               </div>
               {action.fields && renderActionFields(action.fields)}
             </div>
@@ -106,10 +106,10 @@ export function UpdatedRuleConditions({
   originalConditions,
   updatedConditions,
 }: {
-  args: UpdateRuleConditionsTool["input"];
+  args: UpdateRuleConditionsTool['input'];
   ruleId: string;
-  originalConditions?: UpdateRuleConditionsTool["output"]["originalConditions"];
-  updatedConditions?: UpdateRuleConditionsTool["output"]["updatedConditions"];
+  originalConditions?: UpdateRuleConditionsTool['output']['originalConditions'];
+  updatedConditions?: UpdateRuleConditionsTool['output']['updatedConditions'];
 }) {
   const [showChanges, setShowChanges] = useState(false);
 
@@ -156,7 +156,7 @@ export function UpdatedRuleConditions({
         )}
         {conditionsArray.length > 1 && (
           <div className="my-2 font-mono text-xs">
-            {args.condition.conditionalOperator || "AND"}
+            {args.condition.conditionalOperator || 'AND'}
           </div>
         )}
         {args.condition.static && (
@@ -195,10 +195,10 @@ export function UpdatedRuleActions({
   originalActions,
   updatedActions,
 }: {
-  args: UpdateRuleActionsTool["input"];
+  args: UpdateRuleActionsTool['input'];
   ruleId: string;
-  originalActions?: UpdateRuleActionsTool["output"]["originalActions"];
-  updatedActions?: UpdateRuleActionsTool["output"]["updatedActions"];
+  originalActions?: UpdateRuleActionsTool['output']['originalActions'];
+  updatedActions?: UpdateRuleActionsTool['output']['updatedActions'];
 }) {
   const { provider } = useAccount();
   const [showChanges, setShowChanges] = useState(false);
@@ -212,14 +212,14 @@ export function UpdatedRuleActions({
   const formatActions = <
     T extends { type: string; fields: Record<string, string | null> },
   >(
-    actions: T[],
+    actions: T[]
   ) => {
     return actions
       .map((action) => {
         const parts = [`Type: ${action.type}`];
         if (action.fields?.label)
           parts.push(
-            `${getEmailTerminology(provider).label.action}: ${action.fields.label}`,
+            `${getEmailTerminology(provider).label.action}: ${action.fields.label}`
           );
         if (action.fields?.content)
           parts.push(`Content: ${action.fields.content}`);
@@ -230,11 +230,11 @@ export function UpdatedRuleActions({
           parts.push(`Subject: ${action.fields.subject}`);
         if (action.fields?.webhookUrl || action.fields?.url)
           parts.push(
-            `Webhook: ${action.fields.webhookUrl || action.fields.url}`,
+            `Webhook: ${action.fields.webhookUrl || action.fields.url}`
           );
-        return parts.join(", ");
+        return parts.join(', ');
       })
-      .join("\n");
+      .join('\n');
   };
 
   return (
@@ -261,7 +261,7 @@ export function UpdatedRuleActions({
           return (
             <div key={i} className="rounded-md bg-muted p-2 text-sm">
               <div className="font-medium capitalize">
-                {actionItem.type.toLowerCase().replace("_", " ")}
+                {actionItem.type.toLowerCase().replace('_', ' ')}
               </div>
               {actionItem.fields && renderActionFields(actionItem.fields)}
             </div>
@@ -285,7 +285,7 @@ export function UpdatedLearnedPatterns({
   args,
   ruleId,
 }: {
-  args: UpdateLearnedPatternsTool["input"];
+  args: UpdateLearnedPatternsTool['input'];
   ruleId: string;
 }) {
   return (
@@ -337,7 +337,7 @@ export function UpdatedLearnedPatterns({
   );
 }
 
-export function UpdateAbout({ args }: { args: UpdateAboutTool["input"] }) {
+export function UpdateAbout({ args }: { args: UpdateAboutTool['input'] }) {
   return (
     <ToolCard>
       <ToolCardHeader title={<>Updated About Information</>} />
@@ -349,16 +349,16 @@ export function UpdateAbout({ args }: { args: UpdateAboutTool["input"] }) {
 export function AddToKnowledgeBase({
   args,
 }: {
-  args: AddToKnowledgeBaseTool["input"];
+  args: AddToKnowledgeBaseTool['input'];
 }) {
-  const [_, setTab] = useQueryState("tab");
+  const [_, setTab] = useQueryState('tab');
 
   return (
     <ToolCard>
       <ToolCardHeader
         title={<>Added to Knowledge Base</>}
         actions={
-          <Button variant="link" onClick={() => setTab("rules")}>
+          <Button variant="link" onClick={() => setTab('rules')}>
             View Knowledge Base
           </Button>
         }
@@ -392,7 +392,7 @@ function RuleActions({ ruleId }: { ruleId: string }) {
           size="sm"
           className="h-8 w-8 p-0"
           onClick={async () => {
-            const yes = confirm("Are you sure you want to delete this rule?");
+            const yes = confirm('Are you sure you want to delete this rule?');
             if (yes) {
               try {
                 const result = await deleteRuleAction(emailAccountId, {
@@ -402,11 +402,11 @@ function RuleActions({ ruleId }: { ruleId: string }) {
                   toastError({ description: result.serverError });
                 } else {
                   toastSuccess({
-                    description: "The rule has been deleted.",
+                    description: 'The rule has been deleted.',
                   });
                 }
               } catch {
-                toastError({ description: "Failed to delete rule." });
+                toastError({ description: 'Failed to delete rule.' });
               }
             }
           }}
@@ -452,7 +452,7 @@ function DiffToggleButton({
   onToggle: () => void;
 }) {
   return (
-    <Tooltip content={showChanges ? "Hide Changes" : "Show Changes"}>
+    <Tooltip content={showChanges ? 'Hide Changes' : 'Show Changes'}>
       <Button
         variant="ghost"
         size="sm"
@@ -515,14 +515,14 @@ function renderActionFields(fields: {
   const fieldEntries = [];
 
   // Only add fields that have actual values
-  if (fields.label) fieldEntries.push(["Label", fields.label]);
-  if (fields.subject) fieldEntries.push(["Subject", fields.subject]);
-  if (fields.to) fieldEntries.push(["To", fields.to]);
-  if (fields.cc) fieldEntries.push(["CC", fields.cc]);
-  if (fields.bcc) fieldEntries.push(["BCC", fields.bcc]);
-  if (fields.content) fieldEntries.push(["Content", fields.content]);
+  if (fields.label) fieldEntries.push(['Label', fields.label]);
+  if (fields.subject) fieldEntries.push(['Subject', fields.subject]);
+  if (fields.to) fieldEntries.push(['To', fields.to]);
+  if (fields.cc) fieldEntries.push(['CC', fields.cc]);
+  if (fields.bcc) fieldEntries.push(['BCC', fields.bcc]);
+  if (fields.content) fieldEntries.push(['Content', fields.content]);
   if (fields.url || fields.webhookUrl)
-    fieldEntries.push(["URL", fields.url || fields.webhookUrl]);
+    fieldEntries.push(['URL', fields.url || fields.webhookUrl]);
 
   if (fieldEntries.length === 0) return null;
 
@@ -531,8 +531,8 @@ function renderActionFields(fields: {
       <ul className="list-inside list-disc">
         {fieldEntries.map(([key, value]) => (
           <li key={key}>
-            {key}:{" "}
-            {key === "Content" ? (
+            {key}:{' '}
+            {key === 'Content' ? (
               <span className="font-mono text-xs">{value}</span>
             ) : (
               value

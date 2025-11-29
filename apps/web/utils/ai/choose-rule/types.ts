@@ -1,24 +1,24 @@
-import type { SystemType } from "@/generated/prisma/enums";
-import type { Group, GroupItem } from "@/generated/prisma/client";
-import type { ConditionType } from "@/utils/config";
-import type { RuleWithActions } from "@/utils/types";
+import type { Group, GroupItem } from '@/generated/prisma/client';
+import type { SystemType } from '@/generated/prisma/enums';
+import type { ConditionType } from '@/utils/config';
+import type { RuleWithActions } from '@/utils/types';
 
 export type StaticMatch = {
-  type: Extract<ConditionType, "STATIC">;
+  type: Extract<ConditionType, 'STATIC'>;
 };
 
 export type LearnedPatternMatch = {
-  type: Extract<ConditionType, "LEARNED_PATTERN">;
-  group: Pick<Group, "id" | "name">;
-  groupItem: Pick<GroupItem, "id" | "type" | "value" | "exclude">;
+  type: Extract<ConditionType, 'LEARNED_PATTERN'>;
+  group: Pick<Group, 'id' | 'name'>;
+  groupItem: Pick<GroupItem, 'id' | 'type' | 'value' | 'exclude'>;
 };
 
 export type AiMatch = {
-  type: Extract<ConditionType, "AI">;
+  type: Extract<ConditionType, 'AI'>;
 };
 
 export type PresetMatch = {
-  type: Extract<ConditionType, "PRESET">;
+  type: Extract<ConditionType, 'PRESET'>;
   systemType: SystemType;
 };
 
@@ -42,9 +42,9 @@ export type MatchingRuleResult = {
  * Serializable version of MatchReason for database storage
  */
 export type SerializedMatchReason =
-  | { type: "STATIC" }
+  | { type: 'STATIC' }
   | {
-      type: "LEARNED_PATTERN";
+      type: 'LEARNED_PATTERN';
       group: { id: string; name: string };
       groupItem: {
         id: string;
@@ -53,24 +53,24 @@ export type SerializedMatchReason =
         exclude: boolean;
       };
     }
-  | { type: "AI" }
-  | { type: "PRESET"; systemType: string };
+  | { type: 'AI' }
+  | { type: 'PRESET'; systemType: string };
 
 /**
  * Serializes match reasons to a JSON-safe format for database storage
  */
 export function serializeMatchReasons(
-  matchReasons?: MatchReason[],
+  matchReasons?: MatchReason[]
 ): SerializedMatchReason[] | undefined {
   if (!matchReasons || matchReasons.length === 0) return undefined;
 
   return matchReasons.map((reason): SerializedMatchReason => {
     switch (reason.type) {
-      case "STATIC":
-        return { type: "STATIC" };
-      case "LEARNED_PATTERN":
+      case 'STATIC':
+        return { type: 'STATIC' };
+      case 'LEARNED_PATTERN':
         return {
-          type: "LEARNED_PATTERN",
+          type: 'LEARNED_PATTERN',
           group: {
             id: reason.group.id,
             name: reason.group.name,
@@ -82,10 +82,10 @@ export function serializeMatchReasons(
             exclude: reason.groupItem.exclude,
           },
         };
-      case "AI":
-        return { type: "AI" };
-      case "PRESET":
-        return { type: "PRESET", systemType: reason.systemType };
+      case 'AI':
+        return { type: 'AI' };
+      case 'PRESET':
+        return { type: 'PRESET', systemType: reason.systemType };
     }
   });
 }

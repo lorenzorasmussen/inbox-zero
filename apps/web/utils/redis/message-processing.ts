@@ -1,4 +1,4 @@
-import { redis } from "@/utils/redis";
+import { redis } from '@/utils/redis';
 
 function getProcessingKey({
   userEmail,
@@ -19,13 +19,13 @@ export async function markMessageAsProcessing({
 }): Promise<boolean> {
   const result = await redis.set(
     getProcessingKey({ userEmail, messageId }),
-    "true",
+    'true',
     {
       ex: 60 * 5, // 5 minutes
       nx: true, // Only set if key doesn't exist
-    },
+    }
   );
 
   // Redis returns "OK" if the key was set, and null if it was already set
-  return result === "OK";
+  return result === 'OK';
 }

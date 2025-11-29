@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useWindowSize } from "usehooks-ts";
-import { useOnboarding } from "@/components/OnboardingModal";
+import { ListChecksIcon, ReplyIcon, SlidersIcon } from 'lucide-react';
+import { useWindowSize } from 'usehooks-ts';
+import { useOnboarding } from '@/components/OnboardingModal';
+import { Button } from '@/components/ui/button';
+import { CardBasic } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { CardBasic } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ListChecksIcon, ReplyIcon, SlidersIcon } from "lucide-react";
-import { YouTubeVideo } from "@/components/YouTubeVideo";
+} from '@/components/ui/dialog';
+import { YouTubeVideo } from '@/components/YouTubeVideo';
 
 export function AssistantOnboarding({
   onComplete,
 }: {
   onComplete?: () => void;
 }) {
-  const { isOpen, setIsOpen, onClose } = useOnboarding("Automation");
+  const { isOpen, setIsOpen, onClose } = useOnboarding('Automation');
 
   const { width } = useWindowSize();
 

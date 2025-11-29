@@ -1,30 +1,30 @@
 // based on: https://github.com/vercel/platforms/blob/main/lib/auth.ts
 
-import { sso } from "@better-auth/sso";
-import { createContact as createLoopsContact } from "@inboxzero/loops";
-import { createContact as createResendContact } from "@inboxzero/resend";
-import type { Account, AuthContext, User } from "better-auth";
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { nextCookies } from "better-auth/next-js";
-import { cookies, headers } from "next/headers";
-import { env } from "@/env";
-import { trackDubSignUp } from "@/utils/dub";
+import { sso } from '@better-auth/sso';
+import { createContact as createLoopsContact } from '@inboxzero/loops';
+import { createContact as createResendContact } from '@inboxzero/resend';
+import type { Account, AuthContext, User } from 'better-auth';
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { nextCookies } from 'better-auth/next-js';
+import { cookies, headers } from 'next/headers';
+import { env } from '@/env';
+import { trackDubSignUp } from '@/utils/dub';
 import {
   isGoogleProvider,
   isMicrosoftProvider,
-} from "@/utils/email/provider-types";
-import { encryptToken } from "@/utils/encryption";
-import { captureException } from "@/utils/error";
-import { getContactsClient as getGoogleContactsClient } from "@/utils/gmail/client";
-import { SCOPES as GMAIL_SCOPES } from "@/utils/gmail/scopes";
-import { createScopedLogger } from "@/utils/logger";
-import { createOutlookClient } from "@/utils/outlook/client";
-import { SCOPES as OUTLOOK_SCOPES } from "@/utils/outlook/scopes";
-import { updateAccountSeats } from "@/utils/premium/server";
-import prisma from "@/utils/prisma";
+} from '@/utils/email/provider-types';
+import { encryptToken } from '@/utils/encryption';
+import { captureException } from '@/utils/error';
+import { getContactsClient as getGoogleContactsClient } from '@/utils/gmail/client';
+import { SCOPES as GMAIL_SCOPES } from '@/utils/gmail/scopes';
+import { createScopedLogger } from '@/utils/logger';
+import { createOutlookClient } from '@/utils/outlook/client';
+import { SCOPES as OUTLOOK_SCOPES } from '@/utils/outlook/scopes';
+import { updateAccountSeats } from '@/utils/premium/server';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("auth");
+const logger = createScopedLogger('auth');
 
 export const betterAuthConfig = betterAuth({
   advanced: {
@@ -33,13 +33,13 @@ export const betterAuthConfig = betterAuth({
     },
   },
   logger: {
-    level: "info",
+    level: 'info',
     log: (level, message, ...args) => {
       switch (level) {
-        case "info":
+        case 'info':
           logger.info(message, { args });
           break;
-        case "error":
+        case 'error':
           logger.error(message, { args });
           break;
       }
@@ -52,7 +52,7 @@ export const betterAuthConfig = betterAuth({
     enabled: false,
   },
   database: prismaAdapter(prisma, {
-    provider: "postgresql",
+    provider: 'postgresql',
   }),
   plugins: [
     nextCookies(),
@@ -62,10 +62,10 @@ export const betterAuthConfig = betterAuth({
     }),
   ],
   session: {
-    modelName: "Session",
+    modelName: 'Session',
     fields: {
-      token: "sessionToken",
-      expiresAt: "expires",
+      token: 'sessionToken',
+      expiresAt: 'expires',
     },
     cookieCache: {
       enabled: true,
@@ -75,22 +75,22 @@ export const betterAuthConfig = betterAuth({
     updateAge: 60 * 60 * 24 * 3, // 1 day (every 1 day the session expiration is updated)
   },
   account: {
-    modelName: "Account",
+    modelName: 'Account',
     fields: {
-      accountId: "providerAccountId",
-      providerId: "provider",
-      refreshToken: "refresh_token",
-      refreshTokenExpiresAt: "refreshTokenExpiresAt",
-      accessToken: "access_token",
-      accessTokenExpiresAt: "expires_at",
-      idToken: "id_token",
+      accountId: 'providerAccountId',
+      providerId: 'provider',
+      refreshToken: 'refresh_token',
+      refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+      accessToken: 'access_token',
+      accessTokenExpiresAt: 'expires_at',
+      idToken: 'id_token',
     },
   },
   verification: {
-    modelName: "VerificationToken",
+    modelName: 'VerificationToken',
     fields: {
-      value: "token",
-      expiresAt: "expires",
+      value: 'token',
+      expiresAt: 'expires',
     },
   },
   socialProviders: {
@@ -98,16 +98,16 @@ export const betterAuthConfig = betterAuth({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
       scope: [...GMAIL_SCOPES],
-      accessType: "offline",
-      prompt: "select_account consent",
+      accessType: 'offline',
+      prompt: 'select_account consent',
       disableIdTokenSignIn: true,
     },
     microsoft: {
-      clientId: env.MICROSOFT_CLIENT_ID || "",
-      clientSecret: env.MICROSOFT_CLIENT_SECRET || "",
+      clientId: env.MICROSOFT_CLIENT_ID || '',
+      clientSecret: env.MICROSOFT_CLIENT_SECRET || '',
       scope: [...OUTLOOK_SCOPES],
-      tenantId: "common",
-      prompt: "consent",
+      tenantId: 'common',
+      prompt: 'consent',
       disableIdTokenSignIn: true,
     },
   },
@@ -131,9 +131,9 @@ export const betterAuthConfig = betterAuth({
   onAPIError: {
     throw: true,
     onError: (error: unknown, ctx: AuthContext) => {
-      logger.error("Auth API encountered an error", { error, ctx });
+      logger.error('Auth API encountered an error', { error, ctx });
     },
-    errorURL: "/login/error",
+    errorURL: '/login/error',
   },
 });
 
@@ -152,7 +152,7 @@ async function handleSignIn({
           select: { provider: true },
         })
         .catch((error) => {
-          logger.error("Error finding account", {
+          logger.error('Error finding account', {
             userId: user.id,
             error,
           });
@@ -161,13 +161,13 @@ async function handleSignIn({
 
       await createLoopsContact(
         user.email,
-        user.name?.split(" ")?.[0],
-        account?.provider,
+        user.name?.split(' ')?.[0],
+        account?.provider
       ).catch((error) => {
         const alreadyExists =
-          error instanceof Error && error.message.includes("409");
+          error instanceof Error && error.message.includes('409');
         if (!alreadyExists) {
-          logger.error("Error creating Loops contact", {
+          logger.error('Error creating Loops contact', {
             email: user.email,
             error,
           });
@@ -177,7 +177,7 @@ async function handleSignIn({
     };
 
     const resend = createResendContact({ email: user.email }).catch((error) => {
-      logger.error("Error creating Resend contact", {
+      logger.error('Error creating Resend contact', {
         email: user.email,
         error,
       });
@@ -185,7 +185,7 @@ async function handleSignIn({
     });
 
     const dub = trackDubSignUp(user).catch((error) => {
-      logger.error("Error tracking Dub sign up", {
+      logger.error('Error tracking Dub sign up', {
         email: user.email,
         error,
       });
@@ -206,7 +206,7 @@ async function handleSignIn({
   }
 }
 async function handlePendingPremiumInvite({ email }: { email: string }) {
-  logger.info("Handling pending premium invite", { email });
+  logger.info('Handling pending premium invite', { email });
 
   // Check for pending invite
   const premium = await prisma.premium.findFirst({
@@ -236,7 +236,7 @@ async function handlePendingPremiumInvite({ email }: { email: string }) {
     });
   }
 
-  logger.info("Added user to premium from invite", { email });
+  logger.info('Added user to premium from invite', { email });
 }
 
 export async function handleReferralOnSignUp({
@@ -248,35 +248,35 @@ export async function handleReferralOnSignUp({
 }) {
   try {
     const cookieStore = await cookies();
-    const referralCookie = cookieStore.get("referral_code");
+    const referralCookie = cookieStore.get('referral_code');
 
     if (!referralCookie?.value) {
-      logger.info("No referral code found in cookies", { email });
+      logger.info('No referral code found in cookies', { email });
       return;
     }
 
     const referralCode = referralCookie.value;
-    logger.info("Processing referral for new user", {
+    logger.info('Processing referral for new user', {
       email,
       referralCode,
     });
 
     // Import the createReferral function
-    const { createReferral } = await import("@/utils/referral/referral-code");
+    const { createReferral } = await import('@/utils/referral/referral-code');
     await createReferral(userId, referralCode);
-    logger.info("Successfully created referral", {
+    logger.info('Successfully created referral', {
       email,
       referralCode,
     });
   } catch (error) {
-    logger.error("Error processing referral on sign up", {
+    logger.error('Error processing referral on sign up', {
       error,
       userId,
       email,
     });
     // Don't throw error - referral failure shouldn't prevent sign up
     captureException(error, {
-      extra: { userId, email, location: "handleReferralOnSignUp" },
+      extra: { userId, email, location: 'handleReferralOnSignUp' },
     });
   }
 }
@@ -286,8 +286,8 @@ async function getProfileData(providerId: string, accessToken: string) {
   if (isGoogleProvider(providerId)) {
     const contactsClient = getGoogleContactsClient({ accessToken });
     const profileResponse = await contactsClient.people.get({
-      resourceName: "people/me",
-      personFields: "emailAddresses,names,photos",
+      resourceName: 'people/me',
+      personFields: 'emailAddresses,names,photos',
     });
 
     return {
@@ -313,7 +313,7 @@ async function getProfileData(providerId: string, accessToken: string) {
           photoUrl = photo;
         }
       } catch (error) {
-        logger.info("User has no profile photo", { error });
+        logger.info('User has no profile photo', { error });
       }
 
       return {
@@ -324,7 +324,7 @@ async function getProfileData(providerId: string, accessToken: string) {
         image: photoUrl,
       };
     } catch (error) {
-      logger.error("Error fetching Microsoft profile data", { error });
+      logger.error('Error fetching Microsoft profile data', { error });
       throw error;
     }
   }
@@ -338,17 +338,17 @@ async function handleLinkAccount(account: Account) {
   try {
     if (!account.accessToken) {
       logger.error(
-        "[linkAccount] No access_token found in data, cannot fetch profile.",
+        '[linkAccount] No access_token found in data, cannot fetch profile.'
       );
-      throw new Error("Missing access token during account linking.");
+      throw new Error('Missing access token during account linking.');
     }
     const profileData = await getProfileData(
       account.providerId,
-      account.accessToken,
+      account.accessToken
     );
 
     if (!profileData?.email) {
-      logger.error("[handleLinkAccount] No email found in profile data");
+      logger.error('[handleLinkAccount] No email found in profile data');
     }
 
     primaryEmail = profileData?.email;
@@ -357,9 +357,9 @@ async function handleLinkAccount(account: Account) {
 
     if (!primaryEmail) {
       logger.error(
-        "[linkAccount] Primary email could not be determined from profile.",
+        '[linkAccount] Primary email could not be determined from profile.'
       );
-      throw new Error("Primary email not found for linked account.");
+      throw new Error('Primary email not found for linked account.');
     }
 
     const user = await prisma.user.findUnique({
@@ -368,7 +368,7 @@ async function handleLinkAccount(account: Account) {
     });
 
     if (!user?.email) {
-      logger.error("[linkAccount] No user email found", {
+      logger.error('[linkAccount] No user email found', {
         userId: account.userId,
       });
       return;
@@ -392,25 +392,25 @@ async function handleLinkAccount(account: Account) {
 
     // Handle premium account seats
     await updateAccountSeats({ userId: account.userId }).catch((error) => {
-      logger.error("[linkAccount] Error updating premium account seats:", {
+      logger.error('[linkAccount] Error updating premium account seats:', {
         userId: account.userId,
         error,
       });
       captureException(error, { extra: { userId: account.userId } });
     });
 
-    logger.info("[linkAccount] Successfully linked account", {
+    logger.info('[linkAccount] Successfully linked account', {
       email: user.email,
       userId: account.userId,
       accountId: account.id,
     });
   } catch (error) {
-    logger.error("[linkAccount] Error during linking process:", {
+    logger.error('[linkAccount] Error during linking process:', {
       userId: account.userId,
       error,
     });
     captureException(error, {
-      extra: { userId: account.userId, location: "linkAccount" },
+      extra: { userId: account.userId, location: 'linkAccount' },
     });
     throw error;
   }
@@ -443,8 +443,8 @@ export async function saveTokens({
   const refreshToken = tokens.refresh_token ?? accountRefreshToken;
 
   if (!refreshToken) {
-    logger.error("Attempted to save null refresh token", { providerAccountId });
-    captureException("Cannot save null refresh token", {
+    logger.error('Attempted to save null refresh token', { providerAccountId });
+    captureException('Cannot save null refresh token', {
       extra: { providerAccountId },
     });
     return;
@@ -463,7 +463,7 @@ export async function saveTokens({
     if (data.access_token)
       data.access_token = encryptToken(data.access_token) || undefined;
     if (data.refresh_token)
-      data.refresh_token = encryptToken(data.refresh_token) || "";
+      data.refresh_token = encryptToken(data.refresh_token) || '';
 
     await prisma.emailAccount.update({
       where: { id: emailAccountId },
@@ -471,10 +471,10 @@ export async function saveTokens({
     });
   } else {
     if (!providerAccountId) {
-      logger.error("No providerAccountId found in database", {
+      logger.error('No providerAccountId found in database', {
         emailAccountId,
       });
-      captureException("No providerAccountId found in database", {
+      captureException('No providerAccountId found in database', {
         extra: { emailAccountId },
       });
       return;

@@ -1,7 +1,7 @@
-import { Button } from "@/components/Button";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { BasicLayout } from "@/components/layouts/BasicLayout";
-import { CardBasic } from "@/components/ui/card";
+import { Button } from '@/components/Button';
+import { BasicLayout } from '@/components/layouts/BasicLayout';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { CardBasic } from '@/components/ui/card';
 
 // same component as not-found
 export default function ThankYouPage() {
@@ -15,7 +15,7 @@ export default function ThankYouPage() {
               Your premium purchase was successful. Thank you for supporting us!
             </TypographyP>
           </div>
-          <Button className="mt-4" size="xl" link={{ href: "/setup" }}>
+          <Button className="mt-4" size="xl" link={{ href: '/setup' }}>
             Continue
           </Button>
         </CardBasic>

@@ -1,5 +1,5 @@
-import { vi } from "vitest";
-import type { EmailProvider } from "@/utils/email/types";
+import { vi } from 'vitest';
+import type { EmailProvider } from '@/utils/email/types';
 
 /**
  * Creates a mock EmailProvider for testing
@@ -33,15 +33,15 @@ import type { EmailProvider } from "@/utils/email/types";
  * ```
  */
 export const createMockEmailProvider = (
-  overrides?: Partial<EmailProvider>,
+  overrides?: Partial<EmailProvider>
 ): EmailProvider => ({
-  name: "google",
-  toJSON: () => ({ name: "google", type: "MockEmailProvider" }),
+  name: 'google',
+  toJSON: () => ({ name: 'google', type: 'MockEmailProvider' }),
   getThreads: vi.fn().mockResolvedValue([]),
   getThread: vi.fn().mockResolvedValue({
-    id: "thread1",
+    id: 'thread1',
     messages: [],
-    snippet: "Test thread snippet",
+    snippet: 'Test thread snippet',
   }),
   getLabels: vi.fn().mockResolvedValue([]),
   getLabelById: vi.fn().mockResolvedValue(null),
@@ -50,20 +50,20 @@ export const createMockEmailProvider = (
   getFolders: vi.fn().mockResolvedValue([]),
   getSignatures: vi.fn().mockResolvedValue([]),
   getMessage: vi.fn().mockResolvedValue({
-    id: "msg1",
-    threadId: "thread1",
+    id: 'msg1',
+    threadId: 'thread1',
     headers: {
-      from: "test@example.com",
-      to: "user@example.com",
-      subject: "Test",
+      from: 'test@example.com',
+      to: 'user@example.com',
+      subject: 'Test',
       date: new Date().toISOString(),
     },
-    snippet: "Test message",
-    historyId: "12345",
-    subject: "Test",
+    snippet: 'Test message',
+    historyId: '12345',
+    subject: 'Test',
     date: new Date().toISOString(),
-    textPlain: "Test content",
-    textHtml: "<p>Test content</p>",
+    textPlain: 'Test content',
+    textHtml: '<p>Test content</p>',
     attachments: [],
     inline: [],
     labelIds: [],
@@ -82,7 +82,7 @@ export const createMockEmailProvider = (
   labelMessage: vi.fn().mockResolvedValue(undefined),
   removeThreadLabel: vi.fn().mockResolvedValue(undefined),
   removeThreadLabels: vi.fn().mockResolvedValue(undefined),
-  draftEmail: vi.fn().mockResolvedValue({ draftId: "draft1" }),
+  draftEmail: vi.fn().mockResolvedValue({ draftId: 'draft1' }),
   replyToEmail: vi.fn().mockResolvedValue(undefined),
   sendEmail: vi.fn().mockResolvedValue(undefined),
   forwardEmail: vi.fn().mockResolvedValue(undefined),
@@ -94,11 +94,11 @@ export const createMockEmailProvider = (
   deleteDraft: vi.fn().mockResolvedValue(undefined),
   createLabel: vi
     .fn()
-    .mockResolvedValue({ id: "label1", name: "Test Label", type: "user" }),
+    .mockResolvedValue({ id: 'label1', name: 'Test Label', type: 'user' }),
   deleteLabel: vi.fn().mockResolvedValue(undefined),
   getOrCreateInboxZeroLabel: vi
     .fn()
-    .mockResolvedValue({ id: "label1", name: "Test Label", type: "user" }),
+    .mockResolvedValue({ id: 'label1', name: 'Test Label', type: 'user' }),
   getOriginalMessage: vi.fn().mockResolvedValue(null),
   getFiltersList: vi.fn().mockResolvedValue([]),
   createFilter: vi.fn().mockResolvedValue({}),
@@ -111,17 +111,17 @@ export const createMockEmailProvider = (
     .fn()
     .mockResolvedValue({ messages: [], nextPageToken: undefined }),
   getMessagesBatch: vi.fn().mockResolvedValue([]),
-  getAccessToken: vi.fn().mockReturnValue("mock-token"),
+  getAccessToken: vi.fn().mockReturnValue('mock-token'),
   checkIfReplySent: vi.fn().mockResolvedValue(false),
   countReceivedMessages: vi.fn().mockResolvedValue(0),
-  getAttachment: vi.fn().mockResolvedValue({ data: "", size: 0 }),
+  getAttachment: vi.fn().mockResolvedValue({ data: '', size: 0 }),
   getThreadsWithQuery: vi
     .fn()
     .mockResolvedValue({ threads: [], nextPageToken: undefined }),
   hasPreviousCommunicationsWithSenderOrDomain: vi.fn().mockResolvedValue(false),
   watchEmails: vi
     .fn()
-    .mockResolvedValue({ expirationDate: new Date(), subscriptionId: "sub1" }),
+    .mockResolvedValue({ expirationDate: new Date(), subscriptionId: 'sub1' }),
   unwatchEmails: vi.fn().mockResolvedValue(undefined),
   isReplyInThread: vi.fn().mockReturnValue(false),
   isSentMessage: vi.fn().mockReturnValue(false),
@@ -131,13 +131,13 @@ export const createMockEmailProvider = (
   getMessagesByFields: vi
     .fn()
     .mockResolvedValue({ messages: [], nextPageToken: undefined }),
-  getOrCreateOutlookFolderIdByName: vi.fn().mockResolvedValue("folder1"),
+  getOrCreateOutlookFolderIdByName: vi.fn().mockResolvedValue('folder1'),
   sendEmailWithHtml: vi.fn().mockResolvedValue(undefined),
   getDrafts: vi.fn().mockResolvedValue([]),
   ...overrides,
 });
 
-export const mockGmailProvider = createMockEmailProvider({ name: "google" });
+export const mockGmailProvider = createMockEmailProvider({ name: 'google' });
 export const mockOutlookProvider = createMockEmailProvider({
-  name: "microsoft",
+  name: 'microsoft',
 });

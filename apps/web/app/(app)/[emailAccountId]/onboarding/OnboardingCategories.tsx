@@ -1,7 +1,6 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useMemo } from "react";
-import shuffle from "lodash/shuffle";
+import shuffle from 'lodash/shuffle';
 import {
   AirplayIcon,
   AtomIcon,
@@ -14,36 +13,37 @@ import {
   PencilLineIcon,
   PenIcon,
   UserIcon,
-} from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+} from 'lucide-react';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { ContinueButton } from '@/app/(app)/[emailAccountId]/onboarding/ContinueButton';
+import { usersRolesInfo } from '@/app/(app)/[emailAccountId]/onboarding/config';
+import {
+  IconCircle,
+  type IconCircleColor,
+} from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { LoadingContent } from '@/components/LoadingContent';
+import { TooltipExplanation } from '@/components/TooltipExplanation';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { createRulesOnboardingAction } from "@/utils/actions/rule";
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { usePersona } from '@/hooks/usePersona';
+import { cn } from '@/utils';
+import { createRulesOnboardingAction } from '@/utils/actions/rule';
 import type {
   CategoryAction,
   CategoryConfig,
-} from "@/utils/actions/rule.validation";
-import { categoryConfig } from "@/utils/category-config";
-import { usePersona } from "@/hooks/usePersona";
-import { usersRolesInfo } from "@/app/(app)/[emailAccountId]/onboarding/config";
-import {
-  IconCircle,
-  type IconCircleColor,
-} from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ContinueButton } from "@/app/(app)/[emailAccountId]/onboarding/ContinueButton";
-import { cn } from "@/utils";
-import { TooltipExplanation } from "@/components/TooltipExplanation";
+} from '@/utils/actions/rule.validation';
+import { categoryConfig } from '@/utils/category-config';
 import {
   isGoogleProvider,
   isMicrosoftProvider,
-} from "@/utils/email/provider-types";
+} from '@/utils/email/provider-types';
 
 // copy paste of old file
 export function CategoriesSetup({
@@ -66,13 +66,13 @@ export function CategoriesSetup({
   >(
     categoryConfig(provider).map((c) => ({
       name: c.key,
-      description: "",
+      description: '',
       action: c.action,
       key: c.key,
-    })),
+    }))
   );
 
-  const suggestedLabels = usersRolesInfo[data?.role || ""]?.suggestedLabels;
+  const suggestedLabels = usersRolesInfo[data?.role || '']?.suggestedLabels;
 
   // Initialize categories when persona data loads
   useEffect(() => {
@@ -83,7 +83,7 @@ export function CategoriesSetup({
           description: s.description,
           action: undefined,
           key: null,
-        })),
+        }))
       );
     }
   }, [suggestedLabels, isLoading]);
@@ -105,7 +105,7 @@ export function CategoriesSetup({
         return updated;
       });
     },
-    [],
+    []
   );
 
   const updateBasicCategory = useCallback(
@@ -116,7 +116,7 @@ export function CategoriesSetup({
         return updated;
       });
     },
-    [],
+    []
   );
 
   const icons = useMemo(() => getRandomIcons(), []);
@@ -128,7 +128,7 @@ export function CategoriesSetup({
       <div className="grid grid-cols-1 gap-2">
         {basicCategories.map((category, index) => {
           const config = categoryConfig(provider).find(
-            (c) => c.key === category.name,
+            (c) => c.key === category.name
           );
           if (!config) return null;
           return (
@@ -244,7 +244,7 @@ function CategoryCard({
             onValueChange={(value) => {
               update(index, {
                 action:
-                  value === "none" ? undefined : (value as CategoryAction),
+                  value === 'none' ? undefined : (value as CategoryAction),
               });
             }}
           >
@@ -293,7 +293,7 @@ function CustomCategoryCard() {
           </div>
           <div className="ml-auto flex items-center gap-4 text-muted-foreground text-sm">
             You can set your own custom categories later
-          </div>{" "}
+          </div>{' '}
         </div>
       </CardContent>
     </Card>
@@ -308,7 +308,7 @@ function SectionHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("text-sm font-medium mb-2", className)}>{children}</div>
+    <div className={cn('text-sm font-medium mb-2', className)}>{children}</div>
   );
 }
 

@@ -1,16 +1,16 @@
-import { z } from "zod";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
-import { createScopedLogger } from "@/utils/logger";
+import { z } from 'zod';
 import {
   getEmailListPrompt,
   getUserInfoPrompt,
   getUserRulesPrompt,
-} from "@/utils/ai/helpers";
+} from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import type { EmailForLLM } from '@/utils/types';
 
-const logger = createScopedLogger("ai-detect-recurring-pattern");
+const logger = createScopedLogger('ai-detect-recurring-pattern');
 
 // const braintrust = new Braintrust("recurring-pattern-detection");
 
@@ -45,7 +45,7 @@ export async function aiDetectRecurringPattern({
 <instructions>
 Your task is to determine if emails from a specific sender should ALWAYS be matched to the same rule.
 
-${consistentRuleName ? `IMPORTANT: Historical data shows that ALL previous emails from this sender have been matched to the "${consistentRuleName}" rule. Your task is to verify if this pattern should be learned for future emails.` : ""}
+${consistentRuleName ? `IMPORTANT: Historical data shows that ALL previous emails from this sender have been matched to the "${consistentRuleName}" rule. Your task is to verify if this pattern should be learned for future emails.` : ''}
 
 Analyze the email content to determine if this sender ALWAYS matches a specific rule.
 Only return a matchedRule if you're 90%+ confident all future emails from this sender will serve the same purpose; otherwise return null.
@@ -54,7 +54,7 @@ A sender should only be matched to a rule if you are HIGHLY CONFIDENT that:
 - All future emails from this sender will serve the same purpose
 - The purpose clearly aligns with one specific rule
 - There's a consistent pattern across all sample emails provided
-${consistentRuleName ? `- The content justifies always matching to the "${consistentRuleName}" rule` : ""}
+${consistentRuleName ? `- The content justifies always matching to the "${consistentRuleName}" rule` : ''}
 
 Examples of senders that typically match a single rule:
 - invoice@stripe.com → receipt rule (always sends payment confirmations)
@@ -94,11 +94,11 @@ ${getEmailListPrompt({ messages: emails, messageMaxLength: 500 })}
 </sample_emails>`;
 
   try {
-    const modelOptions = getModel(emailAccount.user, "chat");
+    const modelOptions = getModel(emailAccount.user, 'chat');
 
     const generateObject = createGenerateObject({
       emailAccount,
-      label: "Detect recurring pattern",
+      label: 'Detect recurring pattern',
       modelOptions,
     });
 
@@ -125,7 +125,7 @@ ${getEmailListPrompt({ messages: emails, messageMaxLength: 500 })}
 
     return aiResponse.object;
   } catch (error) {
-    logger.error("Error detecting recurring pattern", { error });
+    logger.error('Error detecting recurring pattern', { error });
     return null;
   }
 }

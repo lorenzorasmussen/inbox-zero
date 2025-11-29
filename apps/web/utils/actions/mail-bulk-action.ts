@@ -1,15 +1,15 @@
-"use server";
+'use server';
 
-import { z } from "zod";
-import { actionClient } from "@/utils/actions/safe-action";
-import { createEmailProvider } from "@/utils/email/provider";
+import { z } from 'zod';
+import { actionClient } from '@/utils/actions/safe-action';
+import { createEmailProvider } from '@/utils/email/provider';
 
 export const bulkArchiveAction = actionClient
-  .metadata({ name: "bulkArchive" })
+  .metadata({ name: 'bulkArchive' })
   .inputSchema(
     z.object({
       froms: z.array(z.string()),
-    }),
+    })
   )
   .action(
     async ({
@@ -25,17 +25,17 @@ export const bulkArchiveAction = actionClient
       await emailProvider.bulkArchiveFromSenders(
         froms,
         emailAccount.email,
-        emailAccountId,
+        emailAccountId
       );
-    },
+    }
   );
 
 export const bulkTrashAction = actionClient
-  .metadata({ name: "bulkTrash" })
+  .metadata({ name: 'bulkTrash' })
   .inputSchema(
     z.object({
       froms: z.array(z.string()),
-    }),
+    })
   )
   .action(
     async ({
@@ -51,7 +51,7 @@ export const bulkTrashAction = actionClient
       await emailProvider.bulkTrashFromSenders(
         froms,
         emailAccount.email,
-        emailAccountId,
+        emailAccountId
       );
-    },
+    }
   );

@@ -1,38 +1,38 @@
-"use client";
+'use client';
 
-import { useCallback, useMemo } from "react";
-import Link from "next/link";
-import { useOrganizationMembers } from "@/hooks/useOrganizationMembers";
-import { LoadingContent } from "@/components/LoadingContent";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import {
+  BarChart3,
+  BarChartIcon,
+  MoreHorizontal,
+  TrashIcon,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useCallback, useMemo } from 'react';
+import type { OrganizationMembersResponse } from '@/app/api/organizations/[organizationId]/members/route';
+import { InviteMemberModal } from '@/components/InviteMemberModal';
+import { LoadingContent } from '@/components/LoadingContent';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  TrashIcon,
-  MoreHorizontal,
-  BarChart3,
-  BarChartIcon,
-} from "lucide-react";
-import { InviteMemberModal } from "@/components/InviteMemberModal";
-import { removeMemberAction } from "@/utils/actions/remove-member";
-import { toastSuccess, toastError } from "@/components/Toast";
-import type { OrganizationMembersResponse } from "@/app/api/organizations/[organizationId]/members/route";
-import { useExecutedRulesCount } from "@/hooks/useExecutedRulesCount";
+} from '@/components/ui/tooltip';
+import { useExecutedRulesCount } from '@/hooks/useExecutedRulesCount';
+import { useOrganizationMembers } from '@/hooks/useOrganizationMembers';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { removeMemberAction } from '@/utils/actions/remove-member';
 
-type Member = OrganizationMembersResponse["members"][0];
+type Member = OrganizationMembersResponse['members'][0];
 
 interface MemberCardProps {
   member: Member;
@@ -54,7 +54,7 @@ export function Members({ organizationId }: { organizationId: string }) {
       executedRulesData.memberCounts.map((item) => [
         item.emailAccountId,
         item.executedRulesCount,
-      ]),
+      ])
     );
   }, [executedRulesData?.memberCounts]);
 
@@ -65,22 +65,22 @@ export function Members({ organizationId }: { organizationId: string }) {
 
         if (result?.serverError) {
           toastError({
-            title: "Error removing member",
+            title: 'Error removing member',
             description: result.serverError,
           });
         } else {
-          toastSuccess({ description: "Member removed successfully" });
+          toastSuccess({ description: 'Member removed successfully' });
           mutate();
         }
       } catch (err) {
         toastError({
-          title: "Error removing member",
+          title: 'Error removing member',
           description:
-            err instanceof Error ? err.message : "Failed to remove member",
+            err instanceof Error ? err.message : 'Failed to remove member',
         });
       }
     },
-    [mutate, emailAccountId],
+    [mutate, emailAccountId]
   );
 
   return (
@@ -96,7 +96,7 @@ export function Members({ organizationId }: { organizationId: string }) {
         <div className="space-y-4">
           {data?.members.map((member) => {
             const executedRulesCount = executedRulesCountMap.get(
-              member.emailAccount.id,
+              member.emailAccount.id
             );
 
             return (
@@ -132,7 +132,7 @@ function MemberCard({ member, onRemove, executedRulesCount }: MemberCardProps) {
             <TooltipTrigger asChild>
               <Avatar className="h-10 w-10 flex-shrink-0">
                 <AvatarImage
-                  src={member.emailAccount.image || ""}
+                  src={member.emailAccount.image || ''}
                   alt={member.emailAccount.name || member.emailAccount.email}
                 />
                 <AvatarFallback>
@@ -152,10 +152,10 @@ function MemberCard({ member, onRemove, executedRulesCount }: MemberCardProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-3">
             <p className="font-medium">
-              {member.emailAccount.name || "No name"}
+              {member.emailAccount.name || 'No name'}
             </p>
             <Badge
-              variant={member.role === "admin" ? "default" : "secondary"}
+              variant={member.role === 'admin' ? 'default' : 'secondary'}
               className="text-xs"
             >
               {member.role.charAt(0).toUpperCase() + member.role.slice(1)}

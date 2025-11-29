@@ -1,52 +1,52 @@
-import { z } from "zod";
-import { createGenerateObject } from "@/utils/llms";
-import type { EmailSummary } from "@/utils/ai/report/summarize-emails";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { createScopedLogger } from "@/utils/logger";
-import { getModel } from "@/utils/llms/model";
+import { z } from 'zod';
+import type { EmailSummary } from '@/utils/ai/report/summarize-emails';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("email-report-response-patterns");
+const logger = createScopedLogger('email-report-response-patterns');
 
 const responsePatternsSchema = z.object({
   commonResponses: z.array(
     z.object({
-      pattern: z.string().describe("Description of the response pattern"),
-      example: z.string().describe("Example of this type of response"),
+      pattern: z.string().describe('Description of the response pattern'),
+      example: z.string().describe('Example of this type of response'),
       frequency: z
         .number()
-        .describe("Percentage of responses using this pattern"),
+        .describe('Percentage of responses using this pattern'),
       triggers: z
         .array(z.string())
-        .describe("What types of emails trigger this response"),
-    }),
+        .describe('What types of emails trigger this response'),
+    })
   ),
   suggestedTemplates: z.array(
     z.object({
-      templateName: z.string().describe("Name of the email template"),
-      template: z.string().describe("The actual email template text"),
-      useCase: z.string().describe("When to use this template"),
-    }),
+      templateName: z.string().describe('Name of the email template'),
+      template: z.string().describe('The actual email template text'),
+      useCase: z.string().describe('When to use this template'),
+    })
   ),
   categoryOrganization: z.array(
     z.object({
-      category: z.string().describe("Email category name"),
+      category: z.string().describe('Email category name'),
       description: z
         .string()
-        .describe("What types of emails belong in this category"),
+        .describe('What types of emails belong in this category'),
       emailCount: z
         .number()
-        .describe("Estimated number of emails in this category"),
+        .describe('Estimated number of emails in this category'),
       priority: z
-        .enum(["high", "medium", "low"])
-        .describe("Priority level for this category"),
-    }),
+        .enum(['high', 'medium', 'low'])
+        .describe('Priority level for this category'),
+    })
   ),
 });
 
 export async function aiAnalyzeResponsePatterns(
   emailSummaries: EmailSummary[],
   emailAccount: EmailAccountWithAI,
-  sentEmailSummaries?: EmailSummary[],
+  sentEmailSummaries?: EmailSummary[]
 ) {
   const system = `You are an expert email behavior analyst. Your task is to identify common response patterns and suggest email categorization and templates based on the user's email activity.
 
@@ -63,15 +63,15 @@ Only suggest categories that are meaningful and provide clear organizational val
   const prompt = `### Input Data
 
 **Received Email Summaries:**  
-${emailSummaries.map((summary, index) => `Email ${index + 1}: ${summary.summary} (Category: ${summary.category})`).join("\n")}
+${emailSummaries.map((summary, index) => `Email ${index + 1}: ${summary.summary} (Category: ${summary.category})`).join('\n')}
 
 ${
   sentEmailSummaries && sentEmailSummaries.length > 0
     ? `
 **Sent Email Summaries (User's Response Patterns):**
-${sentEmailSummaries.map((summary, index) => `Sent ${index + 1}: ${summary.summary} (Category: ${summary.category})`).join("\n")}
+${sentEmailSummaries.map((summary, index) => `Sent ${index + 1}: ${summary.summary} (Category: ${summary.category})`).join('\n')}
 `
-    : ""
+    : ''
 }
 
 ---
@@ -92,7 +92,7 @@ Only suggest categories that are meaningful and provide clear organizational val
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "email-report-response-patterns",
+    label: 'email-report-response-patterns',
     modelOptions,
   });
 

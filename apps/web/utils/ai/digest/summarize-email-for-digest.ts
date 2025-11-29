@@ -1,16 +1,16 @@
-import { z } from "zod";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { createScopedLogger } from "@/utils/logger";
-import type { EmailForLLM } from "@/utils/types";
-import { stringifyEmailSimple } from "@/utils/stringify-email";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
-import { getUserInfoPrompt } from "@/utils/ai/helpers";
+import { z } from 'zod';
+import { getUserInfoPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import { stringifyEmailSimple } from '@/utils/stringify-email';
+import type { EmailForLLM } from '@/utils/types';
 
-const logger = createScopedLogger("summarize-digest-email");
+const logger = createScopedLogger('summarize-digest-email');
 
 const schema = z.object({
-  content: z.string().describe("The content of the summary text"),
+  content: z.string().describe('The content of the summary text'),
 });
 type AISummarizeResult = z.infer<typeof schema>;
 
@@ -75,14 +75,14 @@ Guidelines for summarizing the email:
 
 ${getUserInfoPrompt({ emailAccount })}`;
 
-  logger.info("Summarizing email for digest");
+  logger.info('Summarizing email for digest');
 
   try {
     const modelOptions = getModel(emailAccount.user);
 
     const generateObject = createGenerateObject({
       emailAccount,
-      label: "Summarize email",
+      label: 'Summarize email',
       modelOptions,
     });
 
@@ -95,7 +95,7 @@ ${getUserInfoPrompt({ emailAccount })}`;
 
     return aiResponse.object;
   } catch (error) {
-    logger.error("Failed to summarize email", { error });
+    logger.error('Failed to summarize email', { error });
 
     return null;
   }

@@ -1,22 +1,22 @@
-"use server";
+'use server';
 
-import prisma from "@/utils/prisma";
+import { PremiumTier } from '@/generated/prisma/enums';
 import {
   createKnowledgeBody,
-  updateKnowledgeBody,
   deleteKnowledgeBody,
-} from "@/utils/actions/knowledge.validation";
-import { actionClient } from "@/utils/actions/safe-action";
-import { SafeError } from "@/utils/error";
+  updateKnowledgeBody,
+} from '@/utils/actions/knowledge.validation';
+import { actionClient } from '@/utils/actions/safe-action';
 import {
-  KNOWLEDGE_BASIC_MAX_ITEMS,
   KNOWLEDGE_BASIC_MAX_CHARS,
-} from "@/utils/config";
-import { PremiumTier } from "@/generated/prisma/enums";
-import { checkHasAccess } from "@/utils/premium/server";
+  KNOWLEDGE_BASIC_MAX_ITEMS,
+} from '@/utils/config';
+import { SafeError } from '@/utils/error';
+import { checkHasAccess } from '@/utils/premium/server';
+import prisma from '@/utils/prisma';
 
 export const createKnowledgeAction = actionClient
-  .metadata({ name: "createKnowledge" })
+  .metadata({ name: 'createKnowledge' })
   .inputSchema(createKnowledgeBody)
   .action(
     async ({
@@ -39,7 +39,7 @@ export const createKnowledgeAction = actionClient
 
         if (!hasAccess) {
           throw new SafeError(
-            `You can save up to ${KNOWLEDGE_BASIC_MAX_CHARS} characters and ${KNOWLEDGE_BASIC_MAX_ITEMS} item to your knowledge base. Upgrade to a higher tier to save unlimited content.`,
+            `You can save up to ${KNOWLEDGE_BASIC_MAX_CHARS} characters and ${KNOWLEDGE_BASIC_MAX_ITEMS} item to your knowledge base. Upgrade to a higher tier to save unlimited content.`
           );
         }
       }
@@ -51,11 +51,11 @@ export const createKnowledgeAction = actionClient
           emailAccountId,
         },
       });
-    },
+    }
   );
 
 export const updateKnowledgeAction = actionClient
-  .metadata({ name: "updateKnowledge" })
+  .metadata({ name: 'updateKnowledge' })
   .inputSchema(updateKnowledgeBody)
   .action(
     async ({
@@ -70,7 +70,7 @@ export const updateKnowledgeAction = actionClient
 
         if (!hasAccess) {
           throw new SafeError(
-            `You can save up to ${KNOWLEDGE_BASIC_MAX_CHARS} characters to your knowledge base. Upgrade to a higher tier to save unlimited content.`,
+            `You can save up to ${KNOWLEDGE_BASIC_MAX_CHARS} characters to your knowledge base. Upgrade to a higher tier to save unlimited content.`
           );
         }
       }
@@ -79,11 +79,11 @@ export const updateKnowledgeAction = actionClient
         where: { id, emailAccountId },
         data: { title, content },
       });
-    },
+    }
   );
 
 export const deleteKnowledgeAction = actionClient
-  .metadata({ name: "deleteKnowledge" })
+  .metadata({ name: 'deleteKnowledge' })
   .inputSchema(deleteKnowledgeBody)
   .action(async ({ ctx: { emailAccountId }, parsedInput: { id } }) => {
     await prisma.knowledge.delete({

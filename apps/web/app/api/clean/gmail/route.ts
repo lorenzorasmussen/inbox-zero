@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
-import { z } from "zod";
-import { withError, type RequestWithLogger } from "@/utils/middleware";
-import { getGmailClientWithRefresh } from "@/utils/gmail/client";
-import { GmailLabel, labelThread } from "@/utils/gmail/label";
-import { SafeError } from "@/utils/error";
-import prisma from "@/utils/prisma";
-import { isDefined } from "@/utils/types";
-import type { Logger } from "@/utils/logger";
-import { CleanAction } from "@/generated/prisma/enums";
-import { updateThread } from "@/utils/redis/clean";
+import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { CleanAction } from '@/generated/prisma/enums';
+import { SafeError } from '@/utils/error';
+import { getGmailClientWithRefresh } from '@/utils/gmail/client';
+import { GmailLabel, labelThread } from '@/utils/gmail/label';
+import type { Logger } from '@/utils/logger';
+import { type RequestWithLogger, withError } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { updateThread } from '@/utils/redis/clean';
+import { isDefined } from '@/utils/types';
 
 const cleanGmailSchema = z.object({
   emailAccountId: z.string(),
@@ -47,9 +47,9 @@ async function performGmailAction({
     },
   });
 
-  if (!account) throw new SafeError("User not found", 404);
+  if (!account) throw new SafeError('User not found', 404);
   if (!account.account?.access_token || !account.account?.refresh_token)
-    throw new SafeError("No Gmail account found", 404);
+    throw new SafeError('No Gmail account found', 404);
 
   const gmail = await getGmailClientWithRefresh({
     accessToken: account.account.access_token,
@@ -71,7 +71,7 @@ async function performGmailAction({
     shouldMarkAsRead ? GmailLabel.UNREAD : undefined,
   ].filter(isDefined);
 
-  logger.info("Handling thread", { threadId, shouldArchive, shouldMarkAsRead });
+  logger.info('Handling thread', { threadId, shouldArchive, shouldMarkAsRead });
 
   await labelThread({
     gmail,
@@ -104,7 +104,7 @@ async function saveCleanResult({
       emailAccountId,
       jobId,
       threadId,
-      update: { status: "completed" },
+      update: { status: 'completed' },
     }),
     saveToDatabase({
       emailAccountId,
@@ -137,7 +137,7 @@ async function saveToDatabase({
 }
 
 export const POST = withError(
-  "clean/gmail",
+  'clean/gmail',
   verifySignatureAppRouter(async (request: Request) => {
     const json = await request.json();
     const body = cleanGmailSchema.parse(json);
@@ -148,5 +148,5 @@ export const POST = withError(
     });
 
     return NextResponse.json({ success: true });
-  }),
+  })
 );

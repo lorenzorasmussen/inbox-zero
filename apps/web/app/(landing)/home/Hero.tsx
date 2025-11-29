@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { usePostHog } from "posthog-js/react";
-import { Gmail } from "@/components/new-landing/icons/Gmail";
-import { Outlook } from "@/components/new-landing/icons/Outlook";
+import Image from 'next/image';
+import { usePostHog } from 'posthog-js/react';
+import { CallToAction } from '@/components/new-landing/CallToAction';
+import {
+  Badge,
+  type BadgeVariant,
+} from '@/components/new-landing/common/Badge';
+import { BlurFade } from '@/components/new-landing/common/BlurFade';
 import {
   Section,
   SectionContent,
-} from "@/components/new-landing/common/Section";
+} from '@/components/new-landing/common/Section';
 import {
   PageHeading,
   Paragraph,
-} from "@/components/new-landing/common/Typography";
-import { CallToAction } from "@/components/new-landing/CallToAction";
-import { LiquidGlassButton } from "@/components/new-landing/LiquidGlassButton";
-import { Play } from "@/components/new-landing/icons/Play";
+} from '@/components/new-landing/common/Typography';
+import { Gmail } from '@/components/new-landing/icons/Gmail';
+import { Outlook } from '@/components/new-landing/icons/Outlook';
+import { Play } from '@/components/new-landing/icons/Play';
+import { LiquidGlassButton } from '@/components/new-landing/LiquidGlassButton';
+import { UnicornScene } from '@/components/new-landing/UnicornScene';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { BlurFade } from "@/components/new-landing/common/BlurFade";
-import { UnicornScene } from "@/components/new-landing/UnicornScene";
-import { landingPageAnalytics } from "@/hooks/useAnalytics";
-import {
-  Badge,
-  type BadgeVariant,
-} from "@/components/new-landing/common/Badge";
+} from '@/components/ui/dialog';
+import { landingPageAnalytics } from '@/hooks/useAnalytics';
 
 interface HeroProps {
   title?: React.ReactNode;
@@ -41,11 +41,11 @@ export function Hero({
   title,
   subtitle,
   badge,
-  badgeVariant = "blue",
+  badgeVariant = 'blue',
   children,
 }: HeroProps) {
   return (
-    <Section className={badge ? "mt-7 md:mt-7" : "mt-10 md:mt-20"}>
+    <Section className={badge ? 'mt-7 md:mt-7' : 'mt-10 md:mt-20'}>
       {badge ? (
         <BlurFade duration={0.4} delay={0}>
           <div className="flex justify-center mb-7">
@@ -55,7 +55,7 @@ export function Hero({
       ) : null}
       <PageHeading>{title}</PageHeading>
       <BlurFade duration={0.4} delay={0.125 * 5}>
-        <Paragraph size="lg" className={"max-w-[640px] mx-auto mt-6"}>
+        <Paragraph size="lg" className={'max-w-[640px] mx-auto mt-6'}>
           {subtitle}
         </Paragraph>
       </BlurFade>

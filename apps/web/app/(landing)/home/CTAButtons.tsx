@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/Button";
-import { usePostHog } from "posthog-js/react";
-import { landingPageAnalytics } from "@/hooks/useAnalytics";
+import { usePostHog } from 'posthog-js/react';
+import { Button } from '@/components/Button';
+import { landingPageAnalytics } from '@/hooks/useAnalytics';
 
 export function CTAButtons() {
   const posthog = usePostHog();
@@ -12,7 +12,7 @@ export function CTAButtons() {
         <Button
           size="2xl"
           color="blue"
-          link={{ href: "/login" }}
+          link={{ href: '/login' }}
           onClick={() => landingPageAnalytics.getStartedClicked(posthog)}
         >
           Get Started for Free
@@ -22,7 +22,7 @@ export function CTAButtons() {
         <Button
           size="2xl"
           color="transparent"
-          link={{ href: "/sales", target: "_blank" }}
+          link={{ href: '/sales', target: '_blank' }}
           onClick={() => landingPageAnalytics.talkToSalesClicked(posthog)}
         >
           Talk to sales

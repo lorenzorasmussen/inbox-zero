@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { Response } from "@/components/ai-elements/response";
 import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
-} from "@/components/ai-elements/reasoning";
+} from '@/components/ai-elements/reasoning';
+import { Response } from '@/components/ai-elements/response';
 import {
   AddToKnowledgeBase,
   BasicToolInfo,
@@ -14,11 +14,11 @@ import {
   UpdatedLearnedPatterns,
   UpdatedRuleActions,
   UpdatedRuleConditions,
-} from "@/components/assistant-chat/tools";
-import type { ChatMessage } from "@/components/assistant-chat/types";
+} from '@/components/assistant-chat/tools';
+import type { ChatMessage } from '@/components/assistant-chat/types';
 
 interface MessagePartProps {
-  part: ChatMessage["parts"][0];
+  part: ChatMessage['parts'][0];
   isStreaming: boolean;
   messageId: string;
   partIndex: number;
@@ -36,7 +36,7 @@ export function MessagePart({
 }: MessagePartProps) {
   const key = `${messageId}-${partIndex}`;
 
-  if (part.type === "reasoning") {
+  if (part.type === 'reasoning') {
     return (
       <Reasoning key={key} isStreaming={isStreaming} className="w-full">
         <ReasoningTrigger />
@@ -45,47 +45,47 @@ export function MessagePart({
     );
   }
 
-  if (part.type === "text") {
+  if (part.type === 'text') {
     if (!part.text) return null;
     return <Response key={key}>{part.text}</Response>;
   }
 
   // Tool handling
-  if (part.type === "tool-getUserRulesAndSettings") {
+  if (part.type === 'tool-getUserRulesAndSettings') {
     const { toolCallId, state } = part;
-    if (state === "input-available") {
+    if (state === 'input-available') {
       return (
         <BasicToolInfo key={toolCallId} text="Reading rules and settings..." />
       );
     }
-    if (state === "output-available") {
+    if (state === 'output-available') {
       const { output } = part;
-      if ("error" in output) {
+      if ('error' in output) {
         return <ErrorToolCard key={toolCallId} error={String(output.error)} />;
       }
       return <BasicToolInfo key={toolCallId} text="Read rules and settings" />;
     }
   }
 
-  if (part.type === "tool-getLearnedPatterns") {
+  if (part.type === 'tool-getLearnedPatterns') {
     const { toolCallId, state } = part;
-    if (state === "input-available") {
+    if (state === 'input-available') {
       return (
         <BasicToolInfo key={toolCallId} text="Reading learned patterns..." />
       );
     }
-    if (state === "output-available") {
+    if (state === 'output-available') {
       const { output } = part;
-      if ("error" in output) {
+      if ('error' in output) {
         return <ErrorToolCard key={toolCallId} error={String(output.error)} />;
       }
       return <BasicToolInfo key={toolCallId} text="Read learned patterns" />;
     }
   }
 
-  if (part.type === "tool-createRule") {
+  if (part.type === 'tool-createRule') {
     const { toolCallId, state } = part;
-    if (state === "input-available") {
+    if (state === 'input-available') {
       return (
         <BasicToolInfo
           key={toolCallId}
@@ -93,9 +93,9 @@ export function MessagePart({
         />
       );
     }
-    if (state === "output-available") {
+    if (state === 'output-available') {
       const { output } = part;
-      if ("error" in output) {
+      if ('error' in output) {
         return <ErrorToolCard key={toolCallId} error={String(output.error)} />;
       }
       return (
@@ -108,9 +108,9 @@ export function MessagePart({
     }
   }
 
-  if (part.type === "tool-updateRuleConditions") {
+  if (part.type === 'tool-updateRuleConditions') {
     const { toolCallId, state } = part;
-    if (state === "input-available") {
+    if (state === 'input-available') {
       return (
         <BasicToolInfo
           key={toolCallId}
@@ -118,9 +118,9 @@ export function MessagePart({
         />
       );
     }
-    if (state === "output-available") {
+    if (state === 'output-available') {
       const { output } = part;
-      if ("error" in output) {
+      if ('error' in output) {
         return <ErrorToolCard key={toolCallId} error={String(output.error)} />;
       }
       return (
@@ -135,9 +135,9 @@ export function MessagePart({
     }
   }
 
-  if (part.type === "tool-updateRuleActions") {
+  if (part.type === 'tool-updateRuleActions') {
     const { toolCallId, state } = part;
-    if (state === "input-available") {
+    if (state === 'input-available') {
       return (
         <BasicToolInfo
           key={toolCallId}
@@ -145,9 +145,9 @@ export function MessagePart({
         />
       );
     }
-    if (state === "output-available") {
+    if (state === 'output-available') {
       const { output } = part;
-      if ("error" in output) {
+      if ('error' in output) {
         return <ErrorToolCard key={toolCallId} error={String(output.error)} />;
       }
       return (
@@ -162,9 +162,9 @@ export function MessagePart({
     }
   }
 
-  if (part.type === "tool-updateLearnedPatterns") {
+  if (part.type === 'tool-updateLearnedPatterns') {
     const { toolCallId, state } = part;
-    if (state === "input-available") {
+    if (state === 'input-available') {
       return (
         <BasicToolInfo
           key={toolCallId}
@@ -172,9 +172,9 @@ export function MessagePart({
         />
       );
     }
-    if (state === "output-available") {
+    if (state === 'output-available') {
       const { output } = part;
-      if ("error" in output) {
+      if ('error' in output) {
         return <ErrorToolCard key={toolCallId} error={String(output.error)} />;
       }
       return (
@@ -187,30 +187,30 @@ export function MessagePart({
     }
   }
 
-  if (part.type === "tool-updateAbout") {
+  if (part.type === 'tool-updateAbout') {
     const { toolCallId, state } = part;
-    if (state === "input-available") {
+    if (state === 'input-available') {
       return <BasicToolInfo key={toolCallId} text="Updating about..." />;
     }
-    if (state === "output-available") {
+    if (state === 'output-available') {
       const { output } = part;
-      if ("error" in output) {
+      if ('error' in output) {
         return <ErrorToolCard key={toolCallId} error={String(output.error)} />;
       }
       return <UpdateAbout key={toolCallId} args={part.input} />;
     }
   }
 
-  if (part.type === "tool-addToKnowledgeBase") {
+  if (part.type === 'tool-addToKnowledgeBase') {
     const { toolCallId, state } = part;
-    if (state === "input-available") {
+    if (state === 'input-available') {
       return (
         <BasicToolInfo key={toolCallId} text="Adding to knowledge base..." />
       );
     }
-    if (state === "output-available") {
+    if (state === 'output-available') {
       const { output } = part;
-      if ("error" in output) {
+      if ('error' in output) {
         return <ErrorToolCard key={toolCallId} error={String(output.error)} />;
       }
       return <AddToKnowledgeBase key={toolCallId} args={part.input} />;

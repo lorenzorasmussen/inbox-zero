@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import useSWR from "swr";
-import { BarChart } from "@tremor/react";
-import { FilterIcon } from "lucide-react";
-import type { DateRange } from "react-day-picker";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart } from '@tremor/react';
+import { FilterIcon } from 'lucide-react';
+import { useState } from 'react';
+import type { DateRange } from 'react-day-picker';
+import useSWR from 'swr';
+import { DetailedStatsFilter } from '@/app/(app)/[emailAccountId]/stats/DetailedStatsFilter';
+import { getDateRangeParams } from '@/app/(app)/[emailAccountId]/stats/params';
 import type {
-  StatsByWeekResponse,
   StatsByWeekParams,
-} from "@/app/api/user/stats/by-period/route";
-import { DetailedStatsFilter } from "@/app/(app)/[emailAccountId]/stats/DetailedStatsFilter";
-import { getDateRangeParams } from "@/app/(app)/[emailAccountId]/stats/params";
+  StatsByWeekResponse,
+} from '@/app/api/user/stats/by-period/route';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function DetailedStats(props: {
   dateRange?: DateRange | undefined;
-  period: "day" | "week" | "month" | "year";
+  period: 'day' | 'week' | 'month' | 'year';
   refreshInterval: number;
 }) {
   const { dateRange, period } = props;
 
   const [visibleBars, setVisibleBars] = useState<
     Record<
-      "all" | "read" | "unread" | "sent" | "archived" | "unarchived",
+      'all' | 'read' | 'unread' | 'sent' | 'archived' | 'unarchived',
       boolean
     >
   >({
@@ -64,7 +64,7 @@ export function DetailedStats(props: {
                 icon={<FilterIcon className="mr-2 h-4 w-4" />}
                 columns={[
                   {
-                    label: "All",
+                    label: 'All',
                     checked: visibleBars.all,
                     setChecked: () =>
                       setVisibleBars({
@@ -73,7 +73,7 @@ export function DetailedStats(props: {
                       }),
                   },
                   {
-                    label: "Read",
+                    label: 'Read',
                     checked: visibleBars.read,
                     setChecked: () =>
                       setVisibleBars({
@@ -82,7 +82,7 @@ export function DetailedStats(props: {
                       }),
                   },
                   {
-                    label: "Unread",
+                    label: 'Unread',
                     checked: visibleBars.unread,
                     setChecked: () =>
                       setVisibleBars({
@@ -91,7 +91,7 @@ export function DetailedStats(props: {
                       }),
                   },
                   {
-                    label: "Unarchived",
+                    label: 'Unarchived',
                     checked: visibleBars.unarchived,
                     setChecked: () =>
                       setVisibleBars({
@@ -100,7 +100,7 @@ export function DetailedStats(props: {
                       }),
                   },
                   {
-                    label: "Archived",
+                    label: 'Archived',
                     checked: visibleBars.archived,
                     setChecked: () =>
                       setVisibleBars({
@@ -109,7 +109,7 @@ export function DetailedStats(props: {
                       }),
                   },
                   {
-                    label: "Sent",
+                    label: 'Sent',
                     checked: visibleBars.sent,
                     setChecked: () =>
                       setVisibleBars({
@@ -127,35 +127,35 @@ export function DetailedStats(props: {
               data={data.result}
               index="startOfPeriod"
               categories={[
-                ...(visibleBars.all ? ["All"] : []),
-                ...(visibleBars.archived ? ["Archived"] : []),
-                ...(visibleBars.unarchived ? ["Unarchived"] : []),
-                ...(visibleBars.read ? ["Read"] : []),
-                ...(visibleBars.unread ? ["Unread"] : []),
-                ...(visibleBars.sent ? ["Sent"] : []),
+                ...(visibleBars.all ? ['All'] : []),
+                ...(visibleBars.archived ? ['Archived'] : []),
+                ...(visibleBars.unarchived ? ['Unarchived'] : []),
+                ...(visibleBars.read ? ['Read'] : []),
+                ...(visibleBars.unread ? ['Unread'] : []),
+                ...(visibleBars.sent ? ['Sent'] : []),
               ]}
               colors={[
-                ...(visibleBars.all ? (["fuchsia"] as const) : []),
-                ...(visibleBars.archived ? (["emerald"] as const) : []),
-                ...(visibleBars.unarchived ? (["amber"] as const) : []),
-                ...(visibleBars.read ? (["lime"] as const) : []),
-                ...(visibleBars.unread ? (["pink"] as const) : []),
-                ...(visibleBars.sent ? (["blue"] as const) : []),
+                ...(visibleBars.all ? (['fuchsia'] as const) : []),
+                ...(visibleBars.archived ? (['emerald'] as const) : []),
+                ...(visibleBars.unarchived ? (['amber'] as const) : []),
+                ...(visibleBars.read ? (['lime'] as const) : []),
+                ...(visibleBars.unread ? (['pink'] as const) : []),
+                ...(visibleBars.sent ? (['blue'] as const) : []),
               ]}
             />
             <BarChart
               className="mt-4 h-72"
               data={data.result}
               index="startOfPeriod"
-              categories={["Read", "Unread"]}
-              colors={["lime", "pink"]}
+              categories={['Read', 'Unread']}
+              colors={['lime', 'pink']}
             />
             <BarChart
               className="mt-4 h-72"
               data={data.result}
               index="startOfPeriod"
-              categories={["Sent"]}
-              colors={["blue"]}
+              categories={['Sent']}
+              colors={['blue']}
             />
           </CardContent>
         </Card>

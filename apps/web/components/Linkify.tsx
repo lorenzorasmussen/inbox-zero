@@ -1,5 +1,5 @@
-import LinkifyReact from "linkify-react";
-import Link from "next/link";
+import LinkifyReact from 'linkify-react';
+import Link from 'next/link';
 
 const renderLink = ({
   attributes,

@@ -1,18 +1,21 @@
-"use client";
+'use client';
 
-import Link from "next/link";
 import {
-  ChevronsUpDownIcon,
   BarChartIcon,
-  MessageCircleReplyIcon,
-  ShieldCheckIcon,
-  RibbonIcon,
-  LogOutIcon,
-  PaletteIcon,
-  ChromeIcon,
   Building2Icon,
+  ChevronsUpDownIcon,
+  ChromeIcon,
   CrownIcon,
-} from "lucide-react";
+  LogOutIcon,
+  MessageCircleReplyIcon,
+  PaletteIcon,
+  RibbonIcon,
+  ShieldCheckIcon,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useTheme } from 'next-themes';
+import { ProfileImage } from '@/components/ProfileImage';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,18 +24,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { logOut } from "@/utils/user";
-import { isGoogleProvider } from "@/utils/email/provider-types";
-import { useTheme } from "next-themes";
-import { ProfileImage } from "@/components/ProfileImage";
-import { SidebarMenuButton } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { EXTENSION_URL } from "@/utils/config";
-import { useUser } from "@/hooks/useUser";
-import { isOrganizationAdmin } from "@/utils/organizations/roles";
+} from '@/components/ui/dropdown-menu';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { useUser } from '@/hooks/useUser';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { EXTENSION_URL } from '@/utils/config';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import { isOrganizationAdmin } from '@/utils/organizations/roles';
+import { prefixPath } from '@/utils/path';
+import { logOut } from '@/utils/user';
 
 export function NavUser() {
   const { emailAccountId, emailAccount, provider } = useAccount();
@@ -42,7 +42,7 @@ export function NavUser() {
   const currentEmailAccountId = emailAccount?.id || emailAccountId;
   const currentEmailAccountMembers =
     user?.members?.filter(
-      (member) => member.emailAccountId === currentEmailAccountId,
+      (member) => member.emailAccountId === currentEmailAccountId
     ) || [];
   const hasOrganization = currentEmailAccountMembers.length > 0;
   const isOrgAdmin = isOrganizationAdmin(currentEmailAccountMembers);
@@ -57,7 +57,7 @@ export function NavUser() {
         >
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarImage
-              src={emailAccount?.image || ""}
+              src={emailAccount?.image || ''}
               alt={emailAccount?.name || emailAccount?.email}
             />
             <AvatarFallback className="rounded-lg">
@@ -89,12 +89,12 @@ export function NavUser() {
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <ProfileImage
               image={emailAccount?.image || null}
-              label={emailAccount?.name || emailAccount?.email || ""}
+              label={emailAccount?.name || emailAccount?.email || ''}
               size={32}
             />
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">
-                {emailAccount?.name || emailAccount?.email || "Account"}
+                {emailAccount?.name || emailAccount?.email || 'Account'}
               </span>
               {(organizationName || emailAccount?.email) && (
                 <span className="truncate text-xs text-muted-foreground">
@@ -110,7 +110,7 @@ export function NavUser() {
           {!hasOrganization && (
             <DropdownMenuItem asChild>
               <Link
-                href={prefixPath(currentEmailAccountId, "/organization/create")}
+                href={prefixPath(currentEmailAccountId, '/organization/create')}
               >
                 <Building2Icon className="mr-2 size-4" />
                 Create organization
@@ -119,7 +119,7 @@ export function NavUser() {
           )}
           {hasOrganization && isOrgAdmin && (
             <DropdownMenuItem asChild>
-              <Link href={prefixPath(currentEmailAccountId, "/organization")}>
+              <Link href={prefixPath(currentEmailAccountId, '/organization')}>
                 <Building2Icon className="mr-2 size-4" />
                 My Organization
               </Link>
@@ -145,7 +145,7 @@ export function NavUser() {
           {isGoogleProvider(provider) && (
             <>
               <DropdownMenuItem asChild>
-                <Link href={prefixPath(currentEmailAccountId, "/reply-zero")}>
+                <Link href={prefixPath(currentEmailAccountId, '/reply-zero')}>
                   <MessageCircleReplyIcon className="mr-2 size-4" />
                   Reply Zero
                 </Link>
@@ -154,7 +154,7 @@ export function NavUser() {
                 <Link
                   href={prefixPath(
                     currentEmailAccountId,
-                    "/cold-email-blocker",
+                    '/cold-email-blocker'
                   )}
                 >
                   <ShieldCheckIcon className="mr-2 size-4" />
@@ -170,7 +170,7 @@ export function NavUser() {
             </>
           )}
           <DropdownMenuItem asChild>
-            <Link href={prefixPath(currentEmailAccountId, "/usage")}>
+            <Link href={prefixPath(currentEmailAccountId, '/usage')}>
               <BarChartIcon className="mr-2 size-4" />
               Usage
             </Link>
@@ -188,11 +188,11 @@ export function NavUser() {
         <DropdownMenuItem
           onSelect={(e) => {
             e.preventDefault();
-            setTheme(theme === "dark" ? "light" : "dark");
+            setTheme(theme === 'dark' ? 'light' : 'dark');
           }}
         >
           <PaletteIcon className="mr-2 size-4" />
-          {theme === "dark" ? "Light mode" : "Dark mode"}
+          {theme === 'dark' ? 'Light mode' : 'Dark mode'}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />

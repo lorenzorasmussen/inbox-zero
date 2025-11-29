@@ -1,0 +1,64 @@
+# Packages build output
+packages/*/dist/
+packages/*/build/
+packages/*/lib/
+packages/*/esm/
+packages/*/cjs/
+
+# Compiled TypeScript files
+packages/**/*.js
+packages/**/*.d.ts
+packages/**/*.map
+
+# Package lock files (workspace level)
+packages/**/package-lock.json
+packages/**/yarn.lock
+packages/**/pnpm-lock.yaml
+
+# Node modules
+packages/**/node_modules/
+
+# TypeScript build info
+packages/**/*.tsbuildinfo
+
+# Coverage reports
+packages/**/coverage/
+packages/**/.nyc_output/
+
+# Test output
+packages/**/test-results/
+packages/**/playwright-report/
+packages/**/junit.xml
+
+# Environment files
+packages/**/.env
+packages/**/.env.local
+packages/**/.env.*.local
+
+# Temporary files
+packages/**/.tmp/
+packages/**/tmp/
+packages/**/.temp/
+packages/**/temp/
+
+# Logs
+packages/**/*.log
+packages/**/npm-debug.log*
+packages/**/yarn-debug.log*
+packages/**/yarn-error.log*
+packages/**/pnpm-debug.log*
+
+# Editor directories and files
+packages/**/.vscode/
+packages/**/.idea/
+packages/**/*.swp
+packages/**/*.swo
+
+# OS generated files
+packages/**/.DS_Store
+packages/**/.DS_Store?
+packages/**/._*
+packages/**/.Spotlight-V100
+packages/**/.Trashes
+packages/**/ehthumbs.db
+packages/**/Thumbs.db

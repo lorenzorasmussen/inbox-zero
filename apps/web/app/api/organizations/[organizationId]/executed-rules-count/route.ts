@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withAuth } from "@/utils/middleware";
-import { fetchAndCheckIsAdmin } from "@/utils/organizations/access";
+import { NextResponse } from 'next/server';
+import { withAuth } from '@/utils/middleware';
+import { fetchAndCheckIsAdmin } from '@/utils/organizations/access';
+import prisma from '@/utils/prisma';
 
 export type GetExecutedRulesCountResponse = Awaited<
   ReturnType<typeof getExecutedRulesCount>
 >;
 
 export const GET = withAuth(
-  "organizations/executed-rules-count",
+  'organizations/executed-rules-count',
   async (request, { params }) => {
     const { userId } = request.auth;
     const { organizationId } = await params;
@@ -18,7 +18,7 @@ export const GET = withAuth(
     const result = await getExecutedRulesCount({ organizationId });
 
     return NextResponse.json(result);
-  },
+  }
 );
 
 async function getExecutedRulesCount({
@@ -27,7 +27,7 @@ async function getExecutedRulesCount({
   organizationId: string;
 }) {
   const memberCounts = await prisma.executedRule.groupBy({
-    by: ["emailAccountId"],
+    by: ['emailAccountId'],
     where: {
       emailAccount: {
         members: {

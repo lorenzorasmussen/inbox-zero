@@ -1,4 +1,4 @@
-import { isMicrosoftProvider } from "@/utils/email/provider-types";
+import { isMicrosoftProvider } from '@/utils/email/provider-types';
 
 interface EmailTerminology {
   label: {
@@ -20,11 +20,11 @@ export function getEmailTerminology(provider: string): EmailTerminology {
   if (isOutlook) {
     return {
       label: {
-        singular: "category",
-        plural: "categories",
-        singularCapitalized: "Category",
-        pluralCapitalized: "Categories",
-        action: "Categorize",
+        singular: 'category',
+        plural: 'categories',
+        singularCapitalized: 'Category',
+        pluralCapitalized: 'Categories',
+        action: 'Categorize',
       },
     };
   }
@@ -32,11 +32,11 @@ export function getEmailTerminology(provider: string): EmailTerminology {
   // Default to Gmail terminology
   return {
     label: {
-      singular: "label",
-      plural: "labels",
-      singularCapitalized: "Label",
-      pluralCapitalized: "Labels",
-      action: "Label",
+      singular: 'label',
+      plural: 'labels',
+      singularCapitalized: 'Label',
+      pluralCapitalized: 'Labels',
+      action: 'Label',
     },
   };
 }

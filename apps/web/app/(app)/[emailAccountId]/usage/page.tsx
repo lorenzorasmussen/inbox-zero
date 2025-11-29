@@ -1,15 +1,15 @@
-import { getUsage } from "@/utils/redis/usage";
-import { Usage } from "@/app/(app)/[emailAccountId]/usage/usage";
-import { auth } from "@/utils/auth";
+import { notFound } from 'next/navigation';
+import { Usage } from '@/app/(app)/[emailAccountId]/usage/usage';
+import { PageHeader } from '@/components/PageHeader';
+import { PageWrapper } from '@/components/PageWrapper';
+import { auth } from '@/utils/auth';
+import { checkUserOwnsEmailAccount } from '@/utils/email-account';
 import {
-  getMemberEmailAccount,
   getCallerEmailAccount,
-} from "@/utils/organizations/access";
-import { checkUserOwnsEmailAccount } from "@/utils/email-account";
-import { notFound } from "next/navigation";
-import prisma from "@/utils/prisma";
-import { PageWrapper } from "@/components/PageWrapper";
-import { PageHeader } from "@/components/PageHeader";
+  getMemberEmailAccount,
+} from '@/utils/organizations/access';
+import prisma from '@/utils/prisma';
+import { getUsage } from '@/utils/redis/usage';
 
 export default async function UsagePage(props: {
   params: Promise<{ emailAccountId: string }>;
@@ -24,14 +24,14 @@ export default async function UsagePage(props: {
   } catch {
     const callerEmailAccount = await getCallerEmailAccount(
       userId,
-      emailAccountId,
+      emailAccountId
     );
 
     if (!callerEmailAccount) notFound();
 
     const memberEmailAccount = await getMemberEmailAccount(
       callerEmailAccount.id,
-      emailAccountId,
+      emailAccountId
     );
 
     if (!memberEmailAccount) notFound();
@@ -58,7 +58,7 @@ export default async function UsagePage(props: {
       <PageHeader
         title={
           isOwnAccount
-            ? "Credits and Usage"
+            ? 'Credits and Usage'
             : `Credits and Usage for ${emailAccount.name || emailAccount.email}`
         }
         description=""

@@ -1,9 +1,9 @@
-import prisma from "@/utils/prisma";
-import type { Logger } from "@/utils/logger";
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
 export async function cleanupOrphanedAccount(
   orphanedAccountId: string,
-  log: Logger,
+  log: Logger
 ) {
   const logger = log.with({ accountId: orphanedAccountId });
 
@@ -13,12 +13,12 @@ export async function cleanupOrphanedAccount(
   });
 
   if (!orphanedAccount) {
-    logger.info("Account not found, may have been deleted already");
+    logger.info('Account not found, may have been deleted already');
     return;
   }
 
   if (orphanedAccount.emailAccount) {
-    logger.info("Account has an email account, skipping cleanup");
+    logger.info('Account has an email account, skipping cleanup');
     return;
   }
 
@@ -31,9 +31,9 @@ export async function cleanupOrphanedAccount(
       prisma.account.delete({ where: { id: orphanedAccount.id } }),
       prisma.user.delete({ where: { id: orphanedAccount.userId } }),
     ]);
-    logger.info("Deleted orphaned Account and User");
+    logger.info('Deleted orphaned Account and User');
   } else {
     await prisma.account.delete({ where: { id: orphanedAccount.id } });
-    logger.info("Deleted orphaned Account, User has other accounts");
+    logger.info('Deleted orphaned Account, User has other accounts');
   }
 }

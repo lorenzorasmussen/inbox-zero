@@ -1,38 +1,38 @@
-import useSWR from "swr";
-import { BarChart } from "@tremor/react";
-import type { DateRange } from "react-day-picker";
-import Link from "next/link";
-import { ExternalLinkIcon } from "lucide-react";
-import { usePostHog } from "posthog-js/react";
+import type { ZodPeriod } from '@inboxzero/tinybird';
+import { BarChart } from '@tremor/react';
+import { ExternalLinkIcon } from 'lucide-react';
+import Link from 'next/link';
+import { usePostHog } from 'posthog-js/react';
+import type { DateRange } from 'react-day-picker';
+import useSWR from 'swr';
+import { MoreDropdown } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/common';
+import type { Row } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/types';
+import { getDateRangeParams } from '@/app/(app)/[emailAccountId]/stats/params';
+import type {
+  SenderEmailsQuery,
+  SenderEmailsResponse,
+} from '@/app/api/user/stats/sender-emails/route';
+import { AlertBasic } from '@/components/Alert';
+import { EmailList } from '@/components/email-list/EmailList';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Tooltip } from '@/components/Tooltip';
+import { SectionHeader } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { getDateRangeParams } from "@/app/(app)/[emailAccountId]/stats/params";
-import type {
-  SenderEmailsQuery,
-  SenderEmailsResponse,
-} from "@/app/api/user/stats/sender-emails/route";
-import type { ZodPeriod } from "@inboxzero/tinybird";
-import { LoadingContent } from "@/components/LoadingContent";
-import { SectionHeader } from "@/components/Typography";
-import { EmailList } from "@/components/email-list/EmailList";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { getGmailFilterSettingsUrl } from "@/utils/url";
-import { Tooltip } from "@/components/Tooltip";
-import { AlertBasic } from "@/components/Alert";
-import { MoreDropdown } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/common";
-import { useLabels } from "@/hooks/useLabels";
-import type { Row } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/types";
-import { useThreads } from "@/hooks/useThreads";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { onAutoArchive } from "@/utils/actions/client";
+} from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLabels } from '@/hooks/useLabels';
+import { useThreads } from '@/hooks/useThreads';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { onAutoArchive } from '@/utils/actions/client';
+import { getGmailFilterSettingsUrl } from '@/utils/url';
 
 export function NewsletterModal(props: {
-  newsletter?: Pick<Row, "name" | "unsubscribeLink" | "autoArchived">;
+  newsletter?: Pick<Row, 'name' | 'unsubscribeLink' | 'autoArchived'>;
   onClose: (isOpen: boolean) => void;
   refreshInterval?: number;
   mutate: () => Promise<any>;
@@ -154,8 +154,8 @@ function EmailsChart(props: {
           className="h-72"
           data={data.result}
           index="startOfPeriod"
-          categories={["Emails"]}
-          colors={["lime"]}
+          categories={['Emails']}
+          colors={['lime']}
         />
       )}
     </LoadingContent>
@@ -225,7 +225,7 @@ function AllEmails({
 }) {
   const { data, isLoading, error, mutate } = useThreads({
     fromEmail,
-    type: "all",
+    type: 'all',
     refreshInterval,
   });
 

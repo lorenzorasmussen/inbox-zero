@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const digestBody = z.object({
   emailAccountId: z.string(),

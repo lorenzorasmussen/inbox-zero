@@ -1,10 +1,10 @@
-"use server";
+'use server';
 
-import prisma from "@/utils/prisma";
-import { actionClientUser } from "@/utils/actions/safe-action";
+import { actionClientUser } from '@/utils/actions/safe-action';
+import prisma from '@/utils/prisma';
 
 export const regenerateWebhookSecretAction = actionClientUser
-  .metadata({ name: "regenerateWebhookSecret" })
+  .metadata({ name: 'regenerateWebhookSecret' })
   .action(async ({ ctx: { userId } }) => {
     const webhookSecret = generateWebhookSecret();
 
@@ -16,8 +16,8 @@ export const regenerateWebhookSecretAction = actionClientUser
 
 function generateWebhookSecret(length = 32) {
   const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   return Array.from(crypto.getRandomValues(new Uint8Array(length)))
     .map((x) => chars[x % chars.length])
-    .join("");
+    .join('');
 }

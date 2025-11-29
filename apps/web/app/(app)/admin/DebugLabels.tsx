@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { useAction } from "next-safe-action/hooks";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/Input";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { Input } from '@/components/Input';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { toastSuccess, toastError } from "@/components/Toast";
-import { adminGetLabelsAction } from "@/utils/actions/admin";
+} from '@/components/ui/card';
+import { adminGetLabelsAction } from '@/utils/actions/admin';
 import {
-  getLabelsBody,
   type GetLabelsBody,
-} from "@/utils/actions/admin.validation";
+  getLabelsBody,
+} from '@/utils/actions/admin.validation';
 
 export function DebugLabels() {
   const { execute, isExecuting, result } = useAction(adminGetLabelsAction, {
     onSuccess: () => {
-      toastSuccess({ description: "Labels found!" });
+      toastSuccess({ description: 'Labels found!' });
     },
     onError: ({ error }) => {
       toastError({
-        title: "Error getting labels",
-        description: error.serverError || "An error occurred",
+        title: 'Error getting labels',
+        description: error.serverError || 'An error occurred',
       });
     },
   });
@@ -45,7 +45,7 @@ export function DebugLabels() {
     (data) => {
       execute(data);
     },
-    [execute],
+    [execute]
   );
 
   return (
@@ -61,7 +61,7 @@ export function DebugLabels() {
             name="emailAccountId"
             label="Email Account ID"
             placeholder="Email Account ID"
-            registerProps={register("emailAccountId")}
+            registerProps={register('emailAccountId')}
             error={errors.emailAccountId}
           />
           <Button type="submit" loading={isExecuting}>

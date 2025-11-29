@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef } from 'react';
 
 export const Checkbox = forwardRef(
   (
@@ -6,7 +6,7 @@ export const Checkbox = forwardRef(
       checked: boolean;
       onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     },
-    ref: React.Ref<HTMLInputElement>,
+    ref: React.Ref<HTMLInputElement>
   ) => {
     return (
       <input
@@ -17,7 +17,7 @@ export const Checkbox = forwardRef(
         onChange={props.onChange}
       />
     );
-  },
+  }
 );
 
-Checkbox.displayName = "Checkbox";
+Checkbox.displayName = 'Checkbox';

@@ -1,14 +1,14 @@
-import type { OutlookClient } from "@/utils/outlook/client";
 import type {
   MessageRule,
   OutlookCategory,
-} from "@microsoft/microsoft-graph-types";
-import { createScopedLogger } from "@/utils/logger";
-import { isAlreadyExistsError } from "./errors";
-import { withOutlookRetry } from "@/utils/outlook/retry";
-import { getLabelById } from "@/utils/outlook/label";
+} from '@microsoft/microsoft-graph-types';
+import { createScopedLogger } from '@/utils/logger';
+import type { OutlookClient } from '@/utils/outlook/client';
+import { getLabelById } from '@/utils/outlook/label';
+import { withOutlookRetry } from '@/utils/outlook/retry';
+import { isAlreadyExistsError } from './errors';
 
-const logger = createScopedLogger("outlook/filter");
+const logger = createScopedLogger('outlook/filter');
 
 // Microsoft Graph API doesn't have a direct equivalent to Gmail filters
 // Instead, we can work with mail rules which are more complex but provide similar functionality
@@ -41,13 +41,13 @@ export async function createFilter(options: {
     };
 
     const response: MessageRule = await withOutlookRetry(() =>
-      client.getClient().api("/me/mailFolders/inbox/messageRules").post(rule),
+      client.getClient().api('/me/mailFolders/inbox/messageRules').post(rule)
     );
 
     return { status: 201, data: response };
   } catch (error) {
     if (isAlreadyExistsError(error)) {
-      logger.warn("Filter already exists", { from });
+      logger.warn('Filter already exists', { from });
       return { status: 200 };
     }
     throw error;
@@ -73,20 +73,20 @@ export async function createAutoArchiveFilter({
         senderContains: [from],
       },
       actions: {
-        moveToFolder: "archive",
+        moveToFolder: 'archive',
         markAsRead: true,
         ...(labelName && { assignCategories: [labelName] }),
       },
     };
 
     const response: MessageRule = await withOutlookRetry(() =>
-      client.getClient().api("/me/mailFolders/inbox/messageRules").post(rule),
+      client.getClient().api('/me/mailFolders/inbox/messageRules').post(rule)
     );
 
     return { status: 201, data: response };
   } catch (error) {
     if (isAlreadyExistsError(error)) {
-      logger.warn("Auto-archive filter already exists", { from });
+      logger.warn('Auto-archive filter already exists', { from });
       return { status: 200 };
     }
     throw error;
@@ -104,12 +104,12 @@ export async function deleteFilter(options: {
       client
         .getClient()
         .api(`/me/mailFolders/inbox/messageRules/${id}`)
-        .delete(),
+        .delete()
     );
 
     return { status: 204 };
   } catch (error) {
-    logger.error("Error deleting Outlook filter", { id, error });
+    logger.error('Error deleting Outlook filter', { id, error });
     throw error;
   }
 }
@@ -118,14 +118,14 @@ export async function getFiltersList(options: { client: OutlookClient }) {
   try {
     const response: { value: MessageRule[] } = await options.client
       .getClient()
-      .api("/me/mailFolders/inbox/messageRules")
+      .api('/me/mailFolders/inbox/messageRules')
       .get();
 
     return response;
   } catch (error) {
-    logger.error("Error getting Outlook filters list", {
+    logger.error('Error getting Outlook filters list', {
       error,
-      errorMessage: error instanceof Error ? error.message : "Unknown error",
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       errorStack: error instanceof Error ? error.stack : undefined,
     });
     throw error;
@@ -147,20 +147,20 @@ export async function createCategoryFilter({
     // First, ensure the category exists
     const categories: { value: OutlookCategory[] } = await client
       .getClient()
-      .api("/me/outlook/masterCategories")
+      .api('/me/outlook/masterCategories')
       .get();
 
     let category = categories.value.find(
-      (cat) => cat.displayName === categoryName,
+      (cat) => cat.displayName === categoryName
     );
 
     if (!category) {
       // Create the category if it doesn't exist
       category = await withOutlookRetry(() =>
-        client.getClient().api("/me/outlook/masterCategories").post({
+        client.getClient().api('/me/outlook/masterCategories').post({
           displayName: categoryName,
-          color: "preset0", // Default color
-        }),
+          color: 'preset0', // Default color
+        })
       );
     }
 
@@ -168,7 +168,7 @@ export async function createCategoryFilter({
     // This function creates the category but the actual application would need to be done
     // when processing individual messages, similar to how it's done in the label functions
 
-    logger.info("Category created for filter", {
+    logger.info('Category created for filter', {
       from,
       categoryName,
       categoryId: category?.id,
@@ -178,11 +178,11 @@ export async function createCategoryFilter({
       status: 200,
       category,
       message:
-        "Category created. Note: Categories must be applied to individual messages.",
+        'Category created. Note: Categories must be applied to individual messages.',
     };
   } catch (error) {
     if (isAlreadyExistsError(error)) {
-      logger.warn("Category filter already exists", { from, categoryName });
+      logger.warn('Category filter already exists', { from, categoryName });
       return { status: 200 };
     }
     throw error;
@@ -224,12 +224,12 @@ export async function updateFilter({
       client
         .getClient()
         .api(`/me/mailFolders/inbox/messageRules/${id}`)
-        .patch(rule),
+        .patch(rule)
     );
 
     return response;
   } catch (error) {
-    logger.error("Error updating Outlook filter", { id, error });
+    logger.error('Error updating Outlook filter', { id, error });
     throw error;
   }
 }
@@ -242,7 +242,7 @@ export async function updateFilter({
  */
 async function resolveCategoryNames(
   client: OutlookClient,
-  labelIds: string[],
+  labelIds: string[]
 ): Promise<string[]> {
   const categoryNames: string[] = [];
 
@@ -252,10 +252,10 @@ async function resolveCategoryNames(
       if (category?.displayName) {
         categoryNames.push(category.displayName);
       } else {
-        logger.error("Category not found by ID", { labelId });
+        logger.error('Category not found by ID', { labelId });
       }
     } catch (error) {
-      logger.error("Failed to resolve category ID", {
+      logger.error('Failed to resolve category ID', {
         labelId,
         error,
       });
@@ -295,18 +295,18 @@ async function buildFilterActions(options: {
   }
 
   // Handle label removals
-  if (removeLabelIds?.includes("INBOX")) {
-    actions.moveToFolder = "archive";
+  if (removeLabelIds?.includes('INBOX')) {
+    actions.moveToFolder = 'archive';
   }
 
-  if (removeLabelIds?.includes("UNREAD")) {
+  if (removeLabelIds?.includes('UNREAD')) {
     actions.markAsRead = true;
   }
 
   // If no actions were specified, default to marking as read
   // (Microsoft API requires at least one action)
   if (Object.keys(actions).length === 0) {
-    logger.warn("No actions specified for filter, defaulting to markAsRead", {
+    logger.warn('No actions specified for filter, defaulting to markAsRead', {
       addLabelIds,
       removeLabelIds,
       ...context,

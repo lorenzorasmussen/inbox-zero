@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import { useCallback, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { useAction } from "next-safe-action/hooks";
-import { Button } from "@/components/Button";
-import { saveSignatureAction } from "@/utils/actions/user";
-import type { SaveSignatureBody } from "@/utils/actions/user.validation";
-import { fetchSignaturesFromProviderAction } from "@/utils/actions/email-account";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/Button';
+import { ClientOnly } from '@/components/ClientOnly';
+import { Tiptap, type TiptapHandle } from '@/components/editor/Tiptap';
 import {
   FormSection,
   FormSectionLeft,
   FormSectionRight,
   SubmitButtonWrapper,
-} from "@/components/Form";
-import { Tiptap, type TiptapHandle } from "@/components/editor/Tiptap";
-import { toastError, toastInfo, toastSuccess } from "@/components/Toast";
-import { ClientOnly } from "@/components/ClientOnly";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { saveSignatureBody } from "@/utils/actions/user.validation";
+} from '@/components/Form';
+import { toastError, toastInfo, toastSuccess } from '@/components/Toast';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { fetchSignaturesFromProviderAction } from '@/utils/actions/email-account';
+import { saveSignatureAction } from '@/utils/actions/user';
+import type { SaveSignatureBody } from '@/utils/actions/user.validation';
+import { saveSignatureBody } from '@/utils/actions/user.validation';
 
 export const SignatureSectionForm = ({
   signature,
 }: {
   signature: string | null;
 }) => {
-  const defaultSignature = signature ?? "";
+  const defaultSignature = signature ?? '';
 
   const { handleSubmit, setValue } = useForm<SaveSignatureBody>({
     defaultValues: { signature: defaultSignature },
@@ -35,30 +35,30 @@ export const SignatureSectionForm = ({
   const editorRef = useRef<TiptapHandle>(null);
 
   const { emailAccountId, provider } = useAccount();
-  const isGmail = provider === "google";
+  const isGmail = provider === 'google';
 
   const { execute, isExecuting } = useAction(
     saveSignatureAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Signature saved" });
+        toastSuccess({ description: 'Signature saved' });
       },
       onError: (error) => {
         toastError({
-          description: error.error.serverError ?? "An unknown error occurred",
+          description: error.error.serverError ?? 'An unknown error occurred',
         });
       },
-    },
+    }
   );
   const { executeAsync: executeFetchSignatures } = useAction(
-    fetchSignaturesFromProviderAction.bind(null, emailAccountId),
+    fetchSignaturesFromProviderAction.bind(null, emailAccountId)
   );
 
   const handleEditorChange = useCallback(
     (html: string) => {
-      setValue("signature", html);
+      setValue('signature', html);
     },
-    [setValue],
+    [setValue]
   );
 
   return (
@@ -95,7 +95,7 @@ export const SignatureSectionForm = ({
 
                   if (result?.serverError) {
                     toastError({
-                      title: `Error loading signature from ${isGmail ? "Gmail" : "Outlook"}`,
+                      title: `Error loading signature from ${isGmail ? 'Gmail' : 'Outlook'}`,
                       description: result.serverError,
                     });
                     return;
@@ -108,22 +108,22 @@ export const SignatureSectionForm = ({
                   if (defaultSig?.signature) {
                     editorRef.current?.appendContent(defaultSig.signature);
                     toastSuccess({
-                      title: "Signature loaded",
+                      title: 'Signature loaded',
                       description: isGmail
-                        ? "Loaded from Gmail"
-                        : "Extracted from recent sent emails",
+                        ? 'Loaded from Gmail'
+                        : 'Extracted from recent sent emails',
                     });
                   } else {
                     toastInfo({
-                      title: "No signature found",
+                      title: 'No signature found',
                       description: isGmail
-                        ? "No signature found in your Gmail account"
-                        : "No signature found in recent sent emails",
+                        ? 'No signature found in your Gmail account'
+                        : 'No signature found in recent sent emails',
                     });
                   }
                 }}
               >
-                Load from {isGmail ? "Gmail" : "Outlook"}
+                Load from {isGmail ? 'Gmail' : 'Outlook'}
               </Button>
             </div>
           </SubmitButtonWrapper>

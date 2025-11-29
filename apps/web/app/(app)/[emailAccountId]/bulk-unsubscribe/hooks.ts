@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import { useCallback, useState, useEffect } from "react";
-import { toast } from "sonner";
-import { useAction } from "next-safe-action/hooks";
-import type { PostHog } from "posthog-js/react";
-import { onAutoArchive, onDeleteFilter } from "@/utils/actions/client";
-import { setNewsletterStatusAction } from "@/utils/actions/unsubscriber";
-import { decrementUnsubscribeCreditAction } from "@/utils/actions/premium";
-import { NewsletterStatus } from "@/generated/prisma/enums";
-import { cleanUnsubscribeLink } from "@/utils/parse/parseHtml.client";
-import { captureException } from "@/utils/error";
-import { addToArchiveSenderQueue } from "@/store/archive-sender-queue";
-import { deleteEmails } from "@/store/archive-queue";
-import type { Row } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/types";
-import type { GetThreadsResponse } from "@/app/api/threads/basic/route";
-import { isDefined } from "@/utils/types";
-import { fetchWithAccount } from "@/utils/fetch";
-import type { UserResponse } from "@/app/api/user/me/route";
+import { useAction } from 'next-safe-action/hooks';
+import type { PostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import type { Row } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/types';
+import type { GetThreadsResponse } from '@/app/api/threads/basic/route';
+import type { UserResponse } from '@/app/api/user/me/route';
+import { NewsletterStatus } from '@/generated/prisma/enums';
+import { deleteEmails } from '@/store/archive-queue';
+import { addToArchiveSenderQueue } from '@/store/archive-sender-queue';
+import { onAutoArchive, onDeleteFilter } from '@/utils/actions/client';
 import {
   bulkArchiveAction,
   bulkTrashAction,
-} from "@/utils/actions/mail-bulk-action";
+} from '@/utils/actions/mail-bulk-action';
+import { decrementUnsubscribeCreditAction } from '@/utils/actions/premium';
+import { setNewsletterStatusAction } from '@/utils/actions/unsubscriber';
+import { captureException } from '@/utils/error';
+import { fetchWithAccount } from '@/utils/fetch';
+import { cleanUnsubscribeLink } from '@/utils/parse/parseHtml.client';
+import { isDefined } from '@/utils/types';
 
 async function unsubscribeAndArchive({
   newsletterEmail,
@@ -69,7 +69,7 @@ export function useUnsubscribe<T extends Row>({
     setUnsubscribeLoading(true);
 
     try {
-      posthog.capture("Clicked Unsubscribe");
+      posthog.capture('Clicked Unsubscribe');
 
       if (item.status === NewsletterStatus.UNSUBSCRIBED) {
         await setNewsletterStatusAction(emailAccountId, {
@@ -105,8 +105,8 @@ export function useUnsubscribe<T extends Row>({
     onUnsubscribe,
     unsubscribeLink:
       hasUnsubscribeAccess && item.unsubscribeLink
-        ? cleanUnsubscribeLink(item.unsubscribeLink) || "#"
-        : "#",
+        ? cleanUnsubscribeLink(item.unsubscribeLink) || '#'
+        : '#',
   };
 }
 
@@ -132,7 +132,7 @@ export function useBulkUnsubscribe<T extends Row>({
       setBulkUnsubscribeLoading(true);
 
       try {
-        posthog.capture("Clicked Bulk Unsubscribe");
+        posthog.capture('Clicked Bulk Unsubscribe');
 
         for (const item of items) {
           try {
@@ -152,7 +152,7 @@ export function useBulkUnsubscribe<T extends Row>({
 
       setBulkUnsubscribeLoading(false);
     },
-    [hasUnsubscribeAccess, mutate, posthog, refetchPremium, emailAccountId],
+    [hasUnsubscribeAccess, mutate, posthog, refetchPremium, emailAccountId]
   );
 
   return {
@@ -227,7 +227,7 @@ export function useAutoArchive<T extends Row>({
       emailAccountId,
     });
 
-    posthog.capture("Clicked Auto Archive");
+    posthog.capture('Clicked Auto Archive');
 
     setAutoArchiveLoading(false);
   }, [
@@ -274,7 +274,7 @@ export function useAutoArchive<T extends Row>({
 
       setAutoArchiveLoading(false);
     },
-    [item.name, mutate, refetchPremium, hasUnsubscribeAccess, emailAccountId],
+    [item.name, mutate, refetchPremium, hasUnsubscribeAccess, emailAccountId]
   );
 
   return {
@@ -317,7 +317,7 @@ export function useBulkAutoArchive<T extends Row>({
 
       setBulkAutoArchiveLoading(false);
     },
-    [hasUnsubscribeAccess, mutate, refetchPremium, emailAccountId],
+    [hasUnsubscribeAccess, mutate, refetchPremium, emailAccountId]
   );
 
   return {
@@ -357,7 +357,7 @@ export function useApproveButton<T extends Row>({
     });
     await mutate();
 
-    posthog.capture("Clicked Approve Sender");
+    posthog.capture('Clicked Approve Sender');
 
     setApproveLoading(false);
   };
@@ -382,7 +382,7 @@ export function useBulkApprove<T extends Row>({
   const onBulkApprove = async (items: T[]) => {
     setBulkApproveLoading(true);
 
-    posthog.capture("Clicked Bulk Approve");
+    posthog.capture('Clicked Bulk Approve');
 
     for (const item of items) {
       await setNewsletterStatusAction(emailAccountId, {
@@ -416,11 +416,11 @@ export function useBulkArchive<T extends Row>({
       onSuccess: () => {
         mutate();
       },
-    },
+    }
   );
 
   const onBulkArchive = (items: T[]) => {
-    posthog.capture("Clicked Bulk Archive");
+    posthog.capture('Clicked Bulk Archive');
     const promise = executeBulkArchive({
       froms: items.map((item) => item.name),
     });
@@ -431,7 +431,7 @@ export function useBulkArchive<T extends Row>({
       loading: `Archiving emails from ${displayNames}...`,
       success: `Archived emails from ${displayNames}`,
       error: (error) =>
-        error?.error?.serverError || "There was an error archiving the emails",
+        error?.error?.serverError || 'There was an error archiving the emails',
     });
   };
 
@@ -480,7 +480,7 @@ async function deleteAllFromSender({
           ? `Deleting ${data} emails from ${name}...`
           : `No emails to delete from ${name}`,
       error: `There was an error deleting the emails from ${name} :(`,
-    },
+    }
   );
 }
 
@@ -498,7 +498,7 @@ export function useDeleteAllFromSender<T extends Row>({
   const onDeleteAll = async () => {
     setDeleteAllLoading(true);
 
-    posthog.capture("Clicked Delete All");
+    posthog.capture('Clicked Delete All');
 
     await deleteAllFromSender({
       name: item.name,
@@ -528,11 +528,11 @@ export function useBulkDelete<T extends Row>({
       onSuccess: () => {
         mutate();
       },
-    },
+    }
   );
 
   const onBulkDelete = (items: T[]) => {
-    posthog.capture("Clicked Bulk Delete");
+    posthog.capture('Clicked Bulk Delete');
 
     const promise = executeBulkTrash({ froms: items.map((item) => item.name) });
 
@@ -542,7 +542,7 @@ export function useBulkDelete<T extends Row>({
       loading: `Deleting emails from ${displayNames}...`,
       success: `Deleted emails from ${displayNames}`,
       error: (error) =>
-        error?.error?.serverError || "There was an error trashing the emails",
+        error?.error?.serverError || 'There was an error trashing the emails',
     });
   };
 
@@ -580,19 +580,19 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
       if (!item) return;
 
       // to prevent when typing in an input such as Crisp support
-      if (document?.activeElement?.tagName !== "BODY") return;
+      if (document?.activeElement?.tagName !== 'BODY') return;
 
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         e.preventDefault();
         const index = newsletters?.findIndex((n) => n.name === item.name);
         if (index === undefined) return;
         const nextItem =
-          newsletters?.[index + (e.key === "ArrowDown" ? 1 : -1)];
+          newsletters?.[index + (e.key === 'ArrowDown' ? 1 : -1)];
         if (!nextItem) return;
         setSelectedRow(nextItem);
         return;
       }
-      if (e.key === "Enter") {
+      if (e.key === 'Enter') {
         // open modal
         e.preventDefault();
         onOpenNewsletter(item);
@@ -601,7 +601,7 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
 
       if (!hasUnsubscribeAccess) return;
 
-      if (e.key === "e") {
+      if (e.key === 'e') {
         // auto archive
         e.preventDefault();
         onAutoArchive({
@@ -617,11 +617,11 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
         await refetchPremium();
         return;
       }
-      if (e.key === "u") {
+      if (e.key === 'u') {
         // unsubscribe
         e.preventDefault();
         if (!item.unsubscribeLink) return;
-        window.open(cleanUnsubscribeLink(item.unsubscribeLink), "_blank");
+        window.open(cleanUnsubscribeLink(item.unsubscribeLink), '_blank');
         await setNewsletterStatusAction(emailAccountId, {
           newsletterEmail: item.name,
           status: NewsletterStatus.UNSUBSCRIBED,
@@ -631,7 +631,7 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
         await refetchPremium();
         return;
       }
-      if (e.key === "a") {
+      if (e.key === 'a') {
         // approve
         e.preventDefault();
         await setNewsletterStatusAction(emailAccountId, {
@@ -642,8 +642,8 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
         return;
       }
     };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
   }, [
     mutate,
     newsletters,
@@ -658,7 +658,7 @@ export function useBulkUnsubscribeShortcuts<T extends Row>({
 
 export function useNewsletterFilter() {
   const [filters, setFilters] = useState<
-    Record<"unhandled" | "unsubscribed" | "autoArchived" | "approved", boolean>
+    Record<'unhandled' | 'unsubscribed' | 'autoArchived' | 'approved', boolean>
   >({
     unhandled: true,
     unsubscribed: true,
@@ -671,10 +671,10 @@ export function useNewsletterFilter() {
     filtersArray: Object.entries(filters)
       .filter(([, selected]) => selected)
       .map(([key]) => key) as (
-      | "unhandled"
-      | "unsubscribed"
-      | "autoArchived"
-      | "approved"
+      | 'unhandled'
+      | 'unsubscribed'
+      | 'autoArchived'
+      | 'approved'
     )[],
     setFilters,
   };
@@ -683,6 +683,6 @@ export function useNewsletterFilter() {
 function formatSenderNames<T extends Row>(items: T[]): string {
   const senderNames = items.map((item) => item.name);
   return senderNames.length > 3
-    ? `${senderNames.slice(0, 3).join(", ")}...`
-    : senderNames.join(", ");
+    ? `${senderNames.slice(0, 3).join(', ')}...`
+    : senderNames.join(', ');
 }

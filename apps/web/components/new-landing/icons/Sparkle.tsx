@@ -1,14 +1,14 @@
-import type { SVGProps } from "react";
+import type { SVGProps } from 'react';
 
 interface SparkleProps extends SVGProps<SVGSVGElement> {
   size?: number;
-  "aria-label"?: string;
+  'aria-label'?: string;
 }
 
 export function Sparkle({
   size = 15,
   className,
-  "aria-label": ariaLabel,
+  'aria-label': ariaLabel,
   ...props
 }: SparkleProps) {
   return (
@@ -19,7 +19,7 @@ export function Sparkle({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      role={ariaLabel ? "img" : undefined}
+      role={ariaLabel ? 'img' : undefined}
       aria-label={ariaLabel}
       aria-hidden={ariaLabel ? undefined : true}
       {...props}

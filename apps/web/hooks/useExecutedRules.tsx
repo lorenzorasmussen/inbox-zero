@@ -1,5 +1,5 @@
-import useSWR from "swr";
-import type { GetExecutedRulesResponse } from "@/app/api/user/executed-rules/history/route";
+import useSWR from 'swr';
+import type { GetExecutedRulesResponse } from '@/app/api/user/executed-rules/history/route';
 
 export function useExecutedRules({
   page,
@@ -9,6 +9,6 @@ export function useExecutedRules({
   ruleId: string;
 }) {
   return useSWR<GetExecutedRulesResponse>(
-    `/api/user/executed-rules/history?page=${page}&ruleId=${ruleId}`,
+    `/api/user/executed-rules/history?page=${page}&ruleId=${ruleId}`
   );
 }

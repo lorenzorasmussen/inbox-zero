@@ -1,11 +1,11 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // https://learn.microsoft.com/en-us/graph/api/resources/resourcedata?view=graph-rest-1.0
 const resourceDataSchema = z
   .object({
-    "@odata.type": z.string().optional(),
-    "@odata.id": z.string().optional(),
-    "@odata.etag": z.string().optional(),
+    '@odata.type': z.string().optional(),
+    '@odata.id': z.string().optional(),
+    '@odata.etag': z.string().optional(),
     id: z.string(), // The message identifier
   })
   .passthrough(); // Allow additional properties from other notification types

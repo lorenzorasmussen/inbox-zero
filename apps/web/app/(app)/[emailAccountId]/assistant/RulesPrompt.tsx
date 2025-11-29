@@ -1,50 +1,50 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState, useRef } from "react";
-import { useLocalStorage } from "usehooks-ts";
-import { HelpCircleIcon, SparklesIcon, UserPenIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import useSWR from "swr";
-import { Button } from "@/components/ui/button";
-import {
-  saveRulesPromptAction,
-  generateRulesPromptAction,
-} from "@/utils/actions/ai-rule";
-import {
-  SimpleRichTextEditor,
-  type SimpleRichTextEditorRef,
-} from "@/components/editor/SimpleRichTextEditor";
-import type { SaveRulesPromptBody } from "@/utils/actions/rule.validation";
-import type { RulesPromptResponse } from "@/app/api/user/rules/prompt/route";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Tooltip } from "@/components/Tooltip";
-import { AssistantOnboarding } from "@/app/(app)/[emailAccountId]/assistant/AssistantOnboarding";
+import { HelpCircleIcon, SparklesIcon, UserPenIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import useSWR from 'swr';
+import { useLocalStorage } from 'usehooks-ts';
+import { AssistantOnboarding } from '@/app/(app)/[emailAccountId]/assistant/AssistantOnboarding';
 import {
   getPersonas,
   type Personas,
-} from "@/app/(app)/[emailAccountId]/assistant/examples";
-import { PersonaDialog } from "@/app/(app)/[emailAccountId]/assistant/PersonaDialog";
-import { useModal } from "@/hooks/useModal";
-import { ProcessingPromptFileDialog } from "@/app/(app)/[emailAccountId]/assistant/ProcessingPromptFileDialog";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useLabels } from "@/hooks/useLabels";
-import { toastError } from "@/components/Toast";
+} from '@/app/(app)/[emailAccountId]/assistant/examples';
+import { PersonaDialog } from '@/app/(app)/[emailAccountId]/assistant/PersonaDialog';
+import { ProcessingPromptFileDialog } from '@/app/(app)/[emailAccountId]/assistant/ProcessingPromptFileDialog';
+import type { RulesPromptResponse } from '@/app/api/user/rules/prompt/route';
+import {
+  SimpleRichTextEditor,
+  type SimpleRichTextEditorRef,
+} from '@/components/editor/SimpleRichTextEditor';
+import { LoadingContent } from '@/components/LoadingContent';
+import { toastError } from '@/components/Toast';
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useLabels } from '@/hooks/useLabels';
+import { useModal } from '@/hooks/useModal';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { cn } from '@/utils';
+import {
+  generateRulesPromptAction,
+  saveRulesPromptAction,
+} from '@/utils/actions/ai-rule';
+import type { SaveRulesPromptBody } from '@/utils/actions/rule.validation';
+import { prefixPath } from '@/utils/path';
 
 export function RulesPrompt() {
   const { emailAccountId, provider } = useAccount();
   const { data, isLoading, error, mutate } = useSWR<
     RulesPromptResponse,
     { error: string }
-  >("/api/user/rules/prompt");
+  >('/api/user/rules/prompt');
   const { isModalOpen, setIsModalOpen } = useModal();
   const onOpenPersonaDialog = useCallback(
     () => setIsModalOpen(true),
-    [setIsModalOpen],
+    [setIsModalOpen]
   );
 
   const [persona, setPersona] = useState<string | null>(null);
@@ -120,7 +120,7 @@ function RulesPromptForm({
   const [
     viewedProcessingPromptFileDialog,
     setViewedProcessingPromptFileDialog,
-  ] = useLocalStorage("viewedProcessingPromptFileDialog", false);
+  ] = useLocalStorage('viewedProcessingPromptFileDialog', false);
 
   const router = useRouter();
 
@@ -128,7 +128,7 @@ function RulesPromptForm({
 
   const onSubmit = useCallback(async () => {
     const markdown = editorRef.current?.getMarkdown();
-    if (typeof markdown !== "string") return;
+    if (typeof markdown !== 'string') return;
 
     setIsSubmitting(true);
 
@@ -142,7 +142,7 @@ function RulesPromptForm({
       }
 
       if (viewedProcessingPromptFileDialog) {
-        router.push(prefixPath(emailAccountId, "/automation?tab=test"));
+        router.push(prefixPath(emailAccountId, '/automation?tab=test'));
       }
 
       mutate();
@@ -157,7 +157,7 @@ function RulesPromptForm({
     setResult(undefined);
 
     toast.promise(() => saveRulesPromise({ rulesPrompt: markdown }), {
-      loading: "Saving rules... This may take a while to process...",
+      loading: 'Saving rules... This may take a while to process...',
       success: (result) => {
         const {
           createdRules = 0,
@@ -167,12 +167,12 @@ function RulesPromptForm({
         setResult({ createdRules, editedRules, removedRules });
 
         const message = [
-          createdRules ? `${createdRules} rules created.` : "",
-          editedRules ? `${editedRules} rules edited.` : "",
-          removedRules ? `${removedRules} rules removed.` : "",
+          createdRules ? `${createdRules} rules created.` : '',
+          editedRules ? `${editedRules} rules edited.` : '',
+          removedRules ? `${removedRules} rules removed.` : '',
         ]
           .filter(Boolean)
-          .join(" ");
+          .join(' ');
 
         return `Rules saved successfully! ${message}`;
       },
@@ -203,14 +203,14 @@ function RulesPromptForm({
       />
 
       <div
-        className={cn(showExamples && "grid grid-cols-1 gap-4 sm:grid-cols-3")}
+        className={cn(showExamples && 'grid grid-cols-1 gap-4 sm:grid-cols-3')}
       >
         <form
           onSubmit={(e) => {
             e.preventDefault();
             onSubmit();
           }}
-          className={showExamples ? "sm:col-span-2" : ""}
+          className={showExamples ? 'sm:col-span-2' : ''}
         >
           <div className="flex items-center justify-between">
             <Label className="font-title text-xl leading-7">
@@ -225,19 +225,19 @@ function RulesPromptForm({
                     <div>
                       <span className="font-mono font-bold text-blue-400">
                         *
-                      </span>{" "}
+                      </span>{' '}
                       for bullet points
                     </div>
                     <div>
                       <span className="font-mono font-bold text-blue-400">
                         @label
-                      </span>{" "}
+                      </span>{' '}
                       for labels
                     </div>
                     <div>
                       <span className="font-mono font-bold text-blue-400">
                         &gt; text
-                      </span>{" "}
+                      </span>{' '}
                       for quotes
                     </div>
                   </div>
@@ -260,7 +260,7 @@ function RulesPromptForm({
                 userLabels={userLabels}
                 onClearContents={() => {
                   toast.info(
-                    "Note: Deleting text will delete rules. Add new rules at the end to keep your existing rules.",
+                    'Note: Deleting text will delete rules. Add new rules at the end to keep your existing rules.'
                   );
                 }}
                 placeholder={`Here's an example of what your prompt might look like:
@@ -299,7 +299,7 @@ function RulesPromptForm({
                         setIsGenerating(true);
                         const result = await generateRulesPromptAction(
                           emailAccountId,
-                          {},
+                          {}
                         );
 
                         if (result?.serverError) {
@@ -309,11 +309,11 @@ function RulesPromptForm({
 
                         if (result?.data?.rulesPrompt) {
                           editorRef.current?.appendText(
-                            `\n${result?.data?.rulesPrompt || ""}`,
+                            `\n${result?.data?.rulesPrompt || ''}`
                           );
                         } else {
                           toastError({
-                            description: "Error generating prompt",
+                            description: 'Error generating prompt',
                           });
                         }
 
@@ -322,12 +322,12 @@ function RulesPromptForm({
                         return result;
                       },
                       {
-                        loading: "Generating prompt...",
-                        success: "Prompt generated successfully!",
+                        loading: 'Generating prompt...',
+                        success: 'Prompt generated successfully!',
                         error: (err) => {
                           return `Error generating prompt: ${err.message}`;
                         },
-                      },
+                      }
                     );
                   }}
                   loading={isGenerating}

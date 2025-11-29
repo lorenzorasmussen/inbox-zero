@@ -1,11 +1,20 @@
-"use client";
+'use client';
 
-import { useAction } from "next-safe-action/hooks";
-import { useCallback } from "react";
-import useSWR from "swr";
-import { CircleXIcon } from "lucide-react";
-import { LoadingContent } from "@/components/LoadingContent";
-import type { ColdEmailsResponse } from "@/app/api/user/cold-email/route";
+import { CircleXIcon } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { useAction } from 'next-safe-action/hooks';
+import { useCallback } from 'react';
+import useSWR from 'swr';
+import { DateCell } from '@/app/(app)/[emailAccountId]/assistant/DateCell';
+import type { ColdEmailsResponse } from '@/app/api/user/cold-email/route';
+import { AlertBasic } from '@/components/Alert';
+import { Checkbox } from '@/components/Checkbox';
+import { EmailMessageCellWithData } from '@/components/EmailMessageCell';
+import { EnableFeatureCard } from '@/components/EnableFeatureCard';
+import { LoadingContent } from '@/components/LoadingContent';
+import { TablePagination } from '@/components/TablePagination';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -13,29 +22,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { DateCell } from "@/app/(app)/[emailAccountId]/assistant/DateCell";
-import { TablePagination } from "@/components/TablePagination";
-import { AlertBasic } from "@/components/Alert";
-import { Button } from "@/components/ui/button";
-import { useSearchParams } from "next/navigation";
-import { markNotColdEmailAction } from "@/utils/actions/cold-email";
-import { Checkbox } from "@/components/Checkbox";
-import { useToggleSelect } from "@/hooks/useToggleSelect";
-import { ViewEmailButton } from "@/components/ViewEmailButton";
-import { EmailMessageCellWithData } from "@/components/EmailMessageCell";
-import { EnableFeatureCard } from "@/components/EnableFeatureCard";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { useRules } from "@/hooks/useRules";
-import { isColdEmailBlockerEnabled } from "@/utils/cold-email/cold-email-blocker-enabled";
+} from '@/components/ui/table';
+import { ViewEmailButton } from '@/components/ViewEmailButton';
+import { useRules } from '@/hooks/useRules';
+import { useToggleSelect } from '@/hooks/useToggleSelect';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { markNotColdEmailAction } from '@/utils/actions/cold-email';
+import { isColdEmailBlockerEnabled } from '@/utils/cold-email/cold-email-blocker-enabled';
+import { prefixPath } from '@/utils/path';
 
 export function ColdEmailList() {
   const searchParams = useSearchParams();
-  const page = searchParams.get("page") || "1";
+  const page = searchParams.get('page') || '1';
   const { data, isLoading, error, mutate } = useSWR<ColdEmailsResponse>(
-    `/api/user/cold-email?page=${page}`,
+    `/api/user/cold-email?page=${page}`
   );
 
   const { selected, isAllSelected, onToggleSelect, onToggleSelectAll } =
@@ -46,12 +46,12 @@ export function ColdEmailList() {
     markNotColdEmailAction.bind(null, emailAccountId),
     {
       onSuccess: () => {
-        toastSuccess({ description: "Marked not cold email!" });
+        toastSuccess({ description: 'Marked not cold email!' });
       },
       onError: () => {
-        toastError({ description: "Error marking not cold email!" });
+        toastError({ description: 'Error marking not cold email!' });
       },
-    },
+    }
   );
 
   const markNotColdEmailSelected = useCallback(async () => {
@@ -133,7 +133,7 @@ function Row({
   markNotColdEmail,
   isExecuting,
 }: {
-  row: ColdEmailsResponse["coldEmails"][number];
+  row: ColdEmailsResponse['coldEmails'][number];
   userEmail: string;
   mutate: () => void;
   selected: Map<string, boolean>;
@@ -153,11 +153,11 @@ function Row({
         <EmailMessageCellWithData
           sender={row.fromEmail}
           userEmail={userEmail}
-          threadId={row.threadId || ""}
-          messageId={row.messageId || ""}
+          threadId={row.threadId || ''}
+          messageId={row.messageId || ''}
         />
       </TableCell>
-      <TableCell>{row.reason || "-"}</TableCell>
+      <TableCell>{row.reason || '-'}</TableCell>
       <TableCell>
         <DateCell createdAt={row.createdAt} />
       </TableCell>
@@ -198,7 +198,7 @@ function NoColdEmails() {
           imageSrc="/images/illustrations/calling-help.svg"
           imageAlt="Cold email blocker"
           buttonText="Set Up"
-          href={prefixPath(emailAccountId, "/cold-email-blocker?tab=settings")}
+          href={prefixPath(emailAccountId, '/cold-email-blocker?tab=settings')}
           hideBorder
         />
       </div>

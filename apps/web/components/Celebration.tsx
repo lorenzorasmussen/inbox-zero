@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Confetti from "react-dom-confetti";
-import Image from "next/image";
-import { getCelebrationImage } from "@/utils/celebration";
-import { Button } from "@/components/Button";
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import Confetti from 'react-dom-confetti';
+import { Button } from '@/components/Button';
+import { getCelebrationImage } from '@/utils/celebration';
 
 export function Celebration(props: { message: string }) {
   const [active, setActive] = useState(false);
@@ -34,13 +34,13 @@ export function Celebration(props: { message: string }) {
           size="2xl"
           onClick={() => {
             const tweet = encodeURIComponent(
-              "I made it to Inbox Zero thanks to @inboxzero_ai!",
+              'I made it to Inbox Zero thanks to @inboxzero_ai!'
             );
             const twitterIntentURL = `https://x.com/intent/tweet?text=${tweet}`;
             window.open(
               twitterIntentURL,
-              "_blank",
-              "noopener,noreferrer,width=550,height=420",
+              '_blank',
+              'noopener,noreferrer,width=550,height=420'
             );
           }}
         >

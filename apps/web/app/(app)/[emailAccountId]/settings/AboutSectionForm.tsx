@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { useAction } from "next-safe-action/hooks";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/Input";
-import { saveAboutAction } from "@/utils/actions/user";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAction } from 'next-safe-action/hooks';
+import { useForm } from 'react-hook-form';
 import {
   FormSection,
   FormSectionLeft,
   FormSectionRight,
-} from "@/components/Form";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { useEmailAccountFull } from "@/hooks/useEmailAccountFull";
-import { Skeleton } from "@/components/ui/skeleton";
-import { LoadingContent } from "@/components/LoadingContent";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@/components/Form';
+import { Input } from '@/components/Input';
+import { LoadingContent } from '@/components/LoadingContent';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useEmailAccountFull } from '@/hooks/useEmailAccountFull';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { saveAboutAction } from '@/utils/actions/user';
 import {
   type SaveAboutBody,
   saveAboutBody,
-} from "@/utils/actions/user.validation";
+} from '@/utils/actions/user.validation';
 
 export function AboutSectionFull() {
   return (
@@ -65,7 +65,7 @@ const AboutSectionForm = ({
     formState: { errors },
     handleSubmit,
   } = useForm<SaveAboutBody>({
-    defaultValues: { about: about ?? "" },
+    defaultValues: { about: about ?? '' },
     resolver: zodResolver(saveAboutBody),
   });
 
@@ -76,20 +76,20 @@ const AboutSectionForm = ({
     {
       onSuccess: () => {
         toastSuccess({
-          description: "Your profile has been updated!",
+          description: 'Your profile has been updated!',
         });
       },
       onError: (error) => {
         toastError({
           description:
             error.error.serverError ??
-            "An unknown error occurred while updating your profile",
+            'An unknown error occurred while updating your profile',
         });
       },
       onSettled: () => {
         mutate();
       },
-    },
+    }
   );
 
   return (
@@ -100,7 +100,7 @@ const AboutSectionForm = ({
         rows={4}
         name="about"
         label=""
-        registerProps={register("about")}
+        registerProps={register('about')}
         error={errors.about}
         placeholder={`My name is John Doe. I'm the founder of a startup called Doe.
 Some rules to follow:

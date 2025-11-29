@@ -1,20 +1,20 @@
-import uniqBy from "lodash/uniqBy";
-import { NextResponse } from "next/server";
-import { getGmailClientWithRefresh } from "@/utils/gmail/client";
-import { GmailLabel } from "@/utils/gmail/label";
-import { captureException } from "@/utils/error";
+import uniqBy from 'lodash/uniqBy';
+import { NextResponse } from 'next/server';
+import { processHistoryItem } from '@/app/api/google/webhook/process-history-item';
 import {
   HistoryEventType,
   type ProcessHistoryOptions,
-} from "@/app/api/google/webhook/types";
-import { processHistoryItem } from "@/app/api/google/webhook/process-history-item";
-import { getHistory } from "@/utils/gmail/history";
+} from '@/app/api/google/webhook/types';
+import { captureException } from '@/utils/error';
+import { getGmailClientWithRefresh } from '@/utils/gmail/client';
+import { getHistory } from '@/utils/gmail/history';
+import { GmailLabel } from '@/utils/gmail/label';
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 import {
-  validateWebhookAccount,
   getWebhookEmailAccount,
-} from "@/utils/webhook/validate-webhook-account";
-import prisma from "@/utils/prisma";
-import type { Logger } from "@/utils/logger";
+  validateWebhookAccount,
+} from '@/utils/webhook/validate-webhook-account';
 
 export async function processHistoryForUser(
   decodedData: {
@@ -22,7 +22,7 @@ export async function processHistoryForUser(
     historyId: number;
   },
   options: { startHistoryId?: string },
-  logger: Logger,
+  logger: Logger
 ) {
   const startTime = Date.now();
   const { emailAddress, historyId } = decodedData;
@@ -52,13 +52,13 @@ export async function processHistoryForUser(
     !validatedEmailAccount.account?.access_token ||
     !validatedEmailAccount.account?.refresh_token
   ) {
-    logger.error("Missing tokens after validation");
+    logger.error('Missing tokens after validation');
     return NextResponse.json({ error: true });
   }
 
   const accountAccessToken = validatedEmailAccount.account.access_token;
   const accountRefreshToken = validatedEmailAccount.account.refresh_token;
-  const accountProvider = validatedEmailAccount.account.provider || "google";
+  const accountProvider = validatedEmailAccount.account.provider || 'google';
 
   try {
     const gmail = await getGmailClientWithRefresh({
@@ -71,11 +71,11 @@ export async function processHistoryForUser(
     const startHistoryId =
       options?.startHistoryId ||
       Math.max(
-        Number.parseInt(emailAccount?.lastSyncedHistoryId || "0"),
-        historyId - 500, // avoid going too far back
+        Number.parseInt(emailAccount?.lastSyncedHistoryId || '0'),
+        historyId - 500 // avoid going too far back
       ).toString();
 
-    logger.info("Listing history", {
+    logger.info('Listing history', {
       startHistoryId,
       lastSyncedHistoryId: emailAccount?.lastSyncedHistoryId,
       gmailHistoryId: startHistoryId,
@@ -85,12 +85,12 @@ export async function processHistoryForUser(
       // NOTE this can cause problems if we're way behind
       // NOTE this doesn't include startHistoryId in the results
       startHistoryId,
-      historyTypes: ["messageAdded", "labelAdded", "labelRemoved"],
+      historyTypes: ['messageAdded', 'labelAdded', 'labelRemoved'],
       maxResults: 500,
     });
 
     if (history.history) {
-      logger.info("Processing history", { startHistoryId });
+      logger.info('Processing history', { startHistoryId });
 
       await processHistory(
         {
@@ -107,10 +107,10 @@ export async function processHistoryForUser(
             },
           },
         },
-        logger,
+        logger
       );
     } else {
-      logger.info("No history", { startHistoryId });
+      logger.info('No history', { startHistoryId });
 
       // important to save this or we can get into a loop with never receiving history
       await updateLastSyncedHistoryId({
@@ -120,17 +120,17 @@ export async function processHistoryForUser(
     }
 
     const processingTimeMs = Date.now() - startTime;
-    logger.info("Completed processing history", { processingTimeMs });
+    logger.info('Completed processing history', { processingTimeMs });
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    if (error instanceof Error && error.message === "invalid_grant") {
-      logger.warn("Invalid grant", { email });
+    if (error instanceof Error && error.message === 'invalid_grant') {
+      logger.warn('Invalid grant', { email });
       return NextResponse.json({ ok: true });
     }
 
     captureException(error, { extra: { decodedData } }, email);
-    logger.error("Error processing webhook", {
+    logger.error('Error processing webhook', {
       error:
         error instanceof Error
           ? {
@@ -165,7 +165,7 @@ async function processHistory(options: ProcessHistoryOptions, logger: Logger) {
         .filter((m) => {
           const isRelevant = isInboxOrSentMessage(m);
           if (!isRelevant) {
-            logger.info("Skipping message not in inbox or sent", {
+            logger.info('Skipping message not in inbox or sent', {
               messageId: m.message?.id,
               labelIds: m.message?.labelIds,
             });
@@ -185,7 +185,7 @@ async function processHistory(options: ProcessHistoryOptions, logger: Logger) {
 
     const uniqueEvents = uniqBy(
       allEvents,
-      (e) => `${e.type}:${e.item.message?.id}`,
+      (e) => `${e.type}:${e.item.message?.id}`
     );
 
     for (const event of uniqueEvents) {
@@ -200,9 +200,9 @@ async function processHistory(options: ProcessHistoryOptions, logger: Logger) {
         captureException(
           error,
           { extra: { userEmail, messageId: event.item.message?.id } },
-          userEmail,
+          userEmail
         );
-        logger.error("Error processing history item", { error });
+        logger.error('Error processing history item', { error });
       }
     }
   }

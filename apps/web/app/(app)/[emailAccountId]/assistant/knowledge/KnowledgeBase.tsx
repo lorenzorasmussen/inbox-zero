@@ -1,10 +1,22 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import useSWR from "swr";
-import { Plus, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Plus, Trash2 } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import useSWR from 'swr';
+import { KnowledgeForm } from '@/app/(app)/[emailAccountId]/assistant/knowledge/KnowledgeForm';
+import type { GetKnowledgeResponse } from '@/app/api/knowledge/route';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { LoadingContent } from '@/components/LoadingContent';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -12,30 +24,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { deleteKnowledgeAction } from "@/utils/actions/knowledge";
-import { toastError, toastSuccess } from "@/components/Toast";
-import { LoadingContent } from "@/components/LoadingContent";
-import { formatDateSimple } from "@/utils/date";
-import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { KnowledgeForm } from "@/app/(app)/[emailAccountId]/assistant/knowledge/KnowledgeForm";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import type { GetKnowledgeResponse } from "@/app/api/knowledge/route";
-import type { Knowledge } from "@/generated/prisma/client";
+} from '@/components/ui/table';
+import type { Knowledge } from '@/generated/prisma/client';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { deleteKnowledgeAction } from '@/utils/actions/knowledge';
+import { formatDateSimple } from '@/utils/date';
 
 export function KnowledgeBase() {
   const { emailAccountId } = useAccount();
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Knowledge | null>(null);
   const { data, isLoading, error, mutate } =
-    useSWR<GetKnowledgeResponse>("/api/knowledge");
+    useSWR<GetKnowledgeResponse>('/api/knowledge');
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
@@ -59,7 +59,7 @@ export function KnowledgeBase() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {editingItem ? "Edit Knowledge" : "Add Knowledge"}
+              {editingItem ? 'Edit Knowledge' : 'Add Knowledge'}
             </DialogTitle>
           </DialogHeader>
           <KnowledgeForm
@@ -159,13 +159,13 @@ function KnowledgeTableRow({
                 });
                 if (result?.serverError) {
                   toastError({
-                    title: "Error deleting knowledge base entry",
-                    description: result.serverError || "",
+                    title: 'Error deleting knowledge base entry',
+                    description: result.serverError || '',
                   });
                   return;
                 }
                 toastSuccess({
-                  description: "Knowledge base entry deleted successfully",
+                  description: 'Knowledge base entry deleted successfully',
                 });
                 onDelete();
               } finally {

@@ -1,20 +1,20 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { SectionDescription, TypographyH3 } from "@/components/Typography";
-import { Footer } from "@/app/(landing)/home/Footer";
-import { FinalCTA } from "@/app/(landing)/home/FinalCTA";
-import { CardBasic } from "@/components/ui/card";
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { FinalCTA } from '@/app/(landing)/home/FinalCTA';
+import { Footer } from '@/app/(landing)/home/Footer';
+import { BlogHeader } from '@/components/layouts/BlogLayout';
+import { Button } from '@/components/new-landing/common/Button';
 import {
   PageHeading,
   Paragraph,
-} from "@/components/new-landing/common/Typography";
-import { Button } from "@/components/new-landing/common/Button";
-import { BlogHeader } from "@/components/layouts/BlogLayout";
+} from '@/components/new-landing/common/Typography';
+import { SectionDescription, TypographyH3 } from '@/components/Typography';
+import { CardBasic } from '@/components/ui/card';
 
 export const metadata: Metadata = {
-  title: "Open Source Friends | Inbox Zero",
-  description: "Some other great Open Source projects to follow",
-  alternates: { canonical: "/oss-friends" },
+  title: 'Open Source Friends | Inbox Zero',
+  description: 'Some other great Open Source projects to follow',
+  alternates: { canonical: '/oss-friends' },
 };
 
 type OSSFriend = {
@@ -25,7 +25,7 @@ type OSSFriend = {
 
 export default async function OSSFriendsPage() {
   try {
-    const res = await fetch("https://formbricks.com/api/oss-friends");
+    const res = await fetch('https://formbricks.com/api/oss-friends');
     const data: { data: OSSFriend[] } = await res.json();
 
     return (

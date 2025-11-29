@@ -1,12 +1,12 @@
-import type { gmail_v1 } from "@googleapis/gmail";
-import type { RuleWithActions } from "@/utils/types";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailAccount } from "@/generated/prisma/client";
+import type { gmail_v1 } from '@googleapis/gmail';
+import type { EmailAccount } from '@/generated/prisma/client';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { RuleWithActions } from '@/utils/types';
 
 export const HistoryEventType = {
-  MESSAGE_ADDED: "messageAdded",
-  LABEL_ADDED: "labelAdded",
-  LABEL_REMOVED: "labelRemoved",
+  MESSAGE_ADDED: 'messageAdded',
+  LABEL_ADDED: 'labelAdded',
+  LABEL_REMOVED: 'labelRemoved',
 } as const;
 
 export type HistoryEventType =
@@ -19,6 +19,6 @@ export type ProcessHistoryOptions = {
   rules: RuleWithActions[];
   hasAutomationRules: boolean;
   hasAiAccess: boolean;
-  emailAccount: Pick<EmailAccount, "autoCategorizeSenders"> &
+  emailAccount: Pick<EmailAccount, 'autoCategorizeSenders'> &
     EmailAccountWithAI;
 };

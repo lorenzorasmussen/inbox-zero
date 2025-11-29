@@ -1,31 +1,31 @@
-"use server";
+'use server';
 
-import { actionClient } from "@/utils/actions/safe-action";
 import {
   disconnectMcpConnectionBody,
+  testMcpSchema,
   toggleMcpConnectionBody,
   toggleMcpToolBody,
-} from "@/utils/actions/mcp.validation";
-import prisma from "@/utils/prisma";
-import { SafeError } from "@/utils/error";
-import { mcpAgent } from "@/utils/ai/mcp/mcp-agent";
-import { getEmailAccountWithAi } from "@/utils/user/get";
-import type { EmailForLLM } from "@/utils/types";
-import { testMcpSchema } from "@/utils/actions/mcp.validation";
+} from '@/utils/actions/mcp.validation';
+import { actionClient } from '@/utils/actions/safe-action';
+import { mcpAgent } from '@/utils/ai/mcp/mcp-agent';
+import { SafeError } from '@/utils/error';
+import prisma from '@/utils/prisma';
+import type { EmailForLLM } from '@/utils/types';
+import { getEmailAccountWithAi } from '@/utils/user/get';
 
 export const disconnectMcpConnectionAction = actionClient
-  .metadata({ name: "disconnectMcpConnection" })
+  .metadata({ name: 'disconnectMcpConnection' })
   .inputSchema(disconnectMcpConnectionBody)
   .action(
     async ({ ctx: { emailAccountId }, parsedInput: { connectionId } }) => {
       await prisma.mcpConnection.delete({
         where: { id: connectionId, emailAccountId },
       });
-    },
+    }
   );
 
 export const toggleMcpConnectionAction = actionClient
-  .metadata({ name: "toggleMcpConnection" })
+  .metadata({ name: 'toggleMcpConnection' })
   .inputSchema(toggleMcpConnectionBody)
   .action(
     async ({
@@ -36,11 +36,11 @@ export const toggleMcpConnectionAction = actionClient
         where: { id: connectionId, emailAccountId },
         data: { isActive },
       });
-    },
+    }
   );
 
 export const toggleMcpToolAction = actionClient
-  .metadata({ name: "toggleMcpTool" })
+  .metadata({ name: 'toggleMcpTool' })
   .inputSchema(toggleMcpToolBody)
   .action(
     async ({ ctx: { emailAccountId }, parsedInput: { toolId, isEnabled } }) => {
@@ -48,11 +48,11 @@ export const toggleMcpToolAction = actionClient
         where: { id: toolId, connection: { emailAccountId } },
         data: { isEnabled },
       });
-    },
+    }
   );
 
 export const testMcpAction = actionClient
-  .metadata({ name: "mcpAgent" })
+  .metadata({ name: 'mcpAgent' })
   .inputSchema(testMcpSchema)
   .action(
     async ({
@@ -60,10 +60,10 @@ export const testMcpAction = actionClient
       parsedInput: { from, subject, content },
     }) => {
       const emailAccount = await getEmailAccountWithAi({ emailAccountId });
-      if (!emailAccount) throw new SafeError("Email account not found");
+      if (!emailAccount) throw new SafeError('Email account not found');
 
       const testMessage: EmailForLLM = {
-        id: "test-message-id",
+        id: 'test-message-id',
         to: emailAccount.email,
         from,
         subject,
@@ -76,5 +76,5 @@ export const testMcpAction = actionClient
         response: result?.response,
         toolCalls: result?.getToolCalls(),
       };
-    },
+    }
   );

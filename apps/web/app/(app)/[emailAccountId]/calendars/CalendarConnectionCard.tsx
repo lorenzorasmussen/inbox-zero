@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
+import { Trash2, XCircle } from 'lucide-react';
+import Image from 'next/image';
+import { useAction } from 'next-safe-action/hooks';
+import { useState } from 'react';
+import type { GetCalendarsResponse } from '@/app/api/user/calendars/route';
+import { TypographyP } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Trash2, XCircle } from "lucide-react";
-import { CalendarList } from "./CalendarList";
-import { useAction } from "next-safe-action/hooks";
+} from '@/components/ui/card';
+import { useCalendars } from '@/hooks/useCalendars';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
   disconnectCalendarAction,
   toggleCalendarAction,
-} from "@/utils/actions/calendar";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { useCalendars } from "@/hooks/useCalendars";
-import { useState } from "react";
-import type { GetCalendarsResponse } from "@/app/api/user/calendars/route";
-import Image from "next/image";
-import { TypographyP } from "@/components/Typography";
+} from '@/utils/actions/calendar';
+import { CalendarList } from './CalendarList';
 
-type CalendarConnection = GetCalendarsResponse["connections"][0];
+type CalendarConnection = GetCalendarsResponse['connections'][0];
 
 interface CalendarConnectionCardProps {
   connection: CalendarConnection;
@@ -31,14 +31,14 @@ interface CalendarConnectionCardProps {
 const getProviderInfo = (provider: string) => {
   const providers = {
     microsoft: {
-      name: "Microsoft Calendar",
-      icon: "/images/product/outlook-calendar.svg",
-      alt: "Microsoft Calendar",
+      name: 'Microsoft Calendar',
+      icon: '/images/product/outlook-calendar.svg',
+      alt: 'Microsoft Calendar',
     },
     google: {
-      name: "Google Calendar",
-      icon: "/images/product/google-calendar.svg",
-      alt: "Google Calendar",
+      name: 'Google Calendar',
+      icon: '/images/product/google-calendar.svg',
+      alt: 'Google Calendar',
     },
   };
 
@@ -59,13 +59,13 @@ export function CalendarConnectionCard({
   const { execute: executeDisconnect, isExecuting: isDisconnecting } =
     useAction(disconnectCalendarAction.bind(null, emailAccountId));
   const { execute: executeToggle } = useAction(
-    toggleCalendarAction.bind(null, emailAccountId),
+    toggleCalendarAction.bind(null, emailAccountId)
   );
 
   const handleDisconnect = async () => {
     if (
       confirm(
-        "Are you sure you want to disconnect this calendar? This will remove all associated calendars.",
+        'Are you sure you want to disconnect this calendar? This will remove all associated calendars.'
       )
     ) {
       executeDisconnect({ connectionId: connection.id });
@@ -75,7 +75,7 @@ export function CalendarConnectionCard({
 
   const handleToggleCalendar = async (
     calendarId: string,
-    isEnabled: boolean,
+    isEnabled: boolean
   ) => {
     setOptimisticUpdates((prev) => ({ ...prev, [calendarId]: isEnabled }));
 
@@ -89,13 +89,13 @@ export function CalendarConnectionCard({
                   ...conn,
                   calendars:
                     conn.calendars?.map((cal) =>
-                      cal.id === calendarId ? { ...cal, isEnabled } : cal,
+                      cal.id === calendarId ? { ...cal, isEnabled } : cal
                     ) || [],
                 }
-              : conn,
+              : conn
           ),
         },
-        false,
+        false
       );
     }
 

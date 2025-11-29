@@ -1,24 +1,24 @@
-import type { ParsedMessage } from "@/utils/types";
-import { internalDateToDate } from "@/utils/date";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
-import { aiDraftWithKnowledge } from "@/utils/ai/reply/draft-with-knowledge";
-import { getReply, saveReply } from "@/utils/redis/reply";
-import { getWritingStyle } from "@/utils/user/get";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { createScopedLogger } from "@/utils/logger";
-import prisma from "@/utils/prisma";
-import { aiExtractRelevantKnowledge } from "@/utils/ai/knowledge/extract";
-import { stringifyEmail } from "@/utils/stringify-email";
-import { aiExtractFromEmailHistory } from "@/utils/ai/knowledge/extract-from-email-history";
-import type { EmailProvider } from "@/utils/email/types";
-import { aiCollectReplyContext } from "@/utils/ai/reply/reply-context-collector";
-import { getOrCreateReferralCode } from "@/utils/referral/referral-code";
-import { generateReferralLink } from "@/utils/referral/referral-link";
-import { aiGetCalendarAvailability } from "@/utils/ai/calendar/availability";
-import { env } from "@/env";
-import { mcpAgent } from "@/utils/ai/mcp/mcp-agent";
+import { env } from '@/env';
+import { aiGetCalendarAvailability } from '@/utils/ai/calendar/availability';
+import { aiExtractRelevantKnowledge } from '@/utils/ai/knowledge/extract';
+import { aiExtractFromEmailHistory } from '@/utils/ai/knowledge/extract-from-email-history';
+import { mcpAgent } from '@/utils/ai/mcp/mcp-agent';
+import { aiDraftWithKnowledge } from '@/utils/ai/reply/draft-with-knowledge';
+import { aiCollectReplyContext } from '@/utils/ai/reply/reply-context-collector';
+import { internalDateToDate } from '@/utils/date';
+import type { EmailProvider } from '@/utils/email/types';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { getReply, saveReply } from '@/utils/redis/reply';
+import { getOrCreateReferralCode } from '@/utils/referral/referral-code';
+import { generateReferralLink } from '@/utils/referral/referral-link';
+import { stringifyEmail } from '@/utils/stringify-email';
+import type { ParsedMessage } from '@/utils/types';
+import { getWritingStyle } from '@/utils/user/get';
 
-const logger = createScopedLogger("generate-reply");
+const logger = createScopedLogger('generate-reply');
 
 /**
  * Fetches thread messages and generates draft content in one step
@@ -27,7 +27,7 @@ export async function fetchMessagesAndGenerateDraft(
   emailAccount: EmailAccountWithAI,
   threadId: string,
   client: EmailProvider,
-  testMessage?: ParsedMessage,
+  testMessage?: ParsedMessage
 ): Promise<string> {
   const { threadMessages, previousConversationMessages } = testMessage
     ? { threadMessages: [testMessage], previousConversationMessages: null }
@@ -37,11 +37,11 @@ export async function fetchMessagesAndGenerateDraft(
     emailAccount,
     threadMessages,
     previousConversationMessages,
-    client,
+    client
   );
 
-  if (typeof result !== "string") {
-    throw new Error("Draft result is not a string");
+  if (typeof result !== 'string') {
+    throw new Error('Draft result is not a string');
   }
 
   const emailAccountWithSignatures = await prisma.emailAccount.findUnique({
@@ -59,7 +59,7 @@ export async function fetchMessagesAndGenerateDraft(
     emailAccountWithSignatures?.includeReferralSignature
   ) {
     const referralSignature = await getOrCreateReferralCode(
-      emailAccount.userId,
+      emailAccount.userId
     );
     const referralLink = generateReferralLink(referralSignature.code);
     const htmlSignature = `Drafted by <a href="${referralLink}">Inbox Zero</a>.`;
@@ -78,7 +78,7 @@ export async function fetchMessagesAndGenerateDraft(
  */
 async function fetchThreadAndConversationMessages(
   threadId: string,
-  client: EmailProvider,
+  client: EmailProvider
 ): Promise<{
   threadMessages: ParsedMessage[];
   previousConversationMessages: ParsedMessage[] | null;
@@ -86,7 +86,7 @@ async function fetchThreadAndConversationMessages(
   const threadMessages = await client.getThreadMessages(threadId);
   const previousConversationMessages =
     await client.getPreviousConversationMessages(
-      threadMessages.map((msg) => msg.id),
+      threadMessages.map((msg) => msg.id)
     );
 
   return {
@@ -99,11 +99,11 @@ async function generateDraftContent(
   emailAccount: EmailAccountWithAI,
   threadMessages: ParsedMessage[],
   previousConversationMessages: ParsedMessage[] | null,
-  emailProvider: EmailProvider,
+  emailProvider: EmailProvider
 ) {
   const lastMessage = threadMessages.at(-1);
 
-  if (!lastMessage) throw new Error("No message provided");
+  if (!lastMessage) throw new Error('No message provided');
 
   // Check Redis cache for reply
   const reply = await getReply({
@@ -126,14 +126,14 @@ async function generateDraftContent(
   // 1. Get knowledge base entries
   const knowledgeBase = await prisma.knowledge.findMany({
     where: { emailAccountId: emailAccount.id },
-    orderBy: { updatedAt: "desc" },
+    orderBy: { updatedAt: 'desc' },
   });
 
   // If we have knowledge base entries, extract relevant knowledge and draft with it
   // 2a. Extract relevant knowledge
   const lastMessageContent = stringifyEmail(
     messages[messages.length - 1],
-    10_000,
+    10_000
   );
   const [
     knowledgeResult,
@@ -160,7 +160,7 @@ async function generateDraftContent(
   // 2b. Extract email history context
   const senderEmail = lastMessage.headers.from;
 
-  logger.info("Fetching historical messages from sender", {
+  logger.info('Fetching historical messages from sender', {
     sender: senderEmail,
   });
 
@@ -193,7 +193,7 @@ async function generateDraftContent(
     mcpContext: mcpResult?.response || null,
   });
 
-  if (typeof text === "string") {
+  if (typeof text === 'string') {
     await saveReply({
       emailAccountId: emailAccount.id,
       messageId: lastMessage.id,

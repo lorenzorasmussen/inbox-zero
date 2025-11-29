@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { CheckIcon } from "lucide-react";
-import { cn } from "@/utils";
+import { CheckIcon } from 'lucide-react';
+import * as React from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Command,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandSeparator,
-} from "@/components/ui/command";
+} from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
+import { cn } from '@/utils';
 
 interface MultiSelectFilterProps<_TData, _TValue> {
   title?: string;
@@ -55,7 +55,7 @@ export function MultiSelectFilter<TData, TValue>({
                 {selectedValues.size}
               </Badge>
               <div className="hidden space-x-1 lg:flex">
-                {typeof maxDisplayedValues === "number" &&
+                {typeof maxDisplayedValues === 'number' &&
                 selectedValues.size > maxDisplayedValues ? (
                   <Badge
                     variant="secondary"
@@ -90,7 +90,7 @@ export function MultiSelectFilter<TData, TValue>({
               <CommandItem
                 onSelect={() =>
                   setSelectedValues(
-                    new Set(options.map((option) => option.value)),
+                    new Set(options.map((option) => option.value))
                   )
                 }
                 className="justify-center text-center"
@@ -130,13 +130,13 @@ export function MultiSelectFilter<TData, TValue>({
                   >
                     <div
                       className={cn(
-                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
                         isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "opacity-50 [&_svg]:invisible",
+                          ? 'bg-primary text-primary-foreground'
+                          : 'opacity-50 [&_svg]:invisible'
                       )}
                     >
-                      <CheckIcon className={cn("h-4 w-4")} />
+                      <CheckIcon className={cn('h-4 w-4')} />
                     </div>
                     {option.icon && (
                       <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -155,7 +155,7 @@ export function MultiSelectFilter<TData, TValue>({
 
 export function useMultiSelectFilter(options: string[]) {
   const [selectedValues, setSelectedValues] = React.useState<Set<string>>(
-    new Set(options),
+    new Set(options)
   );
   return { selectedValues, setSelectedValues };
 }

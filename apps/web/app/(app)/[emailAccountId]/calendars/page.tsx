@@ -1,9 +1,9 @@
-import { PageWrapper } from "@/components/PageWrapper";
-import { PageHeader } from "@/components/PageHeader";
-import { CalendarConnections } from "./CalendarConnections";
-import { CalendarSettings } from "./CalendarSettings";
-import { ConnectCalendar } from "@/app/(app)/[emailAccountId]/calendars/ConnectCalendar";
-import { TimezoneDetector } from "./TimezoneDetector";
+import { ConnectCalendar } from '@/app/(app)/[emailAccountId]/calendars/ConnectCalendar';
+import { PageHeader } from '@/components/PageHeader';
+import { PageWrapper } from '@/components/PageWrapper';
+import { CalendarConnections } from './CalendarConnections';
+import { CalendarSettings } from './CalendarSettings';
+import { TimezoneDetector } from './TimezoneDetector';
 
 export default function CalendarsPage() {
   return (

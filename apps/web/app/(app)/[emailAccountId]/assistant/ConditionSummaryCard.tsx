@@ -1,27 +1,27 @@
-import { BotIcon, FilterIcon } from "lucide-react";
-import type { CreateRuleBody } from "@/utils/actions/rule.validation";
-import { ConditionType } from "@/utils/config";
-import { CardBasic } from "@/components/ui/card";
+import { BotIcon, FilterIcon } from 'lucide-react';
+import { CardBasic } from '@/components/ui/card';
+import type { CreateRuleBody } from '@/utils/actions/rule.validation';
+import { ConditionType } from '@/utils/config';
 
 export function ConditionSummaryCard({
   condition,
 }: {
-  condition: CreateRuleBody["conditions"][number];
+  condition: CreateRuleBody['conditions'][number];
 }) {
   let summaryContent: React.ReactNode = condition.type;
   let Icon = FilterIcon;
-  let textColorClass = "text-gray-500";
+  let textColorClass = 'text-gray-500';
 
   switch (condition.type) {
     case ConditionType.AI: {
       Icon = BotIcon;
-      textColorClass = "text-purple-500";
-      summaryContent = condition.instructions || "No instructions set";
+      textColorClass = 'text-purple-500';
+      summaryContent = condition.instructions || 'No instructions set';
       break;
     }
 
     case ConditionType.STATIC: {
-      textColorClass = "text-blue-500";
+      textColorClass = 'text-blue-500';
       const parts: string[] = [];
 
       if (condition.from) {
@@ -48,7 +48,7 @@ export function ConditionSummaryCard({
           </>
         );
       } else {
-        summaryContent = "Static Condition (no filters set)";
+        summaryContent = 'Static Condition (no filters set)';
       }
       break;
     }

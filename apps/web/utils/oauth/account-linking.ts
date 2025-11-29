@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import { env } from "@/env";
-import prisma from "@/utils/prisma";
-import type { Logger } from "@/utils/logger";
-import { cleanupOrphanedAccount } from "@/utils/user/orphaned-account";
+import { NextResponse } from 'next/server';
+import { env } from '@/env';
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { cleanupOrphanedAccount } from '@/utils/user/orphaned-account';
 
 interface AccountLinkingParams {
   existingAccountId: string | null;
   hasEmailAccount: boolean;
   existingUserId: string | null;
   targetUserId: string;
-  provider: "google" | "microsoft";
+  provider: 'google' | 'microsoft';
   providerEmail: string;
   logger: Logger;
 }
@@ -23,14 +23,14 @@ export async function handleAccountLinking({
   providerEmail,
   logger,
 }: AccountLinkingParams): Promise<
-  | { type: "continue_create" }
-  | { type: "redirect"; response: NextResponse }
-  | { type: "merge"; sourceAccountId: string; sourceUserId: string }
+  | { type: 'continue_create' }
+  | { type: 'redirect'; response: NextResponse }
+  | { type: 'merge'; sourceAccountId: string; sourceUserId: string }
 > {
-  const redirectUrl = new URL("/accounts", env.NEXT_PUBLIC_BASE_URL);
+  const redirectUrl = new URL('/accounts', env.NEXT_PUBLIC_BASE_URL);
 
   if (existingAccountId && !hasEmailAccount) {
-    logger.warn("Found orphaned Account, cleaning up", {
+    logger.warn('Found orphaned Account, cleaning up', {
       orphanedAccountId: existingAccountId,
       orphanedUserId: existingUserId,
       email: providerEmail,
@@ -38,7 +38,7 @@ export async function handleAccountLinking({
     });
 
     await cleanupOrphanedAccount(existingAccountId, logger);
-    return { type: "continue_create" };
+    return { type: 'continue_create' };
   }
 
   if (!existingAccountId || !hasEmailAccount) {
@@ -54,16 +54,16 @@ export async function handleAccountLinking({
           email: providerEmail,
           existingUserId: existingEmailAccount.userId,
           targetUserId,
-        },
+        }
       );
-      redirectUrl.searchParams.set("error", "account_already_exists_use_merge");
+      redirectUrl.searchParams.set('error', 'account_already_exists_use_merge');
       return {
-        type: "redirect",
+        type: 'redirect',
         response: NextResponse.redirect(redirectUrl),
       };
     }
 
-    return { type: "continue_create" };
+    return { type: 'continue_create' };
   }
 
   if (existingUserId === targetUserId) {
@@ -71,25 +71,25 @@ export async function handleAccountLinking({
       email: providerEmail,
       targetUserId,
     });
-    redirectUrl.searchParams.set("error", "already_linked_to_self");
+    redirectUrl.searchParams.set('error', 'already_linked_to_self');
     return {
-      type: "redirect",
+      type: 'redirect',
       response: NextResponse.redirect(redirectUrl),
     };
   }
 
   if (!existingAccountId || !existingUserId) {
-    throw new Error("Unexpected state: existingAccount should exist");
+    throw new Error('Unexpected state: existingAccount should exist');
   }
 
-  logger.info("Account exists for different user, merging accounts", {
+  logger.info('Account exists for different user, merging accounts', {
     email: providerEmail,
     existingUserId,
     targetUserId,
   });
 
   return {
-    type: "merge",
+    type: 'merge',
     sourceAccountId: existingAccountId,
     sourceUserId: existingUserId,
   };

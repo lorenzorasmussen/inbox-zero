@@ -1,5 +1,5 @@
-import { createHash } from "node:crypto";
-import { env } from "@/env";
+import { createHash } from 'node:crypto';
+import { env } from '@/env';
 
 export const sendCompleteRegistrationEvent = async ({
   userId,
@@ -20,16 +20,16 @@ export const sendCompleteRegistrationEvent = async ({
 }) => {
   const accessToken = env.FB_CONVERSION_API_ACCESS_TOKEN;
   const pixelId = env.FB_PIXEL_ID;
-  const apiVersion = "v20.0";
+  const apiVersion = 'v20.0';
 
   if (!accessToken || !pixelId) return;
 
   const url = `https://graph.facebook.com/${apiVersion}/${pixelId}/events?access_token=${accessToken}`;
 
   const data = {
-    event_name: "CompleteRegistration",
+    event_name: 'CompleteRegistration',
     event_time: Math.floor(Date.now() / 1000),
-    action_source: "website",
+    action_source: 'website',
     event_source_url: eventSourceUrl,
     user_data: {
       em: [hash(email)],
@@ -43,8 +43,8 @@ export const sendCompleteRegistrationEvent = async ({
   };
 
   await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ data: [data] }),
   });
 
@@ -52,5 +52,5 @@ export const sendCompleteRegistrationEvent = async ({
 };
 
 function hash(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
+  return createHash('sha256').update(value).digest('hex');
 }

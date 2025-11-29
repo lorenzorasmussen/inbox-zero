@@ -1,29 +1,29 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
-import { withEmailProvider } from "@/utils/middleware";
-import { extractEmailAddress } from "@/utils/email";
-import type { Logger } from "@/utils/logger";
-import prisma from "@/utils/prisma";
-import { Prisma } from "@/generated/prisma/client";
-import type { EmailProvider } from "@/utils/email/types";
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import {
-  getAutoArchiveFilters,
-  findNewsletterStatus,
-  findAutoArchiveFilter,
   filterNewsletters,
-} from "@/app/api/user/stats/newsletters/helpers";
+  findAutoArchiveFilter,
+  findNewsletterStatus,
+  getAutoArchiveFilters,
+} from '@/app/api/user/stats/newsletters/helpers';
+import { Prisma } from '@/generated/prisma/client';
+import { extractEmailAddress } from '@/utils/email';
+import type { EmailProvider } from '@/utils/email/types';
+import type { Logger } from '@/utils/logger';
+import { withEmailProvider } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 const newsletterStatsQuery = z.object({
   limit: z.coerce.number().nullish(),
   fromDate: z.coerce.number().nullish(),
   toDate: z.coerce.number().nullish(),
-  orderBy: z.enum(["emails", "unread", "unarchived"]).optional(),
+  orderBy: z.enum(['emails', 'unread', 'unarchived']).optional(),
   types: z
-    .array(z.enum(["read", "unread", "archived", "unarchived", ""]))
+    .array(z.enum(['read', 'unread', 'archived', 'unarchived', '']))
     .transform((arr) => arr?.filter(Boolean)),
   filters: z
     .array(
-      z.enum(["unhandled", "autoArchived", "unsubscribed", "approved", ""]),
+      z.enum(['unhandled', 'autoArchived', 'unsubscribed', 'approved', ''])
     )
     .optional()
     .transform((arr) => arr?.filter(Boolean)),
@@ -35,7 +35,7 @@ export type NewsletterStatsResponse = Awaited<
   ReturnType<typeof getEmailMessages>
 >;
 
-function getTypeFilters(types: NewsletterStatsQuery["types"]) {
+function getTypeFilters(types: NewsletterStatsQuery['types']) {
   const typeMap = Object.fromEntries(types.map((type) => [type, true]));
 
   // only use the read flag if unread is unmarked
@@ -70,7 +70,7 @@ async function getEmailMessages(
     emailAccountId: string;
     emailProvider: EmailProvider;
     logger: Logger;
-  } & NewsletterStatsQuery,
+  } & NewsletterStatsQuery
 ) {
   const { emailAccountId, emailProvider, logger } = options;
   const types = getTypeFilters(options.types);
@@ -89,7 +89,7 @@ async function getEmailMessages(
     const from = extractEmailAddress(email.from);
     return {
       name: from,
-      fromName: email.fromName || "",
+      fromName: email.fromName || '',
       value: email.count,
       inboxEmails: email.inboxEmails,
       readEmails: email.readEmails,
@@ -97,7 +97,7 @@ async function getEmailMessages(
       autoArchived: findAutoArchiveFilter(
         autoArchiveFilters,
         from,
-        emailProvider,
+        emailProvider
       ),
       status: userNewsletters?.find((n) => n.email === from)?.status,
     };
@@ -138,7 +138,7 @@ async function getNewsletterCounts(
     all?: boolean;
     andClause?: boolean;
     logger: Logger;
-  },
+  }
 ): Promise<NewsletterCountResult[]> {
   const { logger } = options;
   // Build WHERE conditions using Prisma.sql for type safety
@@ -148,14 +148,14 @@ async function getNewsletterCounts(
   if (options.fromDate) {
     const fromTimestamp = (options.fromDate / 1000).toString();
     whereConditions.push(
-      Prisma.sql`"date" >= to_timestamp(${fromTimestamp}::double precision)`,
+      Prisma.sql`"date" >= to_timestamp(${fromTimestamp}::double precision)`
     );
   }
 
   if (options.toDate) {
     const toTimestamp = (options.toDate / 1000).toString();
     whereConditions.push(
-      Prisma.sql`"date" <= to_timestamp(${toTimestamp}::double precision)`,
+      Prisma.sql`"date" <= to_timestamp(${toTimestamp}::double precision)`
     );
   }
 
@@ -175,13 +175,13 @@ async function getNewsletterCounts(
 
   // Always filter by emailAccountId
   whereConditions.push(
-    Prisma.sql`"emailAccountId" = ${options.emailAccountId}`,
+    Prisma.sql`"emailAccountId" = ${options.emailAccountId}`
   );
 
   // Join conditions with AND
   const whereClause =
     whereConditions.length > 0
-      ? Prisma.sql`WHERE ${Prisma.join(whereConditions, " AND ")}`
+      ? Prisma.sql`WHERE ${Prisma.join(whereConditions, ' AND ')}`
       : Prisma.empty;
 
   // Build order by clause (safe, no user input)
@@ -190,7 +190,7 @@ async function getNewsletterCounts(
     : '"count" DESC';
 
   // Build limit clause (safe, validated number)
-  const limitClause = options.limit ? `LIMIT ${options.limit}` : "";
+  const limitClause = options.limit ? `LIMIT ${options.limit}` : '';
 
   // Build the complete query using Prisma.sql
   const query = Prisma.sql`
@@ -224,7 +224,7 @@ async function getNewsletterCounts(
       unsubscribeLink: result.unsubscribeLink,
     }));
   } catch (error) {
-    logger.error("getNewsletterCounts error", {
+    logger.error('getNewsletterCounts error', {
       error,
       errorMessage: error instanceof Error ? error.message : String(error),
       errorStack: error instanceof Error ? error.stack : undefined,
@@ -235,11 +235,11 @@ async function getNewsletterCounts(
 
 function getOrderByClause(orderBy: string): string {
   switch (orderBy) {
-    case "emails":
+    case 'emails':
       return '"count" DESC';
-    case "unread":
+    case 'unread':
       return '"count" - "readEmails" DESC';
-    case "unarchived":
+    case 'unarchived':
       return '"inboxEmails" DESC';
     default:
       return '"count" DESC';
@@ -247,21 +247,21 @@ function getOrderByClause(orderBy: string): string {
 }
 
 export const GET = withEmailProvider(
-  "user/stats/newsletters",
+  'user/stats/newsletters',
   async (request) => {
     const { emailProvider } = request;
     const { emailAccountId } = request.auth;
 
     const { searchParams } = new URL(request.url);
     const params = newsletterStatsQuery.parse({
-      limit: searchParams.get("limit"),
-      fromDate: searchParams.get("fromDate"),
-      toDate: searchParams.get("toDate"),
-      orderBy: searchParams.get("orderBy"),
-      types: searchParams.get("types")?.split(",") || [],
-      filters: searchParams.get("filters")?.split(",") || [],
+      limit: searchParams.get('limit'),
+      fromDate: searchParams.get('fromDate'),
+      toDate: searchParams.get('toDate'),
+      orderBy: searchParams.get('orderBy'),
+      types: searchParams.get('types')?.split(',') || [],
+      filters: searchParams.get('filters')?.split(',') || [],
       includeMissingUnsubscribe:
-        searchParams.get("includeMissingUnsubscribe") === "true",
+        searchParams.get('includeMissingUnsubscribe') === 'true',
     });
 
     const result = await getEmailMessages({
@@ -272,5 +272,5 @@ export const GET = withEmailProvider(
     });
 
     return NextResponse.json(result);
-  },
+  }
 );

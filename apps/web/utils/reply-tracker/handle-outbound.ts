@@ -1,9 +1,9 @@
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { ParsedMessage } from "@/utils/types";
-import type { EmailProvider } from "@/utils/email/types";
-import { createScopedLogger } from "@/utils/logger";
-import { handleOutboundReply } from "./outbound";
-import { trackSentDraftStatus, cleanupThreadAIDrafts } from "./draft-tracking";
+import type { EmailProvider } from '@/utils/email/types';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import type { ParsedMessage } from '@/utils/types';
+import { cleanupThreadAIDrafts, trackSentDraftStatus } from './draft-tracking';
+import { handleOutboundReply } from './outbound';
 
 export async function handleOutboundMessage({
   emailAccount,
@@ -14,13 +14,13 @@ export async function handleOutboundMessage({
   message: ParsedMessage;
   provider: EmailProvider;
 }) {
-  const logger = createScopedLogger("handle-outbound").with({
+  const logger = createScopedLogger('handle-outbound').with({
     email: emailAccount.email,
     messageId: message.id,
     threadId: message.threadId,
   });
 
-  logger.info("Handling outbound message");
+  logger.info('Handling outbound message');
 
   await Promise.allSettled([
     trackSentDraftStatus({
@@ -29,14 +29,14 @@ export async function handleOutboundMessage({
       provider,
       logger,
     }).catch((error) => {
-      logger.error("Error tracking sent draft status", { error });
+      logger.error('Error tracking sent draft status', { error });
     }),
     handleOutboundReply({
       emailAccount,
       message,
       provider,
     }).catch((error) => {
-      logger.error("Error handling outbound reply", { error });
+      logger.error('Error handling outbound reply', { error });
     }),
   ]);
 
@@ -48,6 +48,6 @@ export async function handleOutboundMessage({
       logger,
     });
   } catch (error) {
-    logger.error("Error during thread draft cleanup", { error });
+    logger.error('Error during thread draft cleanup', { error });
   }
 }

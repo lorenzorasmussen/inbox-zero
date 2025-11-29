@@ -1,6 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Copy } from 'lucide-react';
+import { toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,10 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Copy } from "lucide-react";
-import { toastSuccess } from "@/components/Toast";
-import { env } from "@/env";
+} from '@/components/ui/dialog';
+import { env } from '@/env';
 
 interface RequestAccessDialogProps {
   integrationName?: string;
@@ -24,25 +24,25 @@ export function RequestAccessDialog({
 }: RequestAccessDialogProps) {
   const isGenericRequest = !integrationName;
   const title = isGenericRequest
-    ? "Request an Integration"
+    ? 'Request an Integration'
     : `Request ${integrationName} Access`;
   const subject = isGenericRequest
-    ? "Integration Request"
+    ? 'Integration Request'
     : `Request Access: ${integrationName} Integration`;
 
   const messageBody = isGenericRequest
-    ? "Hi,\n\nI would like to request a new integration for Inbox Zero.\n\nIntegration name:\n\nUse case:\n\nThank you!"
+    ? 'Hi,\n\nI would like to request a new integration for Inbox Zero.\n\nIntegration name:\n\nUse case:\n\nThank you!'
     : `Hi,\n\nI'm interested in using the ${integrationName} integration with Inbox Zero.\n\nCould you please let me know when this integration will be available?\n\nThank you!`;
 
   const handleCopyEmail = async () => {
     await navigator.clipboard.writeText(env.NEXT_PUBLIC_SUPPORT_EMAIL);
-    toastSuccess({ description: "Email copied to clipboard" });
+    toastSuccess({ description: 'Email copied to clipboard' });
   };
 
   const handleCopyMessage = async () => {
     const message = `Subject: ${subject}\n\n${messageBody}`;
     await navigator.clipboard.writeText(message);
-    toastSuccess({ description: "Message copied to clipboard" });
+    toastSuccess({ description: 'Message copied to clipboard' });
   };
 
   return (
@@ -59,8 +59,8 @@ export function RequestAccessDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {isGenericRequest
-              ? "Send us an email to request a new integration."
-              : "Send us an email to request access to this integration."}
+              ? 'Send us an email to request a new integration.'
+              : 'Send us an email to request access to this integration.'}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">

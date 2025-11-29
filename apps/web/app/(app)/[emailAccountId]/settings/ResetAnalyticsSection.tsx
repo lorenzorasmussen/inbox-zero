@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useAction } from "next-safe-action/hooks";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { FormSection, FormSectionLeft } from "@/components/Form";
-import { resetAnalyticsAction } from "@/utils/actions/user";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import { useAction } from 'next-safe-action/hooks';
+import { toast } from 'sonner';
+import { FormSection, FormSectionLeft } from '@/components/Form';
+import { Button } from '@/components/ui/button';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { resetAnalyticsAction } from '@/utils/actions/user';
 
 export function ResetAnalyticsSection() {
   const { emailAccountId } = useAccount();
   const { executeAsync: executeResetAnalytics } = useAction(
-    resetAnalyticsAction.bind(null, emailAccountId),
+    resetAnalyticsAction.bind(null, emailAccountId)
   );
 
   return (
@@ -25,7 +25,7 @@ export function ResetAnalyticsSection() {
           variant="outline"
           onClick={async () => {
             toast.promise(() => executeResetAnalytics(), {
-              loading: "Resetting analytics...",
+              loading: 'Resetting analytics...',
               success: () => {
                 return "Analytics reset! Visit the Unsubscriber or Analytics page and click the 'Load More' button to reload your data.";
               },

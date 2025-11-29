@@ -1,26 +1,26 @@
-"use server";
+'use server';
 
-import type { gmail_v1 } from "@googleapis/gmail";
-import { z } from "zod";
-import { fetchEmailsForReport } from "@/utils/ai/report/fetch";
-import { aiSummarizeEmails } from "@/utils/ai/report/summarize-emails";
-import { aiGenerateExecutiveSummary } from "@/utils/ai/report/generate-executive-summary";
-import { aiBuildUserPersona } from "@/utils/ai/report/build-user-persona";
-import { aiAnalyzeEmailBehavior } from "@/utils/ai/report/analyze-email-behavior";
-import { aiAnalyzeResponsePatterns } from "@/utils/ai/report/response-patterns";
-import { aiAnalyzeLabelOptimization } from "@/utils/ai/report/analyze-label-optimization";
-import { aiGenerateActionableRecommendations } from "@/utils/ai/report/generate-actionable-recommendations";
-import { actionClient } from "@/utils/actions/safe-action";
-import { getEmailAccountWithAi } from "@/utils/user/get";
-import { getGmailClientForEmail } from "@/utils/account";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
-import type { Logger } from "@/utils/logger";
-import { getGmailSignatures } from "@/utils/gmail/signature-settings";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { z } from 'zod';
+import { getGmailClientForEmail } from '@/utils/account';
+import { actionClient } from '@/utils/actions/safe-action';
+import { aiAnalyzeEmailBehavior } from '@/utils/ai/report/analyze-email-behavior';
+import { aiAnalyzeLabelOptimization } from '@/utils/ai/report/analyze-label-optimization';
+import { aiBuildUserPersona } from '@/utils/ai/report/build-user-persona';
+import { fetchEmailsForReport } from '@/utils/ai/report/fetch';
+import { aiGenerateActionableRecommendations } from '@/utils/ai/report/generate-actionable-recommendations';
+import { aiGenerateExecutiveSummary } from '@/utils/ai/report/generate-executive-summary';
+import { aiAnalyzeResponsePatterns } from '@/utils/ai/report/response-patterns';
+import { aiSummarizeEmails } from '@/utils/ai/report/summarize-emails';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import { getGmailSignatures } from '@/utils/gmail/signature-settings';
+import type { Logger } from '@/utils/logger';
+import { getEmailAccountWithAi } from '@/utils/user/get';
 
 export type EmailReportData = Awaited<ReturnType<typeof getEmailReportData>>;
 
 export const generateReportAction = actionClient
-  .metadata({ name: "generateReport" })
+  .metadata({ name: 'generateReport' })
   .inputSchema(z.object({}))
   .action(async ({ ctx: { emailAccountId, logger } }) => {
     return getEmailReportData({ emailAccountId, logger });
@@ -33,13 +33,13 @@ async function getEmailReportData({
   emailAccountId: string;
   logger: Logger;
 }) {
-  logger.info("getEmailReportData started");
+  logger.info('getEmailReportData started');
 
   const emailAccount = await getEmailAccountWithAi({ emailAccountId });
 
   if (!emailAccount) {
-    logger.error("Email account not found");
-    throw new Error("Email account not found");
+    logger.error('Email account not found');
+    throw new Error('Email account not found');
   }
 
   const { receivedEmails, sentEmails, totalReceived, totalSent } =
@@ -48,18 +48,18 @@ async function getEmailReportData({
   const [receivedSummaries, sentSummaries] = await Promise.all([
     aiSummarizeEmails(
       receivedEmails.map((message) =>
-        getEmailForLLM(message, { maxLength: 1000 }),
+        getEmailForLLM(message, { maxLength: 1000 })
       ),
-      emailAccount,
+      emailAccount
     ).catch((error) => {
-      logger.error("Error summarizing received emails", { error });
+      logger.error('Error summarizing received emails', { error });
       return [];
     }),
     aiSummarizeEmails(
       sentEmails.map((message) => getEmailForLLM(message, { maxLength: 1000 })),
-      emailAccount,
+      emailAccount
     ).catch((error) => {
-      logger.error("Error summarizing sent emails", { error });
+      logger.error('Error summarizing sent emails', { error });
       return [];
     }),
   ]);
@@ -82,38 +82,38 @@ async function getEmailReportData({
       receivedSummaries,
       sentSummaries,
       gmailLabels,
-      emailAccount,
+      emailAccount
     ).catch((error) => {
-      logger.error("Error generating executive summary", { error });
+      logger.error('Error generating executive summary', { error });
     }),
     aiBuildUserPersona(
       receivedSummaries,
       emailAccount,
       sentSummaries,
-      gmailSignature,
+      gmailSignature
     ).catch((error) => {
-      logger.error("Error generating user persona", { error });
+      logger.error('Error generating user persona', { error });
     }),
     aiAnalyzeEmailBehavior(
       receivedSummaries,
       emailAccount,
-      sentSummaries,
+      sentSummaries
     ).catch((error) => {
-      logger.error("Error generating email behavior", { error });
+      logger.error('Error generating email behavior', { error });
     }),
     aiAnalyzeResponsePatterns(
       receivedSummaries,
       emailAccount,
-      sentSummaries,
+      sentSummaries
     ).catch((error) => {
-      logger.error("Error generating response patterns", { error });
+      logger.error('Error generating response patterns', { error });
     }),
     aiAnalyzeLabelOptimization(
       receivedSummaries,
       emailAccount,
-      gmailLabels,
+      gmailLabels
     ).catch((error) => {
-      logger.error("Error generating label optimization", { error });
+      logger.error('Error generating label optimization', { error });
     }),
   ]);
 
@@ -121,9 +121,9 @@ async function getEmailReportData({
     ? await aiGenerateActionableRecommendations(
         receivedSummaries,
         emailAccount,
-        userPersona,
+        userPersona
       ).catch((error) => {
-        logger.error("Error generating actionable recommendations", { error });
+        logger.error('Error generating actionable recommendations', { error });
       })
     : null;
 
@@ -159,32 +159,32 @@ async function getEmailReportData({
 // TODO: should be able to import this functionality from elsewhere
 async function fetchGmailLabels(
   gmail: gmail_v1.Gmail,
-  logger: Logger,
+  logger: Logger
 ): Promise<gmail_v1.Schema$Label[]> {
   try {
-    const response = await gmail.users.labels.list({ userId: "me" });
+    const response = await gmail.users.labels.list({ userId: 'me' });
 
     const userLabels =
       response.data.labels?.filter(
         (label: gmail_v1.Schema$Label) =>
-          label.type === "user" &&
+          label.type === 'user' &&
           label.name &&
-          !label.name.startsWith("CATEGORY_") &&
-          !label.name.startsWith("CHAT"),
+          !label.name.startsWith('CATEGORY_') &&
+          !label.name.startsWith('CHAT')
       ) || [];
 
     const labelsWithCounts = await Promise.all(
       userLabels
         .filter(
           (
-            label,
+            label
           ): label is gmail_v1.Schema$Label & { id: string; name: string } =>
-            Boolean(label.id && label.name),
+            Boolean(label.id && label.name)
         )
         .map(async (label) => {
           try {
             const labelDetail = await gmail.users.labels.get({
-              userId: "me",
+              userId: 'me',
               id: label.id,
             });
             return {
@@ -195,7 +195,7 @@ async function fetchGmailLabels(
               threadsUnread: labelDetail.data.threadsUnread || 0,
             };
           } catch (error) {
-            logger.warn("Failed to get details for label", {
+            logger.warn('Failed to get details for label', {
               labelName: label.name,
               error: error instanceof Error ? error.message : String(error),
             });
@@ -207,16 +207,16 @@ async function fetchGmailLabels(
               threadsUnread: 0,
             };
           }
-        }),
+        })
     );
 
     const sortedLabels = labelsWithCounts.sort(
-      (a, b) => (b.messagesTotal || 0) - (a.messagesTotal || 0),
+      (a, b) => (b.messagesTotal || 0) - (a.messagesTotal || 0)
     );
 
     return sortedLabels;
   } catch (error) {
-    logger.warn("Failed to fetch Gmail labels", {
+    logger.warn('Failed to fetch Gmail labels', {
       error: error instanceof Error ? error.message : String(error),
     });
     return [];
@@ -225,18 +225,18 @@ async function fetchGmailLabels(
 
 async function fetchGmailSignature(
   gmail: gmail_v1.Gmail,
-  logger: Logger,
+  logger: Logger
 ): Promise<string> {
   try {
     const signatures = await getGmailSignatures(gmail);
     const defaultSignature =
       signatures.find((sig) => sig.isDefault) || signatures[0];
 
-    return defaultSignature?.signature || "";
+    return defaultSignature?.signature || '';
   } catch (error) {
-    logger.warn("Failed to fetch Gmail signature", {
+    logger.warn('Failed to fetch Gmail signature', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return "";
+    return '';
   }
 }

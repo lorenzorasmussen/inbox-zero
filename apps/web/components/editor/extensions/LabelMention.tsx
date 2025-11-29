@@ -1,8 +1,8 @@
-import { ReactRenderer } from "@tiptap/react";
-import { Mention } from "@tiptap/extension-mention";
-import { PluginKey } from "@tiptap/pm/state";
-import { MentionList, type MentionListRef } from "./MentionList";
-import type { EmailLabel } from "@/providers/EmailProvider";
+import { Mention } from '@tiptap/extension-mention';
+import { PluginKey } from '@tiptap/pm/state';
+import { ReactRenderer } from '@tiptap/react';
+import type { EmailLabel } from '@/providers/EmailProvider';
+import { MentionList, type MentionListRef } from './MentionList';
 
 const MAX_SUGGESTIONS = 10;
 
@@ -36,7 +36,7 @@ interface MarkdownItInstance {
     ruler: {
       push: (
         name: string,
-        fn: (state: MarkdownItState, silent: boolean) => boolean,
+        fn: (state: MarkdownItState, silent: boolean) => boolean
       ) => void;
     };
   };
@@ -50,25 +50,25 @@ interface MarkdownItInstance {
 export const createLabelMentionExtension = (labels: EmailLabel[]) => {
   return Mention.configure({
     HTMLAttributes: {
-      class: "mention-label",
+      class: 'mention-label',
     },
     renderLabel({ node }) {
       return `${node.attrs.label ?? node.attrs.id}`;
     },
     suggestion: {
-      char: "@",
-      pluginKey: new PluginKey("labelMention"),
+      char: '@',
+      pluginKey: new PluginKey('labelMention'),
       items: ({ query }) => {
         const filteredLabels = labels
           .filter((label) =>
-            label.name.toLowerCase().includes(query.toLowerCase()),
+            label.name.toLowerCase().includes(query.toLowerCase())
           )
           .slice(0, MAX_SUGGESTIONS);
 
         // If there's a query and no exact match exists, add option to create new label
         // Case-insensitive comparison to prevent duplicate entries with different casing
         const exactMatchExists = labels.some(
-          (label) => label.name.toLowerCase() === query.toLowerCase(),
+          (label) => label.name.toLowerCase() === query.toLowerCase()
         );
 
         if (query && !exactMatchExists) {
@@ -101,7 +101,7 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
             }
           } catch (error) {
             // Silently handle cleanup errors to prevent crashes
-            console.warn("Error during mention cleanup:", error);
+            console.warn('Error during mention cleanup:', error);
           }
         };
 
@@ -113,18 +113,18 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
                 editor: props.editor,
               });
 
-              popup = document.createElement("div");
-              popup.className = "mention-suggestions";
-              popup.style.position = "absolute";
-              popup.style.zIndex = "1000";
+              popup = document.createElement('div');
+              popup.className = 'mention-suggestions';
+              popup.style.position = 'absolute';
+              popup.style.zIndex = '1000';
               popup.appendChild(component.element);
 
               document.body.appendChild(popup);
 
               // Add error boundary for cleanup
-              window.addEventListener("beforeunload", cleanup);
+              window.addEventListener('beforeunload', cleanup);
             } catch (error) {
-              console.error("Error during mention start:", error);
+              console.error('Error during mention start:', error);
               cleanup();
             }
           },
@@ -133,7 +133,7 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
             try {
               // More defensive checks to prevent race conditions
               if (!component?.updateProps || !popup) {
-                console.warn("Mention component or popup not ready for update");
+                console.warn('Mention component or popup not ready for update');
                 return;
               }
 
@@ -149,13 +149,13 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
                 popup.style.left = `${rect.left}px`;
               }
             } catch (error) {
-              console.error("Error during mention update:", error);
+              console.error('Error during mention update:', error);
               cleanup();
             }
           },
 
           onKeyDown(props) {
-            if (props.event.key === "Escape") {
+            if (props.event.key === 'Escape') {
               cleanup();
               return true;
             }
@@ -163,7 +163,7 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
             try {
               return component.ref?.onKeyDown(props) ?? false;
             } catch (error) {
-              console.error("Error during mention keydown:", error);
+              console.error('Error during mention keydown:', error);
               cleanup();
               return false;
             }
@@ -171,7 +171,7 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
 
           onExit() {
             // Remove beforeunload listener
-            window.removeEventListener("beforeunload", cleanup);
+            window.removeEventListener('beforeunload', cleanup);
             cleanup();
           },
         };
@@ -181,8 +181,8 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
         // Fix type error by adding proper type guards
         const overrideSpace =
           nodeAfter &&
-          typeof nodeAfter.text === "string" &&
-          nodeAfter.text.startsWith(" ");
+          typeof nodeAfter.text === 'string' &&
+          nodeAfter.text.startsWith(' ');
 
         if (overrideSpace) {
           range.to += 1;
@@ -194,15 +194,15 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
           .focus()
           .insertContentAt(range, [
             {
-              type: "mention",
+              type: 'mention',
               attrs: {
                 id: label.id,
                 label: label.name,
               },
             },
             {
-              type: "text",
-              text: " ",
+              type: 'text',
+              text: ' ',
             },
           ])
           .run();
@@ -221,7 +221,7 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
             // Register a custom markdown-it rule to parse @[labelName] back to mention nodes
             setup: (markdownIt: MarkdownItInstance) => {
               markdownIt.inline.ruler.push(
-                "mention",
+                'mention',
                 (state: MarkdownItState, silent: boolean) => {
                   const start = state.pos;
                   const max = state.posMax;
@@ -252,42 +252,42 @@ export const createLabelMentionExtension = (labels: EmailLabel[]) => {
                   // Create mention node even if label doesn't exist yet
                   // This allows examples to work even when labels haven't been created in Gmail
                   if (!silent) {
-                    const token = state.push("mention_open", "mention", 1);
+                    const token = state.push('mention_open', 'mention', 1);
                     token.attrs = [
                       [
-                        "id",
+                        'id',
                         label?.id ||
                           `__placeholder__${labelName.toLowerCase()}`,
                       ],
-                      ["label", labelName],
+                      ['label', labelName],
                     ];
 
-                    const textToken = state.push("text", "", 0);
+                    const textToken = state.push('text', '', 0);
                     textToken.content = labelName;
 
-                    state.push("mention_close", "mention", -1);
+                    state.push('mention_close', 'mention', -1);
                   }
 
                   state.pos = pos + 1;
                   return true;
-                },
+                }
               );
 
               // Add renderer for mention tokens to create proper HTML structure
               markdownIt.renderer.rules.mention_open = (
                 tokens: MarkdownItToken[],
-                idx: number,
+                idx: number
               ) => {
                 const token = tokens[idx];
                 const id =
-                  token.attrs.find((attr) => attr[0] === "id")?.[1] || "";
+                  token.attrs.find((attr) => attr[0] === 'id')?.[1] || '';
                 const label =
-                  token.attrs.find((attr) => attr[0] === "label")?.[1] || "";
+                  token.attrs.find((attr) => attr[0] === 'label')?.[1] || '';
                 return `<span class="mention-label" data-type="mention" data-id="${id}" data-label="${label}" data-mention-suggestion-char="@" contenteditable="false">`;
               };
 
               markdownIt.renderer.rules.mention_close = () => {
-                return "</span>";
+                return '</span>';
               };
             },
           },

@@ -1,21 +1,21 @@
-import { NextResponse } from "next/server";
-import { env } from "@/env";
-import { withEmailAccount } from "@/utils/middleware";
-import { SafeError } from "@/utils/error";
+import { NextResponse } from 'next/server';
+import { env } from '@/env';
+import { SafeError } from '@/utils/error';
+import { getIntegration } from '@/utils/mcp/integrations';
+import { generateOAuthUrl } from '@/utils/mcp/oauth';
+import { withEmailAccount } from '@/utils/middleware';
 import {
-  oauthStateCookieOptions,
+  generateOAuthState,
+  getMcpOAuthStateType,
   getMcpPkceCookieName,
   getMcpStateCookieName,
-  getMcpOAuthStateType,
-} from "@/utils/oauth/state";
-import { getIntegration } from "@/utils/mcp/integrations";
-import { generateOAuthState } from "@/utils/oauth/state";
-import { generateOAuthUrl } from "@/utils/mcp/oauth";
+  oauthStateCookieOptions,
+} from '@/utils/oauth/state';
 
 export type GetMcpAuthUrlResponse = { url: string };
 
 export const GET = withEmailAccount(
-  "mcp/auth-url",
+  'mcp/auth-url',
   async (request, { params }) => {
     const { integration } = await params;
     const { emailAccountId } = request.auth;
@@ -31,7 +31,7 @@ export const GET = withEmailAccount(
       throw new SafeError(`Integration ${integration} not found`);
     }
 
-    if (integrationConfig.authType !== "oauth") {
+    if (integrationConfig.authType !== 'oauth') {
       throw new SafeError(`Integration ${integration} does not support OAuth`);
     }
 
@@ -67,8 +67,8 @@ export const GET = withEmailAccount(
 
       return response;
     } catch (error) {
-      logger.error("Failed to generate MCP auth URL", { error });
-      throw new SafeError("Failed to generate authorization URL");
+      logger.error('Failed to generate MCP auth URL', { error });
+      throw new SafeError('Failed to generate authorization URL');
     }
-  },
+  }
 );

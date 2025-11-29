@@ -1,7 +1,7 @@
-import { RuleForm } from "@/app/(app)/[emailAccountId]/assistant/RuleForm";
-import { getEmptyCondition } from "@/utils/condition";
-import { ActionType } from "@/generated/prisma/enums";
-import type { CoreConditionType } from "@/utils/config";
+import { RuleForm } from '@/app/(app)/[emailAccountId]/assistant/RuleForm';
+import { ActionType } from '@/generated/prisma/enums';
+import { getEmptyCondition } from '@/utils/condition';
+import type { CoreConditionType } from '@/utils/config';
 
 export default async function CreateRulePage(props: {
   searchParams: Promise<{
@@ -15,7 +15,7 @@ export default async function CreateRulePage(props: {
     <div className="content-container">
       <RuleForm
         rule={{
-          name: searchParams.label ? `Label ${searchParams.label}` : "",
+          name: searchParams.label ? `Label ${searchParams.label}` : '',
           actions: searchParams.label
             ? [
                 {

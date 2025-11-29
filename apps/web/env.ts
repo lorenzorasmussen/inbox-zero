@@ -1,21 +1,21 @@
 /* eslint-disable no-process-env */
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from 'zod';
 
 const llmProviderEnum = z.enum([
-  "anthropic",
-  "google",
-  "openai",
-  "bedrock",
-  "openrouter",
-  "groq",
-  "aigateway",
-  "ollama",
+  'anthropic',
+  'google',
+  'openai',
+  'bedrock',
+  'openrouter',
+  'groq',
+  'aigateway',
+  'ollama',
 ]);
 
 export const env = createEnv({
   server: {
-    NODE_ENV: z.enum(["development", "production", "test"]),
+    NODE_ENV: z.enum(['development', 'production', 'test']),
     DATABASE_URL: z.string().url(),
     DIRECT_URL: z.string().url(),
 
@@ -30,8 +30,8 @@ export const env = createEnv({
 
     DEFAULT_LLM_PROVIDER: z
       // custom is deprecated
-      .enum([...llmProviderEnum.options, "custom"])
-      .default("anthropic"),
+      .enum([...llmProviderEnum.options, 'custom'])
+      .default('anthropic'),
     DEFAULT_LLM_MODEL: z.string().optional(),
     DEFAULT_OPENROUTER_PROVIDERS: z.string().optional(), // Comma-separated list of OpenRouter providers for default model (e.g., "Google Vertex,Anthropic")
     // Set this to a cheaper model like Gemini Flash
@@ -46,13 +46,13 @@ export const env = createEnv({
     OPENROUTER_BACKUP_MODEL: z
       .string()
       .optional()
-      .default("google/gemini-2.5-flash"),
+      .default('google/gemini-2.5-flash'),
 
     OPENAI_API_KEY: z.string().optional(),
     ANTHROPIC_API_KEY: z.string().optional(),
     BEDROCK_ACCESS_KEY: z.string().optional(),
     BEDROCK_SECRET_KEY: z.string().optional(),
-    BEDROCK_REGION: z.string().default("us-west-2"),
+    BEDROCK_REGION: z.string().default('us-west-2'),
     GOOGLE_API_KEY: z.string().optional(),
     GROQ_API_KEY: z.string().optional(),
     OPENROUTER_API_KEY: z.string().optional(),
@@ -88,7 +88,7 @@ export const env = createEnv({
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
 
     TINYBIRD_TOKEN: z.string().optional(),
-    TINYBIRD_BASE_URL: z.string().default("https://api.us-east.tinybird.co/"),
+    TINYBIRD_BASE_URL: z.string().default('https://api.us-east.tinybird.co/'),
     TINYBIRD_ENCRYPT_SECRET: z.string().optional(),
     TINYBIRD_ENCRYPT_SALT: z.string().optional(),
 
@@ -102,7 +102,7 @@ export const env = createEnv({
     RESEND_FROM_EMAIL: z
       .string()
       .optional()
-      .default("Inbox Zero <updates@transactional.getinboxzero.com>"),
+      .default('Inbox Zero <updates@transactional.getinboxzero.com>'),
     CRON_SECRET: z.string().optional(),
     LOOPS_API_SECRET: z.string().optional(),
     FB_CONVERSION_API_ACCESS_TOKEN: z.string().optional(),
@@ -110,7 +110,7 @@ export const env = createEnv({
     ADMINS: z
       .string()
       .optional()
-      .transform((value) => value?.split(",")),
+      .transform((value) => value?.split(',')),
     WEBHOOK_URL: z.string().optional(),
     INTERNAL_API_KEY: z.string(),
     WHITELIST_FROM: z.string().optional(),
@@ -134,7 +134,7 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_BUSINESS_PLUS_ANNUALLY_PRICE_ID: z.string().optional(),
 
     // lemon squeezy
-    NEXT_PUBLIC_LEMON_STORE_ID: z.string().nullish().default("inboxzero"),
+    NEXT_PUBLIC_LEMON_STORE_ID: z.string().nullish().default('inboxzero'),
     NEXT_PUBLIC_BASIC_MONTHLY_VARIANT_ID: z.coerce.number().default(0),
     NEXT_PUBLIC_BASIC_ANNUALLY_VARIANT_ID: z.coerce.number().default(0),
     NEXT_PUBLIC_PRO_MONTHLY_VARIANT_ID: z.coerce.number().default(0),
@@ -146,7 +146,7 @@ export const env = createEnv({
     NEXT_PUBLIC_FREE_UNSUBSCRIBE_CREDITS: z.number().default(5),
     NEXT_PUBLIC_CALL_LINK: z
       .string()
-      .default("https://cal.com/team/inbox-zero/feedback"),
+      .default('https://cal.com/team/inbox-zero/feedback'),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_API_HOST: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HERO_AB: z.string().optional(),
@@ -158,7 +158,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPPORT_EMAIL: z
       .string()
       .optional()
-      .default("elie@getinboxzero.com"),
+      .default('elie@getinboxzero.com'),
     NEXT_PUBLIC_GTM_ID: z.string().optional(),
     NEXT_PUBLIC_CRISP_WEBSITE_ID: z.string().optional(),
     NEXT_PUBLIC_WELCOME_UPGRADE_ENABLED: z.coerce
@@ -172,10 +172,10 @@ export const env = createEnv({
       .optional()
       .transform((value) => {
         if (!value) return;
-        return value.split(",");
+        return value.split(',');
       }),
     NEXT_PUBLIC_OLLAMA_MODEL: z.string().optional(),
-    NEXT_PUBLIC_APP_HOME_PATH: z.string().default("/setup"),
+    NEXT_PUBLIC_APP_HOME_PATH: z.string().default('/setup'),
     NEXT_PUBLIC_DUB_REFER_DOMAIN: z.string().optional(),
     NEXT_PUBLIC_DISABLE_REFERRAL_SIGNATURE: z.coerce
       .boolean()

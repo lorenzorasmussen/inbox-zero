@@ -1,19 +1,19 @@
-"use server";
+'use server';
 
-import { z } from "zod";
-import prisma from "@/utils/prisma";
-import { sendEmailBody } from "@/utils/gmail/mail";
-import { actionClient } from "@/utils/actions/safe-action";
-import { SafeError } from "@/utils/error";
-import { createEmailProvider } from "@/utils/email/provider";
+import { z } from 'zod';
+import { actionClient } from '@/utils/actions/safe-action';
+import { createEmailProvider } from '@/utils/email/provider';
+import { SafeError } from '@/utils/error';
+import { sendEmailBody } from '@/utils/gmail/mail';
+import prisma from '@/utils/prisma';
 
 // do not return functions to the client or we'll get an error
 const isStatusOk = (status: number) => status >= 200 && status < 300;
 
 export const archiveThreadAction = actionClient
-  .metadata({ name: "archiveThread" })
+  .metadata({ name: 'archiveThread' })
   .inputSchema(
-    z.object({ threadId: z.string(), labelId: z.string().optional() }),
+    z.object({ threadId: z.string(), labelId: z.string().optional() })
   )
   .action(
     async ({
@@ -29,13 +29,13 @@ export const archiveThreadAction = actionClient
       await emailProvider.archiveThreadWithLabel(
         threadId,
         emailAccount.email,
-        labelId,
+        labelId
       );
-    },
+    }
   );
 
 export const trashThreadAction = actionClient
-  .metadata({ name: "trashThread" })
+  .metadata({ name: 'trashThread' })
   .inputSchema(z.object({ threadId: z.string() }))
   .action(
     async ({
@@ -48,12 +48,12 @@ export const trashThreadAction = actionClient
         logger,
       });
 
-      await emailProvider.trashThread(threadId, emailAccount.email, "user");
-    },
+      await emailProvider.trashThread(threadId, emailAccount.email, 'user');
+    }
   );
 
 export const markReadThreadAction = actionClient
-  .metadata({ name: "markReadThread" })
+  .metadata({ name: 'markReadThread' })
   .inputSchema(z.object({ threadId: z.string(), read: z.boolean() }))
   .action(
     async ({
@@ -67,17 +67,17 @@ export const markReadThreadAction = actionClient
       });
 
       await emailProvider.markReadThread(threadId, read);
-    },
+    }
   );
 
 export const createAutoArchiveFilterAction = actionClient
-  .metadata({ name: "createAutoArchiveFilter" })
+  .metadata({ name: 'createAutoArchiveFilter' })
   .inputSchema(
     z.object({
       from: z.string(),
       gmailLabelId: z.string().optional(),
       labelName: z.string().optional(),
-    }),
+    })
   )
   .action(
     async ({
@@ -95,11 +95,11 @@ export const createAutoArchiveFilterAction = actionClient
         gmailLabelId,
         labelName,
       });
-    },
+    }
   );
 
 export const createFilterAction = actionClient
-  .metadata({ name: "createFilter" })
+  .metadata({ name: 'createFilter' })
   .inputSchema(z.object({ from: z.string(), gmailLabelId: z.string() }))
   .action(
     async ({
@@ -118,14 +118,14 @@ export const createFilterAction = actionClient
       });
 
       if (!isStatusOk(res.status))
-        throw new SafeError("Failed to create filter");
+        throw new SafeError('Failed to create filter');
 
       return res;
-    },
+    }
   );
 
 export const deleteFilterAction = actionClient
-  .metadata({ name: "deleteFilter" })
+  .metadata({ name: 'deleteFilter' })
   .inputSchema(z.object({ id: z.string() }))
   .action(
     async ({
@@ -141,14 +141,14 @@ export const deleteFilterAction = actionClient
       const res = await emailProvider.deleteFilter(id);
 
       if (!isStatusOk(res.status))
-        throw new SafeError("Failed to delete filter");
-    },
+        throw new SafeError('Failed to delete filter');
+    }
   );
 
 export const createLabelAction = actionClient
-  .metadata({ name: "createLabel" })
+  .metadata({ name: 'createLabel' })
   .inputSchema(
-    z.object({ name: z.string(), description: z.string().optional() }),
+    z.object({ name: z.string(), description: z.string().optional() })
   )
   .action(
     async ({
@@ -162,11 +162,11 @@ export const createLabelAction = actionClient
       });
       const label = await emailProvider.createLabel(name, description);
       return label;
-    },
+    }
   );
 
 export const updateLabelsAction = actionClient
-  .metadata({ name: "updateLabels" })
+  .metadata({ name: 'updateLabels' })
   .inputSchema(
     z.object({
       labels: z.array(
@@ -175,9 +175,9 @@ export const updateLabelsAction = actionClient
           description: z.string().optional(),
           enabled: z.boolean(),
           gmailLabelId: z.string(),
-        }),
+        })
       ),
-    }),
+    })
   )
   .action(async ({ ctx: { emailAccountId }, parsedInput: { labels } }) => {
     const enabledLabels = labels.filter((label) => label.enabled);
@@ -213,7 +213,7 @@ export const updateLabelsAction = actionClient
   });
 
 export const sendEmailAction = actionClient
-  .metadata({ name: "sendEmail" })
+  .metadata({ name: 'sendEmail' })
   .inputSchema(sendEmailBody)
   .action(
     async ({ ctx: { emailAccountId, provider, logger }, parsedInput }) => {
@@ -230,5 +230,5 @@ export const sendEmailAction = actionClient
         messageId: result.messageId,
         threadId: result.threadId,
       };
-    },
+    }
   );

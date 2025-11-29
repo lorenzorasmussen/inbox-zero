@@ -1,24 +1,24 @@
+import clsx from 'clsx';
+import Link from 'next/link';
 import {
   type ForwardedRef,
-  type MouseEventHandler,
   forwardRef,
+  type MouseEventHandler,
   useCallback,
   useMemo,
-} from "react";
-import Link from "next/link";
-import clsx from "clsx";
-import { ActionButtons } from "@/components/ActionButtons";
-import { PlanBadge } from "@/components/PlanBadge";
-import type { Thread } from "@/components/email-list/types";
-import { extractNameFromEmail, participant } from "@/utils/email";
-import { Checkbox } from "@/components/Checkbox";
-import { EmailDate } from "@/components/email-list/EmailDate";
-import { decodeSnippet } from "@/utils/gmail/decode";
-import { useIsInAiQueue } from "@/store/ai-queue";
-import { Button } from "@/components/ui/button";
-import { findCtaLink } from "@/utils/parse/parseHtml.client";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { internalDateToDate } from "@/utils/date";
+} from 'react';
+import { ActionButtons } from '@/components/ActionButtons';
+import { Checkbox } from '@/components/Checkbox';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { EmailDate } from '@/components/email-list/EmailDate';
+import type { Thread } from '@/components/email-list/types';
+import { PlanBadge } from '@/components/PlanBadge';
+import { Button } from '@/components/ui/button';
+import { useIsInAiQueue } from '@/store/ai-queue';
+import { internalDateToDate } from '@/utils/date';
+import { extractNameFromEmail, participant } from '@/utils/email';
+import { decodeSnippet } from '@/utils/gmail/decode';
+import { findCtaLink } from '@/utils/parse/parseHtml.client';
 
 export const EmailListItem = forwardRef(
   (
@@ -36,24 +36,24 @@ export const EmailListItem = forwardRef(
       onArchive: (thread: Thread) => void;
       refetch: () => void;
     },
-    ref: ForwardedRef<HTMLLIElement>,
+    ref: ForwardedRef<HTMLLIElement>
   ) => {
     const { provider, thread, splitView, onSelected } = props;
 
     const lastMessage = thread.messages?.[thread.messages.length - 1];
 
     const isUnread = useMemo(() => {
-      return lastMessage?.labelIds?.includes("UNREAD");
+      return lastMessage?.labelIds?.includes('UNREAD');
     }, [lastMessage?.labelIds]);
 
     const preventPropagation = useCallback(
       (e: React.MouseEvent | React.KeyboardEvent) => e.stopPropagation(),
-      [],
+      []
     );
 
     const onRowSelected = useCallback(
       () => onSelected(props.thread.id!),
-      [onSelected, props.thread.id],
+      [onSelected, props.thread.id]
     );
 
     const isPlanning = useIsInAiQueue(props.thread.id);
@@ -68,17 +68,17 @@ export const EmailListItem = forwardRef(
       <ErrorBoundary extra={{ props, cta, decodedSnippet }}>
         <li
           ref={ref}
-          className={clsx("group relative cursor-pointer border-l-4 py-3", {
-            "hover:bg-slate-50 dark:hover:bg-slate-950":
+          className={clsx('group relative cursor-pointer border-l-4 py-3', {
+            'hover:bg-slate-50 dark:hover:bg-slate-950':
               !props.selected && !props.opened,
-            "bg-blue-50 dark:bg-blue-950": props.selected,
-            "bg-blue-100 dark:bg-blue-900": props.opened,
-            "bg-slate-100 dark:bg-background":
+            'bg-blue-50 dark:bg-blue-950': props.selected,
+            'bg-blue-100 dark:bg-blue-900': props.opened,
+            'bg-slate-100 dark:bg-background':
               !isUnread && !props.selected && !props.opened,
           })}
           onClick={props.onClick}
           onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
+            if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               props.onClick(e as any);
             }
@@ -89,10 +89,10 @@ export const EmailListItem = forwardRef(
               {/* left */}
               <div
                 className={clsx(
-                  "flex flex-1 items-center overflow-hidden whitespace-nowrap text-sm leading-6",
+                  'flex flex-1 items-center overflow-hidden whitespace-nowrap text-sm leading-6',
                   {
-                    "font-semibold": isUnread,
-                  },
+                    'font-semibold': isUnread,
+                  }
                 )}
               >
                 <div
@@ -108,8 +108,8 @@ export const EmailListItem = forwardRef(
 
                 <div className="ml-4 w-48 min-w-0 overflow-hidden truncate text-foreground">
                   {extractNameFromEmail(
-                    participant(lastMessage, props.userEmail),
-                  )}{" "}
+                    participant(lastMessage, props.userEmail)
+                  )}{' '}
                   {thread.messages.length > 1 ? (
                     <span className="font-normal">
                       ({thread.messages.length})
@@ -195,7 +195,7 @@ export const EmailListItem = forwardRef(
         </li>
       </ErrorBoundary>
     );
-  },
+  }
 );
 
-EmailListItem.displayName = "EmailListItem";
+EmailListItem.displayName = 'EmailListItem';

@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { HistoryIcon, Loader2, PlusIcon } from "lucide-react";
-import { Messages } from "./messages";
-import { Button } from "@/components/ui/button";
+import { HistoryIcon, Loader2, PlusIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
+import {
+  PromptInput,
+  PromptInputSubmit,
+  PromptInputTextarea,
+} from '@/components/ai-elements/prompt-input';
+import { ExamplesDialog } from '@/components/assistant-chat/examples-dialog';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useChats } from "@/hooks/useChats";
-import { LoadingContent } from "@/components/LoadingContent";
-import { ExamplesDialog } from "@/components/assistant-chat/examples-dialog";
-import { Tooltip } from "@/components/Tooltip";
-import { useChat } from "@/providers/ChatProvider";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  PromptInput,
-  PromptInputTextarea,
-  PromptInputSubmit,
-} from "@/components/ai-elements/prompt-input";
-import { useLocalStorage } from "usehooks-ts";
+} from '@/components/ui/dropdown-menu';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useChats } from '@/hooks/useChats';
+import { useChat } from '@/providers/ChatProvider';
+import { Messages } from './messages';
 
 const MAX_MESSAGES = 20;
 
@@ -38,8 +38,8 @@ export function Chat() {
   } = useChat();
   const { messages, status, stop, regenerate, setMessages } = chat;
   const [localStorageInput, setLocalStorageInput] = useLocalStorage(
-    "input",
-    "",
+    'input',
+    ''
   );
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export function Chat() {
           <div className="mb-2 flex items-center gap-2">
             <span className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
               Fix: {context.message.headers.subject.slice(0, 60)}
-              {context.message.headers.subject.length > 60 ? "..." : ""}
+              {context.message.headers.subject.length > 60 ? '...' : ''}
               <button
                 type="button"
                 aria-label="Remove context"
@@ -109,9 +109,9 @@ export function Chat() {
         <PromptInput
           onSubmit={(e) => {
             e.preventDefault();
-            if (input.trim() && status === "ready") {
+            if (input.trim() && status === 'ready') {
               handleSubmit();
-              setLocalStorageInput("");
+              setLocalStorageInput('');
             }
           }}
           className="relative"
@@ -124,16 +124,16 @@ export function Chat() {
           />
           <PromptInputSubmit
             status={
-              status === "streaming"
-                ? "streaming"
-                : status === "submitted"
-                  ? "submitted"
-                  : "ready"
+              status === 'streaming'
+                ? 'streaming'
+                : status === 'submitted'
+                  ? 'submitted'
+                  : 'ready'
             }
-            disabled={(!input.trim() && !context) || status !== "ready"}
+            disabled={(!input.trim() && !context) || status !== 'ready'}
             className="absolute bottom-1 right-1"
             onClick={(e) => {
-              if (status === "streaming") {
+              if (status === 'streaming') {
                 e.preventDefault();
                 stop();
                 setMessages((messages) => messages);

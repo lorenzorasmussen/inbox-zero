@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
-import { withEmailAccount } from "@/utils/middleware";
-import { getEmailFieldStats } from "@/app/api/user/stats/helpers";
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getEmailFieldStats } from '@/app/api/user/stats/helpers';
+import { withEmailAccount } from '@/utils/middleware';
 
 const recipientStatsQuery = z.object({
   fromDate: z.coerce.number().nullish(),
@@ -14,16 +14,16 @@ export interface RecipientsResponse {
 }
 
 async function getRecipientStatistics(
-  options: RecipientStatsQuery & { emailAccountId: string },
+  options: RecipientStatsQuery & { emailAccountId: string }
 ): Promise<RecipientsResponse> {
   const [mostReceived] = await Promise.all([getMostSentTo(options)]);
 
   return {
     mostActiveRecipientEmails: mostReceived.data.map(
       (d: { to?: string; count: number }) => ({
-        name: d.to || "",
+        name: d.to || '',
         value: d.count,
-      }),
+      })
     ),
   };
 }
@@ -42,19 +42,19 @@ async function getMostSentTo({
     emailAccountId,
     fromDate,
     toDate,
-    field: "to",
+    field: 'to',
     isSent: true,
   });
 }
 
 export const GET = withEmailAccount(
-  "user/stats/recipients",
+  'user/stats/recipients',
   async (request) => {
     const emailAccountId = request.auth.emailAccountId;
     const { searchParams } = new URL(request.url);
     const query = recipientStatsQuery.parse({
-      fromDate: searchParams.get("fromDate"),
-      toDate: searchParams.get("toDate"),
+      fromDate: searchParams.get('fromDate'),
+      toDate: searchParams.get('toDate'),
     });
 
     const result = await getRecipientStatistics({
@@ -63,5 +63,5 @@ export const GET = withEmailAccount(
     });
 
     return NextResponse.json(result);
-  },
+  }
 );

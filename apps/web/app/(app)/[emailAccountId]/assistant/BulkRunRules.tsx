@@ -1,38 +1,38 @@
-"use client";
+'use client';
 
-import { useRef, useState } from "react";
-import { HistoryIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { SectionDescription } from "@/components/Typography";
-import type { ThreadsResponse } from "@/app/api/threads/route";
-import type { ThreadsQuery } from "@/app/api/threads/validation";
-import { LoadingContent } from "@/components/LoadingContent";
-import { runAiRules } from "@/utils/queue/email-actions";
-import { sleep } from "@/utils/sleep";
-import { toastError } from "@/components/Toast";
-import { PremiumAlertWithData, usePremium } from "@/components/PremiumAlert";
-import { SetDateDropdown } from "@/app/(app)/[emailAccountId]/assistant/SetDateDropdown";
-import { useThreads } from "@/hooks/useThreads";
-import { useAiQueueState } from "@/store/ai-queue";
+import { HistoryIcon } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { SetDateDropdown } from '@/app/(app)/[emailAccountId]/assistant/SetDateDropdown';
+import type { ThreadsResponse } from '@/app/api/threads/route';
+import type { ThreadsQuery } from '@/app/api/threads/validation';
+import { LoadingContent } from '@/components/LoadingContent';
+import { PremiumAlertWithData, usePremium } from '@/components/PremiumAlert';
+import { toastError } from '@/components/Toast';
+import { SectionDescription } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { fetchWithAccount } from "@/utils/fetch";
+} from '@/components/ui/dialog';
+import { useThreads } from '@/hooks/useThreads';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { useAiQueueState } from '@/store/ai-queue';
+import { fetchWithAccount } from '@/utils/fetch';
+import { runAiRules } from '@/utils/queue/email-actions';
+import { sleep } from '@/utils/sleep';
 
 export function BulkRunRules() {
   const { emailAccountId } = useAccount();
 
   const [isOpen, setIsOpen] = useState(false);
   const [processedThreadIds, setProcessedThreadIds] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
-  const { data, isLoading, error } = useThreads({ type: "inbox" });
+  const { data, isLoading, error } = useThreads({ type: 'inbox' });
 
   const queue = useAiQueueState();
 
@@ -49,7 +49,7 @@ export function BulkRunRules() {
   const abortRef = useRef<() => void>(undefined);
 
   const remaining = new Set(
-    [...processedThreadIds].filter((id) => queue.has(id)),
+    [...processedThreadIds].filter((id) => queue.has(id))
   ).size;
   const completed = processedThreadIds.size - remaining;
 
@@ -117,14 +117,14 @@ export function BulkRunRules() {
                           setProcessedThreadIds(new Set());
                           if (!startDate) {
                             toastError({
-                              description: "Please select a start date",
+                              description: 'Please select a start date',
                             });
                             return;
                           }
                           if (!emailAccountId) {
                             toastError({
                               description:
-                                "Email account ID is missing. Please refresh the page.",
+                                'Email account ID is missing. Please refresh the page.',
                             });
                             return;
                           }
@@ -143,10 +143,10 @@ export function BulkRunRules() {
                             },
                             (status, count) => {
                               setRunning(false);
-                              if (status === "success" && count === 0) {
+                              if (status === 'success' && count === 0) {
                                 setRunResult({ count });
                               }
-                            },
+                            }
                           );
                         }}
                       >
@@ -185,12 +185,9 @@ async function onRun(
   emailAccountId: string,
   { startDate, endDate }: { startDate: Date; endDate?: Date },
   onThreadsQueued: (threadIds: string[]) => void,
-  onComplete: (
-    status: "success" | "error" | "cancelled",
-    count: number,
-  ) => void,
+  onComplete: (status: 'success' | 'error' | 'cancelled', count: number) => void
 ) {
-  let nextPageToken = "";
+  let nextPageToken = '';
   const LIMIT = 25;
   let totalProcessed = 0;
 
@@ -203,7 +200,7 @@ async function onRun(
   async function run() {
     for (let i = 0; i < 100; i++) {
       const query: ThreadsQuery = {
-        type: "inbox",
+        type: 'inbox',
         limit: LIMIT,
         after: startDate,
         ...(endDate ? { before: endDate } : {}),
@@ -221,31 +218,31 @@ async function onRun(
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        console.error("Failed to fetch threads:", res.status, errorData);
+        console.error('Failed to fetch threads:', res.status, errorData);
         toastError({
-          title: "Failed to fetch emails",
+          title: 'Failed to fetch emails',
           description:
-            typeof errorData.error === "string"
+            typeof errorData.error === 'string'
               ? errorData.error
               : `Error: ${res.status}`,
         });
-        onComplete("error", totalProcessed);
+        onComplete('error', totalProcessed);
         return;
       }
 
       const data: ThreadsResponse = await res.json();
 
       if (!data.threads) {
-        console.error("Invalid response: missing threads", data);
+        console.error('Invalid response: missing threads', data);
         toastError({
-          title: "Invalid response",
-          description: "Failed to process emails. Please try again.",
+          title: 'Invalid response',
+          description: 'Failed to process emails. Please try again.',
         });
-        onComplete("error", totalProcessed);
+        onComplete('error', totalProcessed);
         return;
       }
 
-      nextPageToken = data.nextPageToken || "";
+      nextPageToken = data.nextPageToken || '';
 
       const threadsWithoutPlan = data.threads.filter((t) => !t.plan);
 
@@ -255,7 +252,7 @@ async function onRun(
       runAiRules(emailAccountId, threadsWithoutPlan, false);
 
       if (aborted) {
-        onComplete("cancelled", totalProcessed);
+        onComplete('cancelled', totalProcessed);
         return;
       }
 
@@ -266,7 +263,7 @@ async function onRun(
       await sleep(threadsWithoutPlan.length ? 5000 : 2000);
     }
 
-    onComplete("success", totalProcessed);
+    onComplete('success', totalProcessed);
   }
 
   run();

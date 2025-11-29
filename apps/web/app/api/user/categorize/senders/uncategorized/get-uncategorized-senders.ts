@@ -1,6 +1,6 @@
-import { extractEmailAddress } from "@/utils/email";
-import { getSenders } from "./get-senders";
-import prisma from "@/utils/prisma";
+import { extractEmailAddress } from '@/utils/email';
+import prisma from '@/utils/prisma';
+import { getSenders } from './get-senders';
 
 const MAX_ITERATIONS = 200;
 
@@ -36,7 +36,7 @@ export async function getUncategorizedSenders({
     const existingSenderEmails = new Set(existingSenders.map((s) => s.email));
 
     uncategorizedSenders = allSenders.filter(
-      (email) => !existingSenderEmails.has(email),
+      (email) => !existingSenderEmails.has(email)
     );
 
     // Break the loop if no more senders are available

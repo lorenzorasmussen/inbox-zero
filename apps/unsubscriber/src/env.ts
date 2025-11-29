@@ -1,12 +1,12 @@
-import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod";
-import "dotenv/config";
+import { createEnv } from '@t3-oss/env-core';
+import { z } from 'zod';
+import 'dotenv/config';
 
 export const env = createEnv({
   server: {
     NODE_ENV: z
-      .enum(["development", "production", "test"])
-      .default("development"),
+      .enum(['development', 'production', 'test'])
+      .default('development'),
     PORT: z.number().default(5000),
     GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),
     CORS_ORIGIN: z.string().optional(),

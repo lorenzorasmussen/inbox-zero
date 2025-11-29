@@ -1,10 +1,10 @@
-import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
-import { forwardEmailHtml } from "./forward";
-import type { ParsedMessage } from "@/utils/types";
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ParsedMessage } from '@/utils/types';
+import { forwardEmailHtml } from './forward';
 
-describe("email forwarding", () => {
+describe('email forwarding', () => {
   // Set a specific timezone offset for consistent testing
-  const testDate = new Date("2025-02-06T22:35:00.000Z");
+  const testDate = new Date('2025-02-06T22:35:00.000Z');
 
   // Thanks to the LLM for helping mock this
   beforeEach(() => {
@@ -13,36 +13,36 @@ describe("email forwarding", () => {
     vi.setSystemTime(testDate);
 
     // Mock all date methods to use UTC values
-    vi.spyOn(Date.prototype, "getHours").mockImplementation(function (
-      this: Date,
+    vi.spyOn(Date.prototype, 'getHours').mockImplementation(function (
+      this: Date
     ) {
       return this.getUTCHours();
     });
 
-    vi.spyOn(Date.prototype, "getMinutes").mockImplementation(function (
-      this: Date,
+    vi.spyOn(Date.prototype, 'getMinutes').mockImplementation(function (
+      this: Date
     ) {
       return this.getUTCMinutes();
     });
 
-    vi.spyOn(Date.prototype, "getDate").mockImplementation(function (
-      this: Date,
+    vi.spyOn(Date.prototype, 'getDate').mockImplementation(function (
+      this: Date
     ) {
       return this.getUTCDate();
     });
 
     // Mock individual toLocaleString calls used by formatEmailDate
-    const mockToLocaleString = vi.spyOn(Date.prototype, "toLocaleString");
+    const mockToLocaleString = vi.spyOn(Date.prototype, 'toLocaleString');
     mockToLocaleString.mockImplementation(function (
       this: Date,
       _locales?: Intl.LocalesArgument,
-      options?: Intl.DateTimeFormatOptions,
+      options?: Intl.DateTimeFormatOptions
     ) {
-      if (options?.weekday === "short") return "Thu";
-      if (options?.month === "short") return "Feb";
-      if (options?.year === "numeric") return "2025";
-      if (options?.day === "numeric") return "6";
-      return ""; // Default case
+      if (options?.weekday === 'short') return 'Thu';
+      if (options?.month === 'short') return 'Feb';
+      if (options?.year === 'numeric') return '2025';
+      if (options?.day === 'numeric') return '6';
+      return ''; // Default case
     });
   });
 
@@ -51,15 +51,15 @@ describe("email forwarding", () => {
     vi.restoreAllMocks();
   });
 
-  it("formats forwarded email like Gmail", () => {
-    const content = "a test forwarded email";
-    const message: Pick<ParsedMessage, "headers" | "textHtml"> = {
+  it('formats forwarded email like Gmail', () => {
+    const content = 'a test forwarded email';
+    const message: Pick<ParsedMessage, 'headers' | 'textHtml'> = {
       headers: {
-        from: "From <from@demo.com>",
+        from: 'From <from@demo.com>',
         date: testDate.toISOString(),
-        subject: "great meeting!",
-        to: "To <to@demo.com>",
-        "message-id": "<123@example.com>",
+        subject: 'great meeting!',
+        to: 'To <to@demo.com>',
+        'message-id': '<123@example.com>',
       },
       textHtml:
         '<div style="font-family:Arial,sans-serif;font-size:14px">hey, was great to meet today. when can we get lunch?</div>',
@@ -80,7 +80,7 @@ Subject: great meeting!<br>
 To: To &lt;<a href="mailto:to@demo.com">to@demo.com</a>&gt;<br>
 </div><br><br>
 ${message.textHtml}
-</div></div>`.trim(),
+</div></div>`.trim()
     );
   });
 });

@@ -1,12 +1,12 @@
-import chunk from "lodash/chunk";
-import { deleteQueue, listQueues, publishToQstashQueue } from "@/utils/upstash";
-import { env } from "@/env";
-import type { AiCategorizeSenders } from "@/app/api/user/categorize/senders/batch/handle-batch-validation";
-import { createScopedLogger } from "@/utils/logger";
+import chunk from 'lodash/chunk';
+import type { AiCategorizeSenders } from '@/app/api/user/categorize/senders/batch/handle-batch-validation';
+import { env } from '@/env';
+import { createScopedLogger } from '@/utils/logger';
+import { deleteQueue, listQueues, publishToQstashQueue } from '@/utils/upstash';
 
-const logger = createScopedLogger("upstash");
+const logger = createScopedLogger('upstash');
 
-const CATEGORIZE_SENDERS_PREFIX = "ai-categorize-senders";
+const CATEGORIZE_SENDERS_PREFIX = 'ai-categorize-senders';
 
 const getCategorizeSendersQueueName = ({
   emailAccountId,
@@ -19,7 +19,7 @@ const getCategorizeSendersQueueName = ({
  * Splits large arrays of senders into chunks of BATCH_SIZE to prevent overwhelming the system
  */
 export async function publishToAiCategorizeSendersQueue(
-  body: AiCategorizeSenders,
+  body: AiCategorizeSenders
 ) {
   const url = `${env.WEBHOOK_URL || env.NEXT_PUBLIC_BASE_URL}/api/user/categorize/senders/batch`;
 
@@ -32,7 +32,7 @@ export async function publishToAiCategorizeSendersQueue(
     emailAccountId: body.emailAccountId,
   });
 
-  logger.info("Publishing to AI categorize senders queue in chunks", {
+  logger.info('Publishing to AI categorize senders queue in chunks', {
     url,
     queueName,
     totalSenders: body.senders.length,
@@ -50,8 +50,8 @@ export async function publishToAiCategorizeSendersQueue(
           emailAccountId: body.emailAccountId,
           senders: senderChunk,
         } satisfies AiCategorizeSenders,
-      }),
-    ),
+      })
+    )
   );
 }
 
@@ -74,7 +74,7 @@ async function deleteEmptyQueues({
   skipEmailAccountId: string;
 }) {
   const queues = await listQueues();
-  logger.info("Found queues", { count: queues.length });
+  logger.info('Found queues', { count: queues.length });
   for (const queue of queues) {
     if (!queue.name.startsWith(prefix)) continue;
     if (
@@ -88,7 +88,7 @@ async function deleteEmptyQueues({
       try {
         await deleteQueue(queue.name);
       } catch (error) {
-        logger.error("Error deleting queue", { queueName: queue.name, error });
+        logger.error('Error deleting queue', { queueName: queue.name, error });
       }
     }
   }

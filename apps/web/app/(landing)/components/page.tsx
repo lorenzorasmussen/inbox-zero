@@ -1,50 +1,50 @@
-"use client";
+'use client';
 
-import { SparklesIcon } from "lucide-react";
-import { CardBasic } from "@/components/ui/card";
-import { Container } from "@/components/Container";
+import { SparklesIcon } from 'lucide-react';
+import { Suspense } from 'react';
 import {
-  PageHeading,
-  SectionDescription,
-  SectionHeader,
-  MessageText,
-  TypographyP,
-  TypographyH3,
-  TypographyH4,
-  TextLink,
-} from "@/components/Typography";
-import { Button } from "@/components/Button";
-import { Button as ShadButton } from "@/components/ui/button";
-import { Badge } from "@/components/Badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertBasic } from "@/components/Alert";
-import { Notice } from "@/components/Notice";
-import { TestErrorButton } from "@/app/(landing)/components/TestError";
-import { TestActionButton } from "@/app/(landing)/components/TestAction";
+  ResultDisplayContent,
+  ResultsDisplay,
+} from '@/app/(app)/[emailAccountId]/assistant/ResultDisplay';
+import { ActionBadges } from '@/app/(app)/[emailAccountId]/assistant/Rules';
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { TestActionButton } from '@/app/(landing)/components/TestAction';
+import { TestErrorButton } from '@/app/(landing)/components/TestError';
+import { AlertBasic } from '@/components/Alert';
+import { Badge } from '@/components/Badge';
+import { Button } from '@/components/Button';
+import { Container } from '@/components/Container';
 import {
   MultiSelectFilter,
   useMultiSelectFilter,
-} from "@/components/MultiSelectFilter";
-import { TooltipExplanation } from "@/components/TooltipExplanation";
-import { Suspense } from "react";
-import { PremiumAiAssistantAlert } from "@/components/PremiumAlert";
-import { ActionType, ExecutedRuleStatus } from "@/generated/prisma/enums";
-import type { Rule } from "@/generated/prisma/client";
-import { SettingCard } from "@/components/SettingCard";
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { ActionBadges } from "@/app/(app)/[emailAccountId]/assistant/Rules";
-import { DismissibleVideoCard } from "@/components/VideoCard";
-import { PremiumExpiredCardContent } from "@/components/PremiumCard";
+} from '@/components/MultiSelectFilter';
+import { Notice } from '@/components/Notice';
+import { PremiumAiAssistantAlert } from '@/components/PremiumAlert';
+import { PremiumExpiredCardContent } from '@/components/PremiumCard';
+import { SettingCard } from '@/components/SettingCard';
+import { TooltipExplanation } from '@/components/TooltipExplanation';
 import {
-  ResultsDisplay,
-  ResultDisplayContent,
-} from "@/app/(app)/[emailAccountId]/assistant/ResultDisplay";
+  MessageText,
+  PageHeading,
+  SectionDescription,
+  SectionHeader,
+  TextLink,
+  TypographyH3,
+  TypographyH4,
+  TypographyP,
+} from '@/components/Typography';
+import { Button as ShadButton } from '@/components/ui/button';
+import { CardBasic } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DismissibleVideoCard } from '@/components/VideoCard';
+import type { Rule } from '@/generated/prisma/client';
+import { ActionType, ExecutedRuleStatus } from '@/generated/prisma/enums';
 
 export const maxDuration = 3;
 
 export default function Components() {
   const { selectedValues, setSelectedValues } = useMultiSelectFilter([
-    "alerts",
+    'alerts',
   ]);
 
   return (
@@ -207,7 +207,7 @@ export default function Components() {
               </p>
               <PremiumAiAssistantAlert
                 showSetApiKey={false}
-                tier={"BASIC_MONTHLY"}
+                tier={'BASIC_MONTHLY'}
               />
             </div>
             <div>
@@ -216,7 +216,7 @@ export default function Components() {
               </p>
               <PremiumAiAssistantAlert
                 showSetApiKey={true}
-                tier={"PRO_MONTHLY"}
+                tier={'PRO_MONTHLY'}
               />
             </div>
             <div>
@@ -235,7 +235,7 @@ export default function Components() {
               icon={<SparklesIcon className="h-5 w-5" />}
               title="Getting started with AI Assistant"
               description={
-                "Learn how to use the AI Assistant to automatically label, archive, and more."
+                'Learn how to use the AI Assistant to automatically label, archive, and more.'
               }
               videoSrc="https://www.youtube.com/embed/SoeNDVr7ve4"
               thumbnailSrc="https://img.youtube.com/vi/SoeNDVr7ve4/0.jpg"
@@ -258,81 +258,81 @@ export default function Components() {
               actions={[
                 {
                   type: ActionType.LABEL,
-                  label: "Label",
-                  id: "label",
+                  label: 'Label',
+                  id: 'label',
                 },
                 {
                   type: ActionType.MOVE_FOLDER,
-                  label: "Move to folder",
-                  id: "move_folder",
-                  folderName: "Marketing",
+                  label: 'Move to folder',
+                  id: 'move_folder',
+                  folderName: 'Marketing',
                 },
                 {
                   type: ActionType.ARCHIVE,
-                  label: "Archive",
-                  id: "archive",
+                  label: 'Archive',
+                  id: 'archive',
                 },
                 {
                   type: ActionType.DRAFT_EMAIL,
-                  label: "Draft",
-                  id: "draft",
+                  label: 'Draft',
+                  id: 'draft',
                 },
                 {
                   type: ActionType.DRAFT_EMAIL,
-                  label: "Draft",
-                  id: "draft-with-content",
+                  label: 'Draft',
+                  id: 'draft-with-content',
                   content: "Hi, I'd like to discuss the project with you.",
                 },
                 {
                   type: ActionType.REPLY,
-                  label: "Reply",
-                  id: "reply",
+                  label: 'Reply',
+                  id: 'reply',
                 },
                 {
                   type: ActionType.SEND_EMAIL,
-                  label: "Send",
-                  id: "send",
+                  label: 'Send',
+                  id: 'send',
                 },
                 {
                   type: ActionType.SEND_EMAIL,
-                  label: "Send",
-                  id: "send-with-to",
-                  to: "test@example.com",
+                  label: 'Send',
+                  id: 'send-with-to',
+                  to: 'test@example.com',
                 },
                 {
                   type: ActionType.FORWARD,
-                  label: "Forward",
-                  id: "forward",
+                  label: 'Forward',
+                  id: 'forward',
                 },
                 {
                   type: ActionType.FORWARD,
-                  label: "Forward",
-                  id: "forward-with-to",
-                  to: "test@example.com",
+                  label: 'Forward',
+                  id: 'forward-with-to',
+                  to: 'test@example.com',
                 },
                 {
                   type: ActionType.MARK_SPAM,
-                  label: "Mark as spam",
-                  id: "mark_spam",
+                  label: 'Mark as spam',
+                  id: 'mark_spam',
                 },
                 {
                   type: ActionType.MARK_READ,
-                  label: "Mark as read",
-                  id: "mark_read",
+                  label: 'Mark as read',
+                  id: 'mark_read',
                 },
                 {
                   type: ActionType.CALL_WEBHOOK,
-                  label: "Call webhook",
-                  id: "call_webhook",
+                  label: 'Call webhook',
+                  id: 'call_webhook',
                 },
                 {
                   type: ActionType.DIGEST,
-                  label: "Digest",
-                  id: "digest",
+                  label: 'Digest',
+                  id: 'digest',
                 },
               ]}
               provider="gmail"
-              labels={[{ id: "label", name: "Label" }]}
+              labels={[{ id: 'label', name: 'Label' }]}
             />
           </div>
         </div>
@@ -343,15 +343,15 @@ export default function Components() {
             <ResultsDisplay
               results={[
                 {
-                  createdAt: new Date("2025-01-01"),
+                  createdAt: new Date('2025-01-01'),
                   actionItems: [
                     {
                       type: ActionType.LABEL,
-                      label: "Label",
-                      id: "label",
+                      label: 'Label',
+                      id: 'label',
                     },
                   ],
-                  reason: "Test reason",
+                  reason: 'Test reason',
                   rule: getRule(),
                   status: ExecutedRuleStatus.APPLIED,
                 },
@@ -366,107 +366,107 @@ export default function Components() {
                 results={[
                   // Batch 1 (most recent): 2 rules
                   {
-                    createdAt: new Date("2025-01-05T10:00:00"),
+                    createdAt: new Date('2025-01-05T10:00:00'),
                     actionItems: [
                       {
                         type: ActionType.LABEL,
-                        label: "Urgent",
-                        id: "label1",
+                        label: 'Urgent',
+                        id: 'label1',
                       },
                     ],
-                    reason: "Matches urgent criteria",
-                    rule: getRuleWithName("Urgent Handler"),
+                    reason: 'Matches urgent criteria',
+                    rule: getRuleWithName('Urgent Handler'),
                     status: ExecutedRuleStatus.APPLIED,
                   },
                   {
-                    createdAt: new Date("2025-01-05T10:00:00"),
+                    createdAt: new Date('2025-01-05T10:00:00'),
                     actionItems: [
                       {
                         type: ActionType.ARCHIVE,
-                        id: "archive1",
+                        id: 'archive1',
                       },
                     ],
-                    reason: "Matches archive criteria",
-                    rule: getRuleWithName("Auto Archive"),
+                    reason: 'Matches archive criteria',
+                    rule: getRuleWithName('Auto Archive'),
                     status: ExecutedRuleStatus.APPLIED,
                   },
                   // Batch 2 (previous): 2 rules - will show "Previous:"
                   {
-                    createdAt: new Date("2025-01-04T10:00:00"),
+                    createdAt: new Date('2025-01-04T10:00:00'),
                     actionItems: [
                       {
                         type: ActionType.LABEL,
-                        label: "Important",
-                        id: "label2",
+                        label: 'Important',
+                        id: 'label2',
                       },
                     ],
-                    reason: "Matches important criteria",
-                    rule: getRuleWithName("Important Filter"),
+                    reason: 'Matches important criteria',
+                    rule: getRuleWithName('Important Filter'),
                     status: ExecutedRuleStatus.APPLIED,
                   },
                   {
-                    createdAt: new Date("2025-01-04T10:00:00"),
+                    createdAt: new Date('2025-01-04T10:00:00'),
                     actionItems: [
                       {
                         type: ActionType.MARK_READ,
-                        id: "mark_read1",
+                        id: 'mark_read1',
                       },
                     ],
-                    reason: "Matches read criteria",
-                    rule: getRuleWithName("Mark as Read"),
+                    reason: 'Matches read criteria',
+                    rule: getRuleWithName('Mark as Read'),
                     status: ExecutedRuleStatus.APPLIED,
                   },
                   // Batch 3: 3 rules
                   {
-                    createdAt: new Date("2025-01-03T10:00:00"),
+                    createdAt: new Date('2025-01-03T10:00:00'),
                     actionItems: [
                       {
                         type: ActionType.LABEL,
-                        label: "Newsletter",
-                        id: "label3",
+                        label: 'Newsletter',
+                        id: 'label3',
                       },
                     ],
-                    reason: "Matches newsletter criteria",
-                    rule: getRuleWithName("Newsletter Handler"),
+                    reason: 'Matches newsletter criteria',
+                    rule: getRuleWithName('Newsletter Handler'),
                     status: ExecutedRuleStatus.APPLIED,
                   },
                   {
-                    createdAt: new Date("2025-01-03T10:00:00"),
+                    createdAt: new Date('2025-01-03T10:00:00'),
                     actionItems: [
                       {
                         type: ActionType.MOVE_FOLDER,
-                        folderName: "Marketing",
-                        id: "move1",
+                        folderName: 'Marketing',
+                        id: 'move1',
                       },
                     ],
-                    reason: "Matches marketing criteria",
-                    rule: getRuleWithName("Marketing Folder"),
+                    reason: 'Matches marketing criteria',
+                    rule: getRuleWithName('Marketing Folder'),
                     status: ExecutedRuleStatus.APPLIED,
                   },
                   {
-                    createdAt: new Date("2025-01-03T10:00:00"),
+                    createdAt: new Date('2025-01-03T10:00:00'),
                     actionItems: [
                       {
                         type: ActionType.DIGEST,
-                        id: "digest1",
+                        id: 'digest1',
                       },
                     ],
-                    reason: "Matches digest criteria",
-                    rule: getRuleWithName("Weekly Digest"),
+                    reason: 'Matches digest criteria',
+                    rule: getRuleWithName('Weekly Digest'),
                     status: ExecutedRuleStatus.APPLIED,
                   },
                   // Batch 4: 1 rule
                   {
-                    createdAt: new Date("2025-01-02T10:00:00"),
+                    createdAt: new Date('2025-01-02T10:00:00'),
                     actionItems: [
                       {
                         type: ActionType.LABEL,
-                        label: "Follow Up",
-                        id: "label4",
+                        label: 'Follow Up',
+                        id: 'label4',
                       },
                     ],
-                    reason: "Matches follow-up criteria",
-                    rule: getRuleWithName("Follow Up Tracker"),
+                    reason: 'Matches follow-up criteria',
+                    rule: getRuleWithName('Follow Up Tracker'),
                     status: ExecutedRuleStatus.APPLIED,
                   },
                 ]}
@@ -476,15 +476,15 @@ export default function Components() {
             <div className="p-4 border border-border rounded mt-4">
               <ResultDisplayContent
                 result={{
-                  createdAt: new Date("2025-01-01"),
+                  createdAt: new Date('2025-01-01'),
                   actionItems: [
                     {
                       type: ActionType.LABEL,
-                      label: "Label",
-                      id: "label",
+                      label: 'Label',
+                      id: 'label',
                     },
                   ],
-                  reason: "Test reason",
+                  reason: 'Test reason',
                   rule: getRule(),
                   status: ExecutedRuleStatus.APPLIED,
                 }}
@@ -494,28 +494,28 @@ export default function Components() {
             <div className="p-4 border border-border rounded mt-4">
               <ResultDisplayContent
                 result={{
-                  createdAt: new Date("2025-01-01"),
+                  createdAt: new Date('2025-01-01'),
                   actionItems: [
                     {
                       type: ActionType.LABEL,
-                      label: "To Reply",
-                      id: "label",
+                      label: 'To Reply',
+                      id: 'label',
                     },
                     {
                       type: ActionType.DRAFT_EMAIL,
-                      subject: "Re: Test subject",
+                      subject: 'Re: Test subject',
                       content: "Hi, I'd like to discuss the project with you.",
-                      to: "test@example.com",
-                      id: "draft_email",
+                      to: 'test@example.com',
+                      id: 'draft_email',
                     },
                   ],
-                  reason: "Test reason",
+                  reason: 'Test reason',
                   rule: {
                     ...getRule(),
-                    from: "team@company.com",
+                    from: 'team@company.com',
                     instructions:
-                      "Urgent requests that need immediate attention",
-                    conditionalOperator: "AND",
+                      'Urgent requests that need immediate attention',
+                    conditionalOperator: 'AND',
                   },
                   status: ExecutedRuleStatus.APPLIED,
                 }}
@@ -525,21 +525,21 @@ export default function Components() {
             <div className="p-4 border border-border rounded mt-4">
               <ResultDisplayContent
                 result={{
-                  createdAt: new Date("2025-01-01"),
+                  createdAt: new Date('2025-01-01'),
                   actionItems: [
                     {
                       type: ActionType.LABEL,
-                      label: "Important",
-                      id: "label",
+                      label: 'Important',
+                      id: 'label',
                     },
                   ],
-                  reason: "Test reason",
+                  reason: 'Test reason',
                   rule: {
                     ...getRule(),
-                    from: "notifications@github.com",
-                    body: "mentioned you",
-                    instructions: "Pull request reviews that need my feedback",
-                    conditionalOperator: "OR",
+                    from: 'notifications@github.com',
+                    body: 'mentioned you',
+                    instructions: 'Pull request reviews that need my feedback',
+                    conditionalOperator: 'OR',
                   },
                   status: ExecutedRuleStatus.APPLIED,
                 }}
@@ -554,10 +554,10 @@ export default function Components() {
             <MultiSelectFilter
               title="Categories"
               options={[
-                { label: "Receipts", value: "receipts" },
-                { label: "Newsletters", value: "newsletters" },
-                { label: "Updates", value: "updates" },
-                { label: "Alerts", value: "alerts" },
+                { label: 'Receipts', value: 'receipts' },
+                { label: 'Newsletters', value: 'newsletters' },
+                { label: 'Updates', value: 'updates' },
+                { label: 'Alerts', value: 'alerts' },
               ]}
               selectedValues={selectedValues}
               setSelectedValues={setSelectedValues}
@@ -604,10 +604,10 @@ export default function Components() {
               <PremiumExpiredCardContent
                 premium={{
                   lemonSqueezyRenewsAt: null,
-                  stripeSubscriptionId: "sub_test123",
-                  stripeSubscriptionStatus: "past_due",
+                  stripeSubscriptionId: 'sub_test123',
+                  stripeSubscriptionStatus: 'past_due',
                   lemonSqueezySubscriptionId: null,
-                  tier: "PRO_MONTHLY",
+                  tier: 'PRO_MONTHLY',
                 }}
               />
             </div>
@@ -618,10 +618,10 @@ export default function Components() {
               <PremiumExpiredCardContent
                 premium={{
                   lemonSqueezyRenewsAt: null,
-                  stripeSubscriptionId: "sub_test456",
-                  stripeSubscriptionStatus: "canceled",
+                  stripeSubscriptionId: 'sub_test456',
+                  stripeSubscriptionStatus: 'canceled',
                   lemonSqueezySubscriptionId: null,
-                  tier: "BUSINESS_MONTHLY",
+                  tier: 'BUSINESS_MONTHLY',
                 }}
               />
             </div>
@@ -632,12 +632,12 @@ export default function Components() {
               <PremiumExpiredCardContent
                 premium={{
                   lemonSqueezyRenewsAt: new Date(
-                    Date.now() - 24 * 60 * 60 * 1000,
+                    Date.now() - 24 * 60 * 60 * 1000
                   ), // Yesterday
                   stripeSubscriptionId: null,
                   stripeSubscriptionStatus: null,
                   lemonSqueezySubscriptionId: 456,
-                  tier: "PRO_ANNUALLY",
+                  tier: 'PRO_ANNUALLY',
                 }}
               />
             </div>
@@ -649,10 +649,10 @@ export default function Components() {
                 <PremiumExpiredCardContent
                   premium={{
                     lemonSqueezyRenewsAt: null,
-                    stripeSubscriptionId: "sub_active123",
-                    stripeSubscriptionStatus: "active",
+                    stripeSubscriptionId: 'sub_active123',
+                    stripeSubscriptionStatus: 'active',
                     lemonSqueezySubscriptionId: null,
-                    tier: "BUSINESS_MONTHLY",
+                    tier: 'BUSINESS_MONTHLY',
                   }}
                 />
                 Banner should not appear for active users
@@ -681,21 +681,21 @@ export default function Components() {
 
 function getRule(): Rule {
   return {
-    id: "1",
-    name: "Test rule",
-    instructions: "Test instructions",
+    id: '1',
+    name: 'Test rule',
+    instructions: 'Test instructions',
     from: null,
     to: null,
     subject: null,
     body: null,
     groupId: null,
-    conditionalOperator: "AND",
+    conditionalOperator: 'AND',
     createdAt: new Date(),
     updatedAt: new Date(),
     enabled: true,
     automate: true,
     runOnThreads: true,
-    emailAccountId: "emailAccountId",
+    emailAccountId: 'emailAccountId',
     promptText: null,
     categoryFilterType: null,
     systemType: null,
@@ -705,7 +705,7 @@ function getRule(): Rule {
 function getRuleWithName(name: string): Rule {
   return {
     ...getRule(),
-    id: name.toLowerCase().replace(/\s+/g, "-"),
+    id: name.toLowerCase().replace(/\s+/g, '-'),
     name,
   };
 }

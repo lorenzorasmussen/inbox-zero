@@ -1,4 +1,4 @@
-import { PageHeading, SectionDescription } from "@/components/Typography";
+import { PageHeading, SectionDescription } from '@/components/Typography';
 
 export function TopSection(props: {
   title: string;

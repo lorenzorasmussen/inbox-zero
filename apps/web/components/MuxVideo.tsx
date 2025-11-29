@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import MuxPlayer from "@mux/mux-player-react";
-import { ClientOnly } from "@/components/ClientOnly";
-import { cn } from "@/utils";
+import MuxPlayer from '@mux/mux-player-react';
+import { ClientOnly } from '@/components/ClientOnly';
+import { cn } from '@/utils';
 
 interface MuxVideoProps {
   playbackId: string;
@@ -19,7 +19,7 @@ export function MuxVideo({
 }: MuxVideoProps) {
   return (
     <ClientOnly>
-      <div className={cn("group relative", className)}>
+      <div className={cn('group relative', className)}>
         <MuxPlayer
           playbackId={playbackId}
           metadata={{ video_title: title }}

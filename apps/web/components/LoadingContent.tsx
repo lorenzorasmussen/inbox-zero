@@ -1,6 +1,6 @@
-import type React from "react";
-import { Loading } from "./Loading";
-import { ErrorDisplay } from "./ErrorDisplay";
+import type React from 'react';
+import { ErrorDisplay } from './ErrorDisplay';
+import { Loading } from './Loading';
 
 interface LoadingContentProps {
   loading: boolean;

@@ -1,9 +1,9 @@
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from '@/generated/prisma/client';
 
 export function isDuplicateError(error: unknown, key?: string) {
   const duplicateError =
     error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.code === "P2002";
+    error.code === 'P2002';
 
   if (key)
     return duplicateError && (error.meta?.target as string[])?.includes?.(key);
@@ -14,6 +14,6 @@ export function isDuplicateError(error: unknown, key?: string) {
 export function isNotFoundError(error: unknown) {
   return (
     error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.code === "P2025"
+    error.code === 'P2025'
   );
 }

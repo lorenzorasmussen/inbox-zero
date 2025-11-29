@@ -1,8 +1,8 @@
-import { z } from "zod";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { Action, Rule } from "@/generated/prisma/client";
-import { getModel } from "@/utils/llms/model";
-import { createGenerateObject } from "@/utils/llms";
+import { z } from 'zod';
+import type { Action, Rule } from '@/generated/prisma/client';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
 
 export async function aiFindExistingRules({
   emailAccount,
@@ -21,11 +21,11 @@ export async function aiFindExistingRules({
   ];
 
   const system =
-    "You are an AI assistant that checks if the prompt rules are already in the database.";
+    'You are an AI assistant that checks if the prompt rules are already in the database.';
   const prompt = `Analyze the following prompt rules and the existing database rules to identify the existing rules that match the prompt rules:
 
 ## Prompt rules:
-${promptRules.map((rule, index) => `${index + 1}: ${rule}`).join("\n")}
+${promptRules.map((rule, index) => `${index + 1}: ${rule}`).join('\n')}
 
 ## Existing database rules:
 ${JSON.stringify(databaseRules, null, 2)}
@@ -44,11 +44,11 @@ Please return the existing rules that match the prompt rules in JSON format.
 </example>
 `;
 
-  const modelOptions = getModel(emailAccount.user, "chat");
+  const modelOptions = getModel(emailAccount.user, 'chat');
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "Find existing rules",
+    label: 'Find existing rules',
     modelOptions,
   });
 
@@ -60,13 +60,13 @@ Please return the existing rules that match the prompt rules in JSON format.
       existingRules: z
         .array(
           z.object({
-            ruleId: z.string().describe("The id of the existing rule"),
+            ruleId: z.string().describe('The id of the existing rule'),
             promptNumber: z
               .number()
-              .describe("The index of the prompt that matches the rule"),
-          }),
+              .describe('The index of the prompt that matches the rule'),
+          })
         )
-        .describe("The existing rules that match the prompt rules"),
+        .describe('The existing rules that match the prompt rules'),
     }),
   });
 

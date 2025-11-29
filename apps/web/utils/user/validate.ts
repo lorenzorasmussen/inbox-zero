@@ -1,6 +1,6 @@
-import { SafeError } from "@/utils/error";
-import { hasAiAccess } from "@/utils/premium";
-import prisma from "@/utils/prisma";
+import { SafeError } from '@/utils/error';
+import { hasAiAccess } from '@/utils/premium';
+import prisma from '@/utils/prisma';
 
 export async function validateUserAndAiAccess({
   emailAccountId,
@@ -32,13 +32,13 @@ export async function validateUserAndAiAccess({
       account: { select: { provider: true } },
     },
   });
-  if (!emailAccount) throw new SafeError("User not found");
+  if (!emailAccount) throw new SafeError('User not found');
 
   const userHasAiAccess = hasAiAccess(
     emailAccount.user.premium?.tier || null,
-    emailAccount.user.aiApiKey,
+    emailAccount.user.aiApiKey
   );
-  if (!userHasAiAccess) throw new SafeError("Please upgrade for AI access");
+  if (!userHasAiAccess) throw new SafeError('Please upgrade for AI access');
 
   return { emailAccount };
 }

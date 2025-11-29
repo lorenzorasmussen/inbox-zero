@@ -1,44 +1,44 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { toastError } from "@/components/Toast";
-import type { GetCalendarAuthUrlResponse } from "@/app/api/google/calendar/auth-url/route";
-import { fetchWithAccount } from "@/utils/fetch";
-import { createScopedLogger } from "@/utils/logger";
-import Image from "next/image";
+import Image from 'next/image';
+import { useState } from 'react';
+import type { GetCalendarAuthUrlResponse } from '@/app/api/google/calendar/auth-url/route';
+import { toastError } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { fetchWithAccount } from '@/utils/fetch';
+import { createScopedLogger } from '@/utils/logger';
 
 export function ConnectCalendar() {
   const { emailAccountId } = useAccount();
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
   const [isConnectingMicrosoft, setIsConnectingMicrosoft] = useState(false);
-  const logger = createScopedLogger("calendar-connection");
+  const logger = createScopedLogger('calendar-connection');
 
   const handleConnectGoogle = async () => {
     setIsConnectingGoogle(true);
     try {
       const response = await fetchWithAccount({
-        url: "/api/google/calendar/auth-url",
+        url: '/api/google/calendar/auth-url',
         emailAccountId,
-        init: { headers: { "Content-Type": "application/json" } },
+        init: { headers: { 'Content-Type': 'application/json' } },
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate Google calendar connection");
+        throw new Error('Failed to initiate Google calendar connection');
       }
 
       const data: GetCalendarAuthUrlResponse = await response.json();
       window.location.href = data.url;
     } catch (error) {
-      logger.error("Error initiating Google calendar connection", {
+      logger.error('Error initiating Google calendar connection', {
         error,
         emailAccountId,
-        provider: "google",
+        provider: 'google',
       });
       toastError({
-        title: "Error initiating Google calendar connection",
-        description: "Please try again or contact support",
+        title: 'Error initiating Google calendar connection',
+        description: 'Please try again or contact support',
       });
       setIsConnectingGoogle(false);
     }
@@ -48,26 +48,26 @@ export function ConnectCalendar() {
     setIsConnectingMicrosoft(true);
     try {
       const response = await fetchWithAccount({
-        url: "/api/outlook/calendar/auth-url",
+        url: '/api/outlook/calendar/auth-url',
         emailAccountId,
-        init: { headers: { "Content-Type": "application/json" } },
+        init: { headers: { 'Content-Type': 'application/json' } },
       });
 
       if (!response.ok) {
-        throw new Error("Failed to initiate Microsoft calendar connection");
+        throw new Error('Failed to initiate Microsoft calendar connection');
       }
 
       const data: GetCalendarAuthUrlResponse = await response.json();
       window.location.href = data.url;
     } catch (error) {
-      logger.error("Error initiating Microsoft calendar connection", {
+      logger.error('Error initiating Microsoft calendar connection', {
         error,
         emailAccountId,
-        provider: "microsoft",
+        provider: 'microsoft',
       });
       toastError({
-        title: "Error initiating Microsoft calendar connection",
-        description: "Please try again or contact support",
+        title: 'Error initiating Microsoft calendar connection',
+        description: 'Please try again or contact support',
       });
       setIsConnectingMicrosoft(false);
     }
@@ -88,7 +88,7 @@ export function ConnectCalendar() {
           height={16}
           unoptimized
         />
-        {isConnectingGoogle ? "Connecting..." : "Add Google Calendar"}
+        {isConnectingGoogle ? 'Connecting...' : 'Add Google Calendar'}
       </Button>
 
       <Button
@@ -104,7 +104,7 @@ export function ConnectCalendar() {
           height={16}
           unoptimized
         />
-        {isConnectingMicrosoft ? "Connecting..." : "Add Outlook Calendar"}
+        {isConnectingMicrosoft ? 'Connecting...' : 'Add Outlook Calendar'}
       </Button>
     </div>
   );

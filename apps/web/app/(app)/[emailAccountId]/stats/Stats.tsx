@@ -1,37 +1,37 @@
-"use client";
+'use client';
 
-import { useState, useMemo, useCallback, useEffect } from "react";
-import type { DateRange } from "react-day-picker";
-import subDays from "date-fns/subDays";
-import { DetailedStats } from "@/app/(app)/[emailAccountId]/stats/DetailedStats";
-import { LoadStatsButton } from "@/app/(app)/[emailAccountId]/stats/LoadStatsButton";
-import { EmailAnalytics } from "@/app/(app)/[emailAccountId]/stats/EmailAnalytics";
-import { StatsSummary } from "@/app/(app)/[emailAccountId]/stats/StatsSummary";
-import { StatsOnboarding } from "@/app/(app)/[emailAccountId]/stats/StatsOnboarding";
-import { ActionBar } from "@/app/(app)/[emailAccountId]/stats/ActionBar";
-import { LoadProgress } from "@/app/(app)/[emailAccountId]/stats/LoadProgress";
-import { useStatLoader } from "@/providers/StatLoaderProvider";
-import { EmailActionsAnalytics } from "@/app/(app)/[emailAccountId]/stats/EmailActionsAnalytics";
-import { BulkUnsubscribeSummary } from "@/app/(app)/[emailAccountId]/bulk-unsubscribe/BulkUnsubscribeSummary";
-import { RuleStatsChart } from "./RuleStatsChart";
-import { CardBasic } from "@/components/ui/card";
-import { Title } from "@tremor/react";
-import { PageHeading } from "@/components/Typography";
-import { PageWrapper } from "@/components/PageWrapper";
-import { useOrgAccess } from "@/hooks/useOrgAccess";
+import { Title } from '@tremor/react';
+import subDays from 'date-fns/subDays';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { DateRange } from 'react-day-picker';
+import { BulkUnsubscribeSummary } from '@/app/(app)/[emailAccountId]/bulk-unsubscribe/BulkUnsubscribeSummary';
+import { ActionBar } from '@/app/(app)/[emailAccountId]/stats/ActionBar';
+import { DetailedStats } from '@/app/(app)/[emailAccountId]/stats/DetailedStats';
+import { EmailActionsAnalytics } from '@/app/(app)/[emailAccountId]/stats/EmailActionsAnalytics';
+import { EmailAnalytics } from '@/app/(app)/[emailAccountId]/stats/EmailAnalytics';
+import { LoadProgress } from '@/app/(app)/[emailAccountId]/stats/LoadProgress';
+import { LoadStatsButton } from '@/app/(app)/[emailAccountId]/stats/LoadStatsButton';
+import { StatsOnboarding } from '@/app/(app)/[emailAccountId]/stats/StatsOnboarding';
+import { StatsSummary } from '@/app/(app)/[emailAccountId]/stats/StatsSummary';
+import { PageWrapper } from '@/components/PageWrapper';
+import { PageHeading } from '@/components/Typography';
+import { CardBasic } from '@/components/ui/card';
+import { useOrgAccess } from '@/hooks/useOrgAccess';
+import { useStatLoader } from '@/providers/StatLoaderProvider';
+import { RuleStatsChart } from './RuleStatsChart';
 
 const selectOptions = [
-  { label: "Last week", value: "7" },
-  { label: "Last month", value: "30" },
-  { label: "Last 3 months", value: "90" },
-  { label: "Last year", value: "365" },
-  { label: "All", value: "0" },
+  { label: 'Last week', value: '7' },
+  { label: 'Last month', value: '30' },
+  { label: 'Last 3 months', value: '90' },
+  { label: 'Last year', value: '365' },
+  { label: 'All', value: '0' },
 ];
 const defaultSelected = selectOptions[1];
 
 export function Stats() {
   const [dateDropdown, setDateDropdown] = useState<string>(
-    defaultSelected.label,
+    defaultSelected.label
   );
 
   const now = useMemo(() => new Date(), []);
@@ -40,8 +40,8 @@ export function Stats() {
     to: now,
   });
 
-  const [period, setPeriod] = useState<"day" | "week" | "month" | "year">(
-    "week",
+  const [period, setPeriod] = useState<'day' | 'week' | 'month' | 'year'>(
+    'week'
   );
 
   const { isAccountOwner, accountInfo } = useOrgAccess();
@@ -51,15 +51,15 @@ export function Stats() {
       const { label, value } = option;
       setDateDropdown(label);
 
-      if (value === "7") {
-        setPeriod("day");
-      } else if (value === "30" && (period === "month" || period === "year")) {
-        setPeriod("week");
-      } else if (value === "90" && period === "year") {
-        setPeriod("month");
+      if (value === '7') {
+        setPeriod('day');
+      } else if (value === '30' && (period === 'month' || period === 'year')) {
+        setPeriod('week');
+      } else if (value === '90' && period === 'year') {
+        setPeriod('month');
       }
     },
-    [period],
+    [period]
   );
 
   const { isLoading, onLoad } = useStatLoader();
@@ -76,7 +76,7 @@ export function Stats() {
       <PageHeading>
         {!isAccountOwner && accountInfo?.name
           ? `Analytics for ${accountInfo.name}`
-          : "Analytics"}
+          : 'Analytics'}
       </PageHeading>
       <div className="flex items-center justify-between mt-2 sm:mt-0">
         {isLoading ? <LoadProgress /> : <div />}

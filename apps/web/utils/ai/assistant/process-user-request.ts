@@ -1,21 +1,21 @@
-import { stepCountIs, tool } from "ai";
-import { z } from "zod";
-import { createGenerateText } from "@/utils/llms";
-import { createScopedLogger } from "@/utils/logger";
-import { GroupItemType, LogicalOperator } from "@/generated/prisma/enums";
-import type { Rule } from "@/generated/prisma/client";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { RuleWithRelations } from "@/utils/rule/types";
-import type { ParsedMessage } from "@/utils/types";
-import { createRuleSchema } from "@/utils/ai/rule/create-rule-schema";
-import { deleteGroupItem } from "@/utils/group/group-item";
-import { createRule, partialUpdateRule } from "@/utils/rule/rule";
-import { getEmailForLLM } from "@/utils/get-email-from-message";
-import { stringifyEmailSimple } from "@/utils/stringify-email";
-import { env } from "@/env";
-import { posthogCaptureEvent } from "@/utils/posthog";
-import { getModel } from "@/utils/llms/model";
-import { getUserInfoPrompt } from "@/utils/ai/helpers";
+import { stepCountIs, tool } from 'ai';
+import { z } from 'zod';
+import { env } from '@/env';
+import type { Rule } from '@/generated/prisma/client';
+import { GroupItemType, LogicalOperator } from '@/generated/prisma/enums';
+import { getUserInfoPrompt } from '@/utils/ai/helpers';
+import { createRuleSchema } from '@/utils/ai/rule/create-rule-schema';
+import { getEmailForLLM } from '@/utils/get-email-from-message';
+import { deleteGroupItem } from '@/utils/group/group-item';
+import { createGenerateText } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import { posthogCaptureEvent } from '@/utils/posthog';
+import { createRule, partialUpdateRule } from '@/utils/rule/rule';
+import type { RuleWithRelations } from '@/utils/rule/types';
+import { stringifyEmailSimple } from '@/utils/stringify-email';
+import type { ParsedMessage } from '@/utils/types';
 
 export async function processUserRequest({
   emailAccount,
@@ -27,10 +27,10 @@ export async function processUserRequest({
   emailAccount: EmailAccountWithAI;
   rules: RuleWithRelations[];
   originalEmail: ParsedMessage | null;
-  messages: { role: "assistant" | "user"; content: string }[];
+  messages: { role: 'assistant' | 'user'; content: string }[];
   matchedRule: RuleWithRelations | null;
 }) {
-  const logger = createScopedLogger("ai-fix-rules").with({
+  const logger = createScopedLogger('ai-fix-rules').with({
     emailAccountId: emailAccount.id,
     userId: emailAccount.userId,
     email: emailAccount.email,
@@ -38,13 +38,13 @@ export async function processUserRequest({
     threadId: originalEmail?.threadId,
   });
 
-  posthogCaptureEvent(emailAccount.email, "AI Assistant Process Started", {
+  posthogCaptureEvent(emailAccount.email, 'AI Assistant Process Started', {
     hasOriginalEmail: !!originalEmail,
     hasMatchedRule: !!matchedRule,
   });
 
-  if (messages[messages.length - 1].role === "assistant")
-    throw new Error("Assistant message cannot be last");
+  if (messages[messages.length - 1].role === 'assistant')
+    throw new Error('Assistant message cannot be last');
 
   const userRules = rulesToXML(rules);
 
@@ -66,7 +66,7 @@ ${
 - These are patterns that have been learned from the user's email history to always be matched (and they ignore the conditionalOperator setting)
 - Patterns are email addresses or subjects
 - You can remove patterns`
-    : ""
+    : ''
 }
 
 When fixing rules:
@@ -93,12 +93,12 @@ If you are unable to fix the rule, say so.`;
   const prompt = `${
     originalEmail
       ? `<matched_rule>
-${matchedRule ? ruleToXML(matchedRule) : "No rule matched"}
+${matchedRule ? ruleToXML(matchedRule) : 'No rule matched'}
 </matched_rule>`
-      : ""
+      : ''
   }
 
-${!matchedRule ? userRules : ""}
+${matchedRule ? '' : userRules}
 
 ${getUserInfoPrompt({ emailAccount })}
 
@@ -107,16 +107,16 @@ ${
     ? `<original_email>
 ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
 </original_email>`
-    : ""
+    : ''
 }`;
 
   const allMessages = [
     {
-      role: "system" as const,
+      role: 'system' as const,
       content: system,
     },
     {
-      role: "user" as const,
+      role: 'user' as const,
       content: prompt,
     },
     ...(messages || []),
@@ -131,7 +131,7 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
 
       if (!ruleId) {
         return {
-          error: "Rule not found",
+          error: 'Rule not found',
           message: `Rule ${ruleName} not found`,
         };
       }
@@ -142,24 +142,24 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
 
-      logger.error("Error while updating rule", {
+      logger.error('Error while updating rule', {
         ruleName,
         keys: Object.keys(rule),
         error: message,
       });
 
       return {
-        error: "Failed to update rule",
+        error: 'Failed to update rule',
         message,
       };
     }
   }
 
-  const modelOptions = getModel(emailAccount.user, "chat");
+  const modelOptions = getModel(emailAccount.user, 'chat');
 
   const generateText = createGenerateText({
     emailAccount,
-    label: "Process user request",
+    label: 'Process user request',
     modelOptions,
   });
 
@@ -169,20 +169,20 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
     stopWhen: stepCountIs(5),
     tools: {
       update_conditional_operator: tool({
-        description: "Update the conditional operator of a rule",
+        description: 'Update the conditional operator of a rule',
         inputSchema: z.object({
-          ruleName: z.string().describe("The exact name of the rule to edit"),
+          ruleName: z.string().describe('The exact name of the rule to edit'),
           conditionalOperator: z
             .enum([LogicalOperator.AND, LogicalOperator.OR])
-            .describe("The new conditional operator"),
+            .describe('The new conditional operator'),
         }),
         execute: async ({ ruleName, conditionalOperator }) => {
-          logger.info("Edit Conditional Operator", {
+          logger.info('Edit Conditional Operator', {
             ruleName,
             conditionalOperator,
           });
           trackToolCall({
-            tool: "update_conditional_operator",
+            tool: 'update_conditional_operator',
             email: emailAccount.email,
           });
 
@@ -190,15 +190,15 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
         },
       }),
       update_ai_instructions: tool({
-        description: "Update the AI instructions of a rule",
+        description: 'Update the AI instructions of a rule',
         inputSchema: z.object({
-          ruleName: z.string().describe("The exact name of the rule to edit"),
-          aiInstructions: z.string().describe("The new AI instructions"),
+          ruleName: z.string().describe('The exact name of the rule to edit'),
+          aiInstructions: z.string().describe('The new AI instructions'),
         }),
         execute: async ({ ruleName, aiInstructions }) => {
-          logger.info("Edit AI Instructions", { ruleName, aiInstructions });
+          logger.info('Edit AI Instructions', { ruleName, aiInstructions });
           trackToolCall({
-            tool: "update_ai_instructions",
+            tool: 'update_ai_instructions',
             email: emailAccount.email,
           });
 
@@ -206,16 +206,16 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
         },
       }),
       update_static_conditions: tool({
-        description: "Update the static conditions of a rule",
+        description: 'Update the static conditions of a rule',
         inputSchema: z.object({
-          ruleName: z.string().describe("The exact name of the rule to edit"),
+          ruleName: z.string().describe('The exact name of the rule to edit'),
           staticConditions: createRuleSchema(emailAccount.account.provider)
             .shape.condition.shape.static,
         }),
         execute: async ({ ruleName, staticConditions }) => {
-          logger.info("Edit Static Conditions", { ruleName, staticConditions });
+          logger.info('Edit Static Conditions', { ruleName, staticConditions });
           trackToolCall({
-            tool: "update_static_conditions",
+            tool: 'update_static_conditions',
             email: emailAccount.email,
           });
 
@@ -288,42 +288,42 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
       ...(matchedRule?.group
         ? {
             remove_pattern: tool({
-              description: "Remove a pattern",
+              description: 'Remove a pattern',
               inputSchema: z.object({
                 type: z
-                  .enum(["from", "subject"])
-                  .describe("The type of the pattern to remove"),
+                  .enum(['from', 'subject'])
+                  .describe('The type of the pattern to remove'),
                 value: z
                   .string()
-                  .describe("The value of the pattern to remove"),
+                  .describe('The value of the pattern to remove'),
               }),
               execute: async ({ type, value }) => {
-                logger.info("Remove Pattern", { type, value });
+                logger.info('Remove Pattern', { type, value });
                 trackToolCall({
-                  tool: "remove_pattern",
+                  tool: 'remove_pattern',
                   email: emailAccount.email,
                 });
 
                 const groupItemType = getPatternType(type);
 
                 if (!groupItemType) {
-                  logger.error("Invalid pattern type", {
+                  logger.error('Invalid pattern type', {
                     type,
                     value,
                   });
-                  return { error: "Invalid pattern type" };
+                  return { error: 'Invalid pattern type' };
                 }
 
                 const groupItem = matchedRule?.group?.items?.find(
-                  (item) => item.type === groupItemType && item.value === value,
+                  (item) => item.type === groupItemType && item.value === value
                 );
 
                 if (!groupItem) {
-                  logger.error("Pattern not found", {
+                  logger.error('Pattern not found', {
                     type,
                     value,
                   });
-                  return { error: "Pattern not found" };
+                  return { error: 'Pattern not found' };
                 }
 
                 try {
@@ -335,7 +335,7 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
                   const message =
                     error instanceof Error ? error.message : String(error);
 
-                  logger.error("Error while deleting pattern", {
+                  logger.error('Error while deleting pattern', {
                     groupItemId: groupItem.id,
                     type: groupItemType,
                     value,
@@ -343,7 +343,7 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
                   });
 
                   return {
-                    error: "Failed to delete pattern",
+                    error: 'Failed to delete pattern',
                     message,
                   };
                 }
@@ -354,12 +354,12 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
           }
         : {}),
       create_rule: tool({
-        description: "Create a new rule",
+        description: 'Create a new rule',
         inputSchema: createRuleSchema(emailAccount.account.provider),
         execute: async ({ name, condition, actions }) => {
-          logger.info("Create Rule", { name, condition, actions });
+          logger.info('Create Rule', { name, condition, actions });
           trackToolCall({
-            tool: "create_rule",
+            tool: 'create_rule',
             email: emailAccount.email,
           });
 
@@ -398,37 +398,37 @@ ${stringifyEmailSimple(getEmailForLLM(originalEmail))}
             const message =
               error instanceof Error ? error.message : String(error);
 
-            logger.error("Failed to create rule", { error: message });
+            logger.error('Failed to create rule', { error: message });
 
             return {
-              error: "Failed to create rule",
+              error: 'Failed to create rule',
               message,
             };
           }
         },
       }),
       list_rules: tool({
-        description: "List all existing rules for the user",
+        description: 'List all existing rules for the user',
         inputSchema: z.object({}),
         execute: async () => {
           trackToolCall({
-            tool: "list_rules",
+            tool: 'list_rules',
             email: emailAccount.email,
           });
           return userRules;
         },
       }),
       reply: tool({
-        description: "Send an email reply to the user",
+        description: 'Send an email reply to the user',
         inputSchema: z.object({
-          content: z.string().describe("The content of the reply"),
+          content: z.string().describe('The content of the reply'),
         }),
         // no execute function - invoking it will terminate the agent
       }),
     },
   });
 
-  posthogCaptureEvent(emailAccount.email, "AI Assistant Process Completed", {
+  posthogCaptureEvent(emailAccount.email, 'AI Assistant Process Completed', {
     toolCallCount: result.steps.length,
     rulesCreated: createdRules.size,
     rulesUpdated: updatedRules.size,
@@ -442,16 +442,16 @@ function ruleToXML(rule: RuleWithRelations) {
   <rule_name>${rule.name}</rule_name>
   <conditions>
     <conditional_operator>${rule.conditionalOperator}</conditional_operator>
-    ${rule.instructions ? `<ai_instructions>${rule.instructions}</ai_instructions>` : ""}
+    ${rule.instructions ? `<ai_instructions>${rule.instructions}</ai_instructions>` : ''}
     ${
       hasStaticConditions(rule)
         ? `<static_conditions>
-      ${rule.from ? `<from>${rule.from}</from>` : ""}
-      ${rule.to ? `<to>${rule.to}</to>` : ""}
-      ${rule.subject ? `<subject>${rule.subject}</subject>` : ""}
-      ${rule.body ? `<body>${rule.body}</body>` : ""}
+      ${rule.from ? `<from>${rule.from}</from>` : ''}
+      ${rule.to ? `<to>${rule.to}</to>` : ''}
+      ${rule.subject ? `<subject>${rule.subject}</subject>` : ''}
+      ${rule.body ? `<body>${rule.body}</body>` : ''}
     </static_conditions>`
-        : ""
+        : ''
     }
   </conditions>
 
@@ -464,18 +464,18 @@ function ruleToXML(rule: RuleWithRelations) {
             `<pattern>
 <type>${item.type}</type>
 <value>${item.value}</value>
-</pattern>`,
+</pattern>`
         )
-        .join("\n      ")}
+        .join('\n      ')}
   </patterns>`
-      : ""
+      : ''
   }
 </rule>`;
 }
 
 function rulesToXML(rules: RuleWithRelations[]) {
   return `<user_rules>
-${rules.map((rule) => ruleToXML(rule)).join("\n")}
+${rules.map((rule) => ruleToXML(rule)).join('\n')}
 </user_rules>`;
 }
 
@@ -484,10 +484,10 @@ function hasStaticConditions(rule: RuleWithRelations) {
 }
 
 function getPatternType(type: string) {
-  if (type === "from") return GroupItemType.FROM;
-  if (type === "subject") return GroupItemType.SUBJECT;
+  if (type === 'from') return GroupItemType.FROM;
+  if (type === 'subject') return GroupItemType.SUBJECT;
 }
 
 async function trackToolCall({ tool, email }: { tool: string; email: string }) {
-  return posthogCaptureEvent(email, "AI Assistant Tool Call", { tool });
+  return posthogCaptureEvent(email, 'AI Assistant Tool Call', { tool });
 }

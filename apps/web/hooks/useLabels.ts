@@ -1,12 +1,12 @@
-import { useMemo } from "react";
-import useSWR from "swr";
-import type { LabelsResponse } from "@/app/api/labels/route";
-import type { EmailLabel } from "@/providers/EmailProvider";
+import { useMemo } from 'react';
+import useSWR from 'swr';
+import type { LabelsResponse } from '@/app/api/labels/route';
+import type { EmailLabel } from '@/providers/EmailProvider';
 
 export type UserLabel = {
   id: string;
   name: string;
-  type: "user";
+  type: 'user';
   labelListVisibility?: string;
   messageListVisibility?: string;
   color?: {
@@ -18,7 +18,7 @@ export type UserLabel = {
 export type OutlookLabel = {
   id: string;
   name: string;
-  type: "user";
+  type: 'user';
   color?: string;
 };
 
@@ -35,18 +35,18 @@ type SortableLabel = {
 };
 
 function isHidden(label: EmailLabel): boolean {
-  return label.labelListVisibility === "labelHide";
+  return label.labelListVisibility === 'labelHide';
 }
 
 export function useAllLabels() {
   const { data, isLoading, error, mutate } =
-    useSWR<LabelsResponse>("/api/labels");
+    useSWR<LabelsResponse>('/api/labels');
 
   const userLabels = useMemo(() => {
     if (!data?.labels) return [];
 
     return data.labels
-      .filter((label) => label.type === "user")
+      .filter((label) => label.type === 'user')
       .sort(sortLabels);
   }, [data?.labels]);
 
@@ -61,16 +61,16 @@ export function useAllLabels() {
 
 export function useLabels() {
   const { data, isLoading, error, mutate } =
-    useSWR<LabelsResponse>("/api/labels");
+    useSWR<LabelsResponse>('/api/labels');
 
   const userLabels: EmailLabel[] = useMemo(() => {
     if (!data?.labels) return [];
 
     return data.labels
-      .filter((label) => label.type === "user")
+      .filter((label) => label.type === 'user')
       .map((label) => ({
-        id: label.id || "",
-        name: label.name || "",
+        id: label.id || '',
+        name: label.name || '',
         type: label.type || null,
         color: label.color,
         labelListVisibility: label.labelListVisibility,
@@ -119,12 +119,12 @@ export function useSplitLabels() {
 }
 
 function sortLabels(a: SortableLabel, b: SortableLabel) {
-  const aName = a.name || "";
-  const bName = b.name || "";
+  const aName = a.name || '';
+  const bName = b.name || '';
 
   // Order words that start with [ at the end
-  if (aName.startsWith("[") && !bName.startsWith("[")) return 1;
-  if (!aName.startsWith("[") && bName.startsWith("[")) return -1;
+  if (aName.startsWith('[') && !bName.startsWith('[')) return 1;
+  if (!aName.startsWith('[') && bName.startsWith('[')) return -1;
 
   return aName.localeCompare(bName);
 }

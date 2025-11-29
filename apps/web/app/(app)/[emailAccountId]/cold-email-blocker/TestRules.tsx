@@ -1,26 +1,26 @@
 // this is a copy/paste of the assistant/TestRules.tsx file
 // can probably extract some common components from it
 
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import useSWR from "swr";
-import { SparklesIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/Input";
-import { toastError } from "@/components/Toast";
-import { LoadingContent } from "@/components/LoadingContent";
-import type { MessagesResponse } from "@/app/api/messages/route";
-import { Separator } from "@/components/ui/separator";
-import { AlertBasic } from "@/components/Alert";
-import { EmailMessageCell } from "@/components/EmailMessageCell";
-import { SearchForm } from "@/components/SearchForm";
-import { TableCell, TableRow, Table, TableBody } from "@/components/ui/table";
-import { CardContent } from "@/components/ui/card";
-import { testColdEmailAction } from "@/utils/actions/cold-email";
-import type { ColdEmailBlockerBody } from "@/utils/actions/cold-email.validation";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import { SparklesIcon } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import useSWR from 'swr';
+import type { MessagesResponse } from '@/app/api/messages/route';
+import { AlertBasic } from '@/components/Alert';
+import { EmailMessageCell } from '@/components/EmailMessageCell';
+import { Input } from '@/components/Input';
+import { LoadingContent } from '@/components/LoadingContent';
+import { SearchForm } from '@/components/SearchForm';
+import { toastError } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
+import { CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { testColdEmailAction } from '@/utils/actions/cold-email';
+import type { ColdEmailBlockerBody } from '@/utils/actions/cold-email.validation';
 
 type ColdEmailBlockerResponse = {
   isColdEmail: boolean;
@@ -29,13 +29,13 @@ type ColdEmailBlockerResponse = {
 };
 
 export function TestRulesContent() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const { data, isLoading, error } = useSWR<MessagesResponse>(
     `/api/messages?q=${searchQuery}`,
     {
       keepPreviousData: true,
       dedupingInterval: 1000,
-    },
+    }
   );
 
   const { userEmail } = useAccount();
@@ -86,15 +86,15 @@ const TestRulesForm = () => {
   } = useForm<TestRulesInputs>({
     defaultValues: {
       message:
-        "Hey, I run a development agency. I was wondering if you need extra hands on your team?",
+        'Hey, I run a development agency. I was wondering if you need extra hands on your team?',
     },
   });
 
   const onSubmit: SubmitHandler<TestRulesInputs> = useCallback(
     async (data) => {
       await testEmail({
-        from: "",
-        subject: "",
+        from: '',
+        subject: '',
         textHtml: null,
         textPlain: data.message,
         snippet: null,
@@ -103,7 +103,7 @@ const TestRulesForm = () => {
         date: undefined,
       });
     },
-    [testEmail],
+    [testEmail]
   );
 
   return (
@@ -116,7 +116,7 @@ const TestRulesForm = () => {
           name="message"
           label="Email to test against"
           placeholder="Hey, I run a marketing agency, and would love to chat."
-          registerProps={register("message", { required: true })}
+          registerProps={register('message', { required: true })}
           error={errors.message}
         />
         <Button type="submit" loading={isSubmitting}>
@@ -137,7 +137,7 @@ function TestRulesContentRow({
   message,
   userEmail,
 }: {
-  message: MessagesResponse["messages"][number];
+  message: MessagesResponse['messages'][number];
   userEmail: string;
 }) {
   const { testing, response, testEmail } = useColdEmailTest();
@@ -145,7 +145,7 @@ function TestRulesContentRow({
   return (
     <TableRow
       className={
-        testing ? "animate-pulse bg-blue-50 dark:bg-blue-950/20" : undefined
+        testing ? 'animate-pulse bg-blue-50 dark:bg-blue-950/20' : undefined
       }
     >
       <TableCell>
@@ -207,9 +207,9 @@ function Result(props: { coldEmailResponse: ColdEmailBlockerResponse | null }) {
     <AlertBasic
       variant="success"
       title={
-        coldEmailResponse.reason === "hasPreviousEmail"
-          ? "This person has previously emailed you. This is not a cold email!"
-          : "Our AI determined this is not a cold email!"
+        coldEmailResponse.reason === 'hasPreviousEmail'
+          ? 'This person has previously emailed you. This is not a cold email!'
+          : 'Our AI determined this is not a cold email!'
       }
       description={coldEmailResponse.aiReason}
     />
@@ -219,7 +219,7 @@ function Result(props: { coldEmailResponse: ColdEmailBlockerResponse | null }) {
 function useColdEmailTest() {
   const [testing, setTesting] = useState(false);
   const [response, setResponse] = useState<ColdEmailBlockerResponse | null>(
-    null,
+    null
   );
   const { emailAccountId } = useAccount();
 

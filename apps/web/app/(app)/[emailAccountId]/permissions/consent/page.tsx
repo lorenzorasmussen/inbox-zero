@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { logOut } from "@/utils/user";
-import { PageHeading, TypographyP } from "@/components/Typography";
+import Image from 'next/image';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { logOut } from '@/utils/user';
 
 export default function PermissionsConsentPage() {
   return (
@@ -19,7 +19,7 @@ export default function PermissionsConsentPage() {
 
       <Button
         className="mt-4"
-        onClick={() => logOut("/login?error=RequiresReconsent")}
+        onClick={() => logOut('/login?error=RequiresReconsent')}
       >
         Sign in again
       </Button>

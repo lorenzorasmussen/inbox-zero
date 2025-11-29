@@ -1,30 +1,30 @@
-import { z } from "zod";
-import { createScopedLogger } from "@/utils/logger";
-import { createGenerateObject } from "@/utils/llms";
-import type { EmailForLLM } from "@/utils/types";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { sleep } from "@/utils/sleep";
-import { getModel } from "@/utils/llms/model";
-import { getEmailListPrompt } from "@/utils/ai/helpers";
+import { z } from 'zod';
+import { getEmailListPrompt } from '@/utils/ai/helpers';
+import { createGenerateObject } from '@/utils/llms';
+import { getModel } from '@/utils/llms/model';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import { sleep } from '@/utils/sleep';
+import type { EmailForLLM } from '@/utils/types';
 
-const logger = createScopedLogger("email-report-summarize-emails");
+const logger = createScopedLogger('email-report-summarize-emails');
 
 const emailSummarySchema = z.object({
-  summary: z.string().describe("Brief summary of the email content"),
-  sender: z.string().describe("Email sender"),
-  subject: z.string().describe("Email subject"),
+  summary: z.string().describe('Brief summary of the email content'),
+  sender: z.string().describe('Email sender'),
+  subject: z.string().describe('Email subject'),
   category: z
     .string()
-    .describe("Category of the email (work, personal, marketing, etc.)"),
+    .describe('Category of the email (work, personal, marketing, etc.)'),
 });
 export type EmailSummary = z.infer<typeof emailSummarySchema>;
 
 export async function aiSummarizeEmails(
   emails: EmailForLLM[],
-  emailAccount: EmailAccountWithAI,
+  emailAccount: EmailAccountWithAI
 ): Promise<EmailSummary[]> {
   if (emails.length === 0) {
-    logger.warn("No emails to summarize, returning empty array");
+    logger.warn('No emails to summarize, returning empty array');
     return [];
   }
 
@@ -40,7 +40,7 @@ export async function aiSummarizeEmails(
       batch,
       emailAccount,
       batchNumber,
-      totalBatches,
+      totalBatches
     );
     results.push(...batchResults);
 
@@ -56,7 +56,7 @@ async function processEmailBatch(
   emails: EmailForLLM[],
   emailAccount: EmailAccountWithAI,
   batchNumber: number,
-  totalBatches: number,
+  totalBatches: number
 ): Promise<EmailSummary[]> {
   const system = `You are an assistant that processes user emails to extract their core meaning for later analysis.
 
@@ -80,11 +80,11 @@ ${getEmailListPrompt({ messages: emails, messageMaxLength: 2000 })}
 
 Return the analysis as a JSON array of objects.`;
 
-  const modelOptions = getModel(emailAccount.user, "economy");
+  const modelOptions = getModel(emailAccount.user, 'economy');
 
   const generateObject = createGenerateObject({
     emailAccount,
-    label: "email-report-summary-generation",
+    label: 'email-report-summary-generation',
     modelOptions,
   });
 
@@ -95,7 +95,7 @@ Return the analysis as a JSON array of objects.`;
     schema: z.object({
       summaries: z
         .array(emailSummarySchema)
-        .describe("Summaries of the emails"),
+        .describe('Summaries of the emails'),
     }),
   });
 

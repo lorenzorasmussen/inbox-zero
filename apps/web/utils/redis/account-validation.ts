@@ -1,6 +1,6 @@
-import "server-only";
-import { redis } from "@/utils/redis";
-import prisma from "@/utils/prisma";
+import 'server-only';
+import prisma from '@/utils/prisma';
+import { redis } from '@/utils/redis';
 
 const EXPIRATION = 60 * 60; // 1 hour
 

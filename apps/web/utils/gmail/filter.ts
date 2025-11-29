@@ -1,7 +1,7 @@
-import type { gmail_v1 } from "@googleapis/gmail";
-import { GaxiosError } from "gaxios";
-import { GmailLabel } from "@/utils/gmail/label";
-import { withGmailRetry } from "@/utils/gmail/retry";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { GaxiosError } from 'gaxios';
+import { GmailLabel } from '@/utils/gmail/label';
+import { withGmailRetry } from '@/utils/gmail/retry';
 
 export async function createFilter(options: {
   gmail: gmail_v1.Gmail;
@@ -14,7 +14,7 @@ export async function createFilter(options: {
   try {
     return await withGmailRetry(() =>
       gmail.users.settings.filters.create({
-        userId: "me",
+        userId: 'me',
         requestBody: {
           criteria: { from },
           action: {
@@ -22,7 +22,7 @@ export async function createFilter(options: {
             removeLabelIds,
           },
         },
-      }),
+      })
     );
   } catch (error) {
     if (isFilterExistsError(error)) return { status: 200 };
@@ -59,19 +59,19 @@ export async function deleteFilter(options: {
   const { gmail, id } = options;
 
   return withGmailRetry(() =>
-    gmail.users.settings.filters.delete({ userId: "me", id }),
+    gmail.users.settings.filters.delete({ userId: 'me', id })
   );
 }
 
 export async function getFiltersList(options: { gmail: gmail_v1.Gmail }) {
   return withGmailRetry(() =>
-    options.gmail.users.settings.filters.list({ userId: "me" }),
+    options.gmail.users.settings.filters.list({ userId: 'me' })
   );
 }
 
 function isFilterExistsError(error: unknown): error is GaxiosError {
   return (
     error instanceof GaxiosError &&
-    error.message.includes("Filter already exists")
+    error.message.includes('Filter already exists')
   );
 }

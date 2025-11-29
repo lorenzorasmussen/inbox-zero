@@ -1,18 +1,18 @@
-import { createScopedLogger } from "@/utils/logger";
-import type { ParsedMessage } from "@/utils/types";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { sleep } from "@/utils/sleep";
-import { createEmailProvider } from "@/utils/email/provider";
-import type { EmailProvider } from "@/utils/email/types";
+import { createEmailProvider } from '@/utils/email/provider';
+import type { EmailProvider } from '@/utils/email/types';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
+import { sleep } from '@/utils/sleep';
+import type { ParsedMessage } from '@/utils/types';
 
-const logger = createScopedLogger("email-report-fetch");
+const logger = createScopedLogger('email-report-fetch');
 
 export async function fetchEmailsForReport({
   emailAccount,
 }: {
   emailAccount: EmailAccountWithAI;
 }) {
-  logger.info("fetchEmailsForReport started", {
+  logger.info('fetchEmailsForReport started', {
     emailAccountId: emailAccount.id,
   });
 
@@ -25,7 +25,7 @@ export async function fetchEmailsForReport({
   await sleep(3000);
   const sentEmails = await fetchSentEmails(emailProvider, 50);
 
-  logger.info("fetchEmailsForReport: preparing return result", {
+  logger.info('fetchEmailsForReport: preparing return result', {
     receivedCount: receivedEmails.length,
     sentCount: sentEmails.length,
   });
@@ -40,16 +40,16 @@ export async function fetchEmailsForReport({
 
 async function fetchReceivedEmails(
   emailProvider: EmailProvider,
-  targetCount: number,
+  targetCount: number
 ): Promise<ParsedMessage[]> {
   const emails: ParsedMessage[] = [];
 
   // Fetch from different sources in priority order
   const sources = [
-    { name: "inbox", type: "inbox" as const },
+    { name: 'inbox', type: 'inbox' as const },
     {
-      name: "archived",
-      type: "all" as const,
+      name: 'archived',
+      type: 'all' as const,
       excludeInbox: true,
       excludeSent: true,
     },
@@ -68,14 +68,14 @@ async function fetchReceivedEmails(
 
       emails.push(...response.messages);
 
-      logger.info("Fetched emails", {
+      logger.info('Fetched emails', {
         sourceName: source.name,
         count: response.messages.length,
         totalSoFar: emails.length,
         targetCount,
       });
     } catch (error) {
-      logger.error("Error fetching emails", {
+      logger.error('Error fetching emails', {
         sourceName: source.name,
         error,
         sourceConfig: source,
@@ -88,23 +88,23 @@ async function fetchReceivedEmails(
 
 async function fetchSentEmails(
   emailProvider: EmailProvider,
-  targetCount: number,
+  targetCount: number
 ): Promise<ParsedMessage[]> {
   try {
     const response = await emailProvider.getMessagesByFields({
-      type: "sent",
+      type: 'sent',
       maxResults: targetCount,
     });
 
     return response.messages;
   } catch (error) {
-    logger.error("Error fetching sent emails", { error });
+    logger.error('Error fetching sent emails', { error });
     return [];
   }
 }
 
 export async function fetchEmailTemplates(
-  emailProvider: EmailProvider,
+  emailProvider: EmailProvider
 ): Promise<string[]> {
   try {
     const drafts = await emailProvider.getDrafts({ maxResults: 50 });
@@ -119,7 +119,7 @@ export async function fetchEmailTemplates(
 
         if (templates.length >= 10) break;
       } catch (error) {
-        logger.warn("Failed to process draft:", {
+        logger.warn('Failed to process draft:', {
           error: error instanceof Error ? error.message : String(error),
         });
       }
@@ -127,7 +127,7 @@ export async function fetchEmailTemplates(
 
     return templates;
   } catch (error) {
-    logger.warn("Failed to fetch email templates:", {
+    logger.warn('Failed to fetch email templates:', {
       error: error instanceof Error ? error.message : String(error),
     });
     return [];

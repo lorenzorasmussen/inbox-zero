@@ -1,26 +1,26 @@
-import type { Message } from "@microsoft/microsoft-graph-types";
-import type { ParsedMessage } from "@/utils/types";
-import { createScopedLogger } from "@/utils/logger";
-import type { OutlookClient } from "@/utils/outlook/client";
-import { OutlookLabel } from "./label";
-import { escapeODataString } from "@/utils/outlook/odata-escape";
-import { withOutlookRetry } from "@/utils/outlook/retry";
-import { formatEmailWithName } from "@/utils/email";
+import type { Message } from '@microsoft/microsoft-graph-types';
+import { formatEmailWithName } from '@/utils/email';
+import { createScopedLogger } from '@/utils/logger';
+import type { OutlookClient } from '@/utils/outlook/client';
+import { escapeODataString } from '@/utils/outlook/odata-escape';
+import { withOutlookRetry } from '@/utils/outlook/retry';
+import type { ParsedMessage } from '@/utils/types';
+import { OutlookLabel } from './label';
 
-const logger = createScopedLogger("outlook/message");
+const logger = createScopedLogger('outlook/message');
 
 // Standard fields to select when fetching messages from Microsoft Graph API
 export const MESSAGE_SELECT_FIELDS =
-  "id,conversationId,conversationIndex,subject,bodyPreview,from,sender,toRecipients,ccRecipients,receivedDateTime,isDraft,isRead,body,categories,parentFolderId";
+  'id,conversationId,conversationIndex,subject,bodyPreview,from,sender,toRecipients,ccRecipients,receivedDateTime,isDraft,isRead,body,categories,parentFolderId';
 
 // Well-known folder names in Outlook that are consistent across all languages
 export const WELL_KNOWN_FOLDERS = {
-  inbox: "inbox",
-  sentitems: "sentitems",
-  drafts: "drafts",
-  archive: "archive",
-  deleteditems: "deleteditems",
-  junkemail: "junkemail",
+  inbox: 'inbox',
+  sentitems: 'sentitems',
+  drafts: 'drafts',
+  archive: 'archive',
+  deleteditems: 'deleteditems',
+  junkemail: 'junkemail',
 } as const;
 
 export async function getFolderIds(client: OutlookClient) {
@@ -34,17 +34,17 @@ export async function getFolderIds(client: OutlookClient) {
         const response = await client
           .getClient()
           .api(`/me/mailFolders/${folderName}`)
-          .select("id")
+          .select('id')
           .get();
         return [key, response.id];
       } catch (error) {
-        logger.warn("Failed to get well-known folder", {
+        logger.warn('Failed to get well-known folder', {
           folderName,
           error,
         });
         return [key, null];
       }
-    }),
+    })
   );
 
   const userFolderIds = wellKnownFolders.reduce(
@@ -52,7 +52,7 @@ export async function getFolderIds(client: OutlookClient) {
       if (id) acc[key] = id;
       return acc;
     },
-    {} as Record<string, string>,
+    {} as Record<string, string>
   );
 
   client.setFolderIdCache(userFolderIds);
@@ -62,7 +62,7 @@ export async function getFolderIds(client: OutlookClient) {
 
 function getOutlookLabels(
   message: Message,
-  folderIds: Record<string, string>,
+  folderIds: Record<string, string>
 ): string[] {
   const labels: string[] = [];
 
@@ -80,7 +80,7 @@ function getOutlookLabels(
   // Map folder ID to label
   if (message.parentFolderId) {
     const folderKey = Object.entries(folderIds).find(
-      ([_, id]) => id === message.parentFolderId,
+      ([_, id]) => id === message.parentFolderId
     )?.[0];
 
     if (folderKey) {
@@ -118,12 +118,12 @@ function sanitizeOutlookSearchQuery(query: string): {
 } {
   const normalized = query.trim();
   if (!normalized) {
-    return { sanitized: "", wasSanitized: false };
+    return { sanitized: '', wasSanitized: false };
   }
 
   const sanitized = normalized
-    .replace(OUTLOOK_SEARCH_DISALLOWED_CHARS, " ")
-    .replace(/\s+/g, " ")
+    .replace(OUTLOOK_SEARCH_DISALLOWED_CHARS, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 
   return {
@@ -140,7 +140,7 @@ export async function queryBatchMessages(
     maxResults?: number;
     pageToken?: string;
     folderId?: string;
-  },
+  }
 ) {
   const { searchQuery, dateFilters, pageToken, folderId } = options;
 
@@ -151,21 +151,21 @@ export async function queryBatchMessages(
   // Is this true for Microsoft Graph API or was it copy pasted from Gmail?
   if (options.maxResults && options.maxResults > MAX_RESULTS) {
     logger.warn(
-      "Max results is greater than 20, which will cause rate limiting",
+      'Max results is greater than 20, which will cause rate limiting',
       {
         maxResults,
-      },
+      }
     );
   }
 
   const folderIds = await getFolderIds(client);
 
-  const rawSearchQuery = searchQuery?.trim() || "";
+  const rawSearchQuery = searchQuery?.trim() || '';
   const { sanitized: cleanedSearchQuery, wasSanitized } =
     sanitizeOutlookSearchQuery(rawSearchQuery);
   const effectiveSearchQuery = cleanedSearchQuery || undefined;
 
-  logger.info("Building Outlook request", {
+  logger.info('Building Outlook request', {
     maxResults,
     hasSearchQuery: !!effectiveSearchQuery,
     hasDateFilters: !!(dateFilters && dateFilters.length > 0),
@@ -191,7 +191,7 @@ export async function queryBatchMessages(
 
   if (hasSearchQuery) {
     // Search path - use $search parameter
-    logger.info("Using search path", {
+    logger.info('Using search path', {
       rawSearchQuery,
       effectiveSearchQuery,
       queryWasSanitized: wasSanitized,
@@ -205,7 +205,7 @@ export async function queryBatchMessages(
       request = request.skipToken(pageToken);
     }
 
-    const response: { value: Message[]; "@odata.nextLink"?: string } =
+    const response: { value: Message[]; '@odata.nextLink'?: string } =
       await withOutlookRetry(() => request.get());
 
     // Filter to specific folder if requested, otherwise get all
@@ -214,12 +214,12 @@ export async function queryBatchMessages(
       : response.value;
     const messages = await convertMessages(filteredMessages, folderIds);
 
-    nextPageToken = response["@odata.nextLink"]
-      ? new URL(response["@odata.nextLink"]).searchParams.get("$skiptoken") ||
+    nextPageToken = response['@odata.nextLink']
+      ? new URL(response['@odata.nextLink']).searchParams.get('$skiptoken') ||
         undefined
       : undefined;
 
-    logger.info("Search results", {
+    logger.info('Search results', {
       totalFound: response.value.length,
       filteredByFolder: folderId ? filteredMessages.length : undefined,
       messageCount: messages.length,
@@ -227,58 +227,56 @@ export async function queryBatchMessages(
     });
 
     return { messages, nextPageToken };
-  } else {
-    // Filter path - use $filter parameter for date filters or folder-only queries
-    const filters: string[] = [];
-
-    // Add folder filter if a specific folder is requested
-    if (folderFilter) {
-      filters.push(folderFilter);
-    }
-
-    // Add date filters if provided
-    if (hasDateFilters) {
-      filters.push(...dateFilters!);
-    }
-
-    const combinedFilter =
-      filters.length > 0 ? filters.join(" and ") : undefined;
-
-    logger.info("Using filter path", {
-      folderFilter,
-      dateFilters: dateFilters || [],
-      combinedFilter,
-    });
-
-    // Only apply filter if we have something to filter
-    if (combinedFilter) {
-      request = request.filter(combinedFilter);
-    }
-
-    if (pageToken) {
-      request = request.skipToken(pageToken);
-    } else {
-      // Only add orderby for non-paginated requests to avoid sorting complexity errors
-      request = request.orderby("receivedDateTime DESC");
-    }
-
-    const response: { value: Message[]; "@odata.nextLink"?: string } =
-      await withOutlookRetry(() => request.get());
-    const messages = await convertMessages(response.value, folderIds);
-
-    nextPageToken = response["@odata.nextLink"]
-      ? new URL(response["@odata.nextLink"]).searchParams.get("$skiptoken") ||
-        undefined
-      : undefined;
-
-    logger.info("Filter results", {
-      messageCount: messages.length,
-      hasNextPageToken: !!nextPageToken,
-      combinedFilter,
-    });
-
-    return { messages, nextPageToken };
   }
+  // Filter path - use $filter parameter for date filters or folder-only queries
+  const filters: string[] = [];
+
+  // Add folder filter if a specific folder is requested
+  if (folderFilter) {
+    filters.push(folderFilter);
+  }
+
+  // Add date filters if provided
+  if (hasDateFilters) {
+    filters.push(...dateFilters!);
+  }
+
+  const combinedFilter = filters.length > 0 ? filters.join(' and ') : undefined;
+
+  logger.info('Using filter path', {
+    folderFilter,
+    dateFilters: dateFilters || [],
+    combinedFilter,
+  });
+
+  // Only apply filter if we have something to filter
+  if (combinedFilter) {
+    request = request.filter(combinedFilter);
+  }
+
+  if (pageToken) {
+    request = request.skipToken(pageToken);
+  } else {
+    // Only add orderby for non-paginated requests to avoid sorting complexity errors
+    request = request.orderby('receivedDateTime DESC');
+  }
+
+  const response: { value: Message[]; '@odata.nextLink'?: string } =
+    await withOutlookRetry(() => request.get());
+  const messages = await convertMessages(response.value, folderIds);
+
+  nextPageToken = response['@odata.nextLink']
+    ? new URL(response['@odata.nextLink']).searchParams.get('$skiptoken') ||
+      undefined
+    : undefined;
+
+  logger.info('Filter results', {
+    messageCount: messages.length,
+    hasNextPageToken: !!nextPageToken,
+    combinedFilter,
+  });
+
+  return { messages, nextPageToken };
 }
 
 export async function queryMessagesWithFilters(
@@ -289,7 +287,7 @@ export async function queryMessagesWithFilters(
     maxResults?: number;
     pageToken?: string;
     folderId?: string; // if omitted, defaults to inbox OR archive
-  },
+  }
 ) {
   const { filters = [], dateFilters = [], pageToken, folderId } = options;
 
@@ -297,10 +295,10 @@ export async function queryMessagesWithFilters(
   const maxResults = Math.min(options.maxResults || MAX_RESULTS, MAX_RESULTS);
   if (options.maxResults && options.maxResults > MAX_RESULTS) {
     logger.warn(
-      "Max results is greater than 20, which will cause rate limiting",
+      'Max results is greater than 20, which will cause rate limiting',
       {
         maxResults: options.maxResults,
-      },
+      }
     );
   }
 
@@ -319,18 +317,18 @@ export async function queryMessagesWithFilters(
     const folderClauses: string[] = [];
     if (inboxFolderId) {
       folderClauses.push(
-        `parentFolderId eq '${escapeODataString(inboxFolderId)}'`,
+        `parentFolderId eq '${escapeODataString(inboxFolderId)}'`
       );
     }
     if (archiveFolderId) {
       folderClauses.push(
-        `parentFolderId eq '${escapeODataString(archiveFolderId)}'`,
+        `parentFolderId eq '${escapeODataString(archiveFolderId)}'`
       );
     }
     if (folderClauses.length === 1) {
       folderFilter = folderClauses[0];
     } else if (folderClauses.length > 1) {
-      folderFilter = `(${folderClauses.join(" or ")})`;
+      folderFilter = `(${folderClauses.join(' or ')})`;
     } else {
       folderFilter = undefined; // omit folder clause entirely if none present
     }
@@ -341,7 +339,7 @@ export async function queryMessagesWithFilters(
     ...dateFilters,
     ...filters,
   ].filter(Boolean);
-  const combinedFilter = combinedFilters.join(" and ");
+  const combinedFilter = combinedFilters.join(' and ');
 
   request = request.filter(combinedFilter);
 
@@ -349,12 +347,12 @@ export async function queryMessagesWithFilters(
     request = request.skipToken(pageToken);
   }
 
-  const response: { value: Message[]; "@odata.nextLink"?: string } =
+  const response: { value: Message[]; '@odata.nextLink'?: string } =
     await withOutlookRetry(() => request.get());
 
   const messages = await convertMessages(response.value, folderIds);
-  const nextPageToken = response["@odata.nextLink"]
-    ? new URL(response["@odata.nextLink"]).searchParams.get("$skiptoken") ||
+  const nextPageToken = response['@odata.nextLink']
+    ? new URL(response['@odata.nextLink']).searchParams.get('$skiptoken') ||
       undefined
     : undefined;
 
@@ -364,7 +362,7 @@ export async function queryMessagesWithFilters(
 // Helper function to convert messages
 async function convertMessages(
   messages: Message[],
-  folderIds: Record<string, string>,
+  folderIds: Record<string, string>
 ): Promise<ParsedMessage[]> {
   return messages
     .filter((message: Message) => !message.isDraft) // Filter out drafts
@@ -373,10 +371,10 @@ async function convertMessages(
 
 export async function getMessage(
   messageId: string,
-  client: OutlookClient,
+  client: OutlookClient
 ): Promise<ParsedMessage> {
   const message = await withOutlookRetry(() =>
-    createMessageRequest(client, messageId).get(),
+    createMessageRequest(client, messageId).get()
   );
 
   const folderIds = await getFolderIds(client);
@@ -390,18 +388,18 @@ export async function getMessages(
     query?: string;
     maxResults?: number;
     pageToken?: string;
-  },
+  }
 ) {
   const top = options.maxResults || 20;
   let request = createMessagesRequest(client).top(top);
 
   if (options.query) {
     request = request.filter(
-      `contains(subject, '${escapeODataString(options.query)}')`,
+      `contains(subject, '${escapeODataString(options.query)}')`
     );
   }
 
-  const response: { value: Message[]; "@odata.nextLink"?: string } =
+  const response: { value: Message[]; '@odata.nextLink'?: string } =
     await withOutlookRetry(() => request.get());
 
   // Get folder IDs to properly map labels
@@ -410,7 +408,7 @@ export async function getMessages(
 
   return {
     messages,
-    nextPageToken: response["@odata.nextLink"],
+    nextPageToken: response['@odata.nextLink'],
   };
 }
 
@@ -419,7 +417,7 @@ export async function getMessages(
  * Returns a typed request builder that can be chained with .filter(), .top(), etc.
  */
 export function createMessagesRequest(client: OutlookClient) {
-  return client.getClient().api("/me/messages").select(MESSAGE_SELECT_FIELDS);
+  return client.getClient().api('/me/messages').select(MESSAGE_SELECT_FIELDS);
 }
 
 /**
@@ -442,7 +440,7 @@ function formatRecipientsList(
         emailAddress?: { name?: string | null; address?: string | null } | null;
       }>
     | null
-    | undefined,
+    | undefined
 ): string | undefined {
   if (!recipients || recipients.length === 0) return undefined;
 
@@ -450,29 +448,29 @@ function formatRecipientsList(
     .map((recipient) =>
       formatEmailWithName(
         recipient.emailAddress?.name,
-        recipient.emailAddress?.address,
-      ),
+        recipient.emailAddress?.address
+      )
     )
     .filter(Boolean)
-    .join(", ");
+    .join(', ');
 
   return formatted || undefined;
 }
 
 export function convertMessage(
   message: Message,
-  folderIds: Record<string, string> = {},
+  folderIds: Record<string, string> = {}
 ): ParsedMessage {
-  const bodyContent = message.body?.content || "";
+  const bodyContent = message.body?.content || '';
   const bodyType = message.body?.contentType?.toLowerCase() as
-    | "text"
-    | "html"
+    | 'text'
+    | 'html'
     | undefined;
 
   return {
-    id: message.id || "",
-    threadId: message.conversationId || "",
-    snippet: message.bodyPreview || "",
+    id: message.id || '',
+    threadId: message.conversationId || '',
+    snippet: message.bodyPreview || '',
     textPlain: bodyContent,
     textHtml: bodyContent,
     bodyContentType: bodyType,
@@ -480,18 +478,18 @@ export function convertMessage(
       from:
         formatEmailWithName(
           message.from?.emailAddress?.name,
-          message.from?.emailAddress?.address,
-        ) || "",
-      to: formatRecipientsList(message.toRecipients) || "",
+          message.from?.emailAddress?.address
+        ) || '',
+      to: formatRecipientsList(message.toRecipients) || '',
       cc: formatRecipientsList(message.ccRecipients),
-      subject: message.subject || "",
+      subject: message.subject || '',
       date: message.receivedDateTime || new Date().toISOString(),
     },
-    subject: message.subject || "",
+    subject: message.subject || '',
     date: message.receivedDateTime || new Date().toISOString(),
     labelIds: getOutlookLabels(message, folderIds),
     internalDate: message.receivedDateTime || new Date().toISOString(),
-    historyId: "",
+    historyId: '',
     inline: [],
     conversationIndex: message.conversationIndex,
     rawRecipients: {

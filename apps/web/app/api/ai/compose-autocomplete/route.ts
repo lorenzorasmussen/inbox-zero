@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
-import { withEmailAccount } from "@/utils/middleware";
-import { composeAutocompleteBody } from "@/app/api/ai/compose-autocomplete/validation";
-import { chatCompletionStream } from "@/utils/llms";
-import { getEmailAccountWithAi } from "@/utils/user/get";
+import { NextResponse } from 'next/server';
+import { composeAutocompleteBody } from '@/app/api/ai/compose-autocomplete/validation';
+import { chatCompletionStream } from '@/utils/llms';
+import { withEmailAccount } from '@/utils/middleware';
+import { getEmailAccountWithAi } from '@/utils/user/get';
 
 export const POST = withEmailAccount(async (request) => {
   const emailAccountId = request.auth.emailAccountId;
 
   const user = await getEmailAccountWithAi({ emailAccountId });
 
-  if (!user) return NextResponse.json({ error: "Not authenticated" });
+  if (!user) return NextResponse.json({ error: 'Not authenticated' });
 
   const json = await request.json();
   const { prompt } = composeAutocompleteBody.parse(json);
@@ -22,16 +22,16 @@ Limit your response to no more than 200 characters, but make sure to construct c
     userAi: user.user,
     messages: [
       {
-        role: "system",
+        role: 'system',
         content: system,
       },
       {
-        role: "user",
+        role: 'user',
         content: prompt,
       },
     ],
     userEmail: user.email,
-    usageLabel: "Compose auto complete",
+    usageLabel: 'Compose auto complete',
   });
 
   return response.toTextStreamResponse();

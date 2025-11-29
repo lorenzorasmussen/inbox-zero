@@ -1,5 +1,5 @@
-import * as stringSimilarity from "string-similarity";
-import { parseReply } from "@/utils/mail";
+import * as stringSimilarity from 'string-similarity';
+import { parseReply } from '@/utils/mail';
 
 /**
  * Calculates the similarity between two strings using Dice Coefficient.
@@ -12,14 +12,14 @@ import { parseReply } from "@/utils/mail";
  */
 export function calculateSimilarity(
   text1?: string | null,
-  text2?: string | null,
+  text2?: string | null
 ): number {
   if (!text1 || !text2) {
     return 0.0; // If either text is missing, similarity is 0
   }
 
-  const reply1 = parseReply(text1 || "");
-  const reply2 = parseReply(text2 || "");
+  const reply1 = parseReply(text1 || '');
+  const reply2 = parseReply(text2 || '');
 
   const normalized1 = reply1.toLowerCase().trim();
   const normalized2 = reply2.toLowerCase().trim();

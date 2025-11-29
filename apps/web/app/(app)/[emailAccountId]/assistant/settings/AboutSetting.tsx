@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { SettingCard } from "@/components/SettingCard";
+import { AboutSection } from '@/app/(app)/[emailAccountId]/settings/AboutSectionForm';
+import { SettingCard } from '@/components/SettingCard';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,8 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { AboutSection } from "@/app/(app)/[emailAccountId]/settings/AboutSectionForm";
+} from '@/components/ui/dialog';
 
 export function AboutSetting() {
   return (

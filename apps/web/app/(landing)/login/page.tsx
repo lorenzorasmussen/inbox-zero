@@ -1,19 +1,19 @@
-import { Suspense } from "react";
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { LoginForm } from "@/app/(landing)/login/LoginForm";
-import { auth } from "@/utils/auth";
-import { AlertBasic } from "@/components/Alert";
-import { env } from "@/env";
-import { Button } from "@/components/ui/button";
-import { WELCOME_PATH } from "@/utils/config";
-import { CrispChatLoggedOutVisible } from "@/components/CrispChat";
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { LoginForm } from '@/app/(landing)/login/LoginForm';
+import { AlertBasic } from '@/components/Alert';
+import { CrispChatLoggedOutVisible } from '@/components/CrispChat';
+import { Button } from '@/components/ui/button';
+import { env } from '@/env';
+import { auth } from '@/utils/auth';
+import { WELCOME_PATH } from '@/utils/config';
 
 export const metadata: Metadata = {
-  title: "Log in | Inbox Zero",
-  description: "Log in to Inbox Zero.",
-  alternates: { canonical: "/login" },
+  title: 'Log in | Inbox Zero',
+  description: 'Log in to Inbox Zero.',
+  alternates: { canonical: '/login' },
 };
 
 export default async function AuthenticationPage(props: {
@@ -47,14 +47,14 @@ export default async function AuthenticationPage(props: {
         {searchParams?.error && <ErrorAlert error={searchParams?.error} />}
 
         <p className="px-8 pt-10 text-center text-sm text-muted-foreground">
-          By clicking continue, you agree to our{" "}
+          By clicking continue, you agree to our{' '}
           <Link
             href="/terms"
             className="underline underline-offset-4 hover:text-foreground"
           >
             Terms of Service
-          </Link>{" "}
-          and{" "}
+          </Link>{' '}
+          and{' '}
           <Link
             href="/privacy"
             className="underline underline-offset-4 hover:text-foreground"
@@ -66,13 +66,13 @@ export default async function AuthenticationPage(props: {
 
         <p className="px-4 pt-4 text-center text-sm text-muted-foreground">
           Inbox Zero{"'"}s use and transfer of information received from Google
-          APIs to any other app will adhere to{" "}
+          APIs to any other app will adhere to{' '}
           <a
             href="https://developers.google.com/terms/api-services-user-data-policy"
             className="underline underline-offset-4 hover:text-foreground"
           >
             Google API Services User Data
-          </a>{" "}
+          </a>{' '}
           Policy, including the Limited Use requirements.
         </p>
       </div>
@@ -81,9 +81,9 @@ export default async function AuthenticationPage(props: {
 }
 
 function ErrorAlert({ error }: { error: string }) {
-  if (error === "RequiresReconsent") return null;
+  if (error === 'RequiresReconsent') return null;
 
-  if (error === "OAuthAccountNotLinked") {
+  if (error === 'OAuthAccountNotLinked') {
     return (
       <AlertBasic
         variant="destructive"

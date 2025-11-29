@@ -1,5 +1,5 @@
-import format from "date-fns/format";
-import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import format from 'date-fns/format';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
 export const ONE_MINUTE_MS = 1000 * 60;
 export const ONE_HOUR_MS = ONE_MINUTE_MS * 60;
@@ -27,7 +27,7 @@ export function formatShortDate(
   } = {
     includeYear: false,
     lowercase: false,
-  },
+  }
 ) {
   // if date is today, return the time. e.g. 12:30pm
   // if date is before today then return the date. eg JUL 5th or AUG 13th
@@ -41,12 +41,12 @@ export function formatShortDate(
 
   if (isToday) {
     // Use hour: 'numeric' to avoid leading zeros (e.g., 3:44 PM instead of 03:44 PM)
-    return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   }
   const formattedDate = date.toLocaleDateString([], {
-    month: "short",
-    day: "numeric",
-    year: options.includeYear ? "numeric" : undefined,
+    month: 'short',
+    day: 'numeric',
+    year: options.includeYear ? 'numeric' : undefined,
   });
 
   return options.lowercase ? formattedDate : formattedDate.toUpperCase();
@@ -80,10 +80,10 @@ export function formatRelativeTimeForLLM(date: Date) {
 
 // Format: Mar 18, 2025
 export function formatDateSimple(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
@@ -92,7 +92,7 @@ export function formatDateSimple(date: Date) {
  * @param direction - 'asc' for oldest first (default, chronological), 'desc' for newest first
  */
 export function sortByInternalDate<T extends { internalDate?: string | null }>(
-  direction: "asc" | "desc" = "asc",
+  direction: 'asc' | 'desc' = 'asc'
 ) {
   return (a: T, b: T): number => {
     const aTime = a.internalDate
@@ -101,6 +101,6 @@ export function sortByInternalDate<T extends { internalDate?: string | null }>(
     const bTime = b.internalDate
       ? internalDateToDate(b.internalDate).getTime()
       : 0;
-    return direction === "asc" ? aTime - bTime : bTime - aTime;
+    return direction === 'asc' ? aTime - bTime : bTime - aTime;
   };
 }

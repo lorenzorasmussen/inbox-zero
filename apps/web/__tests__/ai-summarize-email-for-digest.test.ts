@@ -1,7 +1,7 @@
-import { describe, expect, test, vi, beforeEach } from "vitest";
-import { aiSummarizeEmailForDigest } from "@/utils/ai/digest/summarize-email-for-digest";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import type { EmailForLLM } from "@/utils/types";
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { aiSummarizeEmailForDigest } from '@/utils/ai/digest/summarize-email-for-digest';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import type { EmailForLLM } from '@/utils/types';
 
 const TIMEOUT = 15_000;
 
@@ -9,23 +9,23 @@ type EmailAccountForDigest = EmailAccountWithAI & { name: string | null };
 
 // Run with: pnpm test-ai ai-summarize-email-for-digest
 
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
-const isAiTest = process.env.RUN_AI_TESTS === "true";
+const isAiTest = process.env.RUN_AI_TESTS === 'true';
 
 function getEmailAccount(overrides = {}): EmailAccountForDigest {
   return {
-    id: "email-account-id",
-    userId: "user1",
-    email: "user@test.com",
-    about: "Software engineer working on email automation",
-    name: "Test User",
+    id: 'email-account-id',
+    userId: 'user1',
+    email: 'user@test.com',
+    about: 'Software engineer working on email automation',
+    name: 'Test User',
     account: {
-      provider: "gmail",
+      provider: 'gmail',
     },
     user: {
-      aiModel: "gpt-4",
-      aiProvider: "openai",
+      aiModel: 'gpt-4',
+      aiProvider: 'openai',
       aiApiKey: process.env.OPENAI_API_KEY || null,
     },
     ...overrides,
@@ -34,38 +34,38 @@ function getEmailAccount(overrides = {}): EmailAccountForDigest {
 
 function getTestEmail(overrides = {}): EmailForLLM {
   return {
-    id: "email-id",
-    from: "sender@example.com",
-    to: "user@test.com",
-    subject: "Test Email",
-    content: "This is a test email content",
+    id: 'email-id',
+    from: 'sender@example.com',
+    to: 'user@test.com',
+    subject: 'Test Email',
+    content: 'This is a test email content',
     ...overrides,
   };
 }
 
-describe.runIf(isAiTest)("aiSummarizeEmailForDigest", () => {
+describe.runIf(isAiTest)('aiSummarizeEmailForDigest', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   test(
-    "successfully summarizes email with order details",
+    'successfully summarizes email with order details',
     async () => {
       const emailAccount = getEmailAccount();
       const messageToSummarize = getTestEmail({
-        from: "orders@example.com",
-        subject: "Order Confirmation #12345",
+        from: 'orders@example.com',
+        subject: 'Order Confirmation #12345',
         content:
-          "Thank you for your order! Order #12345 has been confirmed. Date: 2024-03-20. Items: 3. Total: $99.99",
+          'Thank you for your order! Order #12345 has been confirmed. Date: 2024-03-20. Items: 3. Total: $99.99',
       });
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "order",
+        ruleName: 'order',
         emailAccount,
         messageToSummarize,
       });
 
-      console.debug("Generated content:\n", result);
+      console.debug('Generated content:\n', result);
 
       expect(result).toMatchObject({
         content: expect.any(String),
@@ -73,30 +73,30 @@ describe.runIf(isAiTest)("aiSummarizeEmailForDigest", () => {
 
       // Verify the result has the expected structure
       expect(result).toBeDefined();
-      expect(result).toHaveProperty("content");
-      expect(typeof result?.content).toBe("string");
+      expect(result).toHaveProperty('content');
+      expect(typeof result?.content).toBe('string');
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   test(
-    "successfully summarizes email with meeting notes",
+    'successfully summarizes email with meeting notes',
     async () => {
       const emailAccount = getEmailAccount();
       const messageToSummarize = getTestEmail({
-        from: "team@example.com",
-        subject: "Weekly Team Meeting Notes",
+        from: 'team@example.com',
+        subject: 'Weekly Team Meeting Notes',
         content:
-          "Hi team, Here are the notes from our weekly meeting: 1. Project timeline updated - Phase 1 completion delayed by 1 week 2. New team member joining next week 3. Client presentation scheduled for Friday",
+          'Hi team, Here are the notes from our weekly meeting: 1. Project timeline updated - Phase 1 completion delayed by 1 week 2. New team member joining next week 3. Client presentation scheduled for Friday',
       });
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "meeting",
+        ruleName: 'meeting',
         emailAccount,
         messageToSummarize,
       });
 
-      console.debug("Generated content:\n", result);
+      console.debug('Generated content:\n', result);
 
       expect(result).toMatchObject({
         content: expect.any(String),
@@ -104,88 +104,88 @@ describe.runIf(isAiTest)("aiSummarizeEmailForDigest", () => {
 
       // Verify the result has the expected structure
       expect(result).toBeDefined();
-      expect(result).toHaveProperty("content");
-      expect(typeof result?.content).toBe("string");
+      expect(result).toHaveProperty('content');
+      expect(typeof result?.content).toBe('string');
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   test(
-    "handles empty email content gracefully",
+    'handles empty email content gracefully',
     async () => {
       const emailAccount = getEmailAccount();
       const messageToSummarize = getTestEmail({
-        from: "empty@example.com",
-        subject: "Empty Email",
-        content: "",
+        from: 'empty@example.com',
+        subject: 'Empty Email',
+        content: '',
       });
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "other",
+        ruleName: 'other',
         emailAccount,
         messageToSummarize,
       });
 
-      console.debug("Generated content:\n", result);
+      console.debug('Generated content:\n', result);
 
       expect(result).toMatchObject({
         content: expect.any(String),
       });
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   test(
-    "handles null message gracefully",
+    'handles null message gracefully',
     async () => {
       const emailAccount = getEmailAccount();
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "other",
+        ruleName: 'other',
         emailAccount,
         messageToSummarize: null as any,
       });
 
       expect(result).toBeNull();
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   test(
-    "handles different user configurations",
+    'handles different user configurations',
     async () => {
       const emailAccount = getEmailAccount({
-        about: "Marketing manager focused on customer engagement",
-        name: "Marketing User",
+        about: 'Marketing manager focused on customer engagement',
+        name: 'Marketing User',
       });
 
       const messageToSummarize = getTestEmail({
-        from: "newsletter@company.com",
-        subject: "Weekly Marketing Update",
+        from: 'newsletter@company.com',
+        subject: 'Weekly Marketing Update',
         content:
           "This week's marketing metrics: Email open rate: 25%, Click-through rate: 3.2%, Conversion rate: 1.8%",
       });
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "newsletter",
+        ruleName: 'newsletter',
         emailAccount,
         messageToSummarize,
       });
 
-      console.debug("Generated content:\n", result);
+      console.debug('Generated content:\n', result);
 
       expect(result).toMatchObject({
         content: expect.any(String),
       });
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   test(
-    "handles various email categories correctly",
+    'handles various email categories correctly',
     async () => {
       const emailAccount = getEmailAccount();
-      const categories = ["invoice", "receipt", "travel", "notification"];
+      const categories = ['invoice', 'receipt', 'travel', 'notification'];
 
       for (const category of categories) {
         const messageToSummarize = getTestEmail({
@@ -207,96 +207,96 @@ describe.runIf(isAiTest)("aiSummarizeEmailForDigest", () => {
         });
       }
     },
-    TIMEOUT * 2,
+    TIMEOUT * 2
   );
 
   test(
-    "handles promotional emails appropriately",
+    'handles promotional emails appropriately',
     async () => {
       const emailAccount = getEmailAccount();
       const messageToSummarize = getTestEmail({
-        from: "promotions@store.com",
-        subject: "50% OFF Everything! Limited Time Only!",
+        from: 'promotions@store.com',
+        subject: '50% OFF Everything! Limited Time Only!',
         content:
           "Don't miss our biggest sale of the year! Everything is 50% off for the next 24 hours only!",
       });
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "marketing",
+        ruleName: 'marketing',
         emailAccount,
         messageToSummarize,
       });
 
-      console.debug("Generated content:\n", result);
+      console.debug('Generated content:\n', result);
 
       expect(result).toMatchObject({
         content: expect.any(String),
       });
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   test(
-    "handles direct messages to user in second person",
+    'handles direct messages to user in second person',
     async () => {
       const emailAccount = getEmailAccount();
       const messageToSummarize = getTestEmail({
-        from: "hr@company.com",
-        subject: "Your Annual Review is Due",
+        from: 'hr@company.com',
+        subject: 'Your Annual Review is Due',
         content:
-          "Hi Test User, Your annual performance review is due by Friday. Please complete the self-assessment form and schedule a meeting with your manager.",
+          'Hi Test User, Your annual performance review is due by Friday. Please complete the self-assessment form and schedule a meeting with your manager.',
       });
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "hr",
+        ruleName: 'hr',
         emailAccount,
         messageToSummarize,
       });
 
-      console.debug("Generated content:\n", result);
+      console.debug('Generated content:\n', result);
 
       expect(result).toMatchObject({
         content: expect.any(String),
       });
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   test(
-    "handles edge case with very long email content",
+    'handles edge case with very long email content',
     async () => {
       const emailAccount = getEmailAccount();
-      const longContent = `${"This is a very long email content. ".repeat(
-        100,
+      const longContent = `${'This is a very long email content. '.repeat(
+        100
       )}End of long content.`;
 
       const messageToSummarize = getTestEmail({
-        from: "long@example.com",
-        subject: "Very Long Email",
+        from: 'long@example.com',
+        subject: 'Very Long Email',
         content: longContent,
       });
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "other",
+        ruleName: 'other',
         emailAccount,
         messageToSummarize,
       });
 
-      console.debug("Generated content:\n", result);
+      console.debug('Generated content:\n', result);
 
       expect(result).toMatchObject({
         content: expect.any(String),
       });
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   test(
-    "summarizes newsletter about building apps with engaging direct style",
+    'summarizes newsletter about building apps with engaging direct style',
     async () => {
       const emailAccount = getEmailAccount();
       const messageToSummarize = getTestEmail({
-        from: "Pat @ Starter Story",
+        from: 'Pat @ Starter Story',
         subject: '"am I too late?"',
         content: `One of my buddies text me this the other day:
 
@@ -352,42 +352,42 @@ Your Choice
       });
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "newsletter",
+        ruleName: 'newsletter',
         emailAccount,
         messageToSummarize,
       });
 
-      console.debug("Generated content:\n", result);
+      console.debug('Generated content:\n', result);
 
       expect(result).toBeDefined();
-      expect(result).toHaveProperty("content");
+      expect(result).toHaveProperty('content');
 
-      const content = result?.content || "";
+      const content = result?.content || '';
 
       // Verify it doesn't use meta-commentary
-      expect(content.toLowerCase()).not.toContain("reflects on");
-      expect(content.toLowerCase()).not.toContain("highlights");
-      expect(content.toLowerCase()).not.toContain("discusses");
+      expect(content.toLowerCase()).not.toContain('reflects on');
+      expect(content.toLowerCase()).not.toContain('highlights');
+      expect(content.toLowerCase()).not.toContain('discusses');
 
       // Should include key details
-      expect(content.toLowerCase()).toContain("30k");
-      expect(content.toLowerCase()).toContain("habit");
+      expect(content.toLowerCase()).toContain('30k');
+      expect(content.toLowerCase()).toContain('habit');
 
       // Should be concise - digest should have 3-4 points max (count newlines)
-      const lines = content.split("\n").filter((line) => line.trim());
+      const lines = content.split('\n').filter((line) => line.trim());
       expect(lines.length).toBeLessThanOrEqual(4);
     },
-    TIMEOUT,
+    TIMEOUT
   );
 
   test(
-    "summarizes newsletter from next play",
+    'summarizes newsletter from next play',
     async () => {
       const emailAccount = getEmailAccount();
       const messageToSummarize = getTestEmail({
-        from: "ben at next play",
+        from: 'ben at next play',
         subject:
-          "How a hot AI startup got 800+ business customers by following their curiosity",
+          'How a hot AI startup got 800+ business customers by following their curiosity',
         content: `Forwarded this email? Subscribe here for more
 How a hot AI startup got 800+ business customers by following their curiosity
 What is it like to work at Pylon?
@@ -542,26 +542,26 @@ Upgrade to paid`,
       });
 
       const result = await aiSummarizeEmailForDigest({
-        ruleName: "newsletter",
+        ruleName: 'newsletter',
         emailAccount,
         messageToSummarize,
       });
 
-      console.debug("Generated content:\n", result);
+      console.debug('Generated content:\n', result);
 
       expect(result).toBeDefined();
-      expect(result).toHaveProperty("content");
+      expect(result).toHaveProperty('content');
 
-      const content = result?.content || "";
+      const content = result?.content || '';
 
       // Should include key details about Pylon
-      expect(content.toLowerCase()).toContain("pylon");
-      expect(content.toLowerCase()).toContain("800");
+      expect(content.toLowerCase()).toContain('pylon');
+      expect(content.toLowerCase()).toContain('800');
 
       // Should be concise - digest should have 3-4 points max (count newlines)
-      const lines = content.split("\n").filter((line) => line.trim());
+      const lines = content.split('\n').filter((line) => line.trim());
       expect(lines.length).toBeLessThanOrEqual(5);
     },
-    TIMEOUT,
+    TIMEOUT
   );
 });

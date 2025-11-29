@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { getGroupEmails } from "@/app/api/user/group/[groupId]/messages/controller";
+import { NextResponse } from 'next/server';
+import { getGroupEmails } from '@/app/api/user/group/[groupId]/messages/controller';
 import {
-  groupEmailsQuerySchema,
   type GroupEmailsResult,
-} from "@/app/api/v1/group/[groupId]/emails/validation";
-import { withError } from "@/utils/middleware";
-import { validateApiKeyAndGetEmailProvider } from "@/utils/api-auth";
-import { getEmailAccountId } from "@/app/api/v1/helpers";
+  groupEmailsQuerySchema,
+} from '@/app/api/v1/group/[groupId]/emails/validation';
+import { getEmailAccountId } from '@/app/api/v1/helpers';
+import { validateApiKeyAndGetEmailProvider } from '@/utils/api-auth';
+import { withError } from '@/utils/middleware';
 
 export const GET = withError(async (request, { params }) => {
   const { emailProvider, userId, accountId } =
@@ -14,17 +14,17 @@ export const GET = withError(async (request, { params }) => {
 
   const { groupId } = await params;
   if (!groupId)
-    return NextResponse.json({ error: "Missing groupId" }, { status: 400 });
+    return NextResponse.json({ error: 'Missing groupId' }, { status: 400 });
 
   const { searchParams } = new URL(request.url);
   const queryResult = groupEmailsQuerySchema.safeParse(
-    Object.fromEntries(searchParams),
+    Object.fromEntries(searchParams)
   );
 
   if (!queryResult.success) {
     return NextResponse.json(
-      { error: "Invalid query parameters" },
-      { status: 400 },
+      { error: 'Invalid query parameters' },
+      { status: 400 }
     );
   }
 
@@ -38,8 +38,8 @@ export const GET = withError(async (request, { params }) => {
 
   if (!emailAccountId) {
     return NextResponse.json(
-      { error: "Email account not found" },
-      { status: 400 },
+      { error: 'Email account not found' },
+      { status: 400 }
     );
   }
 

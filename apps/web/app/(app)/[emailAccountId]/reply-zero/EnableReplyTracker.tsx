@@ -1,24 +1,23 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { Badge } from "@/components/Badge";
-import { EnableFeatureCard } from "@/components/EnableFeatureCard";
-import { toastSuccess } from "@/components/Toast";
-import { toastError } from "@/components/Toast";
-import { SectionDescription } from "@/components/Typography";
-import {
-  markOnboardingAsCompleted,
-  REPLY_ZERO_ONBOARDING_COOKIE,
-} from "@/utils/cookies";
-import { useAccount } from "@/providers/EmailAccountProvider";
-import { prefixPath } from "@/utils/path";
-import { getRuleLabel } from "@/utils/rule/consts";
-import { SystemType } from "@/generated/prisma/enums";
+import { useRouter } from 'next/navigation';
+import { Badge } from '@/components/Badge';
+import { EnableFeatureCard } from '@/components/EnableFeatureCard';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { SectionDescription } from '@/components/Typography';
+import { SystemType } from '@/generated/prisma/enums';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
   enableDraftRepliesAction,
   toggleRuleAction,
-} from "@/utils/actions/rule";
-import { CONVERSATION_STATUS_TYPES } from "@/utils/reply-tracker/conversation-status-config";
+} from '@/utils/actions/rule';
+import {
+  markOnboardingAsCompleted,
+  REPLY_ZERO_ONBOARDING_COOKIE,
+} from '@/utils/cookies';
+import { prefixPath } from '@/utils/path';
+import { CONVERSATION_STATUS_TYPES } from '@/utils/reply-tracker/conversation-status-config';
+import { getRuleLabel } from '@/utils/rule/consts';
 
 export function EnableReplyTracker({ enabled }: { enabled: boolean }) {
   const router = useRouter();
@@ -45,7 +44,7 @@ export function EnableReplyTracker({ enabled }: { enabled: boolean }) {
           <SectionDescription>
             <Badge color="blue">
               {getRuleLabel(SystemType.AWAITING_REPLY)}
-            </Badge>{" "}
+            </Badge>{' '}
             - emails where you're waiting for a response.
           </SectionDescription>
 
@@ -57,12 +56,12 @@ export function EnableReplyTracker({ enabled }: { enabled: boolean }) {
       }
       imageSrc="/images/illustrations/communication.svg"
       imageAlt="Reply tracking"
-      buttonText={enabled ? "Got it!" : "Enable Reply Zero"}
+      buttonText={enabled ? 'Got it!' : 'Enable Reply Zero'}
       onEnable={async () => {
         markOnboardingAsCompleted(REPLY_ZERO_ONBOARDING_COOKIE);
 
         if (enabled) {
-          router.push(prefixPath(emailAccountId, "/reply-zero"));
+          router.push(prefixPath(emailAccountId, '/reply-zero'));
           return;
         }
 
@@ -71,7 +70,7 @@ export function EnableReplyTracker({ enabled }: { enabled: boolean }) {
             toggleRuleAction(emailAccountId, {
               enabled: true,
               systemType,
-            }),
+            })
           ),
           enableDraftRepliesAction(emailAccountId, { enable: true }),
         ];
@@ -80,17 +79,17 @@ export function EnableReplyTracker({ enabled }: { enabled: boolean }) {
 
         if (result?.serverError) {
           toastError({
-            title: "Error enabling Reply Zero",
+            title: 'Error enabling Reply Zero',
             description: result.serverError,
           });
         } else {
           toastSuccess({
-            title: "Reply Zero enabled",
+            title: 'Reply Zero enabled',
             description: "We've enabled Reply Zero for you!",
           });
         }
 
-        router.push(prefixPath(emailAccountId, "/reply-zero?enabled=true"));
+        router.push(prefixPath(emailAccountId, '/reply-zero?enabled=true'));
       }}
     />
   );

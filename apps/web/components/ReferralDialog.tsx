@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import useSWR from "swr";
+import { Copy, GiftIcon, Share2, Trophy, Users } from 'lucide-react';
+import useSWR from 'swr';
+import type { GetReferralCodeResponse } from '@/app/api/referrals/code/route';
+import type { GetReferralStatsResponse } from '@/app/api/referrals/stats/route';
+import { ErrorDisplay } from '@/components/ErrorDisplay';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Copy, Share2, Users, Trophy, GiftIcon } from "lucide-react";
-import { toastError, toastSuccess } from "@/components/Toast";
-import type { GetReferralStatsResponse } from "@/app/api/referrals/stats/route";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { SidebarMenuButton } from "@/components/ui/sidebar";
-import type { GetReferralCodeResponse } from "@/app/api/referrals/code/route";
-import { ErrorDisplay } from "@/components/ErrorDisplay";
-import { generateReferralLink } from "@/utils/referral/referral-link";
+} from '@/components/ui/card';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { generateReferralLink } from '@/utils/referral/referral-link';
 
 export function ReferralDialog() {
   return (
@@ -40,26 +40,26 @@ export function Referrals() {
     data: codeData,
     isLoading: loadingCode,
     error: errorCode,
-  } = useSWR<GetReferralCodeResponse>("/api/referrals/code");
+  } = useSWR<GetReferralCodeResponse>('/api/referrals/code');
 
   const {
     data: statsData,
     isLoading: loadingStats,
     error: errorStats,
-  } = useSWR<GetReferralStatsResponse>("/api/referrals/stats");
+  } = useSWR<GetReferralStatsResponse>('/api/referrals/stats');
 
   const loading = loadingCode || loadingStats;
 
-  const link = generateReferralLink(codeData?.code || "");
+  const link = generateReferralLink(codeData?.code || '');
 
-  const copyToClipboard = async (text: string, type: "code" | "link") => {
+  const copyToClipboard = async (text: string, type: 'code' | 'link') => {
     try {
       await navigator.clipboard.writeText(text);
       toastSuccess({ description: `Referral ${type} copied to clipboard!` });
     } catch {
       toastError({
         title: `Failed to copy ${type}`,
-        description: "Please try again",
+        description: 'Please try again',
       });
     }
   };
@@ -70,20 +70,20 @@ export function Referrals() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Join Inbox Zero with my referral link",
-          text: "Use my referral link to get started with Inbox Zero!",
+          title: 'Join Inbox Zero with my referral link',
+          text: 'Use my referral link to get started with Inbox Zero!',
           url: link,
         });
       } catch (error) {
-        if ((error as Error).name !== "AbortError") {
+        if ((error as Error).name !== 'AbortError') {
           toastError({
-            title: "Failed to share",
-            description: "Please try again",
+            title: 'Failed to share',
+            description: 'Please try again',
           });
         }
       }
     } else {
-      copyToClipboard(link, "link");
+      copyToClipboard(link, 'link');
     }
   };
 
@@ -92,7 +92,7 @@ export function Referrals() {
   }
 
   if (errorCode || errorStats) {
-    return <ErrorDisplay error={{ error: "Error loading referral data" }} />;
+    return <ErrorDisplay error={{ error: 'Error loading referral data' }} />;
   }
 
   return (
@@ -128,7 +128,7 @@ export function Referrals() {
 
               <div className="flex flex-col sm:flex-row gap-2">
                 <Button
-                  onClick={() => copyToClipboard(link, "link")}
+                  onClick={() => copyToClipboard(link, 'link')}
                   variant="outline"
                   className="flex-1"
                 >

@@ -1,7 +1,7 @@
-import type React from "react";
-import { AlertCircle, TerminalIcon } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from "@/utils";
+import { AlertCircle, TerminalIcon } from 'lucide-react';
+import type React from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { cn } from '@/utils';
 
 export function AlertBasic({
   title,
@@ -13,7 +13,7 @@ export function AlertBasic({
   title: string;
   description: React.ReactNode;
   icon?: React.ReactNode | null;
-  variant?: "default" | "destructive" | "success" | "blue";
+  variant?: 'default' | 'destructive' | 'success' | 'blue';
   className?: string;
 }) {
   return (
@@ -36,14 +36,14 @@ export function AlertWithButton({
   title: string;
   description: React.ReactNode;
   icon?: React.ReactNode;
-  variant?: "default" | "destructive" | "success" | "blue";
+  variant?: 'default' | 'destructive' | 'success' | 'blue';
   button?: React.ReactNode;
   className?: string;
 }) {
   return (
     <Alert
       variant={variant}
-      className={cn("bg-background pb-3 pt-5", className)}
+      className={cn('bg-background pb-3 pt-5', className)}
     >
       {icon === null ? null : icon || <TerminalIcon className="h-4 w-4" />}
       <div className="flex items-center justify-between">

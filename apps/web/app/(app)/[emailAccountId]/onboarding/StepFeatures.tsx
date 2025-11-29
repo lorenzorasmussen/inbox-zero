@@ -1,6 +1,5 @@
-"use client";
+'use client';
 
-import { useState } from "react";
 import {
   ArrowRightIcon,
   ChartBarIcon,
@@ -9,53 +8,54 @@ import {
   ShieldCheckIcon,
   SparklesIcon,
   ZapIcon,
-} from "lucide-react";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { OnboardingWrapper } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper";
-import { cn } from "@/utils";
-import { Button } from "@/components/ui/button";
-import { saveOnboardingFeaturesAction } from "@/utils/actions/onboarding";
-import { toastError } from "@/components/Toast";
+} from 'lucide-react';
+import { useState } from 'react';
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { OnboardingWrapper } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper';
+import { toastError } from '@/components/Toast';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/utils';
+import { saveOnboardingFeaturesAction } from '@/utils/actions/onboarding';
 
 // `value` is the value that will be saved to the database
 const choices = [
   {
-    label: "AI Personal Assistant",
-    description: "Auto labelling, pre-drafted responses, and more.",
+    label: 'AI Personal Assistant',
+    description: 'Auto labelling, pre-drafted responses, and more.',
     icon: <SparklesIcon className="size-4" />,
-    value: "AI Personal Assistant",
+    value: 'AI Personal Assistant',
   },
   {
-    label: "Bulk Unsubscriber",
-    description: "One-click unsubscribe and archive emails you never read",
+    label: 'Bulk Unsubscriber',
+    description: 'One-click unsubscribe and archive emails you never read',
     icon: <ClockIcon className="size-4" />,
-    value: "Bulk Unsubscriber",
+    value: 'Bulk Unsubscriber',
   },
   {
-    label: "Cold Email Blocker",
-    description: "Block unsolicited sales emails and spam",
+    label: 'Cold Email Blocker',
+    description: 'Block unsolicited sales emails and spam',
     icon: <ShieldCheckIcon className="size-4" />,
-    value: "Cold Email Blocker",
+    value: 'Cold Email Blocker',
   },
   {
-    label: "Reply Zero",
+    label: 'Reply Zero',
     description:
       "Never forget to reply. Never miss a follow up when others don't respond.",
     icon: <ReplyIcon className="size-4" />,
-    value: "Reply/Follow-up Tracker",
+    value: 'Reply/Follow-up Tracker',
   },
   {
-    label: "Email Analytics",
-    description: "Analyze your email activity",
+    label: 'Email Analytics',
+    description: 'Analyze your email activity',
     icon: <ChartBarIcon className="size-4" />,
-    value: "Email Analytics",
+    value: 'Email Analytics',
   },
 ];
 
 export function StepFeatures({ onNext }: { onNext: () => void }) {
   const [selectedChoices, setSelectedChoices] = useState<Map<string, boolean>>(
-    new Map(),
+    new Map()
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -77,13 +77,13 @@ export function StepFeatures({ onNext }: { onNext: () => void }) {
               type="button"
               key={choice.value}
               className={cn(
-                "rounded-xl border bg-card p-4 text-card-foreground shadow-sm text-left flex items-center gap-4 transition-all min-h-24",
+                'rounded-xl border bg-card p-4 text-card-foreground shadow-sm text-left flex items-center gap-4 transition-all min-h-24',
                 selectedChoices.get(choice.value) &&
-                  "border-blue-600 ring-2 ring-blue-100",
+                  'border-blue-600 ring-2 ring-blue-100'
               )}
               onClick={() => {
                 setSelectedChoices((prev) =>
-                  new Map(prev).set(choice.value, !prev.get(choice.value)),
+                  new Map(prev).set(choice.value, !prev.get(choice.value))
                 );
               }}
             >
@@ -116,10 +116,10 @@ export function StepFeatures({ onNext }: { onNext: () => void }) {
               await saveOnboardingFeaturesAction({ features });
               onNext();
             } catch (error) {
-              console.error("Failed to save features:", error);
+              console.error('Failed to save features:', error);
               toastError({
-                title: "Failed to save your preferences",
-                description: "Please try again.",
+                title: 'Failed to save your preferences',
+                description: 'Please try again.',
               });
               setIsSaving(false);
             }

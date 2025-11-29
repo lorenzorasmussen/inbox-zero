@@ -1,15 +1,15 @@
 import {
   getGmailClientForEmail,
   getOutlookClientForEmail,
-} from "@/utils/account";
-import { GmailProvider } from "@/utils/email/google";
-import { OutlookProvider } from "@/utils/email/microsoft";
+} from '@/utils/account';
+import { GmailProvider } from '@/utils/email/google';
+import { OutlookProvider } from '@/utils/email/microsoft';
 import {
   isGoogleProvider,
   isMicrosoftProvider,
-} from "@/utils/email/provider-types";
-import type { EmailProvider } from "@/utils/email/types";
-import type { Logger } from "@/utils/logger";
+} from '@/utils/email/provider-types';
+import type { EmailProvider } from '@/utils/email/types';
+import type { Logger } from '@/utils/logger';
 
 export async function createEmailProvider({
   emailAccountId,
@@ -23,7 +23,8 @@ export async function createEmailProvider({
   if (isGoogleProvider(provider)) {
     const client = await getGmailClientForEmail({ emailAccountId });
     return new GmailProvider(client, logger);
-  } else if (isMicrosoftProvider(provider)) {
+  }
+  if (isMicrosoftProvider(provider)) {
     const client = await getOutlookClientForEmail({ emailAccountId });
     return new OutlookProvider(client, logger);
   }

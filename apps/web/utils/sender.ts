@@ -1,5 +1,5 @@
-import prisma from "@/utils/prisma";
-import { extractEmailAddress } from "@/utils/email";
+import { extractEmailAddress } from '@/utils/email';
+import prisma from '@/utils/prisma';
 
 export async function findSenderByEmail({
   emailAccountId,

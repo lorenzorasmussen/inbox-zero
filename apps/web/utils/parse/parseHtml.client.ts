@@ -1,35 +1,35 @@
-import { containsCtaKeyword } from "@/utils/parse/cta";
-import { containsUnsubscribeKeyword } from "@/utils/parse/unsubscribe";
+import { containsCtaKeyword } from '@/utils/parse/cta';
+import { containsUnsubscribeKeyword } from '@/utils/parse/unsubscribe';
 
 // very similar to apps/web/utils/parse/parseHtml.server.ts
 export function findUnsubscribeLink(html?: string | null): string | undefined {
-  if (typeof DOMParser === "undefined") return;
+  if (typeof DOMParser === 'undefined') return;
   if (!html) return;
 
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
+  const doc = parser.parseFromString(html, 'text/html');
   let unsubscribeLink: string | undefined;
 
-  const links = doc.querySelectorAll("a");
+  const links = doc.querySelectorAll('a');
   for (const element of links) {
-    const text = element.textContent?.toLowerCase() ?? "";
+    const text = element.textContent?.toLowerCase() ?? '';
     if (containsUnsubscribeKeyword(text)) {
-      unsubscribeLink = element.getAttribute("href") ?? undefined;
+      unsubscribeLink = element.getAttribute('href') ?? undefined;
       return;
     }
   }
 
   if (!unsubscribeLink) {
     // If unsubscribe link not found in direct anchor tags, check for text nodes containing unsubscribe text
-    const allNodes = Array.from(doc.body.getElementsByTagName("*"));
+    const allNodes = Array.from(doc.body.getElementsByTagName('*'));
     for (const node of allNodes) {
-      if (node.nodeType === 3 && node.textContent?.includes("unsubscribe")) {
+      if (node.nodeType === 3 && node.textContent?.includes('unsubscribe')) {
         // text node
         const parent = node.parentNode;
         if (parent) {
-          const linkElement = parent.querySelector("a");
+          const linkElement = parent.querySelector('a');
           if (linkElement) {
-            unsubscribeLink = linkElement.getAttribute("href") ?? undefined;
+            unsubscribeLink = linkElement.getAttribute('href') ?? undefined;
             break;
           }
         }
@@ -41,17 +41,17 @@ export function findUnsubscribeLink(html?: string | null): string | undefined {
 }
 
 export function findCtaLink(
-  html?: string | null,
+  html?: string | null
 ): { ctaText: string; ctaLink: string } | undefined {
-  if (typeof DOMParser === "undefined") return;
+  if (typeof DOMParser === 'undefined') return;
   if (!html) return;
 
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
+  const doc = parser.parseFromString(html, 'text/html');
   let ctaText: string | undefined;
   let ctaLink: string | undefined;
 
-  const links = doc.querySelectorAll("a");
+  const links = doc.querySelectorAll('a');
   for (const element of links) {
     if (!element.textContent) continue;
     if (containsCtaKeyword(element.textContent.toLowerCase())) {
@@ -59,22 +59,22 @@ export function findCtaLink(
       ctaText =
         element.textContent.charAt(0).toUpperCase() +
         element.textContent.slice(1);
-      ctaLink = element.getAttribute("href") ?? undefined;
+      ctaLink = element.getAttribute('href') ?? undefined;
       return;
     }
   }
 
-  if (ctaLink && !ctaLink.startsWith("http") && !ctaLink.startsWith("mailto:"))
+  if (ctaLink && !ctaLink.startsWith('http') && !ctaLink.startsWith('mailto:'))
     ctaLink = `https://${ctaLink}`;
 
   return ctaText && ctaLink ? { ctaText, ctaLink } : undefined;
 }
 
 export function htmlToText(html: string): string {
-  if (typeof DOMParser === "undefined") return "";
+  if (typeof DOMParser === 'undefined') return '';
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-  return doc.body.textContent || "";
+  const doc = parser.parseFromString(html, 'text/html');
+  return doc.body.textContent || '';
 }
 
 // Remove replies from `textPlain` email content.
@@ -85,14 +85,14 @@ export function removeReplyFromTextPlain(text: string) {
 }
 
 export function isMarketingEmail(html: string) {
-  if (typeof DOMParser === "undefined") return "";
+  if (typeof DOMParser === 'undefined') return '';
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
+  const doc = parser.parseFromString(html, 'text/html');
 
   // contains centered table
-  const tables = Array.from(doc.querySelectorAll("table"));
+  const tables = Array.from(doc.querySelectorAll('table'));
   for (const table of tables) {
-    if (table.getAttribute("align") === "center") {
+    if (table.getAttribute('align') === 'center') {
       return true;
     }
   }
@@ -101,7 +101,7 @@ export function isMarketingEmail(html: string) {
 export function cleanUnsubscribeLink(unsubscribeLink?: string) {
   // remove < > from start and end of unsubscribeLink
   let cleanedLink = unsubscribeLink;
-  if (cleanedLink?.startsWith("<")) cleanedLink = cleanedLink.slice(1);
-  if (cleanedLink?.endsWith(">")) cleanedLink = cleanedLink.slice(0, -1);
+  if (cleanedLink?.startsWith('<')) cleanedLink = cleanedLink.slice(1);
+  if (cleanedLink?.endsWith('>')) cleanedLink = cleanedLink.slice(0, -1);
   return cleanedLink;
 }

@@ -1,8 +1,8 @@
 import {
-  HoverCard as HoverCardUi,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card";
+  HoverCard as HoverCardUi,
+} from '@/components/ui/hover-card';
 
 export function HoverCard(props: {
   children: React.ReactNode;

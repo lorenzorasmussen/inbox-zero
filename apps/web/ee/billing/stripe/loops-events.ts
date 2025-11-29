@@ -1,12 +1,12 @@
 import {
-  createContact,
-  completedTrial,
-  startedTrial,
   cancelledPremium,
-} from "@inboxzero/loops";
-import { createScopedLogger } from "@/utils/logger";
+  completedTrial,
+  createContact,
+  startedTrial,
+} from '@inboxzero/loops';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("stripe/syncStripeDataToDb");
+const logger = createScopedLogger('stripe/syncStripeDataToDb');
 
 export async function handleLoopsEvents({
   currentPremium,
@@ -32,7 +32,7 @@ export async function handleLoopsEvents({
       currentPremium.users[0]?.name || currentPremium.admins[0]?.name;
 
     if (!email) {
-      logger.warn("No email found for premium user");
+      logger.warn('No email found for premium user');
       return;
     }
 
@@ -43,11 +43,11 @@ export async function handleLoopsEvents({
       !currentPremium.stripeSubscriptionStatus;
 
     if (hasNewTrial) {
-      logger.info("Trial started", { email });
-      await createContact(email, name?.split(" ")[0]).catch((error) => {
+      logger.info('Trial started', { email });
+      await createContact(email, name?.split(' ')[0]).catch((error) => {
         // ignore if already exists
-        if (error.message.includes("Email already on list")) {
-          logger.info("Email already on list", { email });
+        if (error.message.includes('Email already on list')) {
+          logger.info('Email already on list', { email });
           return;
         }
 
@@ -59,7 +59,7 @@ export async function handleLoopsEvents({
     const wasInTrial =
       currentPremium.stripeTrialEnd &&
       currentPremium.stripeTrialEnd > new Date();
-    const isNowActive = newSubscription.status === "active";
+    const isNowActive = newSubscription.status === 'active';
     const noLongerInTrial =
       !newSubscription.trial_end ||
       newSubscription.trial_end <= Date.now() / 1000;
@@ -68,7 +68,7 @@ export async function handleLoopsEvents({
     const trialCompleted = isNowActive && wasInTrial && noLongerInTrial;
 
     if (trialCompleted) {
-      logger.info("Trial completed", { email, tier: newTier });
+      logger.info('Trial completed', { email, tier: newTier });
       if (newTier) {
         await completedTrial(email, newTier);
       }
@@ -79,10 +79,10 @@ export async function handleLoopsEvents({
       isNowActive &&
       !wasInTrial &&
       (!currentPremium.stripeSubscriptionStatus || // First subscription without trial
-        currentPremium.stripeSubscriptionStatus === "incomplete"); // Completing incomplete payment
+        currentPremium.stripeSubscriptionStatus === 'incomplete'); // Completing incomplete payment
 
     if (directUpgrade) {
-      logger.info("Direct upgrade to premium", { email, tier: newTier });
+      logger.info('Direct upgrade to premium', { email, tier: newTier });
       if (newTier) {
         await startedTrial(email, newTier);
       }
@@ -90,17 +90,17 @@ export async function handleLoopsEvents({
 
     // 3. Subscription cancelled
     const wasCancelled =
-      (newSubscription.status === "canceled" ||
-        newSubscription.status === "unpaid" ||
-        newSubscription.status === "incomplete_expired") &&
+      (newSubscription.status === 'canceled' ||
+        newSubscription.status === 'unpaid' ||
+        newSubscription.status === 'incomplete_expired') &&
       currentPremium.stripeSubscriptionStatus !== newSubscription.status;
 
     if (wasCancelled) {
-      logger.info("Subscription cancelled", { email });
+      logger.info('Subscription cancelled', { email });
       await cancelledPremium(email);
     }
   } catch (error) {
-    logger.error("Error handling Loops events", { error });
+    logger.error('Error handling Loops events', { error });
     // Don't throw - we don't want Loops errors to break sync
   }
 }

@@ -1,15 +1,15 @@
-import { render } from "@react-email/render";
-import { nanoid } from "nanoid";
-import { resend } from "./client";
-import type { ReactElement } from "react";
-import SummaryEmail, { type SummaryEmailProps } from "../emails/summary";
+import { render } from '@react-email/render';
+import { nanoid } from 'nanoid';
+import type { ReactElement } from 'react';
 import DigestEmail, {
   type DigestEmailProps,
   generateDigestSubject,
-} from "../emails/digest";
+} from '../emails/digest';
 import InvitationEmail, {
   type InvitationEmailProps,
-} from "../emails/invitation";
+} from '../emails/invitation';
+import SummaryEmail, { type SummaryEmailProps } from '../emails/summary';
+import { resend } from './client';
 
 const sendEmail = async ({
   from,
@@ -31,7 +31,7 @@ const sendEmail = async ({
 }) => {
   if (!resend) {
     console.log(
-      "Resend is not configured. You need to add a RESEND_API_KEY in your .env file for emails to work.",
+      'Resend is not configured. You need to add a RESEND_API_KEY in your .env file for emails to work.'
     );
     return Promise.resolve();
   }
@@ -40,22 +40,22 @@ const sendEmail = async ({
 
   const result = await resend.emails.send({
     from,
-    to: test ? "delivered@resend.dev" : to,
+    to: test ? 'delivered@resend.dev' : to,
     subject,
     react,
     text,
     headers: {
-      "List-Unsubscribe": `<https://www.getinboxzero.com/api/unsubscribe?token=${unsubscribeToken}>`,
+      'List-Unsubscribe': `<https://www.getinboxzero.com/api/unsubscribe?token=${unsubscribeToken}>`,
       // From Feb 2024 Google requires this for bulk senders
-      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
       // Prevent threading on Gmail
-      "X-Entity-Ref-ID": nanoid(),
+      'X-Entity-Ref-ID': nanoid(),
     },
     tags,
   });
 
   if (result.error) {
-    console.error("Error sending email", result.error);
+    console.error('Error sending email', result.error);
     throw new Error(`Error sending email: ${result.error.message}`);
   }
 
@@ -101,14 +101,14 @@ export const sendSummaryEmail = async ({
   return sendEmail({
     from,
     to,
-    subject: "Your weekly email summary",
+    subject: 'Your weekly email summary',
     react: <SummaryEmail {...emailProps} />,
     test,
     unsubscribeToken: emailProps.unsubscribeToken,
     tags: [
       {
-        name: "category",
-        value: "activity-update",
+        name: 'category',
+        value: 'activity-update',
       },
     ],
   });
@@ -134,8 +134,8 @@ export const sendDigestEmail = async ({
     unsubscribeToken: emailProps.unsubscribeToken,
     tags: [
       {
-        name: "category",
-        value: "digest",
+        name: 'category',
+        value: 'digest',
       },
     ],
   });
@@ -161,8 +161,8 @@ export const sendInvitationEmail = async ({
     unsubscribeToken: emailProps.unsubscribeToken,
     tags: [
       {
-        name: "category",
-        value: "invitation",
+        name: 'category',
+        value: 'invitation',
       },
     ],
   });

@@ -1,25 +1,64 @@
 {
-  "name": "@inboxzero/resend",
-  "version": "0.0.0",
-  "main": "src/index.ts",
-  "scripts": {
-    "dev": "email dev --port 3010"
-  },
-  "dependencies": {
-    "@react-email/components": "0.5.7",
-    "@react-email/render": "1.4.0",
-    "nanoid": "5.1.6",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "react-email": "4.3.1",
-    "resend": "6.2.1"
-  },
-  "devDependencies": {
-    "@types/node": "24.9.1",
-    "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.2",
-    "prettier": "3.6.2",
-    "tsconfig": "workspace:*",
-    "typescript": "5.9.3"
-  }
+	"name": "@inboxzero/resend",
+	"version": "0.1.0",
+	"description": "Resend email templates and client wrapper for InboxZero",
+	"main": "dist/index.js",
+	"module": "dist/index.esm.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"test": "vitest",
+		"test:ci": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"prepublish": "pnpm run build",
+		"dev": "email dev --port 3010",
+		"type-check": "tsc --noEmit"
+	},
+	"keywords": [
+		"resend",
+		"email",
+		"templates",
+		"react-email",
+		"inboxzero"
+	],
+	"author": "InboxZero Team",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/inboxzero/inbox-zero-google-migration.git",
+		"directory": "packages/resend"
+	},
+	"bugs": {
+		"url": "https://github.com/inboxzero/inbox-zero-google-migration/issues"
+	},
+	"homepage": "https://github.com/inboxzero/inbox-zero-google-migration/tree/main/packages/resend#readme",
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"dependencies": {
+		"@react-email/components": "0.5.7",
+		"@react-email/render": "1.4.0",
+		"nanoid": "5.1.6",
+		"react": "19.2.0",
+		"react-dom": "19.2.0",
+		"react-email": "4.3.1",
+		"resend": "6.2.1"
+	},
+	"devDependencies": {
+		"@types/node": "24.9.1",
+		"@types/react": "19.2.2",
+		"@types/react-dom": "19.2.2",
+		"prettier": "3.6.2",
+		"tsconfig": "workspace:*",
+		"typescript": "5.9.3",
+		"vitest": "workspace:*"
+	}
 }

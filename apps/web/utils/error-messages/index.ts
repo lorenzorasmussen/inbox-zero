@@ -1,7 +1,7 @@
-import prisma from "@/utils/prisma";
-import { createScopedLogger } from "@/utils/logger";
+import { createScopedLogger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
 
-const logger = createScopedLogger("error-messages");
+const logger = createScopedLogger('error-messages');
 
 // Used to store error messages for a user which we display in the UI
 
@@ -13,7 +13,7 @@ type ErrorMessageEntry = {
 type ErrorMessages = Record<string, ErrorMessageEntry>;
 
 export async function getUserErrorMessages(
-  userId: string,
+  userId: string
 ): Promise<ErrorMessages | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -25,11 +25,11 @@ export async function getUserErrorMessages(
 export async function addUserErrorMessage(
   userEmail: string,
   errorType: (typeof ErrorType)[keyof typeof ErrorType],
-  errorMessage: string,
+  errorMessage: string
 ): Promise<void> {
   const user = await prisma.user.findUnique({ where: { email: userEmail } });
   if (!user) {
-    logger.warn("User not found", { userEmail });
+    logger.warn('User not found', { userEmail });
     return;
   }
 
@@ -61,9 +61,9 @@ export async function clearUserErrorMessages({
 }
 
 export const ErrorType = {
-  INCORRECT_OPENAI_API_KEY: "Incorrect OpenAI API key",
-  INVALID_OPENAI_MODEL: "Invalid OpenAI model",
-  OPENAI_API_KEY_DEACTIVATED: "OpenAI API key deactivated",
-  OPENAI_RETRY_ERROR: "OpenAI retry error",
-  ANTHROPIC_INSUFFICIENT_BALANCE: "Anthropic insufficient balance",
+  INCORRECT_OPENAI_API_KEY: 'Incorrect OpenAI API key',
+  INVALID_OPENAI_MODEL: 'Invalid OpenAI model',
+  OPENAI_API_KEY_DEACTIVATED: 'OpenAI API key deactivated',
+  OPENAI_RETRY_ERROR: 'OpenAI retry error',
+  ANTHROPIC_INSUFFICIENT_BALANCE: 'Anthropic insufficient balance',
 };

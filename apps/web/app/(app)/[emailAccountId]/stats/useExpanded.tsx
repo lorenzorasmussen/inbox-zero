@@ -1,12 +1,12 @@
-import { ChevronsDownIcon, ChevronsUpIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { ChevronsDownIcon, ChevronsUpIcon } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 export const useExpanded = () => {
   const [expanded, setExpanded] = useState(false);
   const toggleExpand = useCallback(
     () => setExpanded((expanded) => !expanded),
-    [],
+    []
   );
 
   const extra = useMemo(() => {

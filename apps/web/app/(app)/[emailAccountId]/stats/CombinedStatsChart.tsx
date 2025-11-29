@@ -1,12 +1,12 @@
-import { BarChart, Card, Title } from "@tremor/react";
-import { useMemo } from "react";
-import useSWRImmutable from "swr/immutable";
+import { BarChart, Card, Title } from '@tremor/react';
+import { useMemo } from 'react';
+import useSWRImmutable from 'swr/immutable';
 import type {
-  StatsByDayResponse,
   StatsByDayQuery,
-} from "@/app/api/user/stats/day/route";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
+  StatsByDayResponse,
+} from '@/app/api/user/stats/day/route';
+import { LoadingContent } from '@/components/LoadingContent';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function CombinedStatsChart(props: { title: string }) {
   const {
@@ -15,8 +15,8 @@ export function CombinedStatsChart(props: { title: string }) {
     error: sentError,
   } = useSWRImmutable<StatsByDayResponse, { error: string }>(
     `/api/user/stats/day?${new URLSearchParams({
-      type: "sent",
-    } as StatsByDayQuery).toString()}`,
+      type: 'sent',
+    } as StatsByDayQuery).toString()}`
   );
 
   const {
@@ -25,8 +25,8 @@ export function CombinedStatsChart(props: { title: string }) {
     error: archivedError,
   } = useSWRImmutable<StatsByDayResponse, { error: string }>(
     `/api/user/stats/day?${new URLSearchParams({
-      type: "archived",
-    } as StatsByDayQuery).toString()}`,
+      type: 'archived',
+    } as StatsByDayQuery).toString()}`
   );
 
   const {
@@ -35,8 +35,8 @@ export function CombinedStatsChart(props: { title: string }) {
     error: inboxError,
   } = useSWRImmutable<StatsByDayResponse, { error: string }>(
     `/api/user/stats/day?${new URLSearchParams({
-      type: "inbox",
-    } as StatsByDayQuery).toString()}`,
+      type: 'inbox',
+    } as StatsByDayQuery).toString()}`
   );
 
   const isLoading = sentIsLoading || archivedIsLoading || inboxIsLoading;
@@ -79,8 +79,8 @@ export function CombinedStatsChart(props: { title: string }) {
               className="mt-4 h-72"
               data={data}
               index="date"
-              categories={["Unhandled", "Archived", "Sent"]}
-              colors={["blue", "lime", "slate"]}
+              categories={['Unhandled', 'Archived', 'Sent']}
+              colors={['blue', 'lime', 'slate']}
             />
           </Card>
         </div>

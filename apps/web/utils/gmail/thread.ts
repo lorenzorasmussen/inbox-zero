@@ -1,20 +1,20 @@
-import type { gmail_v1 } from "@googleapis/gmail";
-import { getBatch } from "@/utils/gmail/batch";
+import type { gmail_v1 } from '@googleapis/gmail';
+import { getBatch } from '@/utils/gmail/batch';
+import { GmailLabel } from '@/utils/gmail/label';
+import { parseMessage } from '@/utils/gmail/message';
+import { withGmailRetry } from '@/utils/gmail/retry';
 import {
   isDefined,
-  type ThreadWithPayloadMessages,
   type MessageWithPayload,
-} from "@/utils/types";
-import { parseMessage } from "@/utils/gmail/message";
-import { GmailLabel } from "@/utils/gmail/label";
-import { withGmailRetry } from "@/utils/gmail/retry";
+  type ThreadWithPayloadMessages,
+} from '@/utils/types';
 
 export async function getThread(
   threadId: string,
-  gmail: gmail_v1.Gmail,
+  gmail: gmail_v1.Gmail
 ): Promise<ThreadWithPayloadMessages> {
   const thread = await withGmailRetry(() =>
-    gmail.users.threads.get({ userId: "me", id: threadId }),
+    gmail.users.threads.get({ userId: 'me', id: threadId })
   );
   return thread.data as ThreadWithPayloadMessages;
 }
@@ -29,7 +29,7 @@ export async function getThreads(
   q: string,
   labelIds: string[],
   gmail: gmail_v1.Gmail,
-  maxResults = 100,
+  maxResults = 100
 ): Promise<{
   nextPageToken?: string | null;
   resultSizeEstimate?: number | null;
@@ -37,11 +37,11 @@ export async function getThreads(
 }> {
   const threads = await withGmailRetry(() =>
     gmail.users.threads.list({
-      userId: "me",
+      userId: 'me',
       q,
       labelIds,
       maxResults,
-    }),
+    })
   );
   return {
     nextPageToken: threads.data.nextPageToken,
@@ -65,12 +65,12 @@ export async function getThreadsWithNextPageToken({
 }) {
   const threads = await withGmailRetry(() =>
     gmail.users.threads.list({
-      userId: "me",
+      userId: 'me',
       q,
       labelIds,
       maxResults,
       pageToken,
-    }),
+    })
   );
 
   return {
@@ -81,12 +81,12 @@ export async function getThreadsWithNextPageToken({
 
 export async function getThreadsBatch(
   threadIds: string[],
-  accessToken: string,
+  accessToken: string
 ): Promise<ThreadWithPayloadMessages[]> {
   const batch = await getBatch(
     threadIds,
-    "/gmail/v1/users/me/threads",
-    accessToken,
+    '/gmail/v1/users/me/threads',
+    accessToken
   );
 
   return batch;
@@ -95,7 +95,7 @@ export async function getThreadsBatch(
 async function getThreadsFromSender(
   gmail: gmail_v1.Gmail,
   sender: string,
-  limit: number,
+  limit: number
 ): Promise<
   Array<{
     id?: string | null;
@@ -106,10 +106,10 @@ async function getThreadsFromSender(
   const query = `from:${sender} -label:sent -label:draft`;
   const response = await withGmailRetry(() =>
     gmail.users.threads.list({
-      userId: "me",
+      userId: 'me',
       q: query,
       maxResults: limit,
-    }),
+    })
   );
 
   return response.data.threads || [];
@@ -119,7 +119,7 @@ export async function getThreadsFromSenderWithSubject(
   gmail: gmail_v1.Gmail,
   accessToken: string,
   sender: string,
-  limit: number,
+  limit: number
 ): Promise<
   Array<{
     id: string;
@@ -137,18 +137,18 @@ export async function getThreadsFromSenderWithSubject(
             id: t.id,
             subject:
               t.messages?.[0]?.payload?.headers?.find(
-                (h) => h.name === "Subject",
-              )?.value || "",
-            snippet: t.messages?.[0]?.snippet || "",
+                (h) => h.name === 'Subject'
+              )?.value || '',
+            snippet: t.messages?.[0]?.snippet || '',
           }
-        : undefined,
+        : undefined
     )
     .filter(isDefined);
 }
 
 export async function getThreadMessages(
   threadId: string,
-  gmail: gmail_v1.Gmail,
+  gmail: gmail_v1.Gmail
 ) {
   const thread = await getThread(threadId, gmail);
   if (!thread?.messages) return [];

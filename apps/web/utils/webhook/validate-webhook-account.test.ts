@@ -1,25 +1,25 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { validateWebhookAccount } from "./validate-webhook-account";
-import type { ValidatedWebhookAccountData } from "./validate-webhook-account";
-import { PremiumTier } from "@/generated/prisma/enums";
-import { createScopedLogger } from "@/utils/logger";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { PremiumTier } from '@/generated/prisma/enums';
+import { createScopedLogger } from '@/utils/logger';
+import type { ValidatedWebhookAccountData } from './validate-webhook-account';
+import { validateWebhookAccount } from './validate-webhook-account';
 
-const logger = createScopedLogger("test");
+const logger = createScopedLogger('test');
 
 // Mock dependencies
-vi.mock("@/utils/premium");
-vi.mock("@/app/api/watch/controller");
-vi.mock("@/utils/email/provider");
-vi.mock("@/utils/prisma");
-vi.mock("server-only", () => ({}));
+vi.mock('@/utils/premium');
+vi.mock('@/app/api/watch/controller');
+vi.mock('@/utils/email/provider');
+vi.mock('@/utils/prisma');
+vi.mock('server-only', () => ({}));
 
+import { unwatchEmails } from '@/app/api/watch/controller';
+import { createEmailProvider } from '@/utils/email/provider';
 // Import mocked functions
-import { isPremium, hasAiAccess } from "@/utils/premium";
-import { unwatchEmails } from "@/app/api/watch/controller";
-import { createEmailProvider } from "@/utils/email/provider";
+import { hasAiAccess, isPremium } from '@/utils/premium';
 
-describe("validateWebhookAccount", () => {
-  const mockEmailProvider = { type: "google" as const };
+describe('validateWebhookAccount', () => {
+  const mockEmailProvider = { type: 'google' as const };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -27,29 +27,29 @@ describe("validateWebhookAccount", () => {
   });
 
   function createMockEmailAccount(
-    overrides: Partial<ValidatedWebhookAccountData> = {},
+    overrides: Partial<ValidatedWebhookAccountData> = {}
   ): ValidatedWebhookAccountData {
     return {
-      id: "account-id",
-      email: "user@test.com",
-      userId: "user-id",
-      about: "Test account",
+      id: 'account-id',
+      email: 'user@test.com',
+      userId: 'user-id',
+      about: 'Test account',
       lastSyncedHistoryId: null,
       autoCategorizeSenders: false,
-      watchEmailsSubscriptionId: "subscription-id",
+      watchEmailsSubscriptionId: 'subscription-id',
       multiRuleSelectionEnabled: false,
       watchEmailsSubscriptionHistory: [],
       account: {
-        provider: "google",
-        access_token: "access-token",
-        refresh_token: "refresh-token",
+        provider: 'google',
+        access_token: 'access-token',
+        refresh_token: 'refresh-token',
         expires_at: new Date(),
       },
       rules: [
         {
-          id: "rule-id",
-          name: "Test Rule",
-          instructions: "Test instructions",
+          id: 'rule-id',
+          name: 'Test Rule',
+          instructions: 'Test instructions',
           actions: [],
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -61,9 +61,9 @@ describe("validateWebhookAccount", () => {
           subject: null,
           body: null,
           categoryFilterType: null,
-          conditionalOperator: "AND",
+          conditionalOperator: 'AND',
           automate: true,
-          emailAccountId: "account-id",
+          emailAccountId: 'account-id',
           systemType: null,
           promptText: null,
         },
@@ -74,7 +74,7 @@ describe("validateWebhookAccount", () => {
         aiApiKey: null,
         premium: {
           lemonSqueezyRenewsAt: new Date(Date.now() + 86_400_000), // Tomorrow
-          stripeSubscriptionStatus: "active",
+          stripeSubscriptionStatus: 'active',
           tier: PremiumTier.PRO_MONTHLY,
         },
       },
@@ -82,8 +82,8 @@ describe("validateWebhookAccount", () => {
     };
   }
 
-  describe("when emailAccount is null", () => {
-    it("should return failure with error logged", async () => {
+  describe('when emailAccount is null', () => {
+    it('should return failure with error logged', async () => {
       const result = await validateWebhookAccount(null, logger);
 
       expect(result.success).toBe(false);
@@ -93,8 +93,8 @@ describe("validateWebhookAccount", () => {
     });
   });
 
-  describe("when account is not premium", () => {
-    it("should unwatch emails and return failure", async () => {
+  describe('when account is not premium', () => {
+    it('should unwatch emails and return failure', async () => {
       const emailAccount = createMockEmailAccount({
         user: {
           aiProvider: null,
@@ -110,13 +110,13 @@ describe("validateWebhookAccount", () => {
 
       expect(result.success).toBe(false);
       expect(createEmailProvider).toHaveBeenCalledWith({
-        emailAccountId: "account-id",
-        provider: "google",
+        emailAccountId: 'account-id',
+        provider: 'google',
       });
       expect(unwatchEmails).toHaveBeenCalledWith({
-        emailAccountId: "account-id",
+        emailAccountId: 'account-id',
         provider: mockEmailProvider,
-        subscriptionId: "subscription-id",
+        subscriptionId: 'subscription-id',
       });
       if (!result.success) {
         expect(await result.response.json()).toEqual({ ok: true });
@@ -124,8 +124,8 @@ describe("validateWebhookAccount", () => {
     });
   });
 
-  describe("when user does not have AI access", () => {
-    it("should unwatch emails and return failure", async () => {
+  describe('when user does not have AI access', () => {
+    it('should unwatch emails and return failure', async () => {
       const emailAccount = createMockEmailAccount();
 
       vi.mocked(isPremium).mockReturnValue(true);
@@ -135,9 +135,9 @@ describe("validateWebhookAccount", () => {
 
       expect(result.success).toBe(false);
       expect(unwatchEmails).toHaveBeenCalledWith({
-        emailAccountId: "account-id",
+        emailAccountId: 'account-id',
         provider: mockEmailProvider,
-        subscriptionId: "subscription-id",
+        subscriptionId: 'subscription-id',
       });
       if (!result.success) {
         expect(await result.response.json()).toEqual({ ok: true });
@@ -145,8 +145,8 @@ describe("validateWebhookAccount", () => {
     });
   });
 
-  describe("when account has no automation rules", () => {
-    it("should return failure", async () => {
+  describe('when account has no automation rules', () => {
+    it('should return failure', async () => {
       const emailAccount = createMockEmailAccount({
         rules: [],
       });
@@ -164,13 +164,13 @@ describe("validateWebhookAccount", () => {
     });
   });
 
-  describe("when access_token is missing", () => {
-    it("should return failure with error logged", async () => {
+  describe('when access_token is missing', () => {
+    it('should return failure with error logged', async () => {
       const emailAccount = createMockEmailAccount({
         account: {
-          provider: "google",
+          provider: 'google',
           access_token: null,
-          refresh_token: "refresh-token",
+          refresh_token: 'refresh-token',
           expires_at: new Date(),
         },
       });
@@ -187,12 +187,12 @@ describe("validateWebhookAccount", () => {
     });
   });
 
-  describe("when refresh_token is missing", () => {
-    it("should return failure with error logged", async () => {
+  describe('when refresh_token is missing', () => {
+    it('should return failure with error logged', async () => {
       const emailAccount = createMockEmailAccount({
         account: {
-          provider: "google",
-          access_token: "access-token",
+          provider: 'google',
+          access_token: 'access-token',
           refresh_token: null,
           expires_at: new Date(),
         },
@@ -210,8 +210,8 @@ describe("validateWebhookAccount", () => {
     });
   });
 
-  describe("when account is null", () => {
-    it("should return failure with error logged", async () => {
+  describe('when account is null', () => {
+    it('should return failure with error logged', async () => {
       const emailAccount = {
         ...createMockEmailAccount(),
         account: null,
@@ -229,8 +229,8 @@ describe("validateWebhookAccount", () => {
     });
   });
 
-  describe("when all validation passes", () => {
-    it("should return success with validated data", async () => {
+  describe('when all validation passes', () => {
+    it('should return success with validated data', async () => {
       const emailAccount = createMockEmailAccount();
 
       vi.mocked(isPremium).mockReturnValue(true);

@@ -1,7 +1,7 @@
-import { chatCompletionStream } from "@/utils/llms";
-import type { EmailAccountWithAI } from "@/utils/llms/types";
-import { expire } from "@/utils/redis";
-import { saveSummary } from "@/utils/redis/summary";
+import { chatCompletionStream } from '@/utils/llms';
+import type { EmailAccountWithAI } from '@/utils/llms/types';
+import { expire } from '@/utils/redis';
+import { saveSummary } from '@/utils/redis/summary';
 
 export async function summarise({
   text,
@@ -22,16 +22,16 @@ export async function summarise({
     userAi: userAi.user,
     messages: [
       {
-        role: "system",
+        role: 'system',
         content: system,
       },
       {
-        role: "user",
+        role: 'user',
         content: prompt,
       },
     ],
     userEmail,
-    usageLabel: "Summarise",
+    usageLabel: 'Summarise',
     onFinish: async (result) => {
       await saveSummary(prompt, result.text);
       await expire(prompt, 60 * 60 * 24);

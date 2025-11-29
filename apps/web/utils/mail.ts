@@ -1,10 +1,10 @@
-import "server-only";
-import EmailReplyParser from "email-reply-parser";
-import { convert } from "html-to-text";
-import type { ParsedMessage } from "@/utils/types";
-import { removeExcessiveWhitespace, truncate } from "@/utils/string";
-import { env } from "@/env";
-import { SafeError } from "@/utils/error";
+import 'server-only';
+import EmailReplyParser from 'email-reply-parser';
+import { convert } from 'html-to-text';
+import { env } from '@/env';
+import { SafeError } from '@/utils/error';
+import { removeExcessiveWhitespace, truncate } from '@/utils/string';
+import type { ParsedMessage } from '@/utils/types';
 
 export function parseReply(plainText: string) {
   const parser = new EmailReplyParser().read(plainText);
@@ -21,9 +21,9 @@ function htmlToText(html: string, removeLinks = true, removeImages = true) {
     // might want to change this in the future if we're searching for links like Unsubscribe
     selectors: [
       ...(removeLinks
-        ? [{ selector: "a", options: { ignoreHref: true } }]
+        ? [{ selector: 'a', options: { ignoreHref: true } }]
         : []),
-      ...(removeImages ? [{ selector: "img", format: "skip" }] : []),
+      ...(removeImages ? [{ selector: 'img', format: 'skip' }] : []),
     ],
   });
 
@@ -31,12 +31,12 @@ function htmlToText(html: string, removeLinks = true, removeImages = true) {
 }
 
 export function getEmailClient(messageId: string) {
-  if (messageId.includes("mail.gmail.com")) return "gmail";
-  if (messageId.includes("we.are.superhuman.com")) return "superhuman";
-  if (messageId.includes("mail.shortwave.com")) return "shortwave";
+  if (messageId.includes('mail.gmail.com')) return 'gmail';
+  if (messageId.includes('we.are.superhuman.com')) return 'superhuman';
+  if (messageId.includes('mail.shortwave.com')) return 'shortwave';
 
   // take part after @ and remove final >
-  const emailClient = messageId.split("@")[1].split(">")[0];
+  const emailClient = messageId.split('@')[1].split('>')[0];
   return emailClient;
 }
 
@@ -72,14 +72,14 @@ export type EmailToContentOptions = {
 };
 
 export function emailToContent(
-  email: Pick<ParsedMessage, "textHtml" | "textPlain" | "snippet">,
+  email: Pick<ParsedMessage, 'textHtml' | 'textPlain' | 'snippet'>,
   {
     maxLength = 2000,
     extractReply = false,
     removeForwarded = false,
-  }: EmailToContentOptions = {},
+  }: EmailToContentOptions = {}
 ): string {
-  let content = "";
+  let content = '';
 
   if (email.textHtml) {
     content = htmlToText(email.textHtml);
@@ -113,12 +113,12 @@ export function convertEmailHtmlToText({
     wordwrap: 130,
     selectors: [
       {
-        selector: "a",
+        selector: 'a',
         options: includeLinks
           ? { hideLinkHrefIfSameAsText: true } // Keep link URLs: "Text [URL]"
           : { ignoreHref: true }, // Remove links entirely: "Text"
       },
-      { selector: "img", format: "skip" },
+      { selector: 'img', format: 'skip' },
     ],
   });
 
@@ -132,7 +132,7 @@ export function convertEmailHtmlToText({
 export function ensureEmailSendingEnabled(): void {
   if (!env.NEXT_PUBLIC_EMAIL_SEND_ENABLED) {
     throw new SafeError(
-      "Email sending is disabled. Set NEXT_PUBLIC_EMAIL_SEND_ENABLED=true to enable.",
+      'Email sending is disabled. Set NEXT_PUBLIC_EMAIL_SEND_ENABLED=true to enable.'
     );
   }
 }

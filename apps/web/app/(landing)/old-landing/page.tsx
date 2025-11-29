@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-import { Hero, HeroVideoPlayer } from "@/app/(landing)/home/Hero";
-import { BasicLayout } from "@/components/layouts/BasicLayout";
-import { FeaturesHome } from "@/app/(landing)/home/Features";
-import { Privacy } from "@/app/(landing)/home/Privacy";
-import { Testimonials } from "@/app/(landing)/home/Testimonials";
-import { PricingLazy } from "@/app/(app)/premium/PricingLazy";
-import { FAQs } from "@/app/(landing)/home/FAQs";
-import { FinalCTA } from "@/app/(landing)/home/FinalCTA";
+import type { Metadata } from 'next';
+import { PricingLazy } from '@/app/(app)/premium/PricingLazy';
+import { FAQs } from '@/app/(landing)/home/FAQs';
+import { FeaturesHome } from '@/app/(landing)/home/Features';
+import { FinalCTA } from '@/app/(landing)/home/FinalCTA';
+import { Hero, HeroVideoPlayer } from '@/app/(landing)/home/Hero';
+import { Privacy } from '@/app/(landing)/home/Privacy';
+import { Testimonials } from '@/app/(landing)/home/Testimonials';
+import { BasicLayout } from '@/components/layouts/BasicLayout';
 
-export const metadata: Metadata = { alternates: { canonical: "/old-landing" } };
+export const metadata: Metadata = { alternates: { canonical: '/old-landing' } };
 
 export default function Home() {
   return (

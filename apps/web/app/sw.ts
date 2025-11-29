@@ -1,4 +1,4 @@
-import { Serwist, type PrecacheEntry, type SerwistGlobalConfig } from "serwist";
+import { type PrecacheEntry, Serwist, type SerwistGlobalConfig } from 'serwist';
 
 // This declares the value of `injectionPoint` to TypeScript.
 // `injectionPoint` is the string that will be replaced by the
@@ -18,7 +18,7 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [], // caching disabled
-  disableDevLogs: process.env.NODE_ENV === "production",
+  disableDevLogs: process.env.NODE_ENV === 'production',
 });
 
 serwist.addEventListeners();

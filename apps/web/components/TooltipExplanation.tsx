@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { HelpCircleIcon } from "lucide-react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/utils";
+import { cva, type VariantProps } from 'class-variance-authority';
+import { HelpCircleIcon } from 'lucide-react';
+import { useCallback, useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useState, useCallback } from "react";
+} from '@/components/ui/tooltip';
+import { cn } from '@/utils';
 
-const tooltipIconVariants = cva("cursor-pointer", {
+const tooltipIconVariants = cva('cursor-pointer', {
   variants: {
     size: {
-      sm: "h-4 w-4",
-      md: "h-5 w-5",
+      sm: 'h-4 w-4',
+      md: 'h-5 w-5',
     },
   },
   defaultVariants: {
-    size: "sm",
+    size: 'sm',
   },
 });
 
@@ -27,14 +27,14 @@ interface TooltipExplanationProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof tooltipIconVariants> {
   text: string;
-  side?: "top" | "right" | "bottom" | "left";
+  side?: 'top' | 'right' | 'bottom' | 'left';
 }
 
 export function TooltipExplanation({
   text,
   size,
   className,
-  side = "top",
+  side = 'top',
 }: TooltipExplanationProps) {
   const [isOpen, setIsOpen] = useState(false);
 

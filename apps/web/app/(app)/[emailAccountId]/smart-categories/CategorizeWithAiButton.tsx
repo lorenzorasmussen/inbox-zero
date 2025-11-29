@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { SparklesIcon } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { bulkCategorizeSendersAction } from "@/utils/actions/categorize";
-import { PremiumTooltip, usePremium } from "@/components/PremiumAlert";
-import { usePremiumModal } from "@/app/(app)/premium/PremiumModal";
-import type { ButtonProps } from "@/components/ui/button";
-import { useCategorizeProgress } from "@/app/(app)/[emailAccountId]/smart-categories/CategorizeProgress";
-import { Tooltip } from "@/components/Tooltip";
-import { useAccount } from "@/providers/EmailAccountProvider";
+import { SparklesIcon } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { useCategorizeProgress } from '@/app/(app)/[emailAccountId]/smart-categories/CategorizeProgress';
+import { usePremiumModal } from '@/app/(app)/premium/PremiumModal';
+import { PremiumTooltip, usePremium } from '@/components/PremiumAlert';
+import { Tooltip } from '@/components/Tooltip';
+import type { ButtonProps } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { bulkCategorizeSendersAction } from '@/utils/actions/categorize';
 
 export function CategorizeWithAiButton({
   buttonProps,
@@ -53,16 +53,16 @@ export function CategorizeWithAiButton({
                 return result?.data?.totalUncategorizedSenders || 0;
               },
               {
-                loading: "Categorizing senders... This might take a while.",
+                loading: 'Categorizing senders... This might take a while.',
                 success: (totalUncategorizedSenders) => {
                   return totalUncategorizedSenders
                     ? `Categorizing ${totalUncategorizedSenders} senders...`
-                    : "There are no more senders to categorize.";
+                    : 'There are no more senders to categorize.';
                 },
                 error: (err) => {
                   return `Error categorizing senders: ${err.message}`;
                 },
-              },
+              }
             );
           }}
           {...buttonProps}

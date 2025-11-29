@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import useSWR from "swr";
-import { LoadingContent } from "@/components/LoadingContent";
-import type { NoReplyResponse } from "@/app/api/user/no-reply/route";
-import { PageHeading } from "@/components/Typography";
-import { EmailList } from "@/components/email-list/EmailList";
+import useSWR from 'swr';
+import type { NoReplyResponse } from '@/app/api/user/no-reply/route';
+import { EmailList } from '@/components/email-list/EmailList';
+import { LoadingContent } from '@/components/LoadingContent';
+import { PageHeading } from '@/components/Typography';
 
 export default function NoReplyPage() {
   const { data, isLoading, error, mutate } = useSWR<
     NoReplyResponse,
     { error: string }
-  >("/api/user/no-reply");
+  >('/api/user/no-reply');
 
   return (
     <div>

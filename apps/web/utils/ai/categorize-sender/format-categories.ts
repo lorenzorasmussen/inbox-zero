@@ -1,9 +1,9 @@
-import type { Category } from "@/generated/prisma/client";
+import type { Category } from '@/generated/prisma/client';
 
 export function formatCategoriesForPrompt(
-  categories: Pick<Category, "name" | "description">[],
+  categories: Pick<Category, 'name' | 'description'>[]
 ): string {
   return categories
     .map((category) => `- ${category.name}: ${category.description}`)
-    .join("\n");
+    .join('\n');
 }

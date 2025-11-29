@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import { isDefined } from "@/utils/types";
-import { withEmailProvider } from "@/utils/middleware";
-import { createEmailProvider } from "@/utils/email/provider";
-import type { Logger } from "@/utils/logger";
+import { NextResponse } from 'next/server';
+import { createEmailProvider } from '@/utils/email/provider';
+import type { Logger } from '@/utils/logger';
+import { withEmailProvider } from '@/utils/middleware';
+import { isDefined } from '@/utils/types';
 
 export type NoReplyResponse = Awaited<ReturnType<typeof getNoReply>>;
 
@@ -28,7 +28,7 @@ async function getNoReply({
   const sentEmailsWithThreads = (
     await Promise.all(
       sentEmails.map(async (message) => {
-        const thread = await emailProvider.getThread(message.threadId || "");
+        const thread = await emailProvider.getThread(message.threadId || '');
 
         const lastMessage = thread.messages?.[thread.messages?.length - 1];
         const lastMessageFrom = lastMessage?.headers?.from;
@@ -42,14 +42,14 @@ async function getNoReply({
               messages: thread.messages,
             },
           };
-      }) || [],
+      }) || []
     )
   ).filter(isDefined);
 
   return sentEmailsWithThreads;
 }
 
-export const GET = withEmailProvider("user/no-reply", async (request) => {
+export const GET = withEmailProvider('user/no-reply', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
   const userEmail = request.auth.email;
 

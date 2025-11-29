@@ -1,38 +1,38 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePostHog } from "posthog-js/react";
-import type { PostHog } from "posthog-js";
-import { cx } from "class-variance-authority";
-import { Label, Radio, RadioGroup } from "@headlessui/react";
-import { Sparkle } from "@/components/new-landing/icons/Sparkle";
-import { Zap } from "@/components/new-landing/icons/Zap";
-import { Check } from "@/components/new-landing/icons/Check";
-import { CardWrapper } from "@/components/new-landing/common/CardWrapper";
+import { Label, Radio, RadioGroup } from '@headlessui/react';
+import { cx } from 'class-variance-authority';
+import Link from 'next/link';
+import type { PostHog } from 'posthog-js';
+import { usePostHog } from 'posthog-js/react';
+import { useState } from 'react';
+import { type Tier, tiers } from '@/app/(app)/premium/config';
 import {
-  Section,
-  SectionContent,
-} from "@/components/new-landing/common/Section";
+  Badge,
+  type BadgeVariant,
+} from '@/components/new-landing/common/Badge';
 import {
   Button,
   type ButtonVariant,
-} from "@/components/new-landing/common/Button";
-import { Card, CardContent } from "@/components/new-landing/common/Card";
+} from '@/components/new-landing/common/Button';
+import { Card, CardContent } from '@/components/new-landing/common/Card';
+import { CardWrapper } from '@/components/new-landing/common/CardWrapper';
+import {
+  Section,
+  SectionContent,
+} from '@/components/new-landing/common/Section';
 import {
   Paragraph,
   SectionHeading,
   SectionSubtitle,
   Subheading,
-} from "@/components/new-landing/common/Typography";
-import {
-  Badge,
-  type BadgeVariant,
-} from "@/components/new-landing/common/Badge";
-import { Chat } from "@/components/new-landing/icons/Chat";
-import { type Tier, tiers } from "@/app/(app)/premium/config";
-import { Briefcase } from "@/components/new-landing/icons/Briefcase";
-import { landingPageAnalytics } from "@/hooks/useAnalytics";
+} from '@/components/new-landing/common/Typography';
+import { Briefcase } from '@/components/new-landing/icons/Briefcase';
+import { Chat } from '@/components/new-landing/icons/Chat';
+import { Check } from '@/components/new-landing/icons/Check';
+import { Sparkle } from '@/components/new-landing/icons/Sparkle';
+import { Zap } from '@/components/new-landing/icons/Zap';
+import { landingPageAnalytics } from '@/hooks/useAnalytics';
 
 type PricingTier = Tier & {
   badges?: {
@@ -54,39 +54,39 @@ const pricingTiers: PricingTier[] = [
   {
     ...tiers[0],
     badges: [
-      { message: "Save 10%", annualOnly: true },
-      { message: "Popular", variant: "green" },
+      { message: 'Save 10%', annualOnly: true },
+      { message: 'Popular', variant: 'green' },
     ],
     button: {
-      content: "Try free for 7 days",
-      href: "/login",
+      content: 'Try free for 7 days',
+      href: '/login',
     },
     icon: <Briefcase />,
   },
   {
     ...tiers[1],
-    badges: [{ message: "Save 16%", annualOnly: true }],
+    badges: [{ message: 'Save 16%', annualOnly: true }],
     button: {
-      variant: "secondary-two",
-      content: "Try free for 7 days",
-      href: "/login",
+      variant: 'secondary-two',
+      content: 'Try free for 7 days',
+      href: '/login',
     },
     icon: <Zap />,
   },
   {
     ...tiers[2],
     button: {
-      variant: "secondary-two",
-      content: "Speak to sales",
+      variant: 'secondary-two',
+      content: 'Speak to sales',
       icon: <Chat />,
-      href: "/sales",
-      target: "_blank",
+      href: '/sales',
+      target: '_blank',
     },
     icon: <Sparkle />,
   },
 ];
 
-const frequencies = ["annually", "monthly"];
+const frequencies = ['annually', 'monthly'];
 
 export function Pricing() {
   const [frequency, setFrequency] = useState(frequencies[0]);
@@ -112,8 +112,8 @@ export function Pricing() {
               value={value}
               className={({ checked }) =>
                 cx(
-                  checked ? "bg-black text-white" : "text-gray-500",
-                  "cursor-pointer rounded-full px-6 py-1",
+                  checked ? 'bg-black text-white' : 'text-gray-500',
+                  'cursor-pointer rounded-full px-6 py-1'
                 )
               }
             >
@@ -127,7 +127,7 @@ export function Pricing() {
               <PricingCard
                 tier={tier}
                 tierIndex={index}
-                isAnnual={frequency === "annually"}
+                isAnnual={frequency === 'annually'}
                 posthog={posthog}
               />
             </CardWrapper>
@@ -176,7 +176,7 @@ function PricingCard({ tier, tierIndex, isAnnual, posthog }: PricingCardProps) {
               <>
                 <Subheading>${price}</Subheading>
                 <Paragraph size="xs" color="light" className="-translate-y-1">
-                  /user /month (billed {isAnnual ? "annually" : "monthly"})
+                  /user /month (billed {isAnnual ? 'annually' : 'monthly'})
                 </Paragraph>
               </>
             ) : (
@@ -191,7 +191,7 @@ function PricingCard({ tier, tierIndex, isAnnual, posthog }: PricingCardProps) {
                 landingPageAnalytics.pricingCtaClicked(
                   posthog,
                   tier.name,
-                  tier.button.content,
+                  tier.button.content
                 )
               }
             >

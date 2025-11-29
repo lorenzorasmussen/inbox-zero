@@ -1,4 +1,4 @@
-import { Tinybird } from "@chronark/zod-bird";
+import { Tinybird } from '@chronark/zod-bird';
 
 export const tb = new Tinybird({
   token: process.env.TINYBIRD_TOKEN!,

@@ -1,5 +1,5 @@
-import type { ParsedMessage } from "@/utils/types";
-import { z } from "zod";
+import { z } from 'zod';
+import type { ParsedMessage } from '@/utils/types';
 
 const emailSchema = z.string().email();
 
@@ -7,17 +7,17 @@ const emailSchema = z.string().email();
 // Converts "<john.doe@gmail>" to "john.doe@gmail"
 // Converts "john.doe@gmail" to "john.doe@gmail"
 export function extractNameFromEmail(email: string) {
-  if (!email) return "";
-  const firstPart = email.split("<")[0]?.trim();
+  if (!email) return '';
+  const firstPart = email.split('<')[0]?.trim();
   if (firstPart) return firstPart;
-  const secondPart = email.split("<")?.[1]?.trim();
-  if (secondPart) return secondPart.split(">")[0];
+  const secondPart = email.split('<')?.[1]?.trim();
+  if (secondPart) return secondPart.split('>')[0];
   return email;
 }
 
 // Converts "John Doe <john.doe@gmail>" to "john.doe@gmail"
 export function extractEmailAddress(email: string): string {
-  if (!email) return "";
+  if (!email) return '';
 
   // Trim the input once at the start to handle leading/trailing spaces
   const trimmedEmail = email.trim();
@@ -48,7 +48,7 @@ export function extractEmailAddress(email: string): string {
     }
   }
 
-  return "";
+  return '';
 }
 
 function isValidEmail(email: string): boolean {
@@ -62,22 +62,22 @@ function isValidEmail(email: string): boolean {
 // - Preserving domain part unchanged
 // Example: "John.Doe.Smith@gmail.com" -> "johndoesmith@gmail.com"
 export function normalizeEmailAddress(email: string) {
-  const [localPart, domain] = email.toLowerCase().split("@");
+  const [localPart, domain] = email.toLowerCase().split('@');
   if (!domain) return email.toLowerCase();
   // Remove all dots and whitespace from local part
-  const normalizedLocal = localPart.trim().replace(/[\s.]+/g, "");
+  const normalizedLocal = localPart.trim().replace(/[\s.]+/g, '');
   return `${normalizedLocal}@${domain}`;
 }
 
 // Converts "Name <hey@domain.com>" to "domain.com"
 export function extractDomainFromEmail(email: string) {
-  if (!email) return "";
+  if (!email) return '';
 
   // Extract clean email address from formatted strings like "Name <email@domain.com>"
-  const emailAddress = email.includes("<") ? extractEmailAddress(email) : email;
+  const emailAddress = email.includes('<') ? extractEmailAddress(email) : email;
 
   // Validate email has exactly one @ symbol
-  if ((emailAddress.match(/@/g) || []).length !== 1) return "";
+  if ((emailAddress.match(/@/g) || []).length !== 1) return '';
 
   // Extract domain using regex that supports:
   // - International characters (via \p{L})
@@ -85,17 +85,17 @@ export function extractDomainFromEmail(email: string) {
   // - Common domain characters (letters, numbers, dots, hyphens)
   // - TLDs of 2 or more characters
   const domain = emailAddress.match(
-    /@([\p{L}a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/u,
+    /@([\p{L}a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/u
   )?.[1];
-  return domain || "";
+  return domain || '';
 }
 
 // returns the other side of the conversation
 // if we're the sender, then return the recipient
 // if we're the recipient, then return the sender
 export function participant(
-  message: { headers: Pick<ParsedMessage["headers"], "from" | "to"> },
-  userEmail: string,
+  message: { headers: Pick<ParsedMessage['headers'], 'from' | 'to'> },
+  userEmail: string
 ) {
   if (!userEmail) return message.headers.from;
   if (message.headers.from.includes(userEmail)) return message.headers.to;
@@ -106,9 +106,9 @@ export function participant(
 // This is the inverse of extractNameFromEmail/extractEmailAddress
 export function formatEmailWithName(
   name: string | null | undefined,
-  address: string | null | undefined,
+  address: string | null | undefined
 ): string {
-  if (!address) return "";
+  if (!address) return '';
   if (!name || name === address) return address;
   return `${name} <${address}>`;
 }

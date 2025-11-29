@@ -1,6 +1,6 @@
-import { Rules } from "@/app/(app)/[emailAccountId]/assistant/Rules";
-import { RulesPrompt } from "@/app/(app)/[emailAccountId]/assistant/RulesPrompt";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Rules } from '@/app/(app)/[emailAccountId]/assistant/Rules';
+import { RulesPrompt } from '@/app/(app)/[emailAccountId]/assistant/RulesPrompt';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export function RulesTab() {
   return (

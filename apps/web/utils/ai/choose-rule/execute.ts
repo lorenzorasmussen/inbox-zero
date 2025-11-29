@@ -1,13 +1,13 @@
-import { runActionFunction } from "@/utils/ai/actions";
-import prisma from "@/utils/prisma";
-import type { Prisma } from "@/generated/prisma/client";
-import { ExecutedRuleStatus, ActionType } from "@/generated/prisma/enums";
-import type { Logger } from "@/utils/logger";
-import type { ParsedMessage } from "@/utils/types";
-import { updateExecutedActionWithDraftId } from "@/utils/ai/choose-rule/draft-management";
-import type { EmailProvider } from "@/utils/email/types";
+import type { Prisma } from '@/generated/prisma/client';
+import { ActionType, ExecutedRuleStatus } from '@/generated/prisma/enums';
+import { runActionFunction } from '@/utils/ai/actions';
+import { updateExecutedActionWithDraftId } from '@/utils/ai/choose-rule/draft-management';
+import type { EmailProvider } from '@/utils/email/types';
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import type { ParsedMessage } from '@/utils/types';
 
-const MODULE = "ai-execute-act";
+const MODULE = 'ai-execute-act';
 
 type ExecutedRuleWithActionItems = Prisma.ExecutedRuleGetPayload<{
   include: { actionItems: true };
@@ -59,7 +59,7 @@ export async function executeAct({
         });
       }
     } catch (error) {
-      log.error("Error executing action", { error });
+      log.error('Error executing action', { error });
       await prisma.executedRule.update({
         where: { id: executedRule.id },
         data: { status: ExecutedRuleStatus.ERROR },
@@ -74,6 +74,6 @@ export async function executeAct({
       data: { status: ExecutedRuleStatus.APPLIED },
     })
     .catch((error) => {
-      log.error("Failed to update executed rule", { error });
+      log.error('Failed to update executed rule', { error });
     });
 }

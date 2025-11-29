@@ -1,9 +1,15 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { usePostHog, useActiveFeatureFlags } from "posthog-js/react";
-import type { EarlyAccessFeature } from "posthog-js";
-import { Toggle } from "@/components/Toggle";
+import type { EarlyAccessFeature } from 'posthog-js';
+import { useActiveFeatureFlags, usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useState } from 'react';
+import { Toggle } from '@/components/Toggle';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -11,13 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/table';
 
 export function EarlyAccessFeatures() {
   const posthog = usePostHog();
@@ -35,7 +35,7 @@ export function EarlyAccessFeatures() {
       const isActive = activeFlags?.includes(betaKey);
       posthog.updateEarlyAccessFeatureEnrollment(betaKey, !isActive);
     },
-    [posthog, activeFlags],
+    [posthog, activeFlags]
   );
 
   if (!features.length) {

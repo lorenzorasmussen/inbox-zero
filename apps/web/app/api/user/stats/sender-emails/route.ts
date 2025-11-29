@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
-import format from "date-fns/format";
-import { zodPeriod } from "@inboxzero/tinybird";
-import { withEmailAccount } from "@/utils/middleware";
-import prisma from "@/utils/prisma";
-import { Prisma } from "@/generated/prisma/client";
+import { zodPeriod } from '@inboxzero/tinybird';
+import format from 'date-fns/format';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { Prisma } from '@/generated/prisma/client';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 const senderEmailsQuery = z.object({
   fromEmail: z.string(),
@@ -16,17 +16,17 @@ export type SenderEmailsQuery = z.infer<typeof senderEmailsQuery>;
 export type SenderEmailsResponse = Awaited<ReturnType<typeof getSenderEmails>>;
 
 async function getSenderEmails(
-  options: SenderEmailsQuery & { emailAccountId: string },
+  options: SenderEmailsQuery & { emailAccountId: string }
 ) {
   const { fromEmail, period, fromDate, toDate, emailAccountId } = options;
 
   // Define the date truncation function based on the period
   let dateFunction: string;
-  if (period === "day") {
+  if (period === 'day') {
     dateFunction = "DATE_TRUNC('day', date)";
-  } else if (period === "week") {
+  } else if (period === 'week') {
     dateFunction = "DATE_TRUNC('week', date)";
-  } else if (period === "month") {
+  } else if (period === 'month') {
     dateFunction = "DATE_TRUNC('month', date)";
   } else {
     dateFunction = "DATE_TRUNC('year', date)";
@@ -58,29 +58,29 @@ async function getSenderEmails(
 
   const senderEmails =
     await prisma.$queryRaw<Array<{ startOfPeriod: Date; count: number }>>(
-      query,
+      query
     );
 
   return {
     result: senderEmails.map((d: { startOfPeriod: Date; count: number }) => ({
-      startOfPeriod: format(d.startOfPeriod, "LLL dd, y"),
+      startOfPeriod: format(d.startOfPeriod, 'LLL dd, y'),
       Emails: Number(d.count),
     })),
   };
 }
 
 export const GET = withEmailAccount(
-  "user/stats/sender-emails",
+  'user/stats/sender-emails',
   async (request) => {
     const emailAccountId = request.auth.emailAccountId;
 
     const { searchParams } = new URL(request.url);
 
     const query = senderEmailsQuery.parse({
-      fromEmail: searchParams.get("fromEmail"),
-      period: searchParams.get("period") || "week",
-      fromDate: searchParams.get("fromDate"),
-      toDate: searchParams.get("toDate"),
+      fromEmail: searchParams.get('fromEmail'),
+      period: searchParams.get('period') || 'week',
+      fromDate: searchParams.get('fromDate'),
+      toDate: searchParams.get('toDate'),
     });
 
     const result = await getSenderEmails({
@@ -89,5 +89,5 @@ export const GET = withEmailAccount(
     });
 
     return NextResponse.json(result);
-  },
+  }
 );

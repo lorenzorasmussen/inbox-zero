@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 interface LiquidGlassButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -16,12 +16,12 @@ export function LiquidGlassButton({
 
   return (
     <>
-      <button type={type ?? "button"} className={className} {...props}>
+      <button type={type ?? 'button'} className={className} {...props}>
         <div
           className="group relative flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-full p-8 font-semibold text-black transition-all duration-300 hover:p-9 hover:[&>div]:rounded-[4rem] will-change-transform"
           style={{
             boxShadow:
-              "0px 14.3px 38.74px 3.9px #0000001A, 0px 0px 4.16px 0px #0000000D",
+              '0px 14.3px 38.74px 3.9px #0000001A, 0px 0px 4.16px 0px #0000000D',
           }}
         >
           <div
@@ -33,7 +33,7 @@ export function LiquidGlassButton({
             className="absolute inset-0 z-20 overflow-hidden rounded-full transition-all duration-300 will-change-transform"
             style={{
               boxShadow:
-                "inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5)",
+                'inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5)',
             }}
           />
           <div className="z-30 flex items-center justify-center rounded-full transition-all duration-300 ease-back-out will-change-transform group-hover:scale-110">

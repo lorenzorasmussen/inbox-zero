@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useAction } from "next-safe-action/hooks";
+import { useAction } from 'next-safe-action/hooks';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { Button } from '@/components/ui/button';
 import {
-  adminSyncStripeForAllUsersAction,
   adminSyncAllStripeCustomersToDbAction,
-} from "@/utils/actions/admin";
-import { Button } from "@/components/ui/button";
-import { toastError, toastSuccess } from "@/components/Toast";
+  adminSyncStripeForAllUsersAction,
+} from '@/utils/actions/admin';
 
 export const AdminSyncStripe = () => {
   const { execute, isExecuting } = useAction(adminSyncStripeForAllUsersAction, {
     onSuccess: () => {
       toastSuccess({
-        title: "Stripe synced",
-        description: "Stripe synced",
+        title: 'Stripe synced',
+        description: 'Stripe synced',
       });
     },
     onError: (error) => {
       toastError({
-        title: "Error syncing Stripe",
-        description: error.error.serverError || "Unknown error",
+        title: 'Error syncing Stripe',
+        description: error.error.serverError || 'Unknown error',
       });
     },
   });
@@ -37,18 +37,18 @@ export const AdminSyncStripeCustomers = () => {
     {
       onSuccess: (result) => {
         toastSuccess({
-          title: "Stripe customers synced",
+          title: 'Stripe customers synced',
           description:
-            result.data?.success || "All Stripe customers synced to database",
+            result.data?.success || 'All Stripe customers synced to database',
         });
       },
       onError: (error) => {
         toastError({
-          title: "Error syncing Stripe customers",
-          description: error.error.serverError || "Unknown error",
+          title: 'Error syncing Stripe customers',
+          description: error.error.serverError || 'Unknown error',
         });
       },
-    },
+    }
   );
 
   return (

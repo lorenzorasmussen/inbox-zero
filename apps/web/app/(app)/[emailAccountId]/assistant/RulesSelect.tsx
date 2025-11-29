@@ -1,7 +1,7 @@
-import { useRules } from "@/hooks/useRules";
-import { Skeleton } from "@/components/ui/skeleton";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LoadingContent } from '@/components/LoadingContent';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useRules } from '@/hooks/useRules';
 
 export function RulesSelect() {
   const { data, isLoading, error } = useRules();

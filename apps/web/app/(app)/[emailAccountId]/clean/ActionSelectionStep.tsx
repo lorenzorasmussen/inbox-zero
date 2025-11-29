@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { parseAsStringEnum, useQueryState } from "nuqs";
-import { TypographyH3 } from "@/components/Typography";
-import { useStep } from "@/app/(app)/[emailAccountId]/clean/useStep";
-import { ButtonListSurvey } from "@/components/ButtonListSurvey";
-import { CleanAction } from "@/generated/prisma/enums";
+import { parseAsStringEnum, useQueryState } from 'nuqs';
+import { useCallback } from 'react';
+import { useStep } from '@/app/(app)/[emailAccountId]/clean/useStep';
+import { ButtonListSurvey } from '@/components/ButtonListSurvey';
+import { TypographyH3 } from '@/components/Typography';
+import { CleanAction } from '@/generated/prisma/enums';
 
 export function ActionSelectionStep() {
   const { onNext } = useStep();
   const [_, setAction] = useQueryState(
-    "action",
-    parseAsStringEnum([CleanAction.ARCHIVE, CleanAction.MARK_READ]),
+    'action',
+    parseAsStringEnum([CleanAction.ARCHIVE, CleanAction.MARK_READ])
   );
 
   const onSetAction = useCallback(
@@ -19,7 +19,7 @@ export function ActionSelectionStep() {
       setAction(action);
       onNext();
     },
-    [setAction, onNext],
+    [setAction, onNext]
   );
 
   return (
@@ -32,10 +32,10 @@ export function ActionSelectionStep() {
         className="mt-6"
         options={[
           {
-            label: "Archive",
+            label: 'Archive',
             value: CleanAction.ARCHIVE,
           },
-          { label: "Mark as Read", value: CleanAction.MARK_READ },
+          { label: 'Mark as Read', value: CleanAction.MARK_READ },
         ]}
         onClick={(value) => onSetAction(value as CleanAction)}
       />

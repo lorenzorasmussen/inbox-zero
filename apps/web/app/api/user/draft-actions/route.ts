@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
-import { ActionType } from "@/generated/prisma/enums";
+import { NextResponse } from 'next/server';
+import { ActionType } from '@/generated/prisma/enums';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type DraftActionsResponse = Awaited<ReturnType<typeof getData>>;
 
-export const GET = withEmailAccount("user/draft-actions", async (request) => {
+export const GET = withEmailAccount('user/draft-actions', async (request) => {
   const emailAccountId = request.auth.emailAccountId;
 
   const response = await getData({ emailAccountId });
@@ -33,7 +33,7 @@ async function getData({ emailAccountId }: { emailAccountId: string }) {
       },
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: 'desc',
     },
     take: 100,
   });

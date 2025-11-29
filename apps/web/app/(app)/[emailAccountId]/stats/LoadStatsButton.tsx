@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { AreaChartIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ButtonLoader } from "@/components/Loading";
-import { useStatLoader } from "@/providers/StatLoaderProvider";
+import { AreaChartIcon } from 'lucide-react';
+import { ButtonLoader } from '@/components/Loading';
+import { Button } from '@/components/ui/button';
+import { useStatLoader } from '@/providers/StatLoaderProvider';
 
 export function LoadStatsButton() {
   const { isLoading, onLoadBatch } = useStatLoader();

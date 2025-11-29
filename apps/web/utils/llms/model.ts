@@ -1,20 +1,20 @@
-import type { LanguageModelV2 } from "@ai-sdk/provider";
-import { createOpenAI } from "@ai-sdk/openai";
-import { createAnthropic } from "@ai-sdk/anthropic";
-import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createGroq } from "@ai-sdk/groq";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { createGateway } from "@ai-sdk/gateway";
+import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock';
+import { createAnthropic } from '@ai-sdk/anthropic';
+import { createGateway } from '@ai-sdk/gateway';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createGroq } from '@ai-sdk/groq';
+import { createOpenAI } from '@ai-sdk/openai';
+import type { LanguageModelV2 } from '@ai-sdk/provider';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 // import { createOllama } from "ollama-ai-provider";
-import { env } from "@/env";
-import { Provider } from "@/utils/llms/config";
-import type { UserAIFields } from "@/utils/llms/types";
-import { createScopedLogger } from "@/utils/logger";
+import { env } from '@/env';
+import { Provider } from '@/utils/llms/config';
+import type { UserAIFields } from '@/utils/llms/types';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("llms/model");
+const logger = createScopedLogger('llms/model');
 
-export type ModelType = "default" | "economy" | "chat";
+export type ModelType = 'default' | 'economy' | 'chat';
 
 type SelectModel = {
   provider: string;
@@ -26,11 +26,11 @@ type SelectModel = {
 
 export function getModel(
   userAi: UserAIFields,
-  modelType: ModelType = "default",
+  modelType: ModelType = 'default'
 ): SelectModel {
   const data = selectModelByType(userAi, modelType);
 
-  logger.info("Using model", {
+  logger.info('Using model', {
     modelType,
     provider: data.provider,
     model: data.modelName,
@@ -44,9 +44,9 @@ function selectModelByType(userAi: UserAIFields, modelType: ModelType) {
   if (userAi.aiApiKey) return selectDefaultModel(userAi);
 
   switch (modelType) {
-    case "economy":
+    case 'economy':
       return selectEconomyModel(userAi);
-    case "chat":
+    case 'chat':
       return selectChatModel(userAi);
     default:
       return selectDefaultModel(userAi);
@@ -63,22 +63,22 @@ function selectModel(
     aiModel: string | null;
     aiApiKey: string | null;
   },
-  providerOptions?: Record<string, any>,
+  providerOptions?: Record<string, any>
 ): SelectModel {
   switch (aiProvider) {
     case Provider.OPEN_AI: {
-      const modelName = aiModel || "gpt-4o";
+      const modelName = aiModel || 'gpt-4o';
       return {
         provider: Provider.OPEN_AI,
         modelName,
         model: createOpenAI({ apiKey: aiApiKey || env.OPENAI_API_KEY })(
-          modelName,
+          modelName
         ),
         backupModel: getBackupModel(aiApiKey),
       };
     }
     case Provider.GOOGLE: {
-      const mod = aiModel || "gemini-2.0-flash";
+      const mod = aiModel || 'gemini-2.0-flash';
       return {
         provider: Provider.GOOGLE,
         modelName: mod,
@@ -89,7 +89,7 @@ function selectModel(
       };
     }
     case Provider.GROQ: {
-      const modelName = aiModel || "llama-3.3-70b-versatile";
+      const modelName = aiModel || 'llama-3.3-70b-versatile';
       return {
         provider: Provider.GROQ,
         modelName,
@@ -98,12 +98,12 @@ function selectModel(
       };
     }
     case Provider.OPENROUTER: {
-      const modelName = aiModel || "anthropic/claude-sonnet-4.5";
+      const modelName = aiModel || 'anthropic/claude-sonnet-4.5';
       const openrouter = createOpenRouter({
         apiKey: aiApiKey || env.OPENROUTER_API_KEY,
         headers: {
-          "HTTP-Referer": "https://www.getinboxzero.com",
-          "X-Title": "Inbox Zero",
+          'HTTP-Referer': 'https://www.getinboxzero.com',
+          'X-Title': 'Inbox Zero',
         },
       });
       const chatModel = openrouter.chat(modelName);
@@ -117,7 +117,7 @@ function selectModel(
       };
     }
     case Provider.AI_GATEWAY: {
-      const modelName = aiModel || "google/gemini-2.5-pro";
+      const modelName = aiModel || 'google/gemini-2.5-pro';
       const aiGatewayApiKey = aiApiKey || env.AI_GATEWAY_API_KEY;
       const gateway = createGateway({ apiKey: aiGatewayApiKey });
       return {
@@ -129,7 +129,7 @@ function selectModel(
     }
     case Provider.OLLAMA: {
       throw new Error(
-        "Ollama is not supported. Revert to version v1.7.28 or older to use it.",
+        'Ollama is not supported. Revert to version v1.7.28 or older to use it.'
       );
       // const modelName = aiModel || env.NEXT_PUBLIC_OLLAMA_MODEL;
       // if (!modelName) throw new Error("Ollama model is not set");
@@ -142,7 +142,7 @@ function selectModel(
 
     case Provider.BEDROCK: {
       const modelName =
-        aiModel || "global.anthropic.claude-sonnet-4-5-20250929-v1:0";
+        aiModel || 'global.anthropic.claude-sonnet-4-5-20250929-v1:0';
       return {
         provider: Provider.BEDROCK,
         modelName,
@@ -159,7 +159,7 @@ function selectModel(
       };
     }
     case Provider.ANTHROPIC: {
-      const modelName = aiModel || "claude-sonnet-4-5-20250929";
+      const modelName = aiModel || 'claude-sonnet-4-5-20250929';
       return {
         provider: Provider.ANTHROPIC,
         modelName,
@@ -170,7 +170,7 @@ function selectModel(
       };
     }
     default: {
-      logger.error("LLM provider not supported", { aiProvider });
+      logger.error('LLM provider not supported', { aiProvider });
       throw new Error(`LLM provider not supported: ${aiProvider}`);
     }
   }
@@ -180,10 +180,10 @@ function selectModel(
  * Creates OpenRouter provider options from a comma-separated string
  */
 function createOpenRouterProviderOptions(
-  providers: string,
+  providers: string
 ): Record<string, any> {
   const order = providers
-    .split(",")
+    .split(',')
     .map((p: string) => p.trim())
     .filter(Boolean);
 
@@ -209,7 +209,7 @@ function selectEconomyModel(userAi: UserAIFields): SelectModel {
   if (env.ECONOMY_LLM_PROVIDER && env.ECONOMY_LLM_MODEL) {
     const apiKey = getProviderApiKey(env.ECONOMY_LLM_PROVIDER);
     if (!apiKey) {
-      logger.warn("Economy LLM provider configured but API key not found", {
+      logger.warn('Economy LLM provider configured but API key not found', {
         provider: env.ECONOMY_LLM_PROVIDER,
       });
       return selectDefaultModel(userAi);
@@ -222,7 +222,7 @@ function selectEconomyModel(userAi: UserAIFields): SelectModel {
       env.ECONOMY_OPENROUTER_PROVIDERS
     ) {
       providerOptions = createOpenRouterProviderOptions(
-        env.ECONOMY_OPENROUTER_PROVIDERS,
+        env.ECONOMY_OPENROUTER_PROVIDERS
       );
     }
 
@@ -232,7 +232,7 @@ function selectEconomyModel(userAi: UserAIFields): SelectModel {
         aiModel: env.ECONOMY_LLM_MODEL,
         aiApiKey: apiKey,
       },
-      providerOptions,
+      providerOptions
     );
   }
 
@@ -246,7 +246,7 @@ function selectChatModel(userAi: UserAIFields): SelectModel {
   if (env.CHAT_LLM_PROVIDER && env.CHAT_LLM_MODEL) {
     const apiKey = getProviderApiKey(env.CHAT_LLM_PROVIDER);
     if (!apiKey) {
-      logger.warn("Chat LLM provider configured but API key not found", {
+      logger.warn('Chat LLM provider configured but API key not found', {
         provider: env.CHAT_LLM_PROVIDER,
       });
       return selectDefaultModel(userAi);
@@ -259,7 +259,7 @@ function selectChatModel(userAi: UserAIFields): SelectModel {
       env.CHAT_OPENROUTER_PROVIDERS
     ) {
       providerOptions = createOpenRouterProviderOptions(
-        env.CHAT_OPENROUTER_PROVIDERS,
+        env.CHAT_OPENROUTER_PROVIDERS
       );
     }
 
@@ -269,7 +269,7 @@ function selectChatModel(userAi: UserAIFields): SelectModel {
         aiModel: env.CHAT_LLM_MODEL,
         aiApiKey: apiKey,
       },
-      providerOptions,
+      providerOptions
     );
   }
 
@@ -295,7 +295,7 @@ function selectDefaultModel(userAi: UserAIFields): SelectModel {
 
   if (aiProvider === Provider.OPENROUTER) {
     const openRouterOptions = createOpenRouterProviderOptions(
-      env.DEFAULT_OPENROUTER_PROVIDERS || "",
+      env.DEFAULT_OPENROUTER_PROVIDERS || ''
     );
 
     // Preserve any custom options set earlier; always ensure reasoning exists.
@@ -316,7 +316,7 @@ function selectDefaultModel(userAi: UserAIFields): SelectModel {
       aiModel,
       aiApiKey,
     },
-    providerOptions,
+    providerOptions
   );
 }
 
@@ -325,7 +325,7 @@ function getProviderApiKey(provider: string) {
     [Provider.ANTHROPIC]: env.ANTHROPIC_API_KEY,
     [Provider.BEDROCK]:
       env.BEDROCK_ACCESS_KEY && env.BEDROCK_SECRET_KEY
-        ? "bedrock-credentials"
+        ? 'bedrock-credentials'
         : undefined,
     [Provider.OPEN_AI]: env.OPENAI_API_KEY,
     [Provider.GOOGLE]: env.GOOGLE_API_KEY,

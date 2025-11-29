@@ -1,27 +1,27 @@
 /** biome-ignore-all lint/style/noMagicNumbers: test */
-import { describe, expect, test, vi, beforeEach } from "vitest";
-import { aiDetectRecurringPattern } from "@/utils/ai/choose-rule/ai-detect-recurring-pattern";
-import type { EmailForLLM } from "@/utils/types";
-import { getRuleName, getRuleConfig } from "@/utils/rule/consts";
-import { SystemType } from "@/generated/prisma/enums";
-import { getEmailAccount } from "@/__tests__/helpers";
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { getEmailAccount } from '@/__tests__/helpers';
+import { SystemType } from '@/generated/prisma/enums';
+import { aiDetectRecurringPattern } from '@/utils/ai/choose-rule/ai-detect-recurring-pattern';
+import { getRuleConfig, getRuleName } from '@/utils/rule/consts';
+import type { EmailForLLM } from '@/utils/types';
 
 // Run with: pnpm test-ai ai-detect-recurring-pattern
 
 const TIMEOUT = 15_000;
 
-vi.mock("server-only", () => ({}));
-vi.mock("@/utils/braintrust", () => ({
+vi.mock('server-only', () => ({}));
+vi.mock('@/utils/braintrust', () => ({
   Braintrust: class {
     insertToDataset() {}
   },
 }));
 
 // Skip tests unless explicitly running AI tests
-const isAiTest = process.env.RUN_AI_TESTS === "true";
+const isAiTest = process.env.RUN_AI_TESTS === 'true';
 
 describe.runIf(isAiTest)(
-  "detectRecurringPattern",
+  'detectRecurringPattern',
   () => {
     beforeEach(() => {
       vi.clearAllMocks();
@@ -45,8 +45,8 @@ describe.runIf(isAiTest)(
     function getNewsletterEmails(): EmailForLLM[] {
       return Array.from({ length: 7 }).map((_, i) => ({
         id: `newsletter-${i}`,
-        from: "news@substack.com",
-        to: "user@example.com",
+        from: 'news@substack.com',
+        to: 'user@example.com',
         subject: `Weekly Newsletter #${i + 1}: Latest Updates`,
         content: `This is our weekly newsletter with the latest updates and insights. 
         
@@ -66,17 +66,17 @@ describe.runIf(isAiTest)(
     function getReceiptEmails(): EmailForLLM[] {
       return Array.from({ length: 6 }).map((_, i) => ({
         id: `receipt-${i}`,
-        from: "receipts@amazon.com",
-        to: "user@example.com",
+        from: 'receipts@amazon.com',
+        to: 'user@example.com',
         subject: `Your Amazon.com order #A${100_000 + i}`,
         content: `Thank you for your order!
         
         Order Details:
         Order #A${100_000 + i}
-        Date: ${new Date(Date.now() - i * 14 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]}
+        Date: ${new Date(Date.now() - i * 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
         Total: $${(Math.random() * 100).toFixed(2)}
         
-        Your order will be delivered on ${new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]}.
+        Your order will be delivered on ${new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}.
         
         Thank you for shopping with us!`,
         date: new Date(Date.now() - i * 14 * 24 * 60 * 60 * 1000),
@@ -86,13 +86,13 @@ describe.runIf(isAiTest)(
     function getCalendarEmails(): EmailForLLM[] {
       return Array.from({ length: 6 }).map((_, i) => ({
         id: `calendar-${i}`,
-        from: "calendar-noreply@google.com",
-        to: "user@example.com",
+        from: 'calendar-noreply@google.com',
+        to: 'user@example.com',
         subject: `Meeting: Weekly Team Sync ${i + 1}`,
         content: `You have a new calendar invitation:
         
         Event: Weekly Team Sync ${i + 1}
-        Date: ${new Date(Date.now() + (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]}
+        Date: ${new Date(Date.now() + (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
         Time: 10:00 AM - 11:00 AM
         Location: Conference Room A / Zoom
         
@@ -105,7 +105,7 @@ describe.runIf(isAiTest)(
       return Array.from({ length: 6 }).map((_, i) => ({
         id: `reply-${i}`,
         from: `colleague${i + 1}@company.com`,
-        to: "user@example.com",
+        to: 'user@example.com',
         subject: `Question about the project ${i + 1}`,
         content: `Hi there,
 
@@ -113,12 +113,12 @@ describe.runIf(isAiTest)(
         
         ${
           [
-            "Could you review the document I sent yesterday?",
+            'Could you review the document I sent yesterday?',
             "When do you think you'll have time to discuss the requirements?",
-            "Do you have the latest version of the presentation?",
-            "I need your input on the design proposal.",
-            "Can we schedule a call to go over the feedback?",
-            "Let me know what you think about the approach I suggested.",
+            'Do you have the latest version of the presentation?',
+            'I need your input on the design proposal.',
+            'Can we schedule a call to go over the feedback?',
+            'Let me know what you think about the approach I suggested.',
           ][i % 6]
         }
         
@@ -131,52 +131,52 @@ describe.runIf(isAiTest)(
     function getMixedInconsistentEmails(): EmailForLLM[] {
       return [
         {
-          id: "email-1",
-          from: "support@company.com",
-          to: "user@example.com",
-          subject: "Your support ticket #12345",
+          id: 'email-1',
+          from: 'support@company.com',
+          to: 'user@example.com',
+          subject: 'Your support ticket #12345',
           content:
-            "Your ticket has been updated. Please log in to view the status.",
+            'Your ticket has been updated. Please log in to view the status.',
           date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         },
         {
-          id: "email-2",
-          from: "support@company.com",
-          to: "user@example.com",
-          subject: "Invoice for March 2023",
-          content: "Please find attached your invoice for March 2023.",
+          id: 'email-2',
+          from: 'support@company.com',
+          to: 'user@example.com',
+          subject: 'Invoice for March 2023',
+          content: 'Please find attached your invoice for March 2023.',
           date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         },
         {
-          id: "email-3",
-          from: "support@company.com",
-          to: "user@example.com",
-          subject: "Weekly Updates",
-          content: "Check out our latest updates and news.",
+          id: 'email-3',
+          from: 'support@company.com',
+          to: 'user@example.com',
+          subject: 'Weekly Updates',
+          content: 'Check out our latest updates and news.',
           date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         },
         {
-          id: "email-4",
-          from: "support@company.com",
-          to: "user@example.com",
-          subject: "Upcoming Webinar",
-          content: "Join our upcoming webinar on productivity tips.",
+          id: 'email-4',
+          from: 'support@company.com',
+          to: 'user@example.com',
+          subject: 'Upcoming Webinar',
+          content: 'Join our upcoming webinar on productivity tips.',
           date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
         },
         {
-          id: "email-5",
-          from: "support@company.com",
-          to: "user@example.com",
-          subject: "Your account status",
-          content: "Your account has been updated successfully.",
+          id: 'email-5',
+          from: 'support@company.com',
+          to: 'user@example.com',
+          subject: 'Your account status',
+          content: 'Your account has been updated successfully.',
           date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
         },
         {
-          id: "email-6",
-          from: "marketing@company6.com",
-          to: "user@example.com",
-          subject: "Special offer just for you",
-          content: "Take advantage of our limited-time offer!",
+          id: 'email-6',
+          from: 'marketing@company6.com',
+          to: 'user@example.com',
+          subject: 'Special offer just for you',
+          content: 'Take advantage of our limited-time offer!',
           date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
         },
       ];
@@ -185,99 +185,99 @@ describe.runIf(isAiTest)(
     function getDifferentContentEmails(): EmailForLLM[] {
       return Array.from({ length: 6 }).map((_, i) => ({
         id: `mixed-${i}`,
-        from: "notifications@example.com",
-        to: "user@example.com",
+        from: 'notifications@example.com',
+        to: 'user@example.com',
         subject: [
-          "Your subscription is due",
-          "Security alert: new login",
-          "Document shared with you",
-          "Your account has been updated",
-          "Weekly summary report",
-          "Action required: verify your information",
+          'Your subscription is due',
+          'Security alert: new login',
+          'Document shared with you',
+          'Your account has been updated',
+          'Weekly summary report',
+          'Action required: verify your information',
         ][i],
         content: `Various unrelated content for email #${i + 1}`,
         date: new Date(Date.now() - i * 5 * 24 * 60 * 60 * 1000),
       }));
     }
 
-    test("detects newsletter pattern and suggests Newsletter rule", async () => {
+    test('detects newsletter pattern and suggests Newsletter rule', async () => {
       const result = await aiDetectRecurringPattern({
         emails: getNewsletterEmails(),
         emailAccount: getEmailAccount(),
         rules: getRealisticRules(),
       });
 
-      console.debug("Newsletter pattern detection result:", result);
+      console.debug('Newsletter pattern detection result:', result);
 
       expect(result?.matchedRule).toBe(getRuleName(SystemType.NEWSLETTER));
       expect(result?.explanation).toBeDefined();
     });
 
-    test("detects receipt pattern and suggests Receipt rule", async () => {
+    test('detects receipt pattern and suggests Receipt rule', async () => {
       const result = await aiDetectRecurringPattern({
         emails: getReceiptEmails(),
         emailAccount: getEmailAccount(),
         rules: getRealisticRules(),
       });
 
-      console.debug("Receipt pattern detection result:", result);
+      console.debug('Receipt pattern detection result:', result);
 
       expect(result?.matchedRule).toBe(getRuleName(SystemType.RECEIPT));
       expect(result?.explanation).toBeDefined();
     });
 
-    test("detects calendar pattern and suggests Calendar rule", async () => {
+    test('detects calendar pattern and suggests Calendar rule', async () => {
       const result = await aiDetectRecurringPattern({
         emails: getCalendarEmails(),
         emailAccount: getEmailAccount(),
         rules: getRealisticRules(),
       });
 
-      console.debug("Calendar pattern detection result:", result);
+      console.debug('Calendar pattern detection result:', result);
 
       expect(result?.matchedRule).toBe(getRuleName(SystemType.CALENDAR));
       expect(result?.explanation).toBeDefined();
     });
 
-    test("detects reply needed pattern and suggests To Reply rule", async () => {
+    test('detects reply needed pattern and suggests To Reply rule', async () => {
       const result = await aiDetectRecurringPattern({
         emails: getNeedsReplyEmails(),
         emailAccount: getEmailAccount(),
         rules: getRealisticRules(),
       });
 
-      console.debug("Reply needed pattern detection result:", result);
+      console.debug('Reply needed pattern detection result:', result);
 
-      expect(result?.matchedRule).toBe("To Reply");
+      expect(result?.matchedRule).toBe('To Reply');
       expect(result?.explanation).toBeDefined();
     });
 
-    test("returns null for mixed inconsistent emails", async () => {
+    test('returns null for mixed inconsistent emails', async () => {
       const result = await aiDetectRecurringPattern({
         emails: getMixedInconsistentEmails(),
         emailAccount: getEmailAccount(),
         rules: getRealisticRules(),
       });
 
-      console.debug("Mixed inconsistent emails result:", result);
+      console.debug('Mixed inconsistent emails result:', result);
 
       expect(result).toBeNull();
     });
 
-    test("returns null or matches Notification rule for same sender but different types of content", async () => {
+    test('returns null or matches Notification rule for same sender but different types of content', async () => {
       const result = await aiDetectRecurringPattern({
         emails: getDifferentContentEmails(),
         emailAccount: getEmailAccount(),
         rules: getRealisticRules(),
       });
 
-      console.debug("Same sender different content result:", result);
+      console.debug('Same sender different content result:', result);
 
       expect(
         result === null ||
-          result?.matchedRule === getRuleName(SystemType.NOTIFICATION),
+          result?.matchedRule === getRuleName(SystemType.NOTIFICATION)
       ).toBeTruthy();
     });
   },
-  TIMEOUT,
+  TIMEOUT
 );

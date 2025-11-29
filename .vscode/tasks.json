@@ -1,65 +1,65 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Start Development Server",
-      "type": "shell",
-      "command": "pnpm dev",
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "new"
-      }
-    },
-    {
-      "label": "Run Tests",
-      "type": "shell",
-      "command": "pnpm test",
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "new"
-      }
-    },
-    {
-      "label": "Build Project",
-      "type": "shell",
-      "command": "pnpm build",
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "new"
-      }
-    },
-    {
-      "label": "Database Migrate",
-      "type": "shell",
-      "command": "cd apps/web && DATABASE_URL=\"postgresql://postgres:password@localhost:5433/inboxzero?schema=public\" DIRECT_URL=\"postgresql://postgres:password@localhost:5433/inboxzero?schema=public\" npx prisma migrate dev",
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "new"
-      }
-    },
-    {
-      "label": "Database Studio",
-      "type": "shell",
-      "command": "cd apps/web && DATABASE_URL=\"postgresql://postgres:password@localhost:5433/inboxzero?schema=public\" DIRECT_URL=\"postgresql://postgres:password@localhost:5433/inboxzero?schema=public\" npx prisma studio",
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "new"
-      }
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Development Server",
+			"type": "shell",
+			"command": "pnpm dev",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Run Tests",
+			"type": "shell",
+			"command": "pnpm test",
+			"group": "test",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Build Project",
+			"type": "shell",
+			"command": "pnpm build",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Database Migrate",
+			"type": "shell",
+			"command": "cd apps/web && DATABASE_URL=\"postgresql://postgres:password@localhost:5433/inboxzero?schema=public\" DIRECT_URL=\"postgresql://postgres:password@localhost:5433/inboxzero?schema=public\" npx prisma migrate dev",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			}
+		},
+		{
+			"label": "Database Studio",
+			"type": "shell",
+			"command": "cd apps/web && DATABASE_URL=\"postgresql://postgres:password@localhost:5433/inboxzero?schema=public\" DIRECT_URL=\"postgresql://postgres:password@localhost:5433/inboxzero?schema=public\" npx prisma studio",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			}
+		}
+	]
 }

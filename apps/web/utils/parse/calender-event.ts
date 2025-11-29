@@ -1,4 +1,4 @@
-import type { ParsedMessage } from "@/utils/types";
+import type { ParsedMessage } from '@/utils/types';
 
 interface CalendarEventInfo {
   isCalendarEvent: boolean;
@@ -13,7 +13,7 @@ interface CalendarEventInfo {
 
 export type CalendarEventStatus = {
   isEvent: boolean;
-  timing?: "past" | "future";
+  timing?: 'past' | 'future';
 };
 
 /**
@@ -27,26 +27,26 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
   };
 
   // Check subject for calendar event indicators
-  const subject = email.headers.subject || "";
+  const subject = email.headers.subject || '';
   const calendarKeywords = [
-    "invitation",
-    "calendar",
-    "event",
-    "meeting",
-    "appointment",
-    "scheduled",
-    "invite",
-    "calendar event",
-    "reminder",
+    'invitation',
+    'calendar',
+    'event',
+    'meeting',
+    'appointment',
+    'scheduled',
+    'invite',
+    'calendar event',
+    'reminder',
   ];
 
   // Check if subject contains calendar keywords
   const hasCalendarSubject = calendarKeywords.some((keyword) =>
-    subject.toLowerCase().includes(keyword.toLowerCase()),
+    subject.toLowerCase().includes(keyword.toLowerCase())
   );
 
   // Check body for calendar event indicators
-  const body = email.textHtml || "";
+  const body = email.textHtml || '';
 
   // Determine if it's a calendar event based on checks
   result.isCalendarEvent = hasCalendarSubject || hasIcsAttachment(email);
@@ -54,19 +54,19 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
   if (result.isCalendarEvent) {
     // Extract event title
     if (
-      subject.includes("Updated invitation:") ||
-      subject.includes("invitation:") ||
-      subject.includes("invite:")
+      subject.includes('Updated invitation:') ||
+      subject.includes('invitation:') ||
+      subject.includes('invite:')
     ) {
       let title = subject
-        .replace("Updated invitation:", "")
-        .replace("invitation:", "")
-        .replace("invite:", "")
+        .replace('Updated invitation:', '')
+        .replace('invitation:', '')
+        .replace('invite:', '')
         .trim();
 
       // If there's schedule information after "@", take only the event name
-      if (title.includes("@")) {
-        title = title.split("@")[0].trim();
+      if (title.includes('@')) {
+        title = title.split('@')[0].trim();
       }
 
       result.eventTitle = title;
@@ -77,18 +77,18 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
     // Extract organizer
     const organizerMatch =
       body.match(
-        /Organiser[\s\S]*?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i,
+        /Organiser[\s\S]*?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i
       ) ||
       body.match(
-        /Organizer[\s\S]*?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i,
+        /Organizer[\s\S]*?([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i
       );
     result.organizer = organizerMatch?.[1];
 
     // Look for date patterns in the body
     result.recurringEvent =
-      body.includes("Weekly") ||
-      body.includes("RRULE:FREQ=") ||
-      body.includes("recurring");
+      body.includes('Weekly') ||
+      body.includes('RRULE:FREQ=') ||
+      body.includes('recurring');
 
     // Extract dates from common patterns in email body
     const datePatterns = [
@@ -114,7 +114,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
 
     // Process iCalendar dates if present
     const dtStartMatch = body.match(
-      /DTSTART(?:;TZID=[^:]+)?:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/i,
+      /DTSTART(?:;TZID=[^:]+)?:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/i
     );
     if (dtStartMatch) {
       const [_, year, month, day, hour, minute, second] = dtStartMatch;
@@ -124,12 +124,12 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
         Number.parseInt(day),
         Number.parseInt(hour),
         Number.parseInt(minute),
-        Number.parseInt(second),
+        Number.parseInt(second)
       );
 
       // Also look for end date
       const dtEndMatch = body.match(
-        /DTEND(?:;TZID=[^:]+)?:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/i,
+        /DTEND(?:;TZID=[^:]+)?:(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/i
       );
       if (dtEndMatch) {
         const [_, yearEnd, monthEnd, dayEnd, hourEnd, minuteEnd, secondEnd] =
@@ -140,7 +140,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
           Number.parseInt(dayEnd),
           Number.parseInt(hourEnd),
           Number.parseInt(minuteEnd),
-          Number.parseInt(secondEnd),
+          Number.parseInt(secondEnd)
         );
       }
 
@@ -152,30 +152,30 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
     else if (dateMatch) {
       // For text patterns like "Monday 10 Feb"
       const monthNames = [
-        "january",
-        "february",
-        "march",
-        "april",
-        "may",
-        "june",
-        "july",
-        "august",
-        "september",
-        "october",
-        "november",
-        "december",
-        "jan",
-        "feb",
-        "mar",
-        "apr",
-        "may",
-        "jun",
-        "jul",
-        "aug",
-        "sep",
-        "oct",
-        "nov",
-        "dec",
+        'january',
+        'february',
+        'march',
+        'april',
+        'may',
+        'june',
+        'july',
+        'august',
+        'september',
+        'october',
+        'november',
+        'december',
+        'jan',
+        'feb',
+        'mar',
+        'apr',
+        'may',
+        'jun',
+        'jul',
+        'aug',
+        'sep',
+        'oct',
+        'nov',
+        'dec',
       ];
 
       // This is a simplistic approach - for production code, you'd want more robust parsing
@@ -192,7 +192,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
         : new Date().getFullYear();
 
       result.eventDate = new Date(year, month, Number.parseInt(day));
-      result.eventDateString = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+      result.eventDateString = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
     }
 
     // Extract date from text patterns if we haven't found it yet
@@ -225,7 +225,7 @@ export function analyzeCalendarEvent(email: ParsedMessage): CalendarEventInfo {
         const year = new Date().getFullYear();
 
         result.eventDate = new Date(year, month, day);
-        result.eventDateString = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+        result.eventDateString = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
       }
     }
   }
@@ -244,7 +244,7 @@ export function hasIcsAttachment(email: ParsedMessage): boolean {
   }
 
   return email.attachments.some((attachment) =>
-    attachment.filename?.toLowerCase().endsWith(".ics"),
+    attachment.filename?.toLowerCase().endsWith('.ics')
   );
 }
 
@@ -259,7 +259,7 @@ export function isCalendarEventInPast(email: ParsedMessage) {
 }
 
 export function getCalendarEventStatus(
-  email: ParsedMessage,
+  email: ParsedMessage
 ): CalendarEventStatus {
   const calendarEvent = analyzeCalendarEvent(email);
 
@@ -273,6 +273,6 @@ export function getCalendarEventStatus(
 
   return {
     isEvent: true,
-    timing: calendarEvent.eventDate < new Date() ? "past" : "future",
+    timing: calendarEvent.eventDate < new Date() ? 'past' : 'future',
   };
 }

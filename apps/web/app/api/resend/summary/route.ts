@@ -1,17 +1,17 @@
-import { z } from "zod";
-import { NextResponse } from "next/server";
-import subHours from "date-fns/subHours";
-import { sendSummaryEmail } from "@inboxzero/resend";
-import { withEmailAccount, withError } from "@/utils/middleware";
-import { env } from "@/env";
-import { hasCronSecret } from "@/utils/cron";
-import { captureException } from "@/utils/error";
-import prisma from "@/utils/prisma";
-import { ThreadTrackerType } from "@/generated/prisma/enums";
-import { createScopedLogger } from "@/utils/logger";
-import { getMessagesBatch } from "@/utils/gmail/message";
-import { decodeSnippet } from "@/utils/gmail/decode";
-import { createUnsubscribeToken } from "@/utils/unsubscribe";
+import { sendSummaryEmail } from '@inboxzero/resend';
+import subHours from 'date-fns/subHours';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { env } from '@/env';
+import { ThreadTrackerType } from '@/generated/prisma/enums';
+import { hasCronSecret } from '@/utils/cron';
+import { captureException } from '@/utils/error';
+import { decodeSnippet } from '@/utils/gmail/decode';
+import { getMessagesBatch } from '@/utils/gmail/message';
+import { createScopedLogger } from '@/utils/logger';
+import { withEmailAccount, withError } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
+import { createUnsubscribeToken } from '@/utils/unsubscribe';
 
 export const maxDuration = 60;
 
@@ -24,12 +24,12 @@ async function sendEmail({
   emailAccountId: string;
   force?: boolean;
 }) {
-  const logger = createScopedLogger("resend/summary").with({
+  const logger = createScopedLogger('resend/summary').with({
     emailAccountId,
     force,
   });
 
-  logger.info("Sending summary email");
+  logger.info('Sending summary email');
 
   // run every 7 days. but overlap by 1 hour
   const days = 7;
@@ -42,14 +42,14 @@ async function sendEmail({
     });
 
     if (!emailAccount) {
-      logger.error("Email account not found");
+      logger.error('Email account not found');
       return { success: true };
     }
 
     const lastSummaryEmailAt = emailAccount.lastSummaryEmailAt;
 
     if (lastSummaryEmailAt && lastSummaryEmailAt > cutOffDate) {
-      logger.info("Last summary email was recent", {
+      logger.info('Last summary email was recent', {
         lastSummaryEmailAt,
         cutOffDate,
       });
@@ -71,14 +71,14 @@ async function sendEmail({
   });
 
   if (!emailAccount) {
-    logger.error("Email account not found");
+    logger.error('Email account not found');
     return { success: false };
   }
 
   if (emailAccount) {
-    logger.info("Email account found");
+    logger.info('Email account found');
   } else {
-    logger.error("Email account not found or cutoff date is in the future", {
+    logger.error('Email account not found or cutoff date is in the future', {
       cutOffDate,
     });
     return { success: true };
@@ -94,7 +94,7 @@ async function sendEmail({
     // total count
     // NOTE: should really be distinct by threadId. this will cause a mismatch in some cases
     prisma.threadTracker.groupBy({
-      by: ["type"],
+      by: ['type'],
       where: {
         emailAccountId,
         resolved: false,
@@ -108,9 +108,9 @@ async function sendEmail({
         type: ThreadTrackerType.NEEDS_REPLY,
         resolved: false,
       },
-      orderBy: { sentAt: "desc" },
+      orderBy: { sentAt: 'desc' },
       take: 20,
-      distinct: ["threadId"],
+      distinct: ['threadId'],
     }),
     // awaiting reply
     prisma.threadTracker.findMany({
@@ -121,9 +121,9 @@ async function sendEmail({
         // only show emails that are more than 3 days overdue
         sentAt: { lt: subHours(new Date(), 24 * 3) },
       },
-      orderBy: { sentAt: "desc" },
+      orderBy: { sentAt: 'desc' },
       take: 20,
-      distinct: ["threadId"],
+      distinct: ['threadId'],
     }),
     // needs action - currently not used
     // prisma.threadTracker.findMany({
@@ -139,12 +139,12 @@ async function sendEmail({
   ]);
 
   const typeCounts = Object.fromEntries(
-    counts.map((count) => [count.type, count._count]),
+    counts.map((count) => [count.type, count._count])
   );
 
   const coldEmailers = emailAccount.coldEmails.map((e) => ({
     from: e.fromEmail,
-    subject: "",
+    subject: '',
     sentAt: e.createdAt,
   }));
 
@@ -155,7 +155,7 @@ async function sendEmail({
     // ...needsAction.map((m) => m.messageId),
   ];
 
-  logger.info("Getting messages", {
+  logger.info('Getting messages', {
     messagesCount: messageIds.length,
   });
 
@@ -167,14 +167,14 @@ async function sendEmail({
     : [];
 
   const messageMap = Object.fromEntries(
-    messages.map((message) => [message.id, message]),
+    messages.map((message) => [message.id, message])
   );
 
   const recentNeedsReply = needsReply.map((t) => {
     const message = messageMap[t.messageId];
     return {
-      from: message?.headers.from || "Unknown",
-      subject: decodeSnippet(message?.snippet) || "",
+      from: message?.headers.from || 'Unknown',
+      subject: decodeSnippet(message?.snippet) || '',
       sentAt: t.sentAt,
     };
   });
@@ -182,8 +182,8 @@ async function sendEmail({
   const recentAwaitingReply = awaitingReply.map((t) => {
     const message = messageMap[t.messageId];
     return {
-      from: message?.headers.to || "Unknown",
-      subject: decodeSnippet(message?.snippet) || "",
+      from: message?.headers.to || 'Unknown',
+      subject: decodeSnippet(message?.snippet) || '',
       sentAt: t.sentAt,
     };
   });
@@ -204,7 +204,7 @@ async function sendEmail({
     typeCounts[ThreadTrackerType.NEEDS_ACTION]
   );
 
-  logger.info("Sending summary email to user", {
+  logger.info('Sending summary email to user', {
     shouldSendEmail,
     coldEmailers: coldEmailers.length,
     needsReplyCount: typeCounts[ThreadTrackerType.NEEDS_REPLY],
@@ -251,11 +251,11 @@ async function sendEmail({
   return { success: true };
 }
 
-export const GET = withEmailAccount("resend/summary", async (request) => {
+export const GET = withEmailAccount('resend/summary', async (request) => {
   // send to self
   const emailAccountId = request.auth.emailAccountId;
 
-  request.logger.info("Sending summary email to user GET", { emailAccountId });
+  request.logger.info('Sending summary email to user GET', { emailAccountId });
 
   const result = await sendEmail({ emailAccountId, force: true });
 
@@ -263,37 +263,37 @@ export const GET = withEmailAccount("resend/summary", async (request) => {
 });
 
 export const POST = withError(async (request) => {
-  const logger = createScopedLogger("resend/summary");
+  const logger = createScopedLogger('resend/summary');
 
   if (!hasCronSecret(request)) {
-    logger.error("Unauthorized cron request");
-    captureException(new Error("Unauthorized cron request: resend"));
-    return new Response("Unauthorized", { status: 401 });
+    logger.error('Unauthorized cron request');
+    captureException(new Error('Unauthorized cron request: resend'));
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const json = await request.json();
   const { success, data, error } = sendSummaryEmailBody.safeParse(json);
 
   if (!success) {
-    logger.error("Invalid request body", { error });
+    logger.error('Invalid request body', { error });
     return NextResponse.json(
-      { error: "Invalid request body" },
-      { status: 400 },
+      { error: 'Invalid request body' },
+      { status: 400 }
     );
   }
   const { emailAccountId } = data;
 
-  logger.info("Sending summary email to user POST", { emailAccountId });
+  logger.info('Sending summary email to user POST', { emailAccountId });
 
   try {
     await sendEmail({ emailAccountId });
     return NextResponse.json({ success: true });
   } catch (error) {
-    logger.error("Error sending summary email", { error });
+    logger.error('Error sending summary email', { error });
     captureException(error);
     return NextResponse.json(
-      { success: false, error: "Error sending summary email" },
-      { status: 500 },
+      { success: false, error: 'Error sending summary email' },
+      { status: 500 }
     );
   }
 });

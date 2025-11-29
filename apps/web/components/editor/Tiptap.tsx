@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useEditor, EditorContent, type Editor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { Markdown } from "tiptap-markdown";
-import { useCallback, forwardRef, useImperativeHandle } from "react";
-import { cn } from "@/utils";
-import { EnterHandler } from "@/components/editor/extensions";
+import { type Editor, EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import { forwardRef, useCallback, useImperativeHandle } from 'react';
+import { Markdown } from 'tiptap-markdown';
+import { EnterHandler } from '@/components/editor/extensions';
+import { cn } from '@/utils';
 
 export type TiptapHandle = {
   appendContent: (content: string) => void;
@@ -22,8 +22,8 @@ export const Tiptap = forwardRef<
     onMoreClick?: () => void;
   }
 >(function Tiptap(
-  { initialContent = "", onChange, className, autofocus = true, onMoreClick },
-  ref,
+  { initialContent = '', onChange, className, autofocus = true, onMoreClick },
+  ref
 ) {
   const editor = useEditor({
     extensions: [
@@ -47,14 +47,14 @@ export const Tiptap = forwardRef<
         const html = editor.getHTML();
         onChange?.(html);
       },
-      [onChange],
+      [onChange]
     ),
     autofocus,
     editorProps: {
       attributes: {
         class: cn(
-          "px-3 py-2 max-w-none focus:outline-none min-h-[120px]",
-          className,
+          'px-3 py-2 max-w-none focus:outline-none min-h-[120px]',
+          className
         ),
       },
     },

@@ -1,5 +1,5 @@
-import { GroupItemType } from "@/generated/prisma/enums";
-import { z } from "zod";
+import { z } from 'zod';
+import { GroupItemType } from '@/generated/prisma/enums';
 
 export const groupEmailsQuerySchema = z.object({
   pageToken: z.string().optional(),
@@ -32,7 +32,7 @@ export const groupEmailsResponseSchema = z.object({
           value: z.string(),
         })
         .nullish(),
-    }),
+    })
   ),
   nextPageToken: z.string().optional(),
 });

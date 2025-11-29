@@ -1,12 +1,12 @@
-import { createScopedLogger } from "@/utils/logger";
-import type { OutlookClient } from "@/utils/outlook/client";
-import { escapeODataString } from "@/utils/outlook/odata-escape";
 import {
   publishBulkActionToTinybird,
   updateEmailMessagesForSender,
-} from "@/utils/email/bulk-action-tracking";
+} from '@/utils/email/bulk-action-tracking';
+import { createScopedLogger } from '@/utils/logger';
+import type { OutlookClient } from '@/utils/outlook/client';
+import { escapeODataString } from '@/utils/outlook/odata-escape';
 
-const logger = createScopedLogger("outlook/batch");
+const logger = createScopedLogger('outlook/batch');
 
 const GRAPH_JSON_BATCH_LIMIT = 20; // Microsoft Graph JSON batching limit
 
@@ -59,12 +59,12 @@ async function batch<TRequestBody = unknown, TResponseBody = unknown>({
 
     try {
       const response = (await graphClient
-        .api("/$batch")
+        .api('/$batch')
         .post({ requests: chunk })) as GraphBatchResponse<TResponseBody>;
 
       const responses = response?.responses ?? [];
       const requestsById = new Map(
-        chunk.map((request) => [request.id, request]),
+        chunk.map((request) => [request.id, request])
       );
 
       responses.forEach((res) => {
@@ -80,16 +80,16 @@ async function batch<TRequestBody = unknown, TResponseBody = unknown>({
       if (stopOnError) {
         const errors = responses.filter((res) => res.status >= 400);
         if (errors.length > 0) {
-          logger.error("Graph batch responses contain errors", {
+          logger.error('Graph batch responses contain errors', {
             ...context,
             errorCount: errors.length,
             statuses: errors.map((res) => res.status),
           });
-          throw new Error("Graph batch returned one or more error responses.");
+          throw new Error('Graph batch returned one or more error responses.');
         }
       }
     } catch (error) {
-      logger.error("Graph batch request failed", {
+      logger.error('Graph batch request failed', {
         ...context,
         chunkSize: chunk.length,
         error: error instanceof Error ? error.message : error,
@@ -110,7 +110,7 @@ async function moveMessagesInBatches({
   client: OutlookClient;
   messageIds: string[];
   destinationId: string;
-  action: "archive" | "trash";
+  action: 'archive' | 'trash';
 }): Promise<void> {
   if (messageIds.length === 0) return;
 
@@ -121,10 +121,10 @@ async function moveMessagesInBatches({
 
     return {
       id: requestId,
-      method: "POST",
+      method: 'POST',
       url: `/me/messages/${messageId}/move`,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: {
         destinationId,
@@ -145,13 +145,13 @@ async function moveMessagesInBatches({
       const messageId = request ? requestIdToMessageId.get(request.id) : null;
       const body = response.body;
       const errorMessage =
-        body && typeof body === "object" && body !== null && "error" in body
+        body && typeof body === 'object' && body !== null && 'error' in body
           ? (body as { error?: { message?: string } }).error?.message
           : body
             ? JSON.stringify(body)
             : undefined;
 
-      logger.error("Failed to move message via batch", {
+      logger.error('Failed to move message via batch', {
         action,
         messageId,
         status: response.status,
@@ -172,7 +172,7 @@ export async function moveMessagesForSenders({
   client: OutlookClient;
   senders: string[];
   destinationId: string;
-  action: "archive" | "trash";
+  action: 'archive' | 'trash';
   ownerEmail: string;
   emailAccountId: string;
 }): Promise<void> {
@@ -185,7 +185,7 @@ export async function moveMessagesForSenders({
     const publishedThreadIds = new Set<string>();
     const fromFilter = `from/emailAddress/address eq '${escapeODataString(sender)}'`;
     const filterExpression =
-      action === "archive"
+      action === 'archive'
         ? `${fromFilter} and parentFolderId eq 'inbox'`
         : fromFilter;
     let skipToken: string | undefined;
@@ -194,10 +194,10 @@ export async function moveMessagesForSenders({
       try {
         let request = client
           .getClient()
-          .api("/me/messages")
+          .api('/me/messages')
           .filter(filterExpression)
           .top(100)
-          .select("id,conversationId");
+          .select('id,conversationId');
 
         if (skipToken) {
           request = request.skipToken(skipToken);
@@ -205,14 +205,14 @@ export async function moveMessagesForSenders({
 
         const response: {
           value?: Array<{ id?: string | null; conversationId?: string | null }>;
-          "@odata.nextLink"?: string;
+          '@odata.nextLink'?: string;
         } = await request.get();
 
         const allMessages = (response.value ?? []).filter(
           (message): message is { id: string; conversationId: string } =>
             !!message.id &&
             !!message.conversationId &&
-            !processedMessageIds.has(message.id),
+            !processedMessageIds.has(message.id)
         );
 
         const messageIds = allMessages.map((msg) => msg.id);
@@ -227,11 +227,11 @@ export async function moveMessagesForSenders({
             });
 
             const batchThreadIds = new Set(
-              allMessages.map((msg) => msg.conversationId),
+              allMessages.map((msg) => msg.conversationId)
             );
 
             const newThreadIds = Array.from(batchThreadIds).filter(
-              (threadId) => !publishedThreadIds.has(threadId),
+              (threadId) => !publishedThreadIds.has(threadId)
             );
 
             const promises = [
@@ -249,17 +249,17 @@ export async function moveMessagesForSenders({
                   threadIds: newThreadIds,
                   action,
                   ownerEmail,
-                }),
+                })
               );
             }
 
             await Promise.all(promises);
 
             newThreadIds.forEach((threadId) =>
-              publishedThreadIds.add(threadId),
+              publishedThreadIds.add(threadId)
             );
           } catch (error) {
-            logger.error("Failed to move or track messages", {
+            logger.error('Failed to move or track messages', {
               action,
               sender,
               ownerEmail,
@@ -272,15 +272,15 @@ export async function moveMessagesForSenders({
           }
         }
 
-        const nextLink = response["@odata.nextLink"];
+        const nextLink = response['@odata.nextLink'];
         if (nextLink) {
           const url = new URL(nextLink);
-          skipToken = url.searchParams.get("$skiptoken") ?? undefined;
+          skipToken = url.searchParams.get('$skiptoken') ?? undefined;
         } else {
           skipToken = undefined;
         }
       } catch (error) {
-        logger.error("Failed to fetch messages from sender", {
+        logger.error('Failed to fetch messages from sender', {
           sender,
           action,
           error: error instanceof Error ? error.message : error,

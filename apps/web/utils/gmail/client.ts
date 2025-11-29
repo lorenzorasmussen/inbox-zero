@@ -1,12 +1,12 @@
-import { auth, gmail, type gmail_v1 } from "@googleapis/gmail";
-import { people } from "@googleapis/people";
-import { saveTokens } from "@/utils/auth";
-import { env } from "@/env";
-import { createScopedLogger } from "@/utils/logger";
-import { SCOPES } from "@/utils/gmail/scopes";
-import { SafeError } from "@/utils/error";
+import { auth, gmail, type gmail_v1 } from '@googleapis/gmail';
+import { people } from '@googleapis/people';
+import { env } from '@/env';
+import { saveTokens } from '@/utils/auth';
+import { SafeError } from '@/utils/error';
+import { SCOPES } from '@/utils/gmail/scopes';
+import { createScopedLogger } from '@/utils/logger';
 
-const logger = createScopedLogger("gmail/client");
+const logger = createScopedLogger('gmail/client');
 
 type AuthOptions = {
   accessToken?: string | null;
@@ -31,7 +31,7 @@ const getAuth = ({
     access_token: accessToken,
     refresh_token: refreshToken,
     expiry_date: expiryDate,
-    scope: SCOPES.join(" "),
+    scope: SCOPES.join(' '),
   });
 
   return googleAuth;
@@ -58,13 +58,13 @@ export const getGmailClientWithRefresh = async ({
   emailAccountId: string;
 }): Promise<gmail_v1.Gmail> => {
   if (!refreshToken) {
-    logger.error("No refresh token", { emailAccountId });
-    throw new SafeError("No refresh token");
+    logger.error('No refresh token', { emailAccountId });
+    throw new SafeError('No refresh token');
   }
 
   // we handle refresh ourselves so not passing in expiresAt
   const auth = getAuth({ accessToken, refreshToken });
-  const g = gmail({ version: "v1", auth });
+  const g = gmail({ version: 'v1', auth });
 
   const expiryDate = expiresAt ? expiresAt : null;
   if (expiryDate && expiryDate > Date.now()) return g;
@@ -84,17 +84,17 @@ export const getGmailClientWithRefresh = async ({
         },
         accountRefreshToken: refreshToken,
         emailAccountId,
-        provider: "google",
+        provider: 'google',
       });
     }
 
     return g;
   } catch (error) {
     const isInvalidGrantError =
-      error instanceof Error && error.message.includes("invalid_grant");
+      error instanceof Error && error.message.includes('invalid_grant');
 
     if (isInvalidGrantError) {
-      logger.warn("Error refreshing Gmail access token", {
+      logger.warn('Error refreshing Gmail access token', {
         emailAccountId,
         error: error.message,
         errorDescription: (error as any).response?.data?.error_description,
@@ -112,7 +112,7 @@ export const getContactsClient = ({
   refreshToken,
 }: AuthOptions) => {
   const auth = getAuth({ accessToken, refreshToken });
-  const contacts = people({ version: "v1", auth });
+  const contacts = people({ version: 'v1', auth });
 
   return contacts;
 };
@@ -120,6 +120,6 @@ export const getContactsClient = ({
 export const getAccessTokenFromClient = (client: gmail_v1.Gmail): string => {
   const accessToken = (client.context._options.auth as any).credentials
     .access_token;
-  if (!accessToken) throw new Error("No access token");
+  if (!accessToken) throw new Error('No access token');
   return accessToken;
 };

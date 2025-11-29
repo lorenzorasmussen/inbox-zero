@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { env } from "@/env";
-import type { Logger } from "@/utils/logger";
-import { parseOAuthState } from "@/utils/oauth/state";
+import { NextResponse } from 'next/server';
+import { env } from '@/env';
+import type { Logger } from '@/utils/logger';
+import { parseOAuthState } from '@/utils/oauth/state';
 
 interface ValidateCallbackParams {
   code: string | null;
@@ -29,15 +29,15 @@ export function validateOAuthCallback({
   stateCookieName,
   logger,
 }: ValidateCallbackParams): ValidationResult {
-  const redirectUrl = new URL("/accounts", env.NEXT_PUBLIC_BASE_URL);
+  const redirectUrl = new URL('/accounts', env.NEXT_PUBLIC_BASE_URL);
   const response = NextResponse.redirect(redirectUrl);
 
   if (!storedState || !receivedState || storedState !== receivedState) {
-    logger.warn("Invalid state during OAuth callback", {
+    logger.warn('Invalid state during OAuth callback', {
       receivedState,
       hasStoredState: !!storedState,
     });
-    redirectUrl.searchParams.set("error", "invalid_state");
+    redirectUrl.searchParams.set('error', 'invalid_state');
     response.cookies.delete(stateCookieName);
     return {
       success: false,
@@ -54,8 +54,8 @@ export function validateOAuthCallback({
   try {
     decodedState = parseOAuthState(storedState);
   } catch (error) {
-    logger.error("Failed to decode state", { error });
-    redirectUrl.searchParams.set("error", "invalid_state_format");
+    logger.error('Failed to decode state', { error });
+    redirectUrl.searchParams.set('error', 'invalid_state_format');
     response.cookies.delete(stateCookieName);
     return {
       success: false,
@@ -66,8 +66,8 @@ export function validateOAuthCallback({
   }
 
   if (!code) {
-    logger.warn("Missing code in OAuth callback");
-    redirectUrl.searchParams.set("error", "missing_code");
+    logger.warn('Missing code in OAuth callback');
+    redirectUrl.searchParams.set('error', 'missing_code');
     response.cookies.delete(stateCookieName);
     return {
       success: false,

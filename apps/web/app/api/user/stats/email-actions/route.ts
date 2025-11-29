@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { withEmailAccount } from "@/utils/middleware";
-import { getEmailActionsByDay } from "@inboxzero/tinybird";
+import { getEmailActionsByDay } from '@inboxzero/tinybird';
+import { NextResponse } from 'next/server';
+import { withEmailAccount } from '@/utils/middleware';
 
 export type EmailActionStatsResponse = Awaited<
   ReturnType<typeof getEmailActionStats>
@@ -26,5 +26,5 @@ export const GET = withEmailAccount(
 
     return NextResponse.json(result);
   },
-  { allowOrgAdmins: true },
+  { allowOrgAdmins: true }
 );

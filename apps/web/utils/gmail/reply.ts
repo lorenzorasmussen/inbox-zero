@@ -1,4 +1,4 @@
-import type { ParsedMessage } from "@/utils/types";
+import type { ParsedMessage } from '@/utils/types';
 
 export const createReplyContent = ({
   textContent,
@@ -7,7 +7,7 @@ export const createReplyContent = ({
 }: {
   textContent?: string;
   htmlContent?: string;
-  message: Pick<ParsedMessage, "headers" | "textPlain" | "textHtml">;
+  message: Pick<ParsedMessage, 'headers' | 'textPlain' | 'textHtml'>;
 }): {
   html: string;
   text: string;
@@ -16,22 +16,22 @@ export const createReplyContent = ({
   const quotedHeader = `On ${quotedDate}, ${message.headers.from} wrote:`;
 
   // Detect text direction from original message
-  const textDirection = detectTextDirection(textContent || "");
+  const textDirection = detectTextDirection(textContent || '');
   const dirAttribute = `dir="${textDirection}"`;
 
   // Format plain text version with proper quoting
   const quotedContent = message.textPlain
-    ?.split("\n")
+    ?.split('\n')
     .map((line) => `> ${line}`)
-    .join("\n");
+    .join('\n');
   const plainText = `${textContent}\n\n${quotedHeader}\n\n${quotedContent}`;
 
   // Get the message content, preserving any existing quotes
   const messageContent =
-    message.textHtml || message.textPlain?.replace(/\n/g, "<br>") || "";
+    message.textHtml || message.textPlain?.replace(/\n/g, '<br>') || '';
 
   // Use htmlContent if provided, otherwise convert textContent to HTML
-  const contentHtml = htmlContent || textContent?.replace(/\n/g, "<br>") || "";
+  const contentHtml = htmlContent || textContent?.replace(/\n/g, '<br>') || '';
 
   // Format HTML version with Gmail-style quote formatting
   const html = `<div ${dirAttribute}>${contentHtml}</div>
@@ -50,21 +50,21 @@ export const createReplyContent = ({
   };
 };
 
-function detectTextDirection(text: string): "ltr" | "rtl" {
+function detectTextDirection(text: string): 'ltr' | 'rtl' {
   // Basic RTL detection - checks for RTL characters at the start of the text
   const rtlRegex =
     /[\u0591-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC]/;
-  return rtlRegex.test(text.trim().charAt(0)) ? "rtl" : "ltr";
+  return rtlRegex.test(text.trim().charAt(0)) ? 'rtl' : 'ltr';
 }
 
 export function formatEmailDate(date: Date): string {
-  const weekday = date.toLocaleString("en-US", { weekday: "short" });
-  const month = date.toLocaleString("en-US", { month: "short" });
+  const weekday = date.toLocaleString('en-US', { weekday: 'short' });
+  const month = date.toLocaleString('en-US', { month: 'short' });
   const day = date.getDate();
   const year = date.getFullYear();
   const hour = date.getHours();
   const minute = date.getMinutes();
 
   // Format: "Thu, 6 Feb 2025 at 23:23"
-  return `${weekday}, ${day} ${month} ${year} at ${hour}:${minute.toString().padStart(2, "0")}`;
+  return `${weekday}, ${day} ${month} ${year} at ${hour}:${minute.toString().padStart(2, '0')}`;
 }

@@ -1,8 +1,13 @@
-"use client";
+'use client';
 
-import useSWR from "swr";
-import { Button } from "@/components/ui/button";
-import { SettingCard } from "@/components/SettingCard";
+import useSWR from 'swr';
+import { ViewLearnedPatterns } from '@/app/(app)/[emailAccountId]/assistant/group/ViewLearnedPatterns';
+import type { GroupsResponse } from '@/app/api/user/group/route';
+import { LoadingContent } from '@/components/LoadingContent';
+import { SettingCard } from '@/components/SettingCard';
+import { TypographyP } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -10,12 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TypographyP } from "@/components/Typography";
-import { ViewLearnedPatterns } from "@/app/(app)/[emailAccountId]/assistant/group/ViewLearnedPatterns";
-import type { GroupsResponse } from "@/app/api/user/group/route";
-import { LoadingContent } from "@/components/LoadingContent";
+} from '@/components/ui/dialog';
 
 export function LearnedPatternsSetting() {
   return (
@@ -50,7 +50,7 @@ export function LearnedPatternsSetting() {
 }
 
 function Content() {
-  const { data, isLoading, error } = useSWR<GroupsResponse>("/api/user/group");
+  const { data, isLoading, error } = useSWR<GroupsResponse>('/api/user/group');
 
   return (
     <LoadingContent loading={isLoading} error={error}>
@@ -65,7 +65,7 @@ function Content() {
           {data?.groups.map((group) => (
             <Card key={group.id}>
               <CardHeader>
-                <CardTitle>{group.rule?.name || "No rule"}</CardTitle>
+                <CardTitle>{group.rule?.name || 'No rule'}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ViewLearnedPatterns groupId={group.id} />

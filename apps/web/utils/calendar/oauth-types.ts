@@ -1,4 +1,4 @@
-import type { NextResponse } from "next/server";
+import type { NextResponse } from 'next/server';
 
 export interface CalendarTokens {
   accessToken: string;
@@ -8,7 +8,7 @@ export interface CalendarTokens {
 }
 
 export interface CalendarOAuthProvider {
-  name: "google" | "microsoft";
+  name: 'google' | 'microsoft';
 
   /**
    * Exchange OAuth code for tokens and get user email
@@ -23,7 +23,7 @@ export interface CalendarOAuthProvider {
     accessToken: string,
     refreshToken: string,
     emailAccountId: string,
-    expiresAt: Date | null,
+    expiresAt: Date | null
   ): Promise<void>;
 }
 
@@ -35,6 +35,6 @@ export interface OAuthCallbackValidation {
 
 export interface CalendarOAuthState {
   emailAccountId: string;
-  type: "calendar";
+  type: 'calendar';
   nonce: string;
 }

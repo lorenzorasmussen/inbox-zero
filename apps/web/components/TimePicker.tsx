@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/utils";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/utils';
 
 interface TimePickerProps {
   id?: string;
@@ -15,8 +15,8 @@ interface TimePickerProps {
 }
 
 export function TimePicker({
-  id = "time-picker",
-  label = "Time",
+  id = 'time-picker',
+  label = 'Time',
   value,
   onChange,
   className,
@@ -34,8 +34,8 @@ export function TimePicker({
         disabled={disabled}
         required={required}
         className={cn(
-          "bg-background w-32 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none",
-          className,
+          'bg-background w-32 appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none',
+          className
         )}
       />
     </div>

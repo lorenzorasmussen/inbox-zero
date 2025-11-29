@@ -1,18 +1,18 @@
-import { cn } from "@/utils";
-import { type VariantProps, cva } from "class-variance-authority";
-import { forwardRef } from "react";
+import { cva, type VariantProps } from 'class-variance-authority';
+import { forwardRef } from 'react';
+import { cn } from '@/utils';
 
 const tagVariants = cva(
-  "truncate rounded border-2 border-white px-2 py-0.5 text-center text-sm font-semibold shadow",
+  'truncate rounded border-2 border-white px-2 py-0.5 text-center text-sm font-semibold shadow',
   {
     variants: {
       variant: {
-        green: "bg-green-200 text-green-900",
-        red: "bg-red-200 text-red-900",
-        white: "bg-background text-primary",
+        green: 'bg-green-200 text-green-900',
+        red: 'bg-red-200 text-red-900',
+        white: 'bg-background text-primary',
       },
     },
-  },
+  }
 );
 
 export interface TagProps
@@ -26,7 +26,7 @@ export interface TagProps
 }
 
 export const Tag = forwardRef<HTMLDivElement, TagProps>(
-  ({ variant = "green", customColors, className, ...props }, ref) => {
+  ({ variant = 'green', customColors, className, ...props }, ref) => {
     return (
       <div
         ref={ref}
@@ -38,6 +38,6 @@ export const Tag = forwardRef<HTMLDivElement, TagProps>(
         }}
       />
     );
-  },
+  }
 );
-Tag.displayName = "Tag";
+Tag.displayName = 'Tag';

@@ -1,22 +1,22 @@
-import { useMemo, useState, useRef, useEffect } from "react";
-import { useTheme } from "next-themes";
-import DOMPurify from "dompurify";
+import DOMPurify from 'dompurify';
+import { useTheme } from 'next-themes';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export function HtmlEmail({ html }: { html: string }) {
   const [showReplies, setShowReplies] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { theme } = useTheme();
-  const isDarkMode = theme === "dark";
+  const isDarkMode = theme === 'dark';
 
   const sanitizedHtml = useMemo(() => sanitize(html), [html]);
   const { mainContent, hasReplies } = useMemo(
     () => getEmailContent(sanitizedHtml),
-    [sanitizedHtml],
+    [sanitizedHtml]
   );
 
   const srcDoc = useMemo(
     () => getIframeHtml(showReplies ? sanitizedHtml : mainContent, isDarkMode),
-    [sanitizedHtml, mainContent, showReplies, isDarkMode],
+    [sanitizedHtml, mainContent, showReplies, isDarkMode]
   );
 
   const iframeHeight = useIframeHeight(iframeRef);
@@ -50,8 +50,8 @@ export function PlainEmail({ text }: { text: string }) {
 }
 
 function getEmailContent(html: string) {
-  const doc = new DOMParser().parseFromString(html, "text/html");
-  const quoteContainer = doc.querySelector(".gmail_quote_container");
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const quoteContainer = doc.querySelector('.gmail_quote_container');
 
   if (!quoteContainer) {
     return { mainContent: html, hasReplies: false };
@@ -59,7 +59,7 @@ function getEmailContent(html: string) {
 
   // Clone the document and remove the quote container
   const mainDoc = doc.cloneNode(true) as Document;
-  const mainQuoteContainer = mainDoc.querySelector(".gmail_quote_container");
+  const mainQuoteContainer = mainDoc.querySelector('.gmail_quote_container');
   mainQuoteContainer?.remove();
 
   return {
@@ -74,19 +74,19 @@ function getIframeHtml(html: string, isDarkMode: boolean) {
 
   // Check for heavy styling that would indicate a rich HTML email
   const hasHeavyStyling =
-    html.includes("bgcolor") ||
-    html.includes("background") ||
-    html.includes("<style") ||
+    html.includes('bgcolor') ||
+    html.includes('background') ||
+    html.includes('<style') ||
     // Look for multiple style attributes or font styling
     styleAttributeCount > 1 ||
-    html.includes("font-family") ||
-    html.includes("font-size");
+    html.includes('font-family') ||
+    html.includes('font-size');
 
   // Check for basic text styling that shouldn't prevent dark mode
   const hasMinimalStyling =
     !hasHeavyStyling &&
-    (html.includes("color:") ||
-      html.includes("text-decoration") ||
+    (html.includes('color:') ||
+      html.includes('text-decoration') ||
       // Single style attribute is ok (probably just a link)
       styleAttributeCount === 1);
 
@@ -136,7 +136,7 @@ function getIframeHtml(html: string, isDarkMode: boolean) {
 
       /* Style links - allow minimal styling to persist */
       a {
-        color: ${hasMinimalStyling ? "inherit" : "hsl(var(--foreground))"};
+        color: ${hasMinimalStyling ? 'inherit' : 'hsl(var(--foreground))'};
         text-decoration: underline;
       }
 
@@ -153,7 +153,7 @@ function getIframeHtml(html: string, isDarkMode: boolean) {
         color: inherit !important;
       }
       `
-          : ""
+          : ''
       }
     </style>
   `;
@@ -176,7 +176,7 @@ function getIframeHtml(html: string, isDarkMode: boolean) {
   const headContent = `${securityHeaders}${defaultFontStyles}<base target="_blank" rel="noopener noreferrer">`;
 
   function wrapWithProperStructure(content: string) {
-    if (content.indexOf("<html") === -1) {
+    if (content.indexOf('<html') === -1) {
       return `
         <html>
           <head>${headContent}</head>
@@ -184,10 +184,10 @@ function getIframeHtml(html: string, isDarkMode: boolean) {
         </html>`;
     }
 
-    if (content.indexOf("<head") === -1) {
+    if (content.indexOf('<head') === -1) {
       return content.replace(
         /<html([^>]*)>/i,
-        `<html$1><head>${headContent}</head>`,
+        `<html$1><head>${headContent}</head>`
       );
     }
 
@@ -203,18 +203,18 @@ const sanitize = (html: string) =>
 
 function addDarkModeClass(html: string, isDarkMode: boolean) {
   try {
-    const darkClass = isDarkMode ? "dark" : "";
+    const darkClass = isDarkMode ? 'dark' : '';
 
     // Handle empty or invalid HTML
-    if (!html || typeof html !== "string") {
+    if (!html || typeof html !== 'string') {
       return `<body class="${darkClass}"></body>`;
     }
 
-    if (html.indexOf("<body") === -1) {
+    if (html.indexOf('<body') === -1) {
       return `<body class="${darkClass}">${html}</body>`;
     }
 
-    return html.replace(/<body([^>]*)>/i, (match, attributes = "") => {
+    return html.replace(/<body([^>]*)>/i, (match, attributes = '') => {
       try {
         const existingClass = attributes.match(/class=["']([^"']*)["']/);
         if (existingClass) {
@@ -222,7 +222,7 @@ function addDarkModeClass(html: string, isDarkMode: boolean) {
             `${existingClass[1].trim()} ${darkClass}`.trim();
           return match.replace(
             /class=["']([^"']*)["']/i,
-            `class="${combinedClass}"`,
+            `class="${combinedClass}"`
           );
         }
         return `<body${attributes} class="${darkClass}">`;
@@ -233,7 +233,7 @@ function addDarkModeClass(html: string, isDarkMode: boolean) {
     });
   } catch {
     // If all else fails, return a safe fallback
-    return `<body class="${isDarkMode ? "dark" : ""}"></body>`;
+    return `<body class="${isDarkMode ? 'dark' : ''}"></body>`;
   }
 }
 
@@ -257,7 +257,7 @@ function useIframeHeight(iframeRef: React.RefObject<HTMLIFrameElement | null>) {
           }
         }
       } catch (error) {
-        console.error("Failed to get iframe height:", error);
+        console.error('Failed to get iframe height:', error);
       }
       return false;
     };

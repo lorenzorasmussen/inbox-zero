@@ -1,30 +1,30 @@
-import { NextResponse } from "next/server";
-import { withEmailProvider } from "@/utils/middleware";
-import type { ThreadsResponse } from "@/app/api/threads/route";
+import { NextResponse } from 'next/server';
+import type { ThreadsResponse } from '@/app/api/threads/route';
+import { withEmailProvider } from '@/utils/middleware';
 
 export type ThreadsBatchResponse = {
-  threads: ThreadsResponse["threads"];
+  threads: ThreadsResponse['threads'];
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export const maxDuration = 30;
 
-export const GET = withEmailProvider("threads/batch", async (request) => {
+export const GET = withEmailProvider('threads/batch', async (request) => {
   const { emailProvider } = request;
   const { emailAccountId } = request.auth;
 
   const { searchParams } = new URL(request.url);
-  const threadIdsParam = searchParams.get("threadIds");
+  const threadIdsParam = searchParams.get('threadIds');
 
   if (!threadIdsParam) {
     return NextResponse.json(
-      { error: "threadIds parameter is required" },
-      { status: 400 },
+      { error: 'threadIds parameter is required' },
+      { status: 400 }
     );
   }
 
-  const threadIds = threadIdsParam.split(",").filter(Boolean);
+  const threadIds = threadIdsParam.split(',').filter(Boolean);
 
   if (threadIds.length === 0) {
     return NextResponse.json({ threads: [] });
@@ -37,25 +37,25 @@ export const GET = withEmailProvider("threads/batch", async (request) => {
         try {
           return await emailProvider.getThread(threadId);
         } catch (error) {
-          request.logger.error("Error fetching thread", { error, threadId });
+          request.logger.error('Error fetching thread', { error, threadId });
           return null;
         }
-      }),
+      })
     );
 
     const validThreads = threads.filter(
-      (thread): thread is ThreadsResponse["threads"][number] => thread !== null,
+      (thread): thread is ThreadsResponse['threads'][number] => thread !== null
     );
 
     return NextResponse.json({ threads: validThreads });
   } catch (error) {
-    request.logger.error("Error fetching batch threads", {
+    request.logger.error('Error fetching batch threads', {
       error,
       emailAccountId,
     });
     return NextResponse.json(
-      { error: "Failed to fetch threads" },
-      { status: 500 },
+      { error: 'Failed to fetch threads' },
+      { status: 500 }
     );
   }
 });

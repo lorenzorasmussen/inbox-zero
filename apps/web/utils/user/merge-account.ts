@@ -1,6 +1,6 @@
-import prisma from "@/utils/prisma";
-import { transferPremiumDuringMerge } from "@/utils/user/merge-premium";
-import type { Logger } from "@/utils/logger";
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { transferPremiumDuringMerge } from '@/utils/user/merge-premium';
 
 interface MergeAccountOptions {
   sourceAccountId: string;
@@ -18,11 +18,11 @@ export async function mergeAccount({
   email,
   name,
   logger,
-}: MergeAccountOptions): Promise<"full_merge" | "partial_reassign"> {
+}: MergeAccountOptions): Promise<'full_merge' | 'partial_reassign'> {
   const sourceUserEmailAccounts = await prisma.emailAccount.findMany({
     where: { userId: sourceUserId },
     select: { id: true, email: true, accountId: true },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: 'asc' },
   });
 
   const sourceUser = await prisma.user.findUnique({
@@ -32,15 +32,15 @@ export async function mergeAccount({
 
   if (sourceUserEmailAccounts.length > 1) {
     logger.info(
-      "Source user has multiple accounts, reassigning one and updating primary",
+      'Source user has multiple accounts, reassigning one and updating primary',
       {
         sourceUserId,
         emailAccountCount: sourceUserEmailAccounts.length,
-      },
+      }
     );
 
     const accountBeingMoved = sourceUserEmailAccounts.find(
-      (acc) => acc.accountId === sourceAccountId,
+      (acc) => acc.accountId === sourceAccountId
     );
     const isPrimaryAccount = accountBeingMoved?.email === sourceUser?.email;
 
@@ -60,7 +60,7 @@ export async function mergeAccount({
 
     if (isPrimaryAccount) {
       const newPrimaryAccount = sourceUserEmailAccounts.find(
-        (acc) => acc.id !== accountBeingMoved?.id,
+        (acc) => acc.id !== accountBeingMoved?.id
       );
       if (newPrimaryAccount) {
         const userUpdate = prisma.user.update({
@@ -78,7 +78,7 @@ export async function mergeAccount({
     } else {
       await prisma.$transaction([accountUpdate, emailAccountUpdate]);
     }
-    return "partial_reassign";
+    return 'partial_reassign';
   }
 
   await transferPremiumDuringMerge({
@@ -104,5 +104,5 @@ export async function mergeAccount({
     }),
   ]);
 
-  return "full_merge";
+  return 'full_merge';
 }

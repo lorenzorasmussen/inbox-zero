@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import useSWRInfinite from "swr/infinite";
-import { useMemo, useCallback } from "react";
-import { ChevronsDownIcon, SparklesIcon, StopCircleIcon } from "lucide-react";
-import { ClientOnly } from "@/components/ClientOnly";
-import { SendersTable } from "@/components/GroupedTable";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Button } from "@/components/ui/button";
-import type { UncategorizedSendersResponse } from "@/app/api/user/categorize/senders/uncategorized/route";
-import { TopBar } from "@/components/TopBar";
-import { toastError } from "@/components/Toast";
+import { ChevronsDownIcon, SparklesIcon, StopCircleIcon } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
+import useSWRInfinite from 'swr/infinite';
+import { usePremiumModal } from '@/app/(app)/premium/PremiumModal';
+import type { UncategorizedSendersResponse } from '@/app/api/user/categorize/senders/uncategorized/route';
+import { ClientOnly } from '@/components/ClientOnly';
+import { SendersTable } from '@/components/GroupedTable';
+import { ButtonLoader } from '@/components/Loading';
+import { LoadingContent } from '@/components/LoadingContent';
+import { PremiumTooltip, usePremium } from '@/components/PremiumAlert';
+import { toastError } from '@/components/Toast';
+import { Toggle } from '@/components/Toggle';
+import { TooltipExplanation } from '@/components/TooltipExplanation';
+import { TopBar } from '@/components/TopBar';
+import { SectionDescription } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { useAccount } from '@/providers/EmailAccountProvider';
 import {
-  useHasProcessingItems,
   pushToAiCategorizeSenderQueueAtom,
   stopAiCategorizeSenderQueue,
-} from "@/store/ai-categorize-sender-queue";
-import { SectionDescription } from "@/components/Typography";
-import { ButtonLoader } from "@/components/Loading";
-import { PremiumTooltip, usePremium } from "@/components/PremiumAlert";
-import { usePremiumModal } from "@/app/(app)/premium/PremiumModal";
-import { Toggle } from "@/components/Toggle";
-import { setAutoCategorizeAction } from "@/utils/actions/categorize";
-import { TooltipExplanation } from "@/components/TooltipExplanation";
-import type { CategoryWithRules } from "@/utils/category.server";
-import { useAccount } from "@/providers/EmailAccountProvider";
+  useHasProcessingItems,
+} from '@/store/ai-categorize-sender-queue';
+import { setAutoCategorizeAction } from '@/utils/actions/categorize';
+import type { CategoryWithRules } from '@/utils/category.server';
 
 export function Uncategorized({
   categories,
@@ -43,7 +43,7 @@ export function Uncategorized({
       senderAddresses?.map((address) => {
         return { address, category: null };
       }),
-    [senderAddresses],
+    [senderAddresses]
   );
 
   const { emailAccountId } = useAccount();
@@ -61,7 +61,7 @@ export function Uncategorized({
               disabled={!hasAiAccess}
               onClick={async () => {
                 if (!senderAddresses?.length) {
-                  toastError({ description: "No senders to categorize" });
+                  toastError({ description: 'No senders to categorize' });
                   return;
                 }
 
@@ -158,12 +158,12 @@ function AutoCategorizeToggle({
 function useSenders() {
   const getKey = (
     pageIndex: number,
-    previousPageData: UncategorizedSendersResponse | null,
+    previousPageData: UncategorizedSendersResponse | null
   ) => {
     // Reached the end
     if (previousPageData && !previousPageData.nextOffset) return null;
 
-    const baseUrl = "/api/user/categorize/senders/uncategorized";
+    const baseUrl = '/api/user/categorize/senders/uncategorized';
     const offset = pageIndex === 0 ? 0 : previousPageData?.nextOffset;
 
     return `${baseUrl}?offset=${offset}`;

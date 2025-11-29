@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { BarChart, Card, Title } from "@tremor/react";
-import { useMemo } from "react";
-import type { DateRange } from "react-day-picker";
-import { LabelList, Pie, PieChart } from "recharts";
-import { fromPairs } from "lodash";
-import { LoadingContent } from "@/components/LoadingContent";
-import { Skeleton } from "@/components/ui/skeleton";
+import { BarChart, Card, Title } from '@tremor/react';
+import { fromPairs } from 'lodash';
+import { useMemo } from 'react';
+import type { DateRange } from 'react-day-picker';
+import { LabelList, Pie, PieChart } from 'recharts';
+import type { RuleStatsResponse } from '@/app/api/user/stats/rule-stats/route';
+import { LoadingContent } from '@/components/LoadingContent';
 import {
-  Card as ShadcnCard,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+  Card as ShadcnCard,
+} from '@/components/ui/card';
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getDateRangeParams } from "./params";
-import { useOrgSWR } from "@/hooks/useOrgSWR";
-import type { RuleStatsResponse } from "@/app/api/user/stats/rule-stats/route";
+} from '@/components/ui/chart';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useOrgSWR } from '@/hooks/useOrgSWR';
+import { getDateRangeParams } from './params';
 
 interface RuleStatsChartProps {
   dateRange?: DateRange;
@@ -30,25 +30,25 @@ interface RuleStatsChartProps {
 }
 
 const CHART_COLORS = [
-  "var(--chart-1)",
-  "var(--chart-2)",
-  "var(--chart-3)",
-  "var(--chart-4)",
-  "var(--chart-5)",
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
 ];
 
 export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
   const params = getDateRangeParams(dateRange);
 
   const { data, isLoading, error } = useOrgSWR<RuleStatsResponse>(
-    `/api/user/stats/rule-stats?${new URLSearchParams(params as Record<string, string>)}`,
+    `/api/user/stats/rule-stats?${new URLSearchParams(params as Record<string, string>)}`
   );
 
   const barChartData = useMemo(() => {
     if (!data?.ruleStats) return [];
     return data.ruleStats.map((rule) => ({
       group: rule.ruleName,
-      "Executed Rules": rule.executedCount,
+      'Executed Rules': rule.executedCount,
     }));
   }, [data]);
 
@@ -63,7 +63,7 @@ export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
 
     const config: ChartConfig = {
       value: {
-        label: "Executed Rules",
+        label: 'Executed Rules',
       },
       ...fromPairs(
         data.ruleStats.map((rule, index) => [
@@ -72,7 +72,7 @@ export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
             label: rule.ruleName,
             color: CHART_COLORS[index % CHART_COLORS.length],
           },
-        ]),
+        ])
       ),
     };
 
@@ -101,8 +101,8 @@ export function RuleStatsChart({ dateRange, title }: RuleStatsChartProps) {
                 className="mt-4 h-72"
                 data={barChartData}
                 index="group"
-                categories={["Executed Rules"]}
-                colors={["blue"]}
+                categories={['Executed Rules']}
+                colors={['blue']}
                 showLegend={false}
                 showGridLines={true}
               />

@@ -1,29 +1,29 @@
-import { after, NextResponse } from "next/server";
-import { withError } from "@/utils/middleware";
-import { env } from "@/env";
-import { processHistoryForUser } from "@/app/api/google/webhook/process-history";
-import { createScopedLogger, type Logger } from "@/utils/logger";
-import { handleWebhookError } from "@/utils/webhook/error-handler";
+import { after, NextResponse } from 'next/server';
+import { processHistoryForUser } from '@/app/api/google/webhook/process-history';
+import { env } from '@/env';
+import { createScopedLogger, type Logger } from '@/utils/logger';
+import { withError } from '@/utils/middleware';
+import { handleWebhookError } from '@/utils/webhook/error-handler';
 
 export const maxDuration = 300;
 
 // Google PubSub calls this endpoint each time a user recieves an email. We subscribe for updates via `api/google/watch`
 export const POST = withError(async (request) => {
   const searchParams = new URL(request.url).searchParams;
-  const token = searchParams.get("token");
+  const token = searchParams.get('token');
 
-  let logger = createScopedLogger("google/webhook");
+  let logger = createScopedLogger('google/webhook');
 
   if (
     env.GOOGLE_PUBSUB_VERIFICATION_TOKEN &&
     token !== env.GOOGLE_PUBSUB_VERIFICATION_TOKEN
   ) {
-    logger.error("Invalid verification token", { token });
+    logger.error('Invalid verification token', { token });
     return NextResponse.json(
       {
-        message: "Invalid verification token",
+        message: 'Invalid verification token',
       },
-      { status: 403 },
+      { status: 403 }
     );
   }
 
@@ -35,7 +35,7 @@ export const POST = withError(async (request) => {
     historyId: decodedData.historyId,
   });
 
-  logger.info("Received webhook - acknowledging immediately");
+  logger.info('Received webhook - acknowledging immediately');
 
   // Process history asynchronously using after() to avoid Pub/Sub acknowledgment timeout
   // This ensures we acknowledge the message quickly while still processing it fully
@@ -46,15 +46,15 @@ export const POST = withError(async (request) => {
 
 async function processWebhookAsync(
   decodedData: { emailAddress: string; historyId: number },
-  logger: Logger,
+  logger: Logger
 ) {
   try {
     await processHistoryForUser(decodedData, {}, logger);
   } catch (error) {
     await handleWebhookError(error, {
       email: decodedData.emailAddress,
-      emailAccountId: "unknown", // TODO: add emailAccountId
-      url: "/api/google/webhook",
+      emailAccountId: 'unknown', // TODO: add emailAccountId
+      url: '/api/google/webhook',
       logger,
     });
   }
@@ -63,16 +63,16 @@ async function processWebhookAsync(
 function decodeHistoryId(body: { message?: { data?: string } }) {
   const data = body?.message?.data;
 
-  if (!data) throw new Error("No data found");
+  if (!data) throw new Error('No data found');
 
   // data is base64url-encoded JSON
-  const base64 = data.replace(/-/g, "+").replace(/_/g, "/");
+  const base64 = data.replace(/-/g, '+').replace(/_/g, '/');
   const decodedData: { emailAddress: string; historyId: number | string } =
-    JSON.parse(Buffer.from(base64, "base64").toString());
+    JSON.parse(Buffer.from(base64, 'base64').toString());
 
   // seem to get this in different formats? so unifying as number
   const historyId =
-    typeof decodedData.historyId === "string"
+    typeof decodedData.historyId === 'string'
       ? Number.parseInt(decodedData.historyId)
       : decodedData.historyId;
 

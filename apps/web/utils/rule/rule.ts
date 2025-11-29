@@ -1,15 +1,15 @@
-import type { CreateOrUpdateRuleSchema } from "@/utils/ai/rule/create-rule-schema";
-import prisma from "@/utils/prisma";
-import type { Logger } from "@/utils/logger";
-import { ActionType } from "@/generated/prisma/enums";
-import type { SystemType } from "@/generated/prisma/enums";
-import type { Prisma, Rule } from "@/generated/prisma/client";
-import { getActionRiskLevel, type RiskAction } from "@/utils/risk";
-import { hasExampleParams } from "@/app/(app)/[emailAccountId]/assistant/examples";
-import { createRuleHistory } from "@/utils/rule/rule-history";
-import { isMicrosoftProvider } from "@/utils/email/provider-types";
-import { createEmailProvider } from "@/utils/email/provider";
-import { resolveLabelNameAndId } from "@/utils/label/resolve-label";
+import { hasExampleParams } from '@/app/(app)/[emailAccountId]/assistant/examples';
+import type { Prisma, Rule } from '@/generated/prisma/client';
+import type { SystemType } from '@/generated/prisma/enums';
+import { ActionType } from '@/generated/prisma/enums';
+import type { CreateOrUpdateRuleSchema } from '@/utils/ai/rule/create-rule-schema';
+import { createEmailProvider } from '@/utils/email/provider';
+import { isMicrosoftProvider } from '@/utils/email/provider-types';
+import { resolveLabelNameAndId } from '@/utils/label/resolve-label';
+import type { Logger } from '@/utils/logger';
+import prisma from '@/utils/prisma';
+import { getActionRiskLevel, type RiskAction } from '@/utils/risk';
+import { createRuleHistory } from '@/utils/rule/rule-history';
 
 export function partialUpdateRule({
   ruleId,
@@ -41,7 +41,7 @@ export async function createRule({
   logger: Logger;
 }) {
   try {
-    logger.info("Creating rule", {
+    logger.info('Creating rule', {
       name: result.name,
       systemType,
     });
@@ -49,7 +49,7 @@ export async function createRule({
     const mappedActions = await mapActionFields(
       result.actions,
       provider,
-      emailAccountId,
+      emailAccountId
     );
 
     const rule = await prisma.rule.create({
@@ -67,7 +67,7 @@ export async function createRule({
             to: a.to ?? null,
             cc: a.cc ?? null,
             bcc: a.bcc ?? null,
-          })),
+          }))
         ),
         runOnThreads,
         conditionalOperator: result.condition.conditionalOperator ?? undefined,
@@ -79,11 +79,11 @@ export async function createRule({
       include: { actions: true, group: true },
     });
 
-    await createRuleHistory({ rule, triggerType: "created" });
+    await createRuleHistory({ rule, triggerType: 'created' });
 
     return rule;
   } catch (error) {
-    logger.error("Error creating rule", { error });
+    logger.error('Error creating rule', { error });
     throw error;
   }
 }
@@ -104,7 +104,7 @@ export async function updateRule({
   runOnThreads?: boolean;
 }) {
   try {
-    logger.info("Updating rule", {
+    logger.info('Updating rule', {
       name: result.name,
       ruleId,
     });
@@ -122,7 +122,7 @@ export async function updateRule({
             data: await mapActionFields(
               result.actions,
               provider,
-              emailAccountId,
+              emailAccountId
             ),
           },
         },
@@ -136,11 +136,11 @@ export async function updateRule({
       include: { actions: true, group: true },
     });
 
-    await createRuleHistory({ rule, triggerType: "updated" });
+    await createRuleHistory({ rule, triggerType: 'updated' });
 
     return rule;
   } catch (error) {
-    logger.error("Error updating rule", { error });
+    logger.error('Error updating rule', { error });
     throw error;
   }
 }
@@ -162,7 +162,7 @@ export async function upsertSystemRule({
   runOnThreads: boolean;
   logger: Logger;
 }) {
-  logger.info("Upserting system rule", { name, systemType });
+  logger.info('Upserting system rule', { name, systemType });
 
   const existingRule = await prisma.rule.findFirst({
     where: {
@@ -180,7 +180,7 @@ export async function upsertSystemRule({
   };
 
   if (existingRule) {
-    logger.info("Updating existing rule", {
+    logger.info('Updating existing rule', {
       ruleId: existingRule.id,
       hadSystemType: !!existingRule.systemType,
     });
@@ -197,24 +197,23 @@ export async function upsertSystemRule({
       include: { actions: true, group: true },
     });
 
-    await createRuleHistory({ rule, triggerType: "updated" });
-    return rule;
-  } else {
-    logger.info("Creating new system rule");
-
-    const rule = await prisma.rule.create({
-      data: {
-        ...data,
-        enabled: true,
-        emailAccountId,
-        actions: { createMany: { data: actions } },
-      },
-      include: { actions: true, group: true },
-    });
-
-    await createRuleHistory({ rule, triggerType: "created" });
+    await createRuleHistory({ rule, triggerType: 'updated' });
     return rule;
   }
+  logger.info('Creating new system rule');
+
+  const rule = await prisma.rule.create({
+    data: {
+      ...data,
+      enabled: true,
+      emailAccountId,
+      actions: { createMany: { data: actions } },
+    },
+    include: { actions: true, group: true },
+  });
+
+  await createRuleHistory({ rule, triggerType: 'created' });
+  return rule;
 }
 
 export async function updateRuleActions({
@@ -224,7 +223,7 @@ export async function updateRuleActions({
   emailAccountId,
 }: {
   ruleId: string;
-  actions: CreateOrUpdateRuleSchema["actions"];
+  actions: CreateOrUpdateRuleSchema['actions'];
   provider: string;
   emailAccountId: string;
 }) {
@@ -272,32 +271,32 @@ function shouldEnable(rule: CreateOrUpdateRuleSchema, actions: RiskAction[]) {
   // Don't automate sending or replying to emails
   if (
     rule.actions.find(
-      (a) => a.type === ActionType.REPLY || a.type === ActionType.SEND_EMAIL,
+      (a) => a.type === ActionType.REPLY || a.type === ActionType.SEND_EMAIL
     )
   )
     return false;
 
   const riskLevels = actions.map(
-    (action) => getActionRiskLevel(action, {}).level,
+    (action) => getActionRiskLevel(action, {}).level
   );
   // Only enable if all actions are low risk
-  return riskLevels.every((level) => level === "low");
+  return riskLevels.every((level) => level === 'low');
 }
 
 async function mapActionFields(
-  actions: (CreateOrUpdateRuleSchema["actions"][number] & {
+  actions: (CreateOrUpdateRuleSchema['actions'][number] & {
     labelId?: string | null;
     folderId?: string | null;
   })[],
   provider: string,
-  emailAccountId: string,
+  emailAccountId: string
 ) {
   const actionPromises = actions.map(
     async (a): Promise<Prisma.ActionCreateManyRuleInput> => {
       let label = a.fields?.label;
       let labelId: string | null = null;
       const folderName =
-        typeof a.fields?.folderName === "string" ? a.fields.folderName : null;
+        typeof a.fields?.folderName === 'string' ? a.fields.folderName : null;
       let folderId: string | null = a.folderId || null;
 
       if (a.type === ActionType.LABEL) {
@@ -346,7 +345,7 @@ async function mapActionFields(
         }),
         delayInMinutes: a.delayInMinutes,
       };
-    },
+    }
   );
 
   return Promise.all(actionPromises);

@@ -1,5 +1,5 @@
-import { SectionDescription, SectionHeader } from "@/components/Typography";
-import { cn } from "@/utils";
+import { SectionDescription, SectionHeader } from '@/components/Typography';
+import { cn } from '@/utils';
 
 export function FormWrapper(props: { children: React.ReactNode }) {
   return <div className="divide-y divide-black/5">{props.children}</div>;
@@ -14,8 +14,8 @@ export function FormSection(props: {
     <div
       id={props.id}
       className={cn(
-        "content-container grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 py-16 md:grid-cols-3",
-        props.className,
+        'content-container grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 py-16 md:grid-cols-3',
+        props.className
       )}
     >
       {props.children}

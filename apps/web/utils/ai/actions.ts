@@ -1,17 +1,17 @@
-import { ActionType } from "@/generated/prisma/enums";
-import type { ExecutedRule } from "@/generated/prisma/client";
-import { createScopedLogger, type Logger } from "@/utils/logger";
-import { callWebhook } from "@/utils/webhook";
-import type { ActionItem, EmailForAction } from "@/utils/ai/types";
-import type { EmailProvider } from "@/utils/email/types";
-import { enqueueDigestItem } from "@/utils/digest/index";
-import { filterNullProperties } from "@/utils";
-import { labelMessageAndSync } from "@/utils/label.server";
-import { hasVariables } from "@/utils/template";
+import type { ExecutedRule } from '@/generated/prisma/client';
+import { ActionType } from '@/generated/prisma/enums';
+import { filterNullProperties } from '@/utils';
+import type { ActionItem, EmailForAction } from '@/utils/ai/types';
+import { enqueueDigestItem } from '@/utils/digest/index';
+import type { EmailProvider } from '@/utils/email/types';
+import { labelMessageAndSync } from '@/utils/label.server';
+import { createScopedLogger, type Logger } from '@/utils/logger';
+import { hasVariables } from '@/utils/template';
+import { callWebhook } from '@/utils/webhook';
 
-const MODULE = "ai-actions";
+const MODULE = 'ai-actions';
 
-type ActionFunction<T extends Partial<Omit<ActionItem, "type">>> = (options: {
+type ActionFunction<T extends Partial<Omit<ActionItem, 'type'>>> = (options: {
   client: EmailProvider;
   email: EmailForAction;
   args: T;
@@ -35,12 +35,12 @@ export const runActionFunction = async (options: {
   const { action, userEmail, logger } = options;
   const log = logger.with({ module: MODULE });
 
-  log.info("Running action", {
+  log.info('Running action', {
     actionType: action.type,
     userEmail,
     id: action.id,
   });
-  log.trace("Running action", () => filterNullProperties(action));
+  log.trace('Running action', () => filterNullProperties(action));
 
   const { type, ...args } = action;
   const opts = {
@@ -93,7 +93,7 @@ const label: ActionFunction<{
   // Lazy migration: If no labelId but label name exists, look it up
   if (!labelIdToUse && args.label) {
     if (hasVariables(args.label)) {
-      logger.error("Template label not processed by AI", { label: args.label });
+      logger.error('Template label not processed by AI', { label: args.label });
       return;
     }
 
@@ -104,12 +104,12 @@ const label: ActionFunction<{
       // Note: We don't update the Action here to avoid race conditions
       // The Action will be migrated when the rule is next updated
     } else {
-      logger.info("Label not found, creating it", { labelName: args.label });
+      logger.info('Label not found, creating it', { labelName: args.label });
       const createdLabel = await client.createLabel(args.label);
       labelIdToUse = createdLabel.id;
 
       if (!labelIdToUse) {
-        logger.error("Failed to create label", { labelName: args.label });
+        logger.error('Failed to create label', { labelName: args.label });
         return;
       }
     }
@@ -137,7 +137,7 @@ const draft: ActionFunction<{
   const draftArgs = {
     to: args.to ?? undefined,
     subject: args.subject ?? undefined,
-    content: args.content ?? "",
+    content: args.content ?? '',
   };
 
   const result = await client.draftEmail(
@@ -146,8 +146,8 @@ const draft: ActionFunction<{
       threadId: email.threadId,
       headers: email.headers,
       internalDate: email.internalDate,
-      snippet: "",
-      historyId: "",
+      snippet: '',
+      historyId: '',
       inline: [],
       subject: email.headers.subject,
       date: email.headers.date,
@@ -158,7 +158,7 @@ const draft: ActionFunction<{
     },
     draftArgs,
     userEmail,
-    executedRule,
+    executedRule
   );
   return { draftId: result.draftId };
 };
@@ -176,13 +176,13 @@ const reply: ActionFunction<{
       threadId: email.threadId,
       headers: email.headers,
       internalDate: email.internalDate,
-      snippet: "",
-      historyId: "",
+      snippet: '',
+      historyId: '',
       inline: [],
       subject: email.headers.subject,
       date: email.headers.date,
     },
-    args.content,
+    args.content
   );
 };
 
@@ -228,13 +228,13 @@ const forward: ActionFunction<{
       threadId: email.threadId,
       headers: email.headers,
       internalDate: email.internalDate,
-      snippet: "",
-      historyId: "",
+      snippet: '',
+      historyId: '',
       inline: [],
       subject: email.headers.subject,
       date: email.headers.date,
     },
-    forwardArgs,
+    forwardArgs
   );
 };
 
@@ -261,7 +261,7 @@ const call_webhook: ActionFunction<{ url?: string | null }> = async ({
       from: email.headers.from,
       cc: email.headers.cc,
       bcc: email.headers.bcc,
-      headerMessageId: email.headers["message-id"] || "",
+      headerMessageId: email.headers['message-id'] || '',
     },
     executedRule: {
       id: executedRule.id,

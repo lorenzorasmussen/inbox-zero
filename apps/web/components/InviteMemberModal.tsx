@@ -1,8 +1,12 @@
-"use client";
+'use client';
 
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback } from "react";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCallback } from 'react';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { Input } from '@/components/Input';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { TooltipExplanation } from '@/components/TooltipExplanation';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -12,24 +16,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/Input";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { TooltipExplanation } from "@/components/TooltipExplanation";
-import { toastSuccess, toastError } from "@/components/Toast";
-import { inviteMemberAction } from "@/utils/actions/invite-member";
+} from '@/components/ui/select';
+import { useDialogState } from '@/hooks/useDialogState';
+import { inviteMemberAction } from '@/utils/actions/invite-member';
 import {
-  inviteMemberBody,
   type InviteMemberBody,
-} from "@/utils/actions/invite-member.validation";
-import { useDialogState } from "@/hooks/useDialogState";
+  inviteMemberBody,
+} from '@/utils/actions/invite-member.validation';
 
 export function InviteMemberModal({
   organizationId,
@@ -47,13 +47,13 @@ export function InviteMemberModal({
     resolver: zodResolver(inviteMemberBody),
     defaultValues: {
       organizationId,
-      role: "member",
+      role: 'member',
     },
   });
 
   const { isOpen, onToggle, onClose } = useDialogState();
 
-  const selectedRole = watch("role");
+  const selectedRole = watch('role');
 
   const onSubmit: SubmitHandler<InviteMemberBody> = useCallback(
     async (data) => {
@@ -61,18 +61,18 @@ export function InviteMemberModal({
 
       if (result?.serverError) {
         toastError({
-          title: "Error sending invitation",
+          title: 'Error sending invitation',
           description: result.serverError,
         });
       } else {
         toastSuccess({
-          description: "Invitation sent successfully!",
+          description: 'Invitation sent successfully!',
         });
         reset();
         onClose();
       }
     },
-    [reset, onClose],
+    [reset, onClose]
   );
 
   return (
@@ -96,7 +96,7 @@ export function InviteMemberModal({
             name="email"
             label="Email Address"
             placeholder="john.doe@example.com"
-            registerProps={register("email")}
+            registerProps={register('email')}
             error={errors.email}
           />
 
@@ -113,7 +113,7 @@ export function InviteMemberModal({
             <Select
               value={selectedRole}
               onValueChange={(value) =>
-                setValue("role", value as "admin" | "member")
+                setValue('role', value as 'admin' | 'member')
               }
             >
               <SelectTrigger id="role">

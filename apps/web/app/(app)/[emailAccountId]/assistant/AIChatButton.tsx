@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { useSidebar } from "@/components/ui/sidebar";
-import { MessageCircleIcon } from "lucide-react";
+import { MessageCircleIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export function AIChatButton() {
   const { setOpen, setOpenMobile, isMobile } = useSidebar();
@@ -12,9 +12,9 @@ export function AIChatButton() {
       size="sm"
       variant="outline"
       onClick={() => {
-        setOpen((arr) => [...arr, "chat-sidebar"]);
+        setOpen((arr) => [...arr, 'chat-sidebar']);
         if (isMobile) {
-          setOpenMobile((arr) => [...arr, "chat-sidebar"]);
+          setOpenMobile((arr) => [...arr, 'chat-sidebar']);
         }
       }}
     >

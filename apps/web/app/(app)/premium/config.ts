@@ -1,5 +1,5 @@
-import { env } from "@/env";
-import type { PremiumTier } from "@/generated/prisma/enums";
+import { env } from '@/env';
+import type { PremiumTier } from '@/generated/prisma/enums';
 
 type Feature = { text: string; tooltip?: string };
 
@@ -30,13 +30,13 @@ const pricing: Record<PremiumTier, number> = {
 };
 
 const variantIdToTier: Record<number, PremiumTier> = {
-  [env.NEXT_PUBLIC_BASIC_MONTHLY_VARIANT_ID]: "BASIC_MONTHLY",
-  [env.NEXT_PUBLIC_BASIC_ANNUALLY_VARIANT_ID]: "BASIC_ANNUALLY",
-  [env.NEXT_PUBLIC_PRO_MONTHLY_VARIANT_ID]: "PRO_MONTHLY",
-  [env.NEXT_PUBLIC_PRO_ANNUALLY_VARIANT_ID]: "PRO_ANNUALLY",
-  [env.NEXT_PUBLIC_BUSINESS_MONTHLY_VARIANT_ID]: "BUSINESS_MONTHLY",
-  [env.NEXT_PUBLIC_BUSINESS_ANNUALLY_VARIANT_ID]: "BUSINESS_ANNUALLY",
-  [env.NEXT_PUBLIC_COPILOT_MONTHLY_VARIANT_ID]: "COPILOT_MONTHLY",
+  [env.NEXT_PUBLIC_BASIC_MONTHLY_VARIANT_ID]: 'BASIC_MONTHLY',
+  [env.NEXT_PUBLIC_BASIC_ANNUALLY_VARIANT_ID]: 'BASIC_ANNUALLY',
+  [env.NEXT_PUBLIC_PRO_MONTHLY_VARIANT_ID]: 'PRO_MONTHLY',
+  [env.NEXT_PUBLIC_PRO_ANNUALLY_VARIANT_ID]: 'PRO_ANNUALLY',
+  [env.NEXT_PUBLIC_BUSINESS_MONTHLY_VARIANT_ID]: 'BUSINESS_MONTHLY',
+  [env.NEXT_PUBLIC_BUSINESS_ANNUALLY_VARIANT_ID]: 'BUSINESS_ANNUALLY',
+  [env.NEXT_PUBLIC_COPILOT_MONTHLY_VARIANT_ID]: 'COPILOT_MONTHLY',
 };
 
 const STRIPE_PRICE_ID_CONFIG: Record<
@@ -48,44 +48,44 @@ const STRIPE_PRICE_ID_CONFIG: Record<
     oldPriceIds?: string[];
   }
 > = {
-  BASIC_MONTHLY: { priceId: "price_1RfeDLKGf8mwZWHn6UW8wJcY" },
-  BASIC_ANNUALLY: { priceId: "price_1RfeDLKGf8mwZWHn5kfC8gcM" },
+  BASIC_MONTHLY: { priceId: 'price_1RfeDLKGf8mwZWHn6UW8wJcY' },
+  BASIC_ANNUALLY: { priceId: 'price_1RfeDLKGf8mwZWHn5kfC8gcM' },
   PRO_MONTHLY: {},
   PRO_ANNUALLY: {},
   BUSINESS_MONTHLY: {
     priceId: env.NEXT_PUBLIC_STRIPE_BUSINESS_MONTHLY_PRICE_ID,
     oldPriceIds: [
-      "price_1S5u73KGf8mwZWHn8VYFdALA",
-      "price_1RMSnIKGf8mwZWHnlHP0212n",
-      "price_1RfoILKGf8mwZWHnDiUMj6no",
-      "price_1RfeAFKGf8mwZWHnnnPzFEky",
-      "price_1RfSoHKGf8mwZWHnxTsSDTqW",
-      "price_1Rg0QfKGf8mwZWHnDsiocBVD",
-      "price_1Rg0LEKGf8mwZWHndYXYg7ie",
-      "price_1Rg03pKGf8mwZWHnWMNeQzLc",
+      'price_1S5u73KGf8mwZWHn8VYFdALA',
+      'price_1RMSnIKGf8mwZWHnlHP0212n',
+      'price_1RfoILKGf8mwZWHnDiUMj6no',
+      'price_1RfeAFKGf8mwZWHnnnPzFEky',
+      'price_1RfSoHKGf8mwZWHnxTsSDTqW',
+      'price_1Rg0QfKGf8mwZWHnDsiocBVD',
+      'price_1Rg0LEKGf8mwZWHndYXYg7ie',
+      'price_1Rg03pKGf8mwZWHnWMNeQzLc',
     ],
   },
   BUSINESS_ANNUALLY: {
     priceId: env.NEXT_PUBLIC_STRIPE_BUSINESS_ANNUALLY_PRICE_ID,
     oldPriceIds: [
-      "price_1S5u6uKGf8mwZWHnEvPWuQzG",
-      "price_1S1QGGKGf8mwZWHnYpUcqNua",
-      "price_1RMSnIKGf8mwZWHnymtuW2s0",
-      "price_1RfSoxKGf8mwZWHngHcug4YM",
+      'price_1S5u6uKGf8mwZWHnEvPWuQzG',
+      'price_1S1QGGKGf8mwZWHnYpUcqNua',
+      'price_1RMSnIKGf8mwZWHnymtuW2s0',
+      'price_1RfSoxKGf8mwZWHngHcug4YM',
     ],
   },
   BUSINESS_PLUS_MONTHLY: {
     priceId: env.NEXT_PUBLIC_STRIPE_BUSINESS_PLUS_MONTHLY_PRICE_ID,
     oldPriceIds: [
-      "price_1S5u6NKGf8mwZWHnZCfy4D5n",
-      "price_1RMSoMKGf8mwZWHn5fAKBT19",
+      'price_1S5u6NKGf8mwZWHnZCfy4D5n',
+      'price_1RMSoMKGf8mwZWHn5fAKBT19',
     ],
   },
   BUSINESS_PLUS_ANNUALLY: {
     priceId: env.NEXT_PUBLIC_STRIPE_BUSINESS_PLUS_ANNUALLY_PRICE_ID,
     oldPriceIds: [
-      "price_1S5u6XKGf8mwZWHnba8HX1H2",
-      "price_1RMSoMKGf8mwZWHnGjf6fRmh",
+      'price_1S5u6XKGf8mwZWHnba8HX1H2',
+      'price_1RMSoMKGf8mwZWHnGjf6fRmh',
     ],
   },
   COPILOT_MONTHLY: {},
@@ -119,13 +119,13 @@ function discount(monthly: number, annually: number) {
   return ((monthly - annually) / monthly) * 100;
 }
 
-export const businessTierName = "Starter";
+export const businessTierName = 'Starter';
 
 const businessTier: Tier = {
   name: businessTierName,
   tiers: {
-    monthly: "BUSINESS_MONTHLY",
-    annually: "BUSINESS_ANNUALLY",
+    monthly: 'BUSINESS_MONTHLY',
+    annually: 'BUSINESS_ANNUALLY',
   },
   price: {
     monthly: pricing.BUSINESS_MONTHLY,
@@ -136,33 +136,33 @@ const businessTier: Tier = {
     annually: discount(pricing.BUSINESS_MONTHLY, pricing.BUSINESS_ANNUALLY),
   },
   description:
-    "For individuals, entrepreneurs, and executives looking to buy back their time.",
+    'For individuals, entrepreneurs, and executives looking to buy back their time.',
   features: [
     {
-      text: "Sorts and labels every email",
+      text: 'Sorts and labels every email',
     },
     {
-      text: "Drafts replies in your voice",
+      text: 'Drafts replies in your voice',
     },
     {
-      text: "Blocks cold emails",
+      text: 'Blocks cold emails',
     },
     {
-      text: "Bulk unsubscribe and archive emails",
+      text: 'Bulk unsubscribe and archive emails',
     },
     {
-      text: "Email analytics",
+      text: 'Email analytics',
     },
   ],
-  cta: "Try free for 7 days",
+  cta: 'Try free for 7 days',
   mostPopular: true,
 };
 
 const businessPlusTier: Tier = {
-  name: "Professional",
+  name: 'Professional',
   tiers: {
-    monthly: "BUSINESS_PLUS_MONTHLY",
-    annually: "BUSINESS_PLUS_ANNUALLY",
+    monthly: 'BUSINESS_PLUS_MONTHLY',
+    annually: 'BUSINESS_PLUS_ANNUALLY',
   },
   price: {
     monthly: pricing.BUSINESS_PLUS_MONTHLY,
@@ -172,60 +172,60 @@ const businessPlusTier: Tier = {
     monthly: 0,
     annually: discount(
       pricing.BUSINESS_PLUS_MONTHLY,
-      pricing.BUSINESS_PLUS_ANNUALLY,
+      pricing.BUSINESS_PLUS_ANNUALLY
     ),
   },
-  description: "For teams and growing businesses handling high email volumes.",
+  description: 'For teams and growing businesses handling high email volumes.',
   features: [
     {
-      text: "Everything in Individual, plus:",
+      text: 'Everything in Individual, plus:',
     },
     {
-      text: "Unlimited knowledge base",
+      text: 'Unlimited knowledge base',
       tooltip:
-        "The knowledge base is used to help draft responses. Store up to unlimited content in your knowledge base.",
+        'The knowledge base is used to help draft responses. Store up to unlimited content in your knowledge base.',
     },
-    { text: "Team-wide analytics" },
-    { text: "Priority support" },
+    { text: 'Team-wide analytics' },
+    { text: 'Priority support' },
     {
-      text: "Dedicated onboarding manager",
+      text: 'Dedicated onboarding manager',
       tooltip:
         "We'll help you get set up on an onboarding call. Book as many free calls as needed.",
     },
   ],
-  cta: "Try free for 7 days",
+  cta: 'Try free for 7 days',
   mostPopular: false,
 };
 
 const enterpriseTier: Tier = {
-  name: "Enterprise",
+  name: 'Enterprise',
   tiers: {
-    monthly: "COPILOT_MONTHLY",
-    annually: "COPILOT_MONTHLY",
+    monthly: 'COPILOT_MONTHLY',
+    annually: 'COPILOT_MONTHLY',
   },
   price: { monthly: 0, annually: 0 },
   discount: { monthly: 0, annually: 0 },
   description:
-    "For organizations with enterprise-grade security and compliance requirements.",
+    'For organizations with enterprise-grade security and compliance requirements.',
   features: [
     {
-      text: "Everything in Team, plus:",
+      text: 'Everything in Team, plus:',
     },
     {
-      text: "SSO login",
+      text: 'SSO login',
     },
     {
-      text: "On-premise deployment (optional)",
+      text: 'On-premise deployment (optional)',
     },
     {
-      text: "Advanced security & SLA",
+      text: 'Advanced security & SLA',
     },
     {
-      text: "Dedicated account manager & training",
+      text: 'Dedicated account manager & training',
     },
   ],
-  cta: "Speak to sales",
-  ctaLink: "https://go.getinboxzero.com/sales",
+  cta: 'Speak to sales',
+  ctaLink: 'https://go.getinboxzero.com/sales',
   mostPopular: false,
 };
 

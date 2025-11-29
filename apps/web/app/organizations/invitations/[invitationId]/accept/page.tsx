@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Loading } from '@/components/Loading';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Loading } from "@/components/Loading";
-import { useUser } from "@/hooks/useUser";
-import { handleInvitationAction } from "@/utils/actions/invitation";
-import { setInvitationCookie, clearInvitationCookie } from "@/utils/cookies";
+} from '@/components/ui/card';
+import { useUser } from '@/hooks/useUser';
+import { handleInvitationAction } from '@/utils/actions/invitation';
+import { clearInvitationCookie, setInvitationCookie } from '@/utils/cookies';
 
 export default function AcceptInvitationPage() {
   const params = useParams();
@@ -45,7 +45,7 @@ export default function AcceptInvitationPage() {
           setHasProcessed(true);
           setInvitationCookie(invitationId);
           router.push(
-            `/login?next=/organizations/invitations/${invitationId}/accept`,
+            `/login?next=/organizations/invitations/${invitationId}/accept`
           );
           return;
         }
@@ -56,16 +56,16 @@ export default function AcceptInvitationPage() {
         if (result?.serverError) {
           setError(result.serverError);
         } else if (result?.validationErrors) {
-          setError("Validation error occurred");
+          setError('Validation error occurred');
         } else if (result?.data) {
           clearInvitationCookie();
           setSuccess(true);
         } else {
-          setError("An unknown error occurred.");
+          setError('An unknown error occurred.');
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to process invitation",
+          err instanceof Error ? err.message : 'Failed to process invitation'
         );
       } finally {
         setLoading(false);
@@ -128,7 +128,7 @@ export default function AcceptInvitationPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => router.push("/welcome")} className="w-full">
+            <Button onClick={() => router.push('/welcome')} className="w-full">
               Continue
             </Button>
           </CardContent>

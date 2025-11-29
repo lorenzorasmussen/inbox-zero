@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Content from "./content.mdx";
-import { LegalPage } from "@/components/LegalPage";
+import { LegalPage } from '@/components/LegalPage';
+import Content from './content.mdx';
 
 export function PrivacyContent() {
   return (

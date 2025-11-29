@@ -1,7 +1,7 @@
-export const ASSISTANT_ONBOARDING_COOKIE = "viewed_assistant_onboarding";
-export const REPLY_ZERO_ONBOARDING_COOKIE = "viewed_reply_zero_onboarding";
-export const INVITATION_COOKIE = "invitation_id";
-export const LAST_EMAIL_ACCOUNT_COOKIE = "last_email_account_id";
+export const ASSISTANT_ONBOARDING_COOKIE = 'viewed_assistant_onboarding';
+export const REPLY_ZERO_ONBOARDING_COOKIE = 'viewed_reply_zero_onboarding';
+export const INVITATION_COOKIE = 'invitation_id';
+export const LAST_EMAIL_ACCOUNT_COOKIE = 'last_email_account_id';
 
 export type LastEmailAccountCookieValue = {
   userId: string;

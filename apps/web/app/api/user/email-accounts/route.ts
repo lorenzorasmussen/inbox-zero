@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withAuth } from "@/utils/middleware";
+import { NextResponse } from 'next/server';
+import { withAuth } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type GetEmailAccountsResponse = Awaited<
   ReturnType<typeof getEmailAccounts>
@@ -29,7 +29,7 @@ async function getEmailAccounts({ userId }: { userId: string }) {
       },
     },
     orderBy: {
-      createdAt: "asc",
+      createdAt: 'asc',
     },
   });
 
@@ -50,7 +50,7 @@ async function getEmailAccounts({ userId }: { userId: string }) {
   return { emailAccounts: accountsWithNames };
 }
 
-export const GET = withAuth("user/email-accounts", async (request) => {
+export const GET = withAuth('user/email-accounts', async (request) => {
   const userId = request.auth.userId;
   const result = await getEmailAccounts({ userId });
   return NextResponse.json(result);

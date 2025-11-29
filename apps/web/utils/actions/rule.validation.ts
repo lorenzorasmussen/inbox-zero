@@ -1,17 +1,17 @@
-import { z } from "zod";
+import { z } from 'zod';
 import {
   ActionType,
   LogicalOperator,
   SystemType,
-} from "@/generated/prisma/enums";
-import { ConditionType } from "@/utils/config";
-import { NINETY_DAYS_MINUTES } from "@/utils/date";
-import { validateLabelNameBasic } from "@/utils/gmail/label-validation";
+} from '@/generated/prisma/enums';
+import { ConditionType } from '@/utils/config';
+import { NINETY_DAYS_MINUTES } from '@/utils/date';
+import { validateLabelNameBasic } from '@/utils/gmail/label-validation';
 
 export const delayInMinutesSchema = z
   .number()
-  .min(1, "Minimum supported delay is 1 minute")
-  .max(NINETY_DAYS_MINUTES, "Maximum supported delay is 90 days")
+  .min(1, 'Minimum supported delay is 1 minute')
+  .max(NINETY_DAYS_MINUTES, 'Maximum supported delay is 90 days')
   .nullish();
 
 const zodActionType = z.enum([
@@ -95,8 +95,8 @@ const zodAction = z
       if (!labelValue) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Please enter a label name for the Label action",
-          path: ["labelId"],
+          message: 'Please enter a label name for the Label action',
+          path: ['labelId'],
         });
         return;
       }
@@ -106,7 +106,7 @@ const zodAction = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: validation.error!,
-          path: ["labelId"],
+          path: ['labelId'],
         });
       }
     }
@@ -114,15 +114,15 @@ const zodAction = z
     if (data.type === ActionType.FORWARD && !data.to?.value?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please enter an email address to forward to",
-        path: ["to"],
+        message: 'Please enter an email address to forward to',
+        path: ['to'],
       });
     }
     if (data.type === ActionType.CALL_WEBHOOK && !data.url?.value?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please enter a webhook URL",
-        path: ["url"],
+        message: 'Please enter a webhook URL',
+        path: ['url'],
       });
     }
     if (
@@ -131,23 +131,23 @@ const zodAction = z
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Please select a folder from the list",
-        path: ["folderName"],
+        message: 'Please select a folder from the list',
+        path: ['folderName'],
       });
     }
   });
 
 export const createRuleBody = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Please enter a name"),
+  name: z.string().min(1, 'Please enter a name'),
   instructions: z.string().nullish(),
   groupId: z.string().nullish(),
   runOnThreads: z.boolean().nullish(),
   digest: z.boolean().nullish(),
-  actions: z.array(zodAction).min(1, "You must have at least one action"),
+  actions: z.array(zodAction).min(1, 'You must have at least one action'),
   conditions: z
     .array(zodCondition)
-    .min(1, "You must have at least one condition")
+    .min(1, 'You must have at least one condition')
     .refine(
       (conditions) => {
         const types = conditions.map((condition) => condition.type);
@@ -155,7 +155,7 @@ export const createRuleBody = z.object({
       },
       {
         message: "You can't have two conditions with the same type.",
-      },
+      }
     ),
   conditionalOperator: z
     .enum([LogicalOperator.AND, LogicalOperator.OR])
@@ -191,12 +191,12 @@ export type EnableMultiRuleSelectionBody = z.infer<
 >;
 
 const categoryAction = z.enum([
-  "label",
-  "label_archive",
-  "label_archive_delayed",
-  "move_folder",
-  "move_folder_delayed",
-  "none",
+  'label',
+  'label_archive',
+  'label_archive_delayed',
+  'move_folder',
+  'move_folder_delayed',
+  'none',
 ]);
 export type CategoryAction = z.infer<typeof categoryAction>;
 
@@ -206,8 +206,8 @@ const categoryConfig = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "Please enter a name")
-    .max(40, "Please keep names under 40 characters"),
+    .min(1, 'Please enter a name')
+    .max(40, 'Please keep names under 40 characters'),
   description: z.string(),
   key: zodSystemRule.nullable(),
 });
@@ -225,5 +225,5 @@ export const toggleRuleBody = z
     enabled: z.boolean(),
   })
   .refine((data) => data.ruleId || data.systemType, {
-    message: "Either ruleId or systemType must be provided",
+    message: 'Either ruleId or systemType must be provided',
   });

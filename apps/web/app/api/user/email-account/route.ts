@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import prisma from "@/utils/prisma";
-import { withEmailAccount } from "@/utils/middleware";
-import { SafeError } from "@/utils/error";
+import { NextResponse } from 'next/server';
+import { SafeError } from '@/utils/error';
+import { withEmailAccount } from '@/utils/middleware';
+import prisma from '@/utils/prisma';
 
 export type EmailAccountFullResponse = Awaited<
   ReturnType<typeof getEmailAccount>
@@ -26,7 +26,7 @@ async function getEmailAccount({ emailAccountId }: { emailAccountId: string }) {
     },
   });
 
-  if (!emailAccount) throw new SafeError("Email account not found");
+  if (!emailAccount) throw new SafeError('Email account not found');
 
   return emailAccount;
 }
@@ -39,5 +39,5 @@ export const GET = withEmailAccount(
 
     return NextResponse.json(emailAccount);
   },
-  { allowOrgAdmins: true },
+  { allowOrgAdmins: true }
 );

@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom } from 'jotai';
 
 export const refetchEmailListAtom = atom<
   { refetch: (options?: { removedThreadIds?: string[] }) => void } | undefined

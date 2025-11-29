@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { ArrowRightIcon, ChromeIcon, MailsIcon } from "lucide-react";
-import { PageHeading, TypographyP } from "@/components/Typography";
-import { IconCircle } from "@/app/(app)/[emailAccountId]/onboarding/IconCircle";
-import { OnboardingWrapper } from "@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper";
-import { Button } from "@/components/ui/button";
-import { OnboardingImagePreview } from "@/app/(app)/[emailAccountId]/onboarding/ImagePreview";
-import { EXTENSION_URL } from "@/utils/config";
+import { ArrowRightIcon, ChromeIcon, MailsIcon } from 'lucide-react';
+import { useState } from 'react';
+import { IconCircle } from '@/app/(app)/[emailAccountId]/onboarding/IconCircle';
+import { OnboardingImagePreview } from '@/app/(app)/[emailAccountId]/onboarding/ImagePreview';
+import { OnboardingWrapper } from '@/app/(app)/[emailAccountId]/onboarding/OnboardingWrapper';
+import { PageHeading, TypographyP } from '@/components/Typography';
+import { Button } from '@/components/ui/button';
+import { EXTENSION_URL } from '@/utils/config';
 
 export function StepExtension({ onNext }: { onNext: () => Promise<void> }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +22,7 @@ export function StepExtension({ onNext }: { onNext: () => Promise<void> }) {
         <div className="text-center mt-4">
           <PageHeading>Install the Inbox Zero Tabs extension</PageHeading>
           <TypographyP className="mt-2 max-w-lg mx-auto">
-            Add tabs to Gmail that show only <strong>unhandled emails</strong>{" "}
+            Add tabs to Gmail that show only <strong>unhandled emails</strong>{' '}
             by label.
             <br />
             See only emails needing replies, or see only newsletters and archive

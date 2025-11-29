@@ -1,7 +1,7 @@
-import type { NewsletterStatsResponse } from "@/app/api/user/stats/newsletters/route";
-import type { NewsletterStatus } from "@/generated/prisma/enums";
-import type { EmailLabel } from "@/providers/EmailProvider";
-import type { UserResponse } from "@/app/api/user/me/route";
+import type { UserResponse } from '@/app/api/user/me/route';
+import type { NewsletterStatsResponse } from '@/app/api/user/stats/newsletters/route';
+import type { NewsletterStatus } from '@/generated/prisma/enums';
+import type { EmailLabel } from '@/providers/EmailProvider';
 
 export type Row = {
   name: string;
@@ -11,7 +11,7 @@ export type Row = {
   autoArchived?: { id?: string | null };
 };
 
-type Newsletter = NewsletterStatsResponse["newsletters"][number];
+type Newsletter = NewsletterStatsResponse['newsletters'][number];
 
 export interface RowProps {
   emailAccountId: string;

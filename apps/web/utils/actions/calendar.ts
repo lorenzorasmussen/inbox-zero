@@ -1,17 +1,17 @@
-"use server";
+'use server';
 
-import { actionClient } from "@/utils/actions/safe-action";
 import {
   disconnectCalendarBody,
   toggleCalendarBody,
-  updateTimezoneBody,
   updateBookingLinkBody,
-} from "@/utils/actions/calendar.validation";
-import prisma from "@/utils/prisma";
-import { SafeError } from "@/utils/error";
+  updateTimezoneBody,
+} from '@/utils/actions/calendar.validation';
+import { actionClient } from '@/utils/actions/safe-action';
+import { SafeError } from '@/utils/error';
+import prisma from '@/utils/prisma';
 
 export const disconnectCalendarAction = actionClient
-  .metadata({ name: "disconnectCalendar" })
+  .metadata({ name: 'disconnectCalendar' })
   .inputSchema(disconnectCalendarBody)
   .action(
     async ({ ctx: { emailAccountId }, parsedInput: { connectionId } }) => {
@@ -23,7 +23,7 @@ export const disconnectCalendarAction = actionClient
       });
 
       if (!connection) {
-        throw new SafeError("Calendar connection not found");
+        throw new SafeError('Calendar connection not found');
       }
 
       await prisma.calendarConnection.delete({
@@ -31,11 +31,11 @@ export const disconnectCalendarAction = actionClient
       });
 
       return { success: true };
-    },
+    }
   );
 
 export const toggleCalendarAction = actionClient
-  .metadata({ name: "toggleCalendar" })
+  .metadata({ name: 'toggleCalendar' })
   .inputSchema(toggleCalendarBody)
   .action(
     async ({
@@ -53,15 +53,15 @@ export const toggleCalendarAction = actionClient
       });
 
       if (updatedCalendar.count === 0) {
-        throw new SafeError("Calendar not found");
+        throw new SafeError('Calendar not found');
       }
 
       return { success: true };
-    },
+    }
   );
 
 export const updateEmailAccountTimezoneAction = actionClient
-  .metadata({ name: "updateTimezone" })
+  .metadata({ name: 'updateTimezone' })
   .inputSchema(updateTimezoneBody)
   .action(async ({ ctx: { emailAccountId }, parsedInput: { timezone } }) => {
     await prisma.emailAccount.update({
@@ -71,7 +71,7 @@ export const updateEmailAccountTimezoneAction = actionClient
   });
 
 export const updateCalendarBookingLinkAction = actionClient
-  .metadata({ name: "updateBookingLink" })
+  .metadata({ name: 'updateBookingLink' })
   .inputSchema(updateBookingLinkBody)
   .action(async ({ ctx: { emailAccountId }, parsedInput: { bookingLink } }) => {
     await prisma.emailAccount.update({

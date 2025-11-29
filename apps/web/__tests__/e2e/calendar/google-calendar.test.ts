@@ -8,12 +8,12 @@
  * 1. Set TEST_GMAIL_EMAIL env var to your Gmail address
  */
 
-import { describe, test, expect, beforeAll, afterAll, vi } from "vitest";
-import prisma from "@/utils/prisma";
-import { googleAvailabilityProvider } from "@/utils/calendar/providers/google-availability";
-import { getCalendarClientWithRefresh } from "@/utils/calendar/client";
-import type { calendar_v3 } from "@googleapis/calendar";
-import { env } from "@/env";
+import type { calendar_v3 } from '@googleapis/calendar';
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
+import { env } from '@/env';
+import { getCalendarClientWithRefresh } from '@/utils/calendar/client';
+import { googleAvailabilityProvider } from '@/utils/calendar/providers/google-availability';
+import prisma from '@/utils/prisma';
 
 // ============================================
 // TEST DATA - SET VIA ENVIRONMENT VARIABLES
@@ -21,9 +21,9 @@ import { env } from "@/env";
 const RUN_E2E_TESTS = process.env.RUN_E2E_TESTS;
 const TEST_GMAIL_EMAIL = process.env.TEST_GMAIL_EMAIL;
 
-vi.mock("server-only", () => ({}));
+vi.mock('server-only', () => ({}));
 
-describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
+describe.skipIf(!RUN_E2E_TESTS)('Google Calendar Integration Tests', () => {
   let calendarConnection: {
     id: string;
     accessToken: string;
@@ -41,19 +41,19 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
     const testEmail = TEST_GMAIL_EMAIL;
 
     if (!testEmail) {
-      console.warn("\n⚠️  Set TEST_GMAIL_EMAIL env var to run these tests");
+      console.warn('\n⚠️  Set TEST_GMAIL_EMAIL env var to run these tests');
       console.warn(
-        "   Example: TEST_GMAIL_EMAIL=your@gmail.com pnpm test-e2e google-calendar\n",
+        '   Example: TEST_GMAIL_EMAIL=your@gmail.com pnpm test-e2e google-calendar\n'
       );
       return;
     }
 
     if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
       console.warn(
-        "\n⚠️  Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env.test\n",
+        '\n⚠️  Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env.test\n'
       );
       throw new Error(
-        "Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env.test",
+        'Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in .env.test'
       );
     }
 
@@ -61,7 +61,7 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
       where: {
         email: testEmail,
         account: {
-          provider: "google",
+          provider: 'google',
         },
       },
       include: {
@@ -76,7 +76,7 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
     const connection = await prisma.calendarConnection.findFirst({
       where: {
         emailAccountId: emailAccount.id,
-        provider: "google",
+        provider: 'google',
         isConnected: true,
       },
       include: {
@@ -88,14 +88,14 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
     });
 
     if (!connection) {
-      console.warn("\n⚠️  No Google calendar connection found for this account");
-      console.warn("   Please connect your Google calendar in the app first\n");
+      console.warn('\n⚠️  No Google calendar connection found for this account');
+      console.warn('   Please connect your Google calendar in the app first\n');
       return;
     }
 
     if (!connection.accessToken || !connection.refreshToken) {
       console.warn(
-        "\n⚠️  Calendar connection has no access token or refresh token",
+        '\n⚠️  Calendar connection has no access token or refresh token'
       );
       return;
     }
@@ -121,10 +121,10 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
     });
 
     console.log(
-      `\n✅ Using account: ${emailAccount.email} (${emailAccount.id})`,
+      `\n✅ Using account: ${emailAccount.email} (${emailAccount.id})`
     );
     console.log(
-      `   Calendars: ${enabledCalendars.length} enabled, primary: ${primaryCalendarId}\n`,
+      `   Calendars: ${enabledCalendars.length} enabled, primary: ${primaryCalendarId}\n`
     );
   });
 
@@ -132,7 +132,7 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
     if (!calendarClient || createdEventIds.length === 0) return;
 
     console.log(
-      `\n   🧹 Cleaning up ${createdEventIds.length} test event(s)...`,
+      `\n   🧹 Cleaning up ${createdEventIds.length} test event(s)...`
     );
 
     let deletedCount = 0;
@@ -148,7 +148,7 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
         console.log(`      ✅ Deleted event ${eventId}`);
       } catch (error) {
         failedCount++;
-        console.log("      ⚠️  Failed to delete event", {
+        console.log('      ⚠️  Failed to delete event', {
           eventId,
           error: error instanceof Error ? error.message : String(error),
         });
@@ -156,15 +156,15 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
     }
 
     console.log(
-      `   🧹 Cleanup complete: ${deletedCount} deleted, ${failedCount} failed\n`,
+      `   🧹 Cleanup complete: ${deletedCount} deleted, ${failedCount} failed\n`
     );
   });
 
-  describe("Calendar availability", () => {
-    test("should fetch calendar busy periods from Google API", async () => {
+  describe('Calendar availability', () => {
+    test('should fetch calendar busy periods from Google API', async () => {
       if (!calendarConnection || enabledCalendars.length === 0) {
         console.log(
-          "   ⚠️  Skipping test - no calendar connection or enabled calendars",
+          '   ⚠️  Skipping test - no calendar connection or enabled calendars'
         );
         return;
       }
@@ -180,7 +180,7 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
       const timeMax = tomorrowEnd.toISOString();
 
       console.log(
-        `\n   📅 Checking ${tomorrow.toDateString()}: ${timeMin} to ${timeMax}`,
+        `\n   📅 Checking ${tomorrow.toDateString()}: ${timeMin} to ${timeMax}`
       );
 
       const busyPeriods = await googleAvailabilityProvider.fetchBusyPeriods({
@@ -209,10 +209,10 @@ describe.skipIf(!RUN_E2E_TESTS)("Google Calendar Integration Tests", () => {
       expect(busyPeriods.length).toBeGreaterThan(0);
 
       if (busyPeriods.length > 0) {
-        expect(busyPeriods[0]).toHaveProperty("start");
-        expect(busyPeriods[0]).toHaveProperty("end");
-        expect(typeof busyPeriods[0].start).toBe("string");
-        expect(typeof busyPeriods[0].end).toBe("string");
+        expect(busyPeriods[0]).toHaveProperty('start');
+        expect(busyPeriods[0]).toHaveProperty('end');
+        expect(typeof busyPeriods[0].start).toBe('string');
+        expect(typeof busyPeriods[0].end).toBe('string');
       }
     }, 30_000);
   });

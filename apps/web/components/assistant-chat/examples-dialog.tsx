@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import {
+  ArrowLeftIcon,
+  CheckCircle2Icon,
+  LightbulbIcon,
+  PlusIcon,
+} from 'lucide-react';
+import { parseAsStringEnum, useQueryState } from 'nuqs';
+import { useState } from 'react';
+import { getPersonas } from '@/app/(app)/[emailAccountId]/assistant/examples';
+import { ButtonList } from '@/components/ButtonList';
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  LightbulbIcon,
-  ArrowLeftIcon,
-  PlusIcon,
-  CheckCircle2Icon,
-} from "lucide-react";
-import { getPersonas } from "@/app/(app)/[emailAccountId]/assistant/examples";
+} from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useAccount } from '@/providers/EmailAccountProvider';
+import { cn } from '@/utils';
 import {
   convertLabelsToDisplay,
   convertMentionsToLabels,
-} from "@/utils/mention";
-import { Tooltip } from "@/components/Tooltip";
-import { ButtonList } from "@/components/ButtonList";
-import { parseAsStringEnum, useQueryState } from "nuqs";
-import { cn } from "@/utils";
-import { useAccount } from "@/providers/EmailAccountProvider";
+} from '@/utils/mention';
 
 interface ExamplesDialogProps {
   setInput: (input: string) => void;
@@ -52,9 +52,8 @@ export function ExamplesDialog({
     setSelectedExamples((prev) => {
       if (prev.includes(index)) {
         return prev.filter((i) => i !== index);
-      } else {
-        return [...prev, index];
       }
+      return [...prev, index];
     });
   };
 
@@ -70,9 +69,9 @@ export function ExamplesDialog({
     } else {
       // Multiple selections - format as "add the following rules:"
       const selectedRules = selectedExamples.map((index) =>
-        convertMentionsToLabels(persona.promptArray[index]),
+        convertMentionsToLabels(persona.promptArray[index])
       );
-      const formattedPrompt = `Add the following rules:\n${selectedRules.map((rule) => `- ${rule}`).join("\n")}`;
+      const formattedPrompt = `Add the following rules:\n${selectedRules.map((rule) => `- ${rule}`).join('\n')}`;
       setInput(formattedPrompt);
     }
 
@@ -81,8 +80,8 @@ export function ExamplesDialog({
   };
 
   const [selectedPersona, setSelectedPersona] = useQueryState(
-    "persona",
-    parseAsStringEnum(Object.keys(personas)),
+    'persona',
+    parseAsStringEnum(Object.keys(personas))
   );
 
   const handleBackToPersonas = () => {
@@ -119,7 +118,7 @@ export function ExamplesDialog({
               </Button>
             )}
             <DialogTitle>
-              {selectedPersona ? "Choose examples" : "Choose persona"}
+              {selectedPersona ? 'Choose examples' : 'Choose persona'}
             </DialogTitle>
           </div>
         </DialogHeader>
@@ -137,9 +136,9 @@ export function ExamplesDialog({
                       key={index}
                       variant="outline"
                       className={cn(
-                        "relative h-auto min-h-[2.5rem] w-full justify-start text-wrap px-4 py-3 text-left text-sm leading-relaxed",
+                        'relative h-auto min-h-[2.5rem] w-full justify-start text-wrap px-4 py-3 text-left text-sm leading-relaxed',
                         isSelected &&
-                          "border-green-500 bg-green-50 hover:bg-green-100 dark:bg-green-950/20 dark:hover:bg-green-950/30",
+                          'border-green-500 bg-green-50 hover:bg-green-100 dark:bg-green-950/20 dark:hover:bg-green-950/30'
                       )}
                       onClick={() => handleExampleToggle(index)}
                     >
