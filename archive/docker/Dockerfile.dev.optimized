@@ -1,0 +1,33 @@
+# Optimized Development Dockerfile
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install only essential runtime dependencies for development
+RUN apk add --no-cache openssl curl
+
+# Install pnpm globally
+RUN npm install -g pnpm@10.22.0
+
+# Copy package files first for better caching
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json ./apps/web/
+COPY packages/* ./packages/
+
+# Install dependencies with development flags
+RUN pnpm install --frozen-lockfile
+
+# Copy source code
+COPY apps/web ./apps/web
+
+WORKDIR /app/apps/web
+
+# Create non-root user for development
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    chown -R nextjs:nodejs /app
+USER nextjs
+
+# Use development command with optimized memory
+ENV NODE_OPTIONS="--max_old_space_size=1024"
+CMD ["pnpm", "dev"]

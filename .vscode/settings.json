@@ -15,5 +15,14 @@
   "emmet.showExpandedAbbreviation": "never",
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

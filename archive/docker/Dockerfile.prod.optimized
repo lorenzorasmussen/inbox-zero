@@ -1,0 +1,108 @@
+# Optimized Production Dockerfile with Enhanced Resource Efficiency
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Install only required build dependencies
+RUN apk add --no-cache openssl curl python3 make g++
+
+# Install pnpm globally with specific version
+RUN npm install -g pnpm@10.22.0
+
+# Copy lockfiles/workspace manifests for better caching
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc* ./
+COPY apps/web/package.json apps/web/package.json
+COPY apps/unsubscriber/package.json apps/unsubscriber/package.json
+COPY packages/loops/package.json packages/loops/package.json
+COPY packages/resend/package.json packages/resend/package.json
+COPY packages/tinybird/package.json packages/tinybird/package.json
+COPY packages/tinybird-ai-analytics/package.json packages/tinybird-ai-analytics/package.json
+COPY packages/tsconfig/package.json packages/tsconfig/package.json
+COPY patches/ patches/
+
+# Copy Prisma schema file needed for postinstall script
+COPY apps/web/prisma/schema.prisma apps/web/prisma/schema.prisma
+
+# Install deps with optimized flags
+# Use shamefully-hoist to ensure all packages are available at root level for webpack resolution
+RUN pnpm install --no-frozen-lockfile --prefer-offline --shamefully-hoist --reporter=silent
+
+# Copy the full repo
+COPY . .
+
+# Build app (Next.js standalone) with optimized memory usage
+ENV NODE_ENV=production
+# Reduce V8 heap for Next build to prevent excessive memory usage
+ENV NODE_OPTIONS=--max_old_space_size=1536
+ARG NEXT_PUBLIC_BASE_URL="http://NEXT_PUBLIC_BASE_URL_PLACEHOLDER"
+ENV NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+
+# Provide safe dummy envs so Next build can complete at image build time
+ENV DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy?schema=public"
+ENV DIRECT_URL="postgresql://dummy:dummy@dummy:5432/dummy?schema=public"
+ENV AUTH_SECRET="dummy_secret_for_build_only"
+ENV GOOGLE_CLIENT_ID="dummy_id_for_build_only"
+ENV GOOGLE_CLIENT_SECRET="dummy_secret_for_build_only"
+ENV EMAIL_ENCRYPT_SECRET="dummy_encrypt_secret_for_build_only"
+ENV EMAIL_ENCRYPT_SALT="dummy_encrypt_salt_for_build_only"
+ENV GOOGLE_PUBSUB_TOPIC_NAME="dummy_topic_for_build_only"
+ENV GOOGLE_PUBSUB_VERIFICATION_TOKEN="dummy_pubsub_token_for_build"
+ENV INTERNAL_API_KEY="dummy_apikey_for_build_only"
+ENV API_KEY_SALT="dummy_salt_for_build_only"
+ENV UPSTASH_REDIS_URL="http://dummy-redis-for-build:6379"
+ENV UPSTASH_REDIS_TOKEN="dummy_redis_token_for_build"
+ENV REDIS_URL="redis://dummy:dummy@dummy:6379"
+ENV QSTASH_TOKEN="dummy_qstash_token_for_build"
+ENV QSTASH_CURRENT_SIGNING_KEY="dummy_qstash_curr_key_for_build"
+ENV QSTASH_NEXT_SIGNING_KEY="dummy_qstash_next_key_for_build"
+ENV DOCKER_BUILD="true"
+
+# Build with optimized settings
+RUN npx prisma generate --schema=apps/web/prisma/schema.prisma \
+ && cd apps/web \
+ && pnpm exec next build --experimental-build-mode=compile \
+ && cd ../.. \
+ && rm -rf apps/web/.next/cache \
+ && find apps/web/.next -name "*.map" -delete \
+ && find apps/web/.next -name "*.hot-update.*" -delete
+
+# Ultra-minimal runtime stage
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+
+# Install only runtime dependencies
+RUN apk add --no-cache openssl curl dumb-init
+
+# Install Prisma CLI globally (npm handles all dependencies including @prisma/engines)
+RUN npm install -g prisma@6.16.3
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy the standalone server output (contains node_modules subset + server.js)
+COPY --from=builder /app/apps/web/.next/standalone ./
+# Static assets used by the server
+COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder /app/apps/web/public ./apps/web/public
+COPY --from=builder /app/apps/web/prisma ./apps/web/prisma
+
+# Copy runtime scripts
+COPY docker/scripts /app/docker/scripts
+RUN chmod +x /app/docker/scripts/*.sh
+
+# Change ownership of the app directory to the nextjs user
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+
+EXPOSE 3000
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+# Default command runs the Next.js server from the standalone bundle
+CMD ["/app/docker/scripts/start.sh"]

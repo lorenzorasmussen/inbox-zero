@@ -117,7 +117,7 @@ See our **[Docker Self-Hosting Guide](docs/hosting/docker.md)** for complete ins
    pnpm dev
    ```
 
-The app will be available at `http://localhost:3000`.
+The app will be available at `http://localhost:3001`.
 
 #### Detailed Setup
 
@@ -149,7 +149,7 @@ The required environment variables:
 - `EMAIL_ENCRYPT_SALT` -- Salt for encrypting OAuth tokens (try using `openssl rand -hex 16` for a secure salt)
 
 
-- `NEXT_PUBLIC_BASE_URL` -- The URL where your app is hosted (e.g., `http://localhost:3000` for local development or `https://yourdomain.com` for production).
+- `NEXT_PUBLIC_BASE_URL` -- The URL where your app is hosted (e.g., `http://localhost:3001` for local development or `https://yourdomain.com` for production).
 - `INTERNAL_API_KEY` -- A secret key for internal API calls (try using `openssl rand -hex 32` for a secure key)
 
 - `UPSTASH_REDIS_URL` -- Redis URL from Upstash. (can be empty if you are using Docker Compose)
@@ -177,10 +177,10 @@ Create [new credentials](https://console.cloud.google.com/apis/credentials):
     1. Click the `+Create Credentials` button. Choose OAuth Client ID.
     2. In `Application Type`, Choose `Web application`
     3. Choose a name for your web client
-    4. In Authorized JavaScript origins, add a URI and enter `http://localhost:3000` (or your custom domain)
+    4. In Authorized JavaScript origins, add a URI and enter `http://localhost:3001` (or your custom domain)
     5. In `Authorized redirect URIs` enter (or your custom domain):
-      - `http://localhost:3000/api/auth/callback/google`
-      - `http://localhost:3000/api/google/linking/callback`
+      - `http://localhost:3001/api/auth/callback/google`
+      - `http://localhost:3001/api/google/linking/callback`
     6. Click `Create`.
     7. A popup will show up with the new credentials, including the Client ID and secret.
 3.  Update .env file:
@@ -225,10 +225,10 @@ Go to [Microsoft Azure Portal](https://portal.azure.com/). Create a new Azure Ac
    2. Under "Supported account types" select "Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)"
    3. Set the Redirect URI:
       - Platform: Web
-      - URL: `http://localhost:3000/api/auth/callback/microsoft`
+      - URL: `http://localhost:3001/api/auth/callback/microsoft`
    4. Click "Register"
    5. In the "Manage" menu click "Authentication (Preview)"
-   6. Add the Redirect URI: `http://localhost:3000/api/outlook/linking/callback`
+   6. Add the Redirect URI: `http://localhost:3001/api/outlook/linking/callback`
 
 4. Get your credentials:
 
@@ -338,7 +338,7 @@ To build and run the full stack (App + DB + Redis) locally in production mode us
 
 ```bash
 # Build and start all services (includes Postgres and Redis)
-NEXT_PUBLIC_BASE_URL=http://localhost:3000 docker compose --profile all up --build
+NEXT_PUBLIC_BASE_URL=http://localhost:3001 docker compose --profile all up --build
 ```
 
 For production deployments with external databases, see the [Docker Self-Hosting Guide](docs/hosting/docker.md).
@@ -350,12 +350,12 @@ pnpm run build
 pnpm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app in your browser.
+Open [http://localhost:3001](http://localhost:3001) to view the app in your browser.
 
 ### Premium
 
 Many features are available only to premium users. To upgrade yourself, make yourself an admin in the `.env`: `ADMINS=hello@gmail.com`
-Then upgrade yourself at: [http://localhost:3000/admin](http://localhost:3000/admin).
+Then upgrade yourself at: [http://localhost:3001/admin](http://localhost:3001/admin).
 
 ### Set up push notifications via Google PubSub to handle emails in real time
 
@@ -429,14 +429,14 @@ See our comprehensive guides:
 4. Visit: [credentials](https://console.cloud.google.com/apis/credentials):
     1. Click on your project
     2. In `Authorized redirect URIs` add:
-      - `http://localhost:3000/api/google/calendar/callback`
+      - `http://localhost:3001/api/google/calendar/callback`
 
 #### Microsoft Calendar
 
 1. Go to your existing Microsoft Azure app registration (created earlier in the Microsoft OAuth setup)
 2. Add the calendar redirect URI:
     1. In the "Manage" menu click "Authentication (Preview)"
-    2. Add the Redirect URI: `http://localhost:3000/api/outlook/calendar/callback`
+    2. Add the Redirect URI: `http://localhost:3001/api/outlook/calendar/callback`
 3. Add calendar permissions:
     1. In the "Manage" menu click "API permissions"
     2. Click "Add a permission"

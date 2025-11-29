@@ -446,7 +446,7 @@ describe.skipIf(!RUN_E2E_TESTS)("Outlook Webhook Payload", () => {
 
     // Create a mock Request object
     const mockRequest = new NextRequest(
-      "http://localhost:3000/api/outlook/webhook",
+      "http://localhost:3001/api/outlook/webhook",
       {
         method: "POST",
         headers: {

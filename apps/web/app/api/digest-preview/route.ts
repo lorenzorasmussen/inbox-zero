@@ -5,7 +5,7 @@ import DigestEmail, {
 } from "@inboxzero/resend/emails/digest";
 import { digestPreviewBody } from "@/app/api/digest-preview/validation";
 
-// http://localhost:3000/api/digest-preview?categories=["Newsletter","Receipt","Marketing","Cold Emails"]
+// http://localhost:3001/api/digest-preview?categories=["Newsletter","Receipt","Marketing","Cold Emails"]
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

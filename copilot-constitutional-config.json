@@ -1,0 +1,283 @@
+{
+  "constitutional_standards": {
+    "enabled": true,
+    "version": "1.0.0",
+    "project": "inbox-zero-google-migration",
+    "last_updated": "2025-11-29",
+    "security_requirements": {
+      "input_validation": {
+        "enabled": true,
+        "description": "All Copilot-generated code must include comprehensive input validation",
+        "validation_patterns": [
+          "user_input_sanitization",
+          "xss_prevention",
+          "sql_injection_prevention",
+          "parameter_validation"
+        ]
+      },
+      "authentication_patterns": {
+        "enabled": true,
+        "description": "Copilot suggestions must follow constitutional authentication patterns",
+        "required_patterns": [
+          "secure_token_handling",
+          "proper_session_management",
+          "oauth2_implementation",
+          "rate_limiting"
+        ]
+      },
+      "data_protection": {
+        "enabled": true,
+        "description": "Generated code must include constitutional data protection measures",
+        "requirements": [
+          "encryption_at_rest",
+          "encryption_in_transit",
+          "data_minimization",
+          "gdpr_compliance"
+        ]
+      },
+      "vulnerability_prevention": {
+        "enabled": true,
+        "description": "Copilot suggestions must prevent OWASP Top 10 vulnerabilities",
+        "owasp_checks": [
+          "broken_access_control",
+          "cryptographic_failures",
+          "injection_attacks",
+          "insecure_design",
+          "security_misconfiguration",
+          "vulnerable_components",
+          "identification_failures",
+          "software_data_integrity_failures",
+          "ssrf",
+          "server_side_request_forgery"
+        ]
+      }
+    },
+    "performance_requirements": {
+      "response_time_optimization": {
+        "enabled": true,
+        "target_ms": 200,
+        "description": "Code suggestions must support constitutional response time targets"
+      },
+      "bundle_size_limits": {
+        "enabled": true,
+        "max_size_mb": 2.5,
+        "description": "Generated code must respect constitutional bundle size limits"
+      },
+      "core_web_vitals": {
+        "enabled": true,
+        "metrics": [
+          "largest_contentful_paint",
+          "first_input_delay",
+          "cumulative_layout_shift",
+          "first_contentful_paint"
+        ],
+        "description": "Copilot suggestions must optimize for Core Web Vitals"
+      },
+      "scalability_patterns": {
+        "enabled": true,
+        "description": "Generated solutions must be scalable per constitutional requirements",
+        "patterns": [
+          "horizontal_scaling",
+          "caching_strategies",
+          "database_optimization",
+          "load_balancing"
+        ]
+      }
+    },
+    "quality_requirements": {
+      "typescript_strict": {
+        "enabled": true,
+        "strict_mode": true,
+        "description": "All Copilot code must pass constitutional TypeScript strict mode",
+        "rules": [
+          "no_implicit_any",
+          "explicit_typing",
+          "null_undefined_handling",
+          "interface_documentation"
+        ]
+      },
+      "test_coverage_minimum": {
+        "enabled": true,
+        "minimum_coverage": 85,
+        "description": "Copilot suggestions must include constitutional test requirements",
+        "coverage_types": [
+          "unit_tests",
+          "integration_tests",
+          "e2e_tests",
+          "edge_case_coverage"
+        ]
+      },
+      "documentation_required": {
+        "enabled": true,
+        "description": "Generated code must include constitutional documentation standards",
+        "requirements": [
+          "jsdoc_for_public_apis",
+          "component_documentation",
+          "inline_comments_explaining_why",
+          "readme_updates"
+        ]
+      },
+      "code_complexity_limits": {
+        "enabled": true,
+        "max_cyclomatic_complexity": 10,
+        "max_function_length": 50,
+        "description": "Copilot output must meet constitutional code quality metrics"
+      }
+    },
+    "accessibility_requirements": {
+      "wcag_compliance": {
+        "enabled": true,
+        "level": "2.1 AA",
+        "description": "Copilot suggestions must meet constitutional WCAG 2.1 AA requirements"
+      },
+      "keyboard_navigation": {
+        "enabled": true,
+        "description": "Generated UI code must support constitutional keyboard navigation",
+        "requirements": [
+          "tab_navigation",
+          "focus_management",
+          "keyboard_shortcuts",
+          "skip_links"
+        ]
+      },
+      "screen_reader_support": {
+        "enabled": true,
+        "description": "Copilot output must be screen reader compatible per constitutional standards",
+        "requirements": [
+          "semantic_html",
+          "aria_labels",
+          "alt_text_for_images",
+          "screen_reader_announcements"
+        ]
+      },
+      "color_contrast_validation": {
+        "enabled": true,
+        "minimum_ratio": 4.5,
+        "description": "Generated designs must meet constitutional color contrast requirements"
+      }
+    }
+  },
+  "validation_hooks": {
+    "pre_suggestion": {
+      "enabled": true,
+      "hook_name": "constitutional-compliance-check",
+      "description": "Validate user intent against constitutional requirements before providing suggestions",
+      "checks": [
+        "security_validation",
+        "performance_validation",
+        "accessibility_validation",
+        "quality_validation"
+      ]
+    },
+    "post_generation": {
+      "enabled": true,
+      "hook_name": "constitutional-quality-assurance",
+      "description": "Run constitutional compliance validation after generating code",
+      "checks": [
+        "typescript_strict_check",
+        "test_coverage_validation",
+        "security_scan",
+        "performance_analysis",
+        "accessibility_audit"
+      ]
+    },
+    "integration_testing": {
+      "enabled": true,
+      "hook_name": "constitutional-integration-validation",
+      "description": "Validate constitutional compliance during integration testing",
+      "checks": [
+        "integration_test_coverage",
+        "constitutional_requirements_traceability",
+        "quality_metrics_validation"
+      ]
+    }
+  },
+  "suggestion_filters": {
+    "security_patterns": {
+      "enabled": true,
+      "filter_name": "require-constitutional-security",
+      "description": "Apply constitutional security patterns to all suggestions",
+      "patterns": [
+        "input_validation_required",
+        "authentication_required",
+        "authorization_checks",
+        "data_encryption",
+        "secure_headers"
+      ]
+    },
+    "performance_patterns": {
+      "enabled": true,
+      "filter_name": "require-constitutional-performance",
+      "description": "Apply constitutional performance patterns to all suggestions",
+      "patterns": [
+        "lazy_loading",
+        "code_splitting",
+        "caching_strategies",
+        "optimization_techniques"
+      ]
+    },
+    "quality_patterns": {
+      "enabled": true,
+      "filter_name": "require-constitutional-quality",
+      "description": "Apply constitutional quality patterns to all suggestions",
+      "patterns": [
+        "typescript_strict",
+        "error_handling",
+        "testing_patterns",
+        "documentation_standards"
+      ]
+    },
+    "accessibility_patterns": {
+      "enabled": true,
+      "filter_name": "require-constitutional-accessibility",
+      "description": "Apply constitutional accessibility patterns to all suggestions",
+      "patterns": [
+        "semantic_html",
+        "aria_attributes",
+        "keyboard_navigation",
+        "color_contrast"
+      ]
+    }
+  },
+  "monitoring": {
+    "compliance_tracking": {
+      "enabled": true,
+      "metrics": [
+        "constitutional_compliance_rate",
+        "security_violations_count",
+        "performance_benchmarks_met",
+        "accessibility_compliance_score",
+        "quality_metrics_score"
+      ]
+    },
+    "audit_trail": {
+      "enabled": true,
+      "log_level": "detailed",
+      "retention_days": 90,
+      "events": [
+        "copilot_suggestion_generated",
+        "constitutional_validation_passed",
+        "constitutional_validation_failed",
+        "quality_gate_triggered",
+        "compliance_issue_resolved"
+      ]
+    }
+  },
+  "integration": {
+    "opencode_system": {
+      "enabled": true,
+      "agent_coordination": true,
+      "description": "Integrate with OpenCode agent system for enhanced coordination"
+    },
+    "spec_kit_framework": {
+      "enabled": true,
+      "specification_alignment": true,
+      "description": "Align Copilot suggestions with Spec-Kit specifications"
+    },
+    "quality_gates": {
+      "enabled": true,
+      "pre_merge_validation": true,
+      "description": "Constitutional compliance required for Copilot-generated code"
+    }
+  }
+}

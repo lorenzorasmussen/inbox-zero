@@ -27,7 +27,7 @@ describe("handleAccountLinking", () => {
       targetUserId: "target-user-id",
       provider: "google",
       providerEmail: "test@gmail.com",
-      baseUrl: "http://localhost:3000",
+      baseUrl: "http://localhost:3001",
       logger,
     });
 
@@ -46,7 +46,7 @@ describe("handleAccountLinking", () => {
       targetUserId: "target-user-id",
       provider: "google",
       providerEmail: "new@gmail.com",
-      baseUrl: "http://localhost:3000",
+      baseUrl: "http://localhost:3001",
       logger,
     });
 
@@ -61,7 +61,7 @@ describe("handleAccountLinking", () => {
       targetUserId: "same-user-id",
       provider: "google",
       providerEmail: "test@gmail.com",
-      baseUrl: "http://localhost:3000",
+      baseUrl: "http://localhost:3001",
       logger,
     });
 
@@ -80,7 +80,7 @@ describe("handleAccountLinking", () => {
       targetUserId: "target-user-id",
       provider: "google",
       providerEmail: "test@gmail.com",
-      baseUrl: "http://localhost:3000",
+      baseUrl: "http://localhost:3001",
       logger,
     });
 
@@ -106,7 +106,7 @@ describe("handleAccountLinking", () => {
       targetUserId: "target-user-id",
       provider: "google",
       providerEmail: "existing@gmail.com",
-      baseUrl: "http://localhost:3000",
+      baseUrl: "http://localhost:3001",
       logger,
     });
 

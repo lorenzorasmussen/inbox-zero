@@ -118,7 +118,7 @@ docker compose exec web npx prisma migrate deploy
 ### 6. Access Your Application
 
 Your application should now be accessible at:
-- `http://your-server-ip:3000` (if accessing directly)
+- `http://your-server-ip:3001` (if accessing directly)
 - `https://yourdomain.com` (if you've set up a reverse proxy with SSL)
 
 **Note:** For production deployments, you should set up a reverse proxy (like Nginx, Caddy, or use a cloud load balancer) to handle SSL/TLS termination and route traffic to your Docker container.

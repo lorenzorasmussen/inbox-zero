@@ -35,7 +35,7 @@ This service provides an automated solution for unsubscribing from email newslet
 
    ```
    GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key_here
-   CORS_ORIGIN=http://localhost:3000
+   CORS_ORIGIN=http://localhost:3001
    ```
 
    Replace the API keys with your actual keys, and adjust the CORS_ORIGIN if needed.

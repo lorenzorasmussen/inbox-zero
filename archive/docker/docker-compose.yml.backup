@@ -8,17 +8,31 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_DB=${POSTGRES_DB:-inboxzero}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - POSTGRES_SHARED_PRELOAD_LIBRARIES=pg_stat_statements
+      - POSTGRES_MAX_CONNECTIONS=50
+      - POSTGRES_SHARED_BUFFERS=64MB
+      - POSTGRES_EFFECTIVE_CACHE_SIZE=128MB
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c max_connections=50 -c shared_buffers=64MB -c effective_cache_size=128MB
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres}']
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     volumes:
       - database-data:/var/lib/postgresql/data/
     ports:
       - ${POSTGRES_PORT:-5432}:5432
     networks:
       - inbox-zero-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "0.5"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
     profiles:
       - local-db
       - all
@@ -32,6 +46,15 @@ services:
     networks:
       - inbox-zero-network
     restart: always
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.2"
+        reservations:
+          memory: 64M
+          cpus: "0.1"
     profiles:
       - local-redis
       - all
@@ -49,6 +72,14 @@ services:
     networks:
       - inbox-zero-network
     restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.15"
+        reservations:
+          memory: 32M
+          cpus: "0.05"
     profiles:
       - local-redis
       - all
@@ -80,7 +111,22 @@ services:
       DIRECT_URL: ${DIRECT_URL:-postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-inboxzero}?schema=public}
       UPSTASH_REDIS_URL: ${UPSTASH_REDIS_URL:-http://serverless-redis-http:80}
       UPSTASH_REDIS_TOKEN: "${UPSTASH_REDIS_TOKEN}"
+      NODE_OPTIONS: "--max_old_space_size=1024"
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "0.75"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
 
 volumes:
   database-data:

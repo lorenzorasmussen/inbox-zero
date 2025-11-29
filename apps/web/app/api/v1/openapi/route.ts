@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
         url: "https://getinboxzero.com/api/v1",
         description: "Production server",
       },
-      { url: "http://localhost:3000/api/v1", description: "Local development" },
+      { url: "http://localhost:3001/api/v1", description: "Local development" },
     ],
     security: [{ ApiKeyAuth: [] }],
   });

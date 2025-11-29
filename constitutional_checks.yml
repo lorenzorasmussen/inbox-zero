@@ -1,0 +1,265 @@
+# Constitutional Compliance Validation Configuration
+# This file defines automated checks for constitutional compliance
+
+version: "1.0.0"
+project: "inbox-zero"
+constitution: "/CONSTITUTION.md"
+
+# Quality Gates Configuration
+quality_gates:
+  typescript_strict_mode:
+    enabled: true
+    description: "TypeScript strict mode compliance check"
+    check_command: "tsc --noEmit --strict"
+    fail_threshold: 0
+  test_coverage:
+    enabled: true
+    description: "Test coverage validation"
+    check_command: "vitest --coverage --run"
+    metrics:
+      line_coverage:
+        threshold: 85
+        comparison: "gte"
+      branch_coverage:
+        threshold: 80
+        comparison: "gte"
+      function_coverage:
+        threshold: 90
+        comparison: "gte"
+  linting:
+    enabled: true
+    description: "Code linting and formatting validation"
+    check_command: "biome check ."
+    fail_threshold: 0
+  security_scan:
+    enabled: true
+    description: "Security vulnerability scanning"
+    check_command: "npm audit --audit-level moderate"
+    fail_threshold:
+      critical: 0
+      high: 0
+      medium: 5
+      low: 10
+
+# Constitutional Standards Validation
+constitutional_standards:
+  code_quality:
+    - name: "typescript_strict_mode"
+      description: "All TypeScript code must compile with strict mode"
+      validation: "compile_check"
+    - name: "no_implicit_any"
+      description: "No implicit any types allowed"
+      validation: "eslint_rule"
+    - name: "explicit_typing"
+      description: "Explicit typing for all parameters and returns"
+      validation: "type_check"
+  performance:
+    - name: "bundle_size_optimization"
+      description: "Bundle sizes must be optimized"
+      validation: "bundle_analysis"
+      threshold:
+        max_main_bundle: "500KB"
+        max_chunk: "150KB"
+    - name: "runtime_performance"
+      description: "Runtime performance benchmarks"
+      validation: "performance_test"
+      threshold:
+        max_first_contentful_paint: "2.0s"
+        max_largest_contentful_paint: "3.0s"
+  security:
+    - name: "input_validation"
+      description: "All user inputs must be validated and sanitized"
+      validation: "code_scan"
+      patterns:
+        - "sanitize_input"
+        - "validate_params"
+        - "prevent_xss"
+    - name: "data_protection"
+      description: "Sensitive data must be encrypted and protected"
+      validation: "code_scan"
+      patterns:
+        - "encrypt_sensitive_data"
+        - "secure_storage"
+        - "proper_auth"
+  accessibility:
+    - name: "wcag_compliance"
+      description: "WCAG 2.1 AA compliance for all UI"
+      validation: "accessibility_test"
+      tools:
+        - "axe-core"
+        - "lighthouse"
+  documentation:
+    - name: "api_documentation"
+      description: "All public APIs must have comprehensive documentation"
+      validation: "documentation_check"
+      requirements:
+        - "endpoint_descriptions"
+        - "parameter_documentation"
+        - "response_examples"
+    - name: "code_comments"
+      description: "Code comments must explain 'why' not 'what'"
+      validation: "comment_analysis"
+
+# Development Workflow Validation
+development_workflow:
+  code_review:
+    required: true
+    min_reviewers: 1
+    auto_merge_disabled: true
+  testing:
+    unit_tests_required: true
+    integration_tests_required: true
+    e2e_tests_required: true
+    coverage_requirements:
+      unit: 85
+      integration: 80
+      e2e: 70
+  version_control:
+    conventional_commits: true
+    semantic_versioning: true
+    release_notes_required: true
+  deployment:
+    staging_required: true
+    rollback_plan_required: true
+    monitoring_required: true
+
+# Technology Standards Validation
+technology_standards:
+  frontend:
+    framework: "next.js"
+    styling: "tailwind_css"
+    components: "shadcn_ui"
+    state_management: ["react_query", "jotai"]
+  backend:
+    api_design: "restful"
+    database: "prisma"
+    authentication: "secure_oauth"
+    caching: "redis"
+  infrastructure:
+    containerization: "docker"
+    cicd: "github_actions"
+    monitoring: ["sentry", "vercel_analytics"]
+
+# Compliance Reporting
+compliance_reporting:
+  enabled: true
+  output_format: "json"
+  report_location: ".opencode/compliance_reports/"
+  notification_channels:
+    - "console"
+    - "git_commit_status"
+  metrics:
+    - "compliance_score"
+      description: "Overall compliance percentage (0-100)"
+      calculation: "weighted_average"
+    - "quality_gates_passed"
+      description: "Number of quality gates passed"
+    - "constitutional_violations"
+      description: "Number of constitutional standard violations"
+    - "security_issues"
+      description: "Security issues found by category"
+    - "performance_metrics"
+      description: "Performance benchmark results"
+
+# Audit Trail Configuration
+audit_trail:
+  enabled: true
+  storage_location: ".opencode/audit_trail/"
+  retention_days: 90
+  events_to_track:
+    - "constitutional_check"
+    - "quality_gate_execution"
+    - "code_review_completion"
+    - "deployment_activity"
+    - "security_scan_result"
+    - "compliance_violation"
+    - "constitutional_amendment"
+  event_format:
+    timestamp: "ISO 8601"
+    event_type: "string"
+    details: "object"
+    compliance_status: "pass/fail/partial"
+    automated_check: "boolean"
+
+# Integration Settings
+integrations:
+  spec_kit:
+    enabled: true
+    validation_required: true
+    artifact_sync: true
+  copilot_cli:
+    enabled: true
+    validation_required: true
+    standards_enforcement: true
+  opencode_agents:
+    enabled: true
+    constitutional_validation: true
+    quality_gate_enforcement: true
+
+# Exception Handling
+exceptions:
+  allowed_bypasses:
+    - name: "emergency_hotfix"
+      description: "Emergency hotfix for critical production issues"
+      approval_required: true
+      max_duration_hours: 24
+      auto_revert_after: true
+    - name: "experimental_feature"
+      description: "Experimental feature development"
+      approval_required: true
+      max_duration_days: 14
+      branch_prefix: "exp/"
+  violation_handling:
+    auto_block_merge: true
+    notification_required: true
+    remediation_plan_required: true
+    escalation_threshold: 3
+
+# Configuration Updates
+configuration_updates:
+  auto_sync_constitution: true
+  validation_cache_duration: 3600  # 1 hour in seconds
+  compliance_check_frequency: "on_commit"
+  version_control:
+    track_configuration_changes: true
+    require_review_for_changes: true
+    backup_configuration: true
+
+# Compliance Score Calculation
+compliance_scoring:
+  weights:
+    code_quality: 0.3
+    security: 0.25
+    performance: 0.2
+    accessibility: 0.1
+    documentation: 0.1
+    testing: 0.05
+  scoring_rules:
+    excellent: 95-100
+    good: 85-94
+    acceptable: 70-84
+    needs_improvement: 50-69
+    poor: 0-49
+
+# Automated Actions
+automated_actions:
+  on_compliance_failure:
+    - block_merge
+    - create_issue
+    - notify_team
+    - suggest_fixes
+  on_compliance_success:
+    - allow_merge
+    - update_status
+    - celebrate_milestone
+  on_security_vulnerability:
+    - immediate_block
+    - security_team_notification
+    - create_security_issue
+    - patch_recommendation
+
+---
+# Constitutional Compliance Validation Configuration
+# This configuration ensures all development activities align with constitutional standards
+# Last updated: 2025-11-29
+# Version: 1.0.0

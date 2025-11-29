@@ -1,0 +1,122 @@
+name: inbox-zero-dev-optimized
+
+services:
+  db:
+    image: postgres:16
+    container_name: inbox-zero-dev-db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-inboxzero}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - POSTGRES_SHARED_PRELOAD_LIBRARIES=pg_stat_statements
+      - POSTGRES_MAX_CONNECTIONS=25
+      - POSTGRES_SHARED_BUFFERS=32MB
+      - POSTGRES_EFFECTIVE_CACHE_SIZE=64MB
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c max_connections=25 -c shared_buffers=32MB -c effective_cache_size=64MB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - dev-database-data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.4'
+        reservations:
+          memory: 128M
+          cpus: '0.2'
+
+  redis:
+    image: redis:7
+    container_name: inbox-zero-dev-redis
+    ports:
+      - ${REDIS_PORT:-6380}:6379
+    volumes:
+      - dev-redis-data:/data
+    restart: unless-stopped
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.15'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
+
+  serverless-redis-http:
+    image: hiett/serverless-redis-http:latest
+    container_name: inbox-zero-dev-redis-http
+    ports:
+      - "${REDIS_HTTP_PORT:-8079}:80"
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: ${UPSTASH_REDIS_TOKEN:-dev_token}
+      SRH_CONNECTION_STRING: "redis://redis:6379"
+    depends_on:
+      - redis
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: '0.15'
+        reservations:
+          memory: 32M
+          cpus: '0.05'
+
+  web:
+    image: ghcr.io/elie222/inbox-zero:latest
+    pull_policy: if_not_present
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.prod
+    env_file:
+      - ./apps/web/.env
+    depends_on:
+      db:
+        condition: service_healthy
+        required: false
+      redis:
+        condition: service_started
+        required: false
+    ports:
+      - 3001:3000
+    networks:
+      - inbox-zero-network
+    environment:
+      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3001}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-inboxzero}?schema=public}
+      DIRECT_URL: ${DIRECT_URL:-postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-inboxzero}?schema=public}
+      UPSTASH_REDIS_URL: ${UPSTASH_REDIS_URL:-http://serverless-redis-http:80}
+      UPSTASH_REDIS_TOKEN: "${UPSTASH_REDIS_TOKEN}"
+      NODE_OPTIONS: "--max_old_space_size=1024"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.75'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+volumes:
+  dev-database-data:
+  dev-redis-data:
+
+networks:
+  inbox-zero-network:
