@@ -9,7 +9,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-inboxzero}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres}']
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -61,8 +61,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.prod
-    env_file:
-      - ./apps/web/.env
+
     depends_on:
       db:
         condition: service_healthy
@@ -75,11 +74,21 @@ services:
     networks:
       - inbox-zero-network
     environment:
-      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3001}
-      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-inboxzero}?schema=public}
-      DIRECT_URL: ${DIRECT_URL:-postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-inboxzero}?schema=public}
-      UPSTASH_REDIS_URL: ${UPSTASH_REDIS_URL:-http://serverless-redis-http:80}
+      NEXT_PUBLIC_BASE_URL: http://localhost:3001
+      DATABASE_URL: postgresql://postgres:password@db:5432/inboxzero?schema=public
+      DIRECT_URL: postgresql://postgres:password@db:5432/inboxzero?schema=public
+      UPSTASH_REDIS_URL: http://serverless-redis-http:80
       UPSTASH_REDIS_TOKEN: "${UPSTASH_REDIS_TOKEN}"
+      DEFAULT_LLM_PROVIDER: ollama
+      DEFAULT_LLM_MODEL: phi3:mini
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      NEXT_PUBLIC_OLLAMA_MODEL: phi3:mini
+      INTERNAL_API_KEY: "dev-internal-api-key-123"
+      GOOGLE_CLIENT_ID: "dummy-google-client-id"
+      GOOGLE_CLIENT_SECRET: "dummy-google-client-secret"
+      EMAIL_ENCRYPT_SECRET: "dummy-email-encrypt-secret"
+      EMAIL_ENCRYPT_SALT: "dummy-email-encrypt-salt"
+      GOOGLE_PUBSUB_TOPIC_NAME: "inbox-zero-dev-topic"
     restart: always
 
 volumes:

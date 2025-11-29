@@ -31,8 +31,8 @@ export const env = createEnv({
     DEFAULT_LLM_PROVIDER: z
       // custom is deprecated
       .enum([...llmProviderEnum.options, 'custom'])
-      .default('anthropic'),
-    DEFAULT_LLM_MODEL: z.string().optional(),
+      .default('ollama'),
+    DEFAULT_LLM_MODEL: z.string().default('phi3:mini'),
     DEFAULT_OPENROUTER_PROVIDERS: z.string().optional(), // Comma-separated list of OpenRouter providers for default model (e.g., "Google Vertex,Anthropic")
     // Set this to a cheaper model like Gemini Flash
     ECONOMY_LLM_PROVIDER: llmProviderEnum.optional(),
@@ -57,7 +57,7 @@ export const env = createEnv({
     GROQ_API_KEY: z.string().optional(),
     OPENROUTER_API_KEY: z.string().optional(),
     AI_GATEWAY_API_KEY: z.string().optional(),
-    OLLAMA_BASE_URL: z.string().optional(),
+    OLLAMA_BASE_URL: z.string().default('http://localhost:11434'),
 
     UPSTASH_REDIS_URL: z.string().optional(),
     UPSTASH_REDIS_TOKEN: z.string().optional(),
