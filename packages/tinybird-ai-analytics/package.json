@@ -1,29 +1,55 @@
 {
-	"name": "@inboxzero/tinybird-ai-analytics",
-	"version": "0.0.0",
-	"main": "dist/index.js",
-	"module": "dist/index.esm.js",
-	"types": "dist/index.d.ts",
-	"files": [
-		"dist",
-		"src"
-	],
-	"scripts": {
-		"build": "tsc",
-		"clean": "rm -rf dist",
-		"test": "vitest",
-		"test:ci": "vitest run",
-		"test:coverage": "vitest run --coverage",
-		"prepublish": "pnpm run build"
-	},
-	"dependencies": {
-		"@chronark/zod-bird": "0.3.10",
-		"zod": "3.25.46"
-	},
-	"devDependencies": {
-		"@types/node": "24.9.1",
-		"tsconfig": "workspace:*",
-		"typescript": "5.9.3",
-		"vitest": "workspace:*"
-	}
+  "name": "@inboxzero/tinybird-ai-analytics",
+  "version": "0.1.0",
+  "description": "Tinybird AI analytics client wrapper for InboxZero",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prepublish": "pnpm run build",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "tinybird",
+    "analytics",
+    "ai",
+    "machine-learning",
+    "inboxzero"
+  ],
+  "author": "InboxZero Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inboxzero/inbox-zero-google-migration.git",
+    "directory": "packages/tinybird-ai-analytics"
+  },
+  "bugs": {
+    "url": "https://github.com/inboxzero/inbox-zero-google-migration/issues"
+  },
+  "homepage": "https://github.com/inboxzero/inbox-zero-google-migration/tree/main/packages/tinybird-ai-analytics#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@chronark/zod-bird": "0.3.10",
+    "zod": "3.25.46"
+  },
+  "devDependencies": {
+    "@types/node": "24.9.1",
+    "tsconfig": "workspace:*",
+    "typescript": "5.9.3",
+    "vitest": "workspace:*"
+  }
 }

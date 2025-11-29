@@ -1,6 +1,7 @@
 {
 	"name": "@inboxzero/tinybird",
-	"version": "0.0.0",
+	"version": "0.1.0",
+	"description": "Tinybird client wrapper for InboxZero analytics",
 	"main": "dist/index.js",
 	"module": "dist/index.esm.js",
 	"types": "dist/index.d.ts",
@@ -14,7 +15,32 @@
 		"test": "vitest",
 		"test:ci": "vitest run",
 		"test:coverage": "vitest run --coverage",
-		"prepublish": "pnpm run build"
+		"prepublish": "pnpm run build",
+		"type-check": "tsc --noEmit"
+	},
+	"keywords": [
+		"tinybird",
+		"analytics",
+		"data",
+		"events",
+		"inboxzero"
+	],
+	"author": "InboxZero Team",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/inboxzero/inbox-zero-google-migration.git",
+		"directory": "packages/tinybird"
+	},
+	"bugs": {
+		"url": "https://github.com/inboxzero/inbox-zero-google-migration/issues"
+	},
+	"homepage": "https://github.com/inboxzero/inbox-zero-google-migration/tree/main/packages/tinybird#readme",
+	"publishConfig": {
+		"access": "public"
+	},
+	"engines": {
+		"node": ">=18.0.0"
 	},
 	"dependencies": {
 		"@chronark/zod-bird": "0.3.10",
