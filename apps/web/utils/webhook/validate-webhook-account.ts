@@ -4,6 +4,7 @@ import { unwatchEmails } from "@/app/api/watch/controller";
 import { createEmailProvider } from "@/utils/email/provider";
 import prisma from "@/utils/prisma";
 import type { Logger } from "@/utils/logger";
+import { env } from "@/env";
 
 export async function getWebhookEmailAccount(
   where: { email: string } | { watchEmailsSubscriptionId: string },
@@ -122,12 +123,18 @@ export async function validateWebhookAccount(
     return { success: false, response: NextResponse.json({ ok: true }) };
   }
 
-  const premium = isPremium(
-    emailAccount.user.premium?.lemonSqueezyRenewsAt || null,
-    emailAccount.user.premium?.stripeSubscriptionStatus || null,
-  )
-    ? emailAccount.user.premium
-    : undefined;
+  let premium = emailAccount.user.premium;
+
+  if (env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS && !premium) {
+    premium = { tier: "LIFETIME" } as any;
+  } else if (
+    !isPremium(
+      premium?.lemonSqueezyRenewsAt || null,
+      premium?.stripeSubscriptionStatus || null,
+    )
+  ) {
+    premium = undefined;
+  }
 
   const provider = await createEmailProvider({
     emailAccountId: emailAccount.id,

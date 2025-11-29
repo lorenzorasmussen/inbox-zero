@@ -124,6 +124,7 @@ export const env = createEnv({
     LICENSE_25_SEAT_VARIANT_ID: z.coerce.number().optional(),
 
     DUB_API_KEY: z.string().optional(),
+    UNSUBSCRIBER_URL: z.string().url().optional(),
   },
   client: {
     // stripe

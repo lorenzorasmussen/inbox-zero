@@ -48,7 +48,7 @@ export const getUserTier = (
   > | null,
 ) => {
   if (env.NEXT_PUBLIC_BYPASS_PREMIUM_CHECKS) {
-    return "BUSINESS_PLUS_ANNUALLY" as const;
+    return "LIFETIME" as const;
   }
 
   if (!premium) return null;

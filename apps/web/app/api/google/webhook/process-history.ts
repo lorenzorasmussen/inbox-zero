@@ -16,12 +16,14 @@ import {
 import prisma from "@/utils/prisma";
 import type { Logger } from "@/utils/logger";
 
+import type { ValidatedWebhookAccountData } from "@/utils/webhook/validate-webhook-account";
+
 export async function processHistoryForUser(
   decodedData: {
     emailAddress: string;
     historyId: number;
   },
-  options: { startHistoryId?: string },
+  options: { startHistoryId?: string; emailAccount?: ValidatedWebhookAccountData },
   logger: Logger,
 ) {
   const startTime = Date.now();
@@ -31,7 +33,8 @@ export async function processHistoryForUser(
   // So we need to convert it to lowercase
   const email = emailAddress.toLowerCase();
 
-  const emailAccount = await getWebhookEmailAccount({ email }, logger);
+  const emailAccount =
+    options.emailAccount || (await getWebhookEmailAccount({ email }, logger));
 
   // biome-ignore lint/style/noParameterAssign: allowed for logging
   logger = logger.with({ email, emailAccountId: emailAccount?.id });

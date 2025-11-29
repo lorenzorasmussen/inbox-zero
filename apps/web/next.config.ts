@@ -25,6 +25,16 @@ const nextConfig: NextConfig = {
     },
   },
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
+  // Add memory-efficient settings
+  experimental: {
+    optimizePackageImports: [
+      "@radix-ui/react-icons",
+      "lucide-react",
+      "@tanstack/react-query",
+    ],
+    webpackBuildWorker: true,
+    serverComponentsExternalPackages: ["sharp"],
+  },
   images: {
     remotePatterns: [
       {
@@ -290,7 +300,7 @@ const sentryConfig = {
   disableLogger: true,
 
   // Enables automatic instrumentation of Vercel Cron Monitors.
-  // See the following for more information:
+  // See following for more information:
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
@@ -307,7 +317,7 @@ const exportConfig = useSentry
   ? withSentryConfig(mdxConfig, { ...sentryOptions, ...sentryConfig })
   : mdxConfig;
 
-// NEXTAUTH_SECRET is deprecated but kept as an option to not break the build. At least one must be set.
+// NEXTAUTH_SECRET is deprecated but kept as an option to not break build. At least one must be set.
 if (!env.AUTH_SECRET && !env.NEXTAUTH_SECRET) {
   throw new Error(
     "Either AUTH_SECRET or NEXTAUTH_SECRET environment variable must be defined",

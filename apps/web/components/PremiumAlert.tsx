@@ -27,7 +27,7 @@ export function usePremium() {
       hasUnsubscribeAccess: true,
       hasAiAccess: true,
       isProPlanWithoutApiKey: false,
-      tier: "BUSINESS_PLUS_ANNUALLY" as const,
+      tier: "LIFETIME" as const,
     };
   }
 
