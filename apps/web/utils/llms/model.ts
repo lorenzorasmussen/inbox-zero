@@ -330,6 +330,7 @@ function getProviderApiKey(provider: string) {
     [Provider.GROQ]: env.GROQ_API_KEY,
     [Provider.OPENROUTER]: env.OPENROUTER_API_KEY,
     [Provider.AI_GATEWAY]: env.AI_GATEWAY_API_KEY,
+    [Provider.OLLAMA]: 'ollama-local', // Ollama doesn't need API key
   };
 
   return providerApiKeys[provider];
