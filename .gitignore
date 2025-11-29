@@ -30,6 +30,15 @@ yarn-error.log*
 .env
 .env.test
 
+# Environment backup files (contain sensitive credentials)
+.env.backup*
+*.env.backup*
+**/.env.backup*
+
+# Temporary environment files
+.env.tmp
+.env.temp
+
 # vercel
 .vercel
 
