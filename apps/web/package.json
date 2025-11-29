@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--max_old_space_size=2048 next dev --turbopack",
-    "build": "cross-env NODE_OPTIONS=--max_old_space_size=2048 prisma migrate deploy && next build",
+    "build": "node scripts/build-with-env.js",
+    "build:original": "cross-env NODE_OPTIONS=--max_old_space_size=2048 NODE_ENV=production next build",
     "start": "next start",
     "start:standalone": "node .next/standalone/server.js",
     "lint": "biome check .",
