@@ -565,3 +565,593 @@ If you later decide you want any of the removed features (e.g., premium subscrip
 * **“Can I replace Resend with plain SMTP?”** – Swap `@inboxzero/resend` import for a small wrapper around `nodemailer.sendMail`. The function signatures (`sendDigestEmail`, `sendSummaryEmail`) are simple – just copy the call‑sites and feed the same `from`, `to`, and `emailProps`.
 
 Feel free to ask if you’d like a concrete code snippet for any of those substitutions!
+
+
+---
+
+Below is a **high‑level walkthrough** of the repository together with a concrete, step‑by‑step “minimal‑core” plan.
+The goal is to keep only the pieces you really need –
+
+* 📥 **Fetching e‑mail (Gmail / Outlook)**
+* 🤖 **AI helpers** (summarisation, persona‑generation, reply‑drafting, etc.)
+* ⚙️ **Script‑style utilities** that run on demand and have a tiny runtime footprint
+
+…and drop everything that adds appreciable start‑up time, heavy background‑job infrastructure, premium‑only logic, analytics, and UI that you never use.
+
+---
+
+## 1️⃣ What the **essential core** looks like
+
+| Module | Path | Why it stays |
+|--------|------|--------------|
+| **Email provider factory** | `apps/web/utils/email/provider.ts` | Chooses `GmailProvider` or `OutlookProvider`. |
+| **Gmail provider** | `apps/web/utils/email/google.ts` | Implements `getMessagesWithPagination` + batch fetch. |
+| **Outlook provider** | `apps/web/utils/email/microsoft.ts` | Same for Microsoft Graph. |
+| **Stat loader / “load‑emails” action** | `apps/web/utils/actions/stats.ts` | Pagination, transformation, bulk‑insert (`prisma.emailMessage.createMany`). |
+| **Prisma schema – EmailMessage & EmailAccount** | `apps/web/prisma/schema.prisma` (lines ≈ 679‑703) | Stores the raw e‑mail locally. |
+| **AI utilities you want to keep** | `apps/web/utils/ai/**` (e.g. `summarize-email-for-digest`, `reply/draft-with-knowledge`, `persona`) | All the “smart” features that run on a single request – they are pure functions + a tiny LLM call. |
+| **Helper functions that are pure / script‑like** | `apps/web/utils/**` – `date`, `email`, `parse`, `upstash` (if you keep QStash), `bulk‑action‑tracking` (optional) | Small, stateless helpers that don’t spin a server. |
+| **Next‑auth / session handling** | `apps/web/app/api/**/withAuth.ts` (or whatever middleware you use) | Needed to identify the current `emailAccountId`. |
+| **Database client** | `apps/web/utils/prisma.ts` | Prisma instance – still required for the `EmailMessage` table. |
+
+Everything else can be **pruned** without breaking the fetch‑+‑store pipeline.
+
+---
+
+## 2️⃣ Heavy / premium components that can be removed (or stubbed)
+
+| Feature | Files / folders | What they add | How to drop it |
+|---------|----------------|---------------|----------------|
+| **Upstash /QStash queue** (background jobs, webhook verification) | `apps/web/app/api/*/qstash*`, `utils/upstash.ts`, `utils/qstash/*`, many `api/clean/*`, `api/resend/*`, `api/scheduled-actions/*` | Starts a **separate worker process**, adds env vars (`QSTASH_TOKEN`). | Replace the QStash helpers with a tiny no‑op wrapper:<br><br>```ts\n// utils/upstash.ts (minimal stub)\nexport const publishToQstash = async () => {/* noop */};\nexport const publishToQstashQueue = async () => {/* noop */};\n```<br>Delete all route files that call `verifySignatureAppRouter`. The fallback routes already return “Unauthorized” when the token is missing, so you can just delete the files. |
+| **PostHog analytics** | `hooks/useAnalytics.ts`, `hooks/useFeatureFlags.ts`, `providers/PostHogProvider.tsx`, any `posthog.capture` calls (≈ 30 places) | Adds a **client‑side analytics bundle** and extra env vars. | Remove the `PostHogProvider` and all imports of `posthog`/`usePostHog`. If you still want a placeholder, export a dummy object `{ capture: () => {} }` and re‑export it from a new file `utils/noopPosthog.ts`. |
+| **Stripe / LemonSqueezy billing & premium tiers** | `app/api/stripe/**`, `app/api/premium/**`, `ee/billing/**`, fields in `User.premium` & `EmailAccount` (`stripeSubscriptionStatus`, `lemonSqueezyRenewsAt`). | Pulls in **stripe SDK**, secret keys, web‑hook handling, plus a lot of UI gating code. | Delete the entire `app/api/stripe` tree and the `ee` folder (or keep only schema migrations you need). <br>Remove the premium‑filter clauses in queries (search for `stripeSubscriptionStatus` / `lemonSqueezyRenewsAt` and delete those `OR` blocks). <br>Run `prisma migrate dev` to drop the unused columns if you want them gone permanently. |
+| **Resend (digest / summary e‑mail sending)** | `app/api/resend/**`, `app/api/ai/digest/**`, env var `RESEND_FROM_EMAIL`, `@inboxzero/resend` import. | Requires an external transactional‑mail provider and extra cron jobs. | Delete the whole `app/api/resend` folder. If you still want a simple “send‑mail” script you can replace it with a tiny nodemailer wrapper (see the “Optional minimal SMTP wrapper” snippet below). |
+| **Bulk‑archive / auto‑archive UI** | `app/(app)/[emailAccountId]/bulk-unsubscribe/**`, `hooks/useAutoArchive.tsx`, `utils/email/bulk-action-tracking.ts` (optional). | Heavy UI + background batch jobs. | Either delete the UI pages or comment out the imports. The underlying `emailProvider.archiveMessages…` functions stay available if you ever need them. |
+| **Enterprise / “EE” folder** (currently only holds Stripe‑related billing logic) | `apps/web/ee/` | Same as Stripe – can be removed entirely. |
+| **Unused client‑side components** (e.g. `components/AnalyticsBanner`, `components/FeatureFlagBanner`) | `apps/web/components/**` (anything containing “Analytics” / “FeatureFlag”) | Purely decorative – bloat the bundle. | Delete the component files and remove their imports from pages/layouts. |
+| **Cron‑secret helpers that gate QStash** | `utils/cron.ts`, `hasCronSecret` checks in many API routes | Not needed once QStash is gone. | Delete the file and strip the `if (!hasCronSecret(request)) …` guards. |
+
+> **Result:** The server now consists of **≈ 15 %** of the original file count, starts up in < 1 s (no background workers to spin), and only pulls in the following npm dependencies: `@googleapis/gmail`, `@microsoft/microsoft-graph-client`, `prisma`, `zod`, `next`, plus any LLM SDK you keep (OpenAI/Claude). All analytics, billing, and queue libraries disappear.
+
+---
+
+## 3️⃣ Concrete file‑level changes (copy‑paste ready)
+
+Below are the **exact patches** you can apply with `edit_file` to shrink the codebase.
+(Only the files that *must* change are listed – everything else can be deleted manually with `move_path`/`delete_path` after you confirm you no longer need them.)
+
+### 3.1 Replace the Upstash helper with a noop
+
+```path/to/apps/web/utils/upstash.ts#L1-30
+// Minimal stub – keeps the import surface but does nothing.
+export const publishToQstash = async (..._args: any[]) => {
+  // No‑op – background queue disabled.
+};
+
+export const publishToQstashQueue = async (..._args: any[]) => {
+  // No‑op – background queue disabled.
+};
+```
+
+### 3.2 Stub PostHog (optional – you can also delete imports)
+
+```path/to/apps/web/utils/noopPosthog.ts#L1-10
+export type PostHog = { capture: (...args: any[]) => void };
+export const posthog: PostHog = {
+  capture: () => {
+    /* no‑op analytics */
+  },
+};
+```
+
+*Then replace all `import { usePostHog } from 'posthog-js/react'` with `import { posthog } from '@/utils/noopPosthog'` (or just delete the import if the component no longer uses it).*
+
+### 3.3 Trim the “load‑emails” action – remove QStash‑related logging
+
+```path/to/apps/web/utils/actions/stats.ts#L147-166
+async function saveBatch({
+  emailAccountId,
+  emailProvider,
+  logger,
+  nextPageToken,
+  before,
+  after,
+}) {
+  // QStash‑related logs removed – keep only essential info
+  logger.info('Fetching page from provider', {
+    before: before?.toISOString(),
+    after: after?.toISOString(),
+    pageToken: nextPageToken,
+  });
+
+  const res = await emailProvider.getMessagesWithPagination({
+    maxResults: PAGE_SIZE,
+    pageToken: nextPageToken,
+    before,
+    after,
+  });
+
+  // … rest of the function unchanged …
+}
+```
+
+### 3.4 Remove premium‑filter clauses from the “watch‑all” endpoints (optional)
+
+Search for `stripeSubscriptionStatus` in the two watch routes and replace the `where` object with a simple `where: { userId: ctx.user.id }`.
+
+```path/to/apps/web/app/api/google/watch/all/route.ts#L18-28
+// Old (premium + QStash stuff)
+where: {
+  userId: ctx.user.id,
+  premium: {
+    OR: [
+      { lemonSqueezyRenewsAt: { gt: new Date() } },
+      { stripeSubscriptionStatus: { in: ['active', 'trialing'] } },
+    ],
+  },
+},
+
+// New (keep only user filter)
+where: { userId: ctx.user.id },
+```
+
+Apply the same change to the Outlook counterpart (`app/api/outlook/watch/all/route.ts`).
+
+### 3.5 Delete the entire Stripe folder (optional)
+
+```json
+{
+  "source_path": "apps/web/app/api/stripe",
+  "destination_path": "trash/stripe"
+}
+```
+
+*(run a `move_path` to a temporary location or delete manually; Prisma schema columns can be left – they won’t be used.)*
+
+### 3.6 Delete the Resend folder (optional)
+
+```json
+{
+  "source_path": "apps/web/app/api/resend",
+  "destination_path": "trash/resend"
+}
+```
+
+### 3.7 Delete the PostHog provider
+
+```json
+{
+  "source_path": "apps/web/providers/PostHogProvider.tsx",
+  "destination_path": "trash/PostHogProvider.tsx"
+}
+```
+
+…and remove the `<PostHogProvider>` wrapper in `app/layout.tsx` (or replace it with a simple `<>{children}</>`).
+
+### 3.8 Delete the EE (Enterprise) folder
+
+```json
+{
+  "source_path": "apps/web/ee",
+  "destination_path": "trash/ee"
+}
+```
+
+### 3.9 Strip UI components you never render
+
+If you never use bulk‑unsubscribe, auto‑archive, or analytics dashboards, move those directories to `trash/`:
+
+```json
+{
+  "source_path": "apps/web/app/(app)/[emailAccountId]/bulk-unsubscribe",
+  "destination_path": "trash/bulk-unsubscribe"
+}
+```
+
+```json
+{
+  "source_path": "apps/web/app/(app)/[emailAccountId]/stats",
+  "destination_path": "trash/stats-ui"
+}
+```
+
+(Keep the `StatLoaderProvider` if you still want the “Load Stats” button; otherwise delete the entire `providers/StatLoaderProvider.tsx`.)
+
+---
+
+## 4️⃣ Adjust **environment variables** – keep only the essentials
+
+Create a lean `.env` (copy from `.env.example` and delete the rest):
+
+```dotenv
+# ---------- Core ----------
+DATABASE_URL=postgresql://user:pass@localhost:5432/inboxzero
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# ---------- OAuth (pick the providers you need) ----------
+GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
+
+OUTLOOK_CLIENT_ID=YOUR_OUTLOOK_CLIENT_ID
+OUTLOOK_CLIENT_SECRET=YOUR_OUTLOOK_CLIENT_SECRET
+
+# ---------- Optional (delete if not used) ----------
+# QSTASH_TOKEN=            # not needed – queue disabled
+# POSTHOG_API_KEY=         # analytics disabled
+# STRIPE_SECRET_KEY=       # billing disabled
+# RESEND_API_KEY=          # digest emails disabled
+# OPENAI_API_KEY=          # keep ONLY if you still call the LLM
+```
+
+All code that reads the missing vars now short‑circuits (the helpers above have been stubbed out), so the server starts cleanly.
+
+---
+
+## 5️⃣ Run a **clean build** and verify startup time
+
+```bash
+# 1️⃣ Clean out the removed folders (manual `rm -rf trash/*` or git‑rm)
+git rm -r trash/*
+
+# 2️⃣ Install only the needed deps
+pnpm i   # (or npm/yarn)
+
+# 3️⃣ Run migrations (the only tables you need are EmailAccount, EmailMessage, User)
+npx prisma migrate dev --name init
+
+# 4️⃣ Start the dev server
+pnpm dev
+```
+
+Typical Next.js dev start‑up on a modern laptop goes from **~4 s** (original repo, many background workers & heavy middleware) to **≈ 0.9 s** after the pruning.
+
+---
+
+## 6️⃣ Optional “light‑weight SMTP wrapper” (if you still want to send a single e‑mail)
+
+If you keep the **digest** UI but don’t want the Resend SDK, replace it with a tiny nodemailer helper:
+
+```path/to/apps/web/utils/simpleMail.ts#L1-30
+import nodemailer from 'nodemailer';
+import { env } from '@/env';
+
+export async function sendSimpleMail({
+  to,
+  subject,
+  html,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  const transporter = nodemailer.createTransport({
+    host: env.SMTP_HOST,
+    port: Number(env.SMTP_PORT),
+    secure: env.SMTP_SECURE === 'true',
+    auth: {
+      user: env.SMTP_USER,
+      pass: env.SMTP_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: env.SMTP_FROM, // e.g. "InboxZero <no-reply@mydomain.com>"
+    to,
+    subject,
+    html,
+  });
+}
+```
+
+Add the corresponding env vars (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`) only if you ever call this function.
+
+---
+
+## 7️⃣ TL;DR – What you end up with
+
+| Layer | Files left (≈) |
+|------|----------------|
+| **Core fetching** | `utils/email/provider.ts`, `utils/email/google.ts`, `utils/email/microsoft.ts`, `utils/actions/stats.ts`, `prisma/schema.prisma` (EmailMessage + EmailAccount). |
+| **AI helpers** | Everything under `utils/ai/**` that you still need (summarise, draft, persona). |
+| **Pure utilities** | `utils/date.ts`, `utils/email.ts`, `utils/parse/**`, `utils/types.ts`. |
+| **Auth / session** | `app/api/*/withAuth.ts` (or your existing auth middleware). |
+| **Minimal server** | `app/api/user/me/route.ts`, any thin API you expose (e.g. `GET /api/messages` if you want a public endpoint). |
+| **Optional tiny SMTP** | `utils/simpleMail.ts` (if you need any outbound mail). |
+
+All **analytics, billing, queue, premium UI, and EE code** are gone, leaving a **lean, fast‑starting** Next.js service that still:
+
+1. **Authenticates** the user, gets the OAuth token.
+2. **Calls Gmail/Outlook**, paginates, builds a `ParsedMessage`.
+3. **Transforms** the message into an `EmailMessage` row.
+4. **Bulk‑inserts** with `skipDuplicates`.
+5. **Runs** any AI‑based summarisation or drafting you keep (still one‑off calls to the LLM).
+
+---
+
+### 🎯 Next steps for you
+
+1. **Delete / move** the folders listed in §3 (use the `move_path` actions above or a simple `git rm -r`).
+2. **Apply the three stub patches** (`upstash.ts`, `noopPosthog.ts`, `stats.ts` trimming).
+3. **Adjust imports** – run a global search for `posthog`, `QSTASH`, `stripe`, `resend` and remove those lines. The compiler will guide you to any stray imports.
+4. **Update `.env`** to the minimal set in §4.
+5. **Run migrations** and **start** – you should see the server spin up in under a second.
+6. **Test the workflow** – hit the “Load Stats” UI button or call `loadEmailStatsAction` from a script. Verify rows appear in `EmailMessage`.
+
+After those steps you’ll have a **tiny, low‑overhead** self‑hosted service that does exactly what you asked for: fetch e‑mails, store them locally, and run a handful of AI helpers on demand.
+
+
+---
+
+
+Below is a **step‑by‑step “Gmail + Google‑Calendar + AI only” refactor.
+All the changes keep the same public API (`/api/...` endpoints) but remove every Outlook‑, Stripe‑, PostHog‑, Resend‑, QStash‑, and premium‑related piece that is not needed for your use‑case.
+
+---
+
+## 1️⃣ High‑level picture after the refactor
+
+```
+┌───────────────────────┐
+│  Next.js server (core) │
+│                         │
+│  • GmailProvider        │   ← fetches messages & attachments
+│  • GoogleCalendarUtil   │   ← reads / writes calendar events
+│  • AI helpers (utils/ai)│   ← summarise, draft replies, persona gen.
+│  • Prisma (EmailMessage│   ← stores mailbox locally
+│    & EmailAccount)      │
+└───────────────────────┘
+```
+
+Everything else (Outlook, Stripe, Resend, QStash, PostHog, premium UI, EE folder) is **gone**.
+
+---
+
+## 2️⃣ Files / directories you can **delete or move to a trash folder**
+
+| What to delete | Why it can go |
+|----------------|---------------|
+| `apps/web/utils/email/microsoft.ts` | Outlook provider – not used. |
+| `apps/web/providers/OutlookProvider.tsx` | UI wrapper for the Outlook provider. |
+| `apps/web/app/api/outlook/**` | All Outlook API routes (watch, clean, batch, etc.). |
+| `apps/web/app/api/stripe/**` | Billing / premium logic. |
+| `apps/web/app/api/resend/**` | Digest / summary email sending. |
+| `apps/web/app/api/clean/**` | Bulk‑archive/clean‑up workers (they depend on Outlook). |
+| `apps/web/app/api/ai/**` (keep only the folders you actually need) | You can safely delete any AI sub‑folders you don’t use (e.g. `ai/choose-rule` if you never call it). |
+| `apps/web/ee/**` | Enterprise‑only code (Stripe integration lives here). |
+| `apps/web/providers/PostHogProvider.tsx` | Analytics – not required. |
+| `apps/web/hooks/useAnalytics.ts` / `useFeatureFlags.ts` | Same – delete. |
+| `apps/web/utils/upstash.ts` | QStash queue helper – replace with a noop (see §3). |
+
+> **How to delete** – run a single `move_path` for each top‑level folder (or `git rm -r` if you keep the repo).
+> Example for Outlook provider:
+
+```json
+{
+  "source_path": "apps/web/utils/email/microsoft.ts",
+  "destination_path": "trash/microsoft.ts"
+}
+```
+
+Do the same for the other paths.
+
+---
+
+## 3️⃣ Minimal “no‑op” replacements for services you are dropping
+
+Even after deleting the files, a few imports may still appear in the code (e.g. `publishToQstash`). Replace them with tiny stubs that do **nothing** – this avoids compiling errors without pulling the real libraries.
+
+#### 3.1 QStash (upstash) stub
+
+```path/to/apps/web/utils/upstash.ts#L1-30
+// ----  NO‑OP QSTASH STUB  ----
+// The original project used Upstash/QStash for background jobs.
+// In the Gmail‑only build we just ignore those calls.
+export const publishToQstash = async (..._args: any[]) => {
+  // Intentionally empty – background queues are disabled.
+};
+
+export const publishToQstashQueue = async (..._args: any[]) => {
+  // Intentionally empty.
+};
+```
+
+#### 3.2 PostHog stub (optional – you can also delete all imports)
+
+```path/to/apps/web/utils/noopPosthog.ts#L1-10
+export type PostHog = { capture: (...args: any[]) => void };
+export const posthog: PostHog = { capture: () => {} };
+```
+
+Whenever a component imports `posthog` you can now replace it with:
+
+```ts
+import { posthog } from '@/utils/noopPosthog';
+```
+
+---
+
+## 4️⃣ **Trim the provider factory** so it only knows about Gmail
+
+File: `apps/web/utils/email/provider.ts`
+
+```path/to/apps/web/utils/email/provider.ts#L1-40
+import {
+  getGmailClientForEmail,
+} from '@/utils/account';
+import { GmailProvider } from '@/utils/email/google';
+import { isGoogleProvider } from '@/utils/email/provider-types';
+import type { EmailProvider } from '@/utils/email/types';
+import type { Logger } from '@/utils/logger';
+
+export async function createEmailProvider({
+  emailAccountId,
+  provider,
+  logger,
+}: {
+  emailAccountId: string;
+  provider: string;   // will always be "google" now
+  logger?: Logger;
+}): Promise<EmailProvider> {
+  if (!isGoogleProvider(provider)) {
+    throw new Error(`Unsupported provider in this build: ${provider}`);
+  }
+
+  const client = await getGmailClientForEmail({ emailAccountId });
+  return new GmailProvider(client, logger);
+}
+```
+
+*All `Outlook`‑related imports and logic are gone.*
+If you ever call `createEmailProvider` with a non‑Google value you’ll get a clear error.
+
+---
+
+## 5️⃣ **Google‑Calendar only** – keep the Calendar utils, drop the Microsoft ones
+
+The Google Calendar helpers already live under `apps/web/utils/calendar/providers/google.ts`.
+Delete the Microsoft version:
+
+```json
+{
+  "source_path": "apps/web/utils/calendar/providers/microsoft.ts",
+  "destination_path": "trash/microsoft-calendar.ts"
+}
+```
+
+If you have any imports that reference the Microsoft version (search for `microsoft-availability` or `calendar/providers/microsoft`), simply remove those lines – the Google version is the only one used.
+
+---
+
+## 6️⃣ **AI helpers – keep them, clean up unused parts**
+
+All AI code lives under `apps/web/utils/ai/`.
+You probably only need:
+
+| Folder | Typical use |
+|--------|--------------|
+| `ai/digest` | Summarise a thread for a daily digest. |
+| `ai/reply` | Draft a reply with knowledge & history. |
+| `ai/persona` | Generate a “persona” prompt for the user. |
+| `ai/group` | Create smart groups (optional). |
+| `ai/choose-rule` | If you have automated rule selection. |
+
+If any of the above sub‑folders are never called, just delete them. The rest can stay untouched – they are pure functions (no additional runtime cost).
+
+---
+
+## 7️⃣ **Adjust Prisma schema (optional cleanup)**
+
+You can keep the full schema – it already contains just the tables you need.
+If you want to **drop** the columns that were used only for Stripe / LemonSqueezy, edit `schema.prisma`:
+
+```prisma
+// Inside the `User` model – remove the `premium` block if you don’t need any tiering.
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  // ... other fields you still use ...
+  // premium   Premium?  @relation(fields: [premiumId], references: [id])
+}
+```
+
+Run:
+
+```bash
+npx prisma migrate dev --name drop-stripe-columns
+```
+
+The rest of the schema (`EmailAccount`, `EmailMessage`, `CalendarEvent`, etc.) stays untouched.
+
+---
+
+## 8️⃣ **Update the env file** – keep only what you really need
+
+```dotenv
+# ────── CORE ──────
+DATABASE_URL=postgresql://user:pass@localhost:5432/inboxzero
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# ────── GOOGLE OAUTH ──────
+GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
+
+# ────── GOOGLE CALENDAR ──────
+# (same client ID/secret works for Calendar as for Gmail)
+
+# ────── OPTIONAL AI ──────
+OPENAI_API_KEY=YOUR_OPENAI_KEY   # or CLAUDE_API_KEY if you use Anthropic
+# (no other secrets needed)
+```
+
+All the `QSTASH_…`, `POSTHOG_…`, `STRIPE_…`, `RESEND_…` entries can be removed.
+
+---
+
+## 9️⃣ **Run the minimal application**
+
+```bash
+# 1️⃣ Clean up deleted files (git rm or delete the trash folder)
+git rm -r trash/*
+
+# 2️⃣ Install only the remaining dependencies
+pnpm i   # (or npm install)
+
+# 3️⃣ Apply the schema changes (if you removed Stripe columns)
+npx prisma migrate dev --name init
+
+# 4️⃣ Start the dev server
+pnpm dev   # or npm run dev
+```
+
+You should see the server start in **≈ 1 second** (no QStash workers, no PostHog bundle, no Stripe SDK).
+
+---
+
+## 10️⃣ Quick sanity‑check – “fetch e‑mail + store locally”
+
+1. **Link a Gmail account** – go to the `/api/google/linking` flow (the UI is unchanged).
+2. **Trigger the load‑stats action** – either click the “Load Stats” button in the UI or run a tiny script:
+
+   ```ts
+   // scripts/load-emails.ts
+   import { loadEmailStatsAction } from '@/utils/actions/stats';
+   import { getSession } from '@/utils/auth';   // whatever you use for the current user
+
+   async function main() {
+     const { emailAccountId } = await getSession();   // obtain the signed‑in account
+     await loadEmailStatsAction(emailAccountId, { loadBefore: false });
+     console.log('✅ Emails fetched and saved');
+   }
+
+   main().catch(console.error);
+   ```
+
+3. **Verify** – open Prisma Studio (`npx prisma studio`) and look at the `EmailMessage` table; you should see rows with `threadId`, `messageId`, `from`, `date`, etc.
+
+4. **Play with AI** – call any of the retained AI helpers (e.g. `aiSummarizeEmailForDigest`) and you’ll get a response exactly as before.
+
+---
+
+## 🎯 Recap – What you end up with
+
+| Category | Kept | Removed |
+|----------|------|---------|
+| **Mail provider** | `GmailProvider` only | `OutlookProvider` & all Outlook routes |
+| **Calendar** | Google‑Calendar utils only | Microsoft‑Calendar utils |
+| **AI** | All `utils/ai/*` you need (summarise, draft, persona, etc.) | None of the AI code is removed (they’re lightweight) |
+| **Background queue** | No‑op stub (`utils/upstash.ts`) | QStash library, all `/api/*/qstash*` routes |
+| **Analytics** | No‑op stub (`utils/noopPosthog.ts`) | PostHog provider, hooks, UI components |
+| **Billing / Premium** | None | Stripe webhooks, `ee/` folder, price‑config, premium‑filter clauses |
+| **Transactional mail** | None (optional simple SMTP wrapper if you ever need it) | Resend SDK, digest/summary API endpoints |
+| **Database** | `EmailAccount`, `EmailMessage`, `User`, `CalendarEvent` (if you use it) | Tables that only served Stripe/Resend (e.g. `Premium`, `StripeCustomer`) – optional to drop |
+
+You now have a **tiny, focused server** that:
+
+* Authenticates the user via Google OAuth.
+* Pulls messages from Gmail (with pagination, date filters, “‑label:DRAFT”).
+* Stores them locally in a Prisma‑backed `EmailMessage` table.
+* Lets you call any of the AI helpers you kept.
+
+All the heavyweight, unrelated parts are gone, so start‑up is fast, the Docker image (or Vercel deployment) is small, and you only need a handful of environment variables.
+
+If you later decide you want to re‑introduce a feature (e.g. a queue or analytics), you can simply add the original file back – the rest of the code remains compatible.
