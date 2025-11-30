@@ -1,0 +1,1415 @@
+serwist) Bundling the service worker script with the URL '/sw.js' and the scope '/'...
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOSPC: no space left on device, write
+Failed to compile.
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/example-list'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/components/LoadingContent'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/components/TopSection'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/rule/[ruleId]/error.tsx
+Module not found: Can't resolve '@/components/ErrorDisplay'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/page.tsx
+Module not found: Can't resolve '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/example-list'
+
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOSPC: no space left on device, write
+Failed to compile.
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/example-list'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/components/LoadingContent'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/components/TopSection'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/rule/[ruleId]/error.tsx
+Module not found: Can't resolve '@/components/ErrorDisplay'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/page.tsx
+Module not found: Can't resolve '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/example-list'
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors
+ ELIFECYCLE  Command failed with exit code 1.
+
+💻 ZSH v4.1 loaded (standard) | 16:30:23
+💡 Tools: ✓ ripgrep | ✓ fzf | ✓ eza | ✓ bat | ✓ delta | ✓ btop | ✓ dust | ✓ procs
+emoji=💻
+💻 ZSH v4.1 loaded (standard) | 16:30:23
+node:internal/modules/esm/get_format:185
+  throw new ERR_UNKNOWN_FILE_EXTENSION(ext, filepath);
+        ^
+
+TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".tsx" for /Users/lorenzo/Projects/inbox-zero-google-migration/apps/web/providers/EmailProvider.tsx
+    at Object.getFileProtocolModuleFormat [as file:] (node:internal/modules/esm/get_format:185:9)
+    at defaultGetFormat (node:internal/modules/esm/get_format:211:36)
+    at defaultLoadSync (node:internal/modules/esm/load:158:16)
+    at ModuleLoader.load (node:internal/modules/esm/loader:821:12)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:591:31)
+    at #createModuleJob (node:internal/modules/esm/loader:623:36)
+    at #getJobFromResolveResult (node:internal/modules/esm/loader:329:34)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:294:41)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:25) {
+  code: 'ERR_UNKNOWN_FILE_EXTENSION'
+}
+
+Node.js v25.1.0
+✖ /Users/lorenzo/Projects/inbox-zero-google-migration/apps/web/providers/EmailProvider.tsx (838.022403ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 873.131152
+
+✖ failing tests:
+
+test at providers/EmailProvider.tsx:1:1
+✖ /Users/lorenzo/Projects/inbox-zero-google-migration/apps/web/providers/EmailProvider.tsx (838.022403ms)
+  'test failed'
+
+> inbox-zero-ai@1.0.0 check-enums
+> node scripts/check-enum-imports.js
+
+🔍 Checking for problematic Prisma enum imports...
+
+✅ No imports from @/generated/prisma/client found!
+
+> inbox-zero-ai@1.0.0 postinstall
+> prisma generate
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma config detected, skipping environment variable loading.
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (6.16.3) to ./generated/prisma in 1.22s
+
+
+
+
+> inbox-zero-ai@1.0.0 dev
+> cross-env NODE_OPTIONS=--max_old_space_size=2048 next dev --turbopack
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/lorenzo/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles:
+   * /Users/lorenzo/Projects/inbox-zero-google-migration/pnpm-lock.yaml
+
+   ▲ Next.js 15.5.6 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.28:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ○ Compiling instrumentation Node.js ...
+ ✓ Compiled instrumentation Node.js in 988ms
+ ○ Compiling instrumentation Edge ...
+ ✓ Compiled instrumentation Edge in 5.8s
+ ✓ Ready in 40s
+
+
+
+
+> inbox-zero-ai@1.0.0 type-check
+> npx tsc --noEmit --pretty
+
+app/api/admin/api-keys/route.ts:232:93 - error TS1005: ',' expected.
+
+232     prisma.apiKey.count({ where: { userId, isActive: false, expiresAt: { lte: new Date() } }),
+                                                                                                ~
+
+app/api/admin/api-keys/route.ts:270:1 - error TS1128: Declaration or statement expected.
+
+270 }
+    ~
+
+app/api/admin/api-keys/route.ts:312:1 - error TS1128: Declaration or statement expected.
+
+312 }
+    ~
+
+utils/api-keys/types.ts:387:5 - error TS1131: Property or signature expected.
+
+387     const now = Date.now();
+        ~~~~~
+
+utils/api-keys/types.ts:396:5 - error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+
+396     return {
+        ~~~~~~
+
+utils/api-keys/types.ts:401:3 - error TS1128: Declaration or statement expected.
+
+401   }
+      ~
+
+utils/api-keys/types.ts:403:3 - error TS1128: Declaration or statement expected.
+
+403   static calculateSecurityScore(events: ApiKeySecurityEvent[]): number {
+      ~~~~~~
+
+
+
+       inbox-zero-ai@1.0.0 test:ci
+> cross-env RUN_AI_TESTS=false vitest --run
+
+failed to load config from /Users/lorenzo/Projects/inbox-zero-google-migration/apps/web/vitest.config.mts
+
+
+
+💻 ZSH v4.1 loaded (standard) | 17:07:57
+💡 Tools: ✓ ripgrep | ✓ fzf | ✓ eza | ✓ bat | ✓ delta | ✓ btop | ✓ dust | ✓ procs
+emoji=💻
+💻 ZSH v4.1 loaded (standard) | 17:07:57
+
+> inbox-zero-ai@1.0.0 lint
+> npx @biomejs/biome check .
+
+vitest.config.mts:2:18 lint/style/useNodejsImportProtocol  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ℹ A Node.js builtin module should be imported with the node: protocol.
+
+    1 │ import react from '@vitejs/plugin-react';
+  > 2 │ import path from 'path';
+      │                  ^^^^^^
+    3 │ import { defineConfig } from 'vitest/config';
+    4 │
+
+  ℹ Using the node: protocol is more explicit and signals that the imported module belongs to Node.js.
+
+  ℹ Unsafe fix: Add the node: protocol.
+
+     1  1 │   import react from '@vitejs/plugin-react';
+     2    │ - import·path·from·'path';
+        2 │ + import·path·from·'node:path';
+     3  3 │   import { defineConfig } from 'vitest/config';
+     4  4 │
+
+
+utils/user/orphaned-account.test.ts:30:13 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    28 │         userId: 'user-id',
+    29 │         emailAccount: { id: 'email-id' },
+  > 30 │       }) as any
+       │             ^^^
+    31 │     );
+    32 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/user/orphaned-account.test.ts:44:13 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    42 │         userId: 'user-id',
+    43 │         emailAccount: null,
+  > 44 │       }) as any
+       │             ^^^
+    45 │     );
+    46 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/user/orphaned-account.test.ts:48:51 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    47 │     prisma.emailAccount.count.mockResolvedValue(0);
+  > 48 │     prisma.account.delete.mockResolvedValue({} as any);
+       │                                                   ^^^
+    49 │     prisma.user.delete.mockResolvedValue({} as any);
+    50 │     prisma.$transaction.mockImplementation((ops) => Promise.resolve(ops));
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/user/orphaned-account.test.ts:49:48 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    47 │     prisma.emailAccount.count.mockResolvedValue(0);
+    48 │     prisma.account.delete.mockResolvedValue({} as any);
+  > 49 │     prisma.user.delete.mockResolvedValue({} as any);
+       │                                                ^^^
+    50 │     prisma.$transaction.mockImplementation((ops) => Promise.resolve(ops));
+    51 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/user/orphaned-account.test.ts:69:13 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    67 │         userId: 'user-id',
+    68 │         emailAccount: null,
+  > 69 │       }) as any
+       │             ^^^
+    70 │     );
+    71 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/webhook/process-history-item.ts:27:23 lint/complexity/noExcessiveCognitiveComplexity ━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Excessive complexity of 32 detected (max: 15).
+
+    25 │ };
+    26 │
+  > 27 │ export async function processHistoryItem(
+       │                       ^^^^^^^^^^^^^^^^^^
+    28 │   {
+    29 │     messageId,
+
+  ℹ Please refactor this function to reduce its complexity score from 32 to the max allowed complexity 15.
+
+
+utils/webhook/validate-webhook-account.test.ts:26:75 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    24 │   beforeEach(() => {
+    25 │     vi.clearAllMocks();
+  > 26 │     vi.mocked(createEmailProvider).mockResolvedValue(mockEmailProvider as any);
+       │                                                                           ^^^
+    27 │   });
+    28 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/webhook/validate-webhook-account.test.ts:218:12 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    216 │         ...createMockEmailAccount(),
+    217 │         account: null,
+  > 218 │       } as any as ValidatedWebhookAccountData;
+        │            ^^^
+    219 │
+    220 │       vi.mocked(isPremium).mockReturnValue(true);
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+.next/app-build-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1 1 │   {
+    2   │ - ··"pages":·{}
+    3   │ - }
+      2 │ + → "pages":·{}
+      3 │ + }
+      4 │ +
+
+
+.next/build-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+     1  1 │   {
+     2    │ - ··"pages":·{
+     3    │ - ····"/_app":·[]
+     4    │ - ··},
+     5    │ - ··"devFiles":·[],
+     6    │ - ··"ampDevFiles":·[],
+     7    │ - ··"polyfillFiles":·[],
+     8    │ - ··"lowPriorityFiles":·[
+     9    │ - ····"static/development/_ssgManifest.js",
+    10    │ - ····"static/development/_buildManifest.js"
+    11    │ - ··],
+    12    │ - ··"rootMainFiles":·[],
+    13    │ - ··"ampFirstPages":·[]
+    14    │ - }
+        2 │ + → "pages":·{
+        3 │ + → → "/_app":·[]
+        4 │ + → },
+        5 │ + → "devFiles":·[],
+        6 │ + → "ampDevFiles":·[],
+        7 │ + → "polyfillFiles":·[],
+        8 │ + → "lowPriorityFiles":·[
+        9 │ + → → "static/development/_ssgManifest.js",
+       10 │ + → → "static/development/_buildManifest.js"
+       11 │ + → ],
+       12 │ + → "rootMainFiles":·[],
+       13 │ + → "ampFirstPages":·[]
+       14 │ + }
+       15 │ +
+
+
+.next/diagnostics/build-diagnostics.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1 1 │   {
+    2   │ - ··"buildStage":·"compile",
+    3   │ - ··"buildOptions":·{
+    4   │ - ····"useBuildWorker":·"false"
+    5   │ - ··}
+    6   │ - }
+      2 │ + → "buildStage":·"compile",
+      3 │ + → "buildOptions":·{
+      4 │ + → → "useBuildWorker":·"false"
+      5 │ + → }
+      6 │ + }
+      7 │ +
+
+
+.next/diagnostics/framework.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1   │ - {"name":"Next.js","version":"15.5.6"}
+      1 │ + {·"name":·"Next.js",·"version":·"15.5.6"·}
+      2 │ +
+
+
+.next/fallback-build-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+     1  1 │   {
+     2    │ - ··"pages":·{
+     3    │ - ····"/_app":·[]
+     4    │ - ··},
+     5    │ - ··"devFiles":·[],
+     6    │ - ··"ampDevFiles":·[],
+     7    │ - ··"polyfillFiles":·[],
+     8    │ - ··"lowPriorityFiles":·[
+     9    │ - ····"static/development/_ssgManifest.js",
+    10    │ - ····"static/development/_buildManifest.js"
+    11    │ - ··],
+    12    │ - ··"rootMainFiles":·[],
+    13    │ - ··"ampFirstPages":·[]
+    14    │ - }
+        2 │ + → "pages":·{
+        3 │ + → → "/_app":·[]
+        4 │ + → },
+        5 │ + → "devFiles":·[],
+        6 │ + → "ampDevFiles":·[],
+        7 │ + → "polyfillFiles":·[],
+        8 │ + → "lowPriorityFiles":·[
+        9 │ + → → "static/development/_ssgManifest.js",
+       10 │ + → → "static/development/_buildManifest.js"
+       11 │ + → ],
+       12 │ + → "rootMainFiles":·[],
+       13 │ + → "ampFirstPages":·[]
+       14 │ + }
+       15 │ +
+
+
+.next/package.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1 1 │   {
+    2   │ - ··"type":·"commonjs"
+    3   │ - }
+      2 │ + → "type":·"commonjs"
+      3 │ + }
+      4 │ +
+
+
+.next/prerender-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+     1  1 │   {
+     2    │ - ··"version":·4,
+     3    │ - ··"routes":·{},
+     4    │ - ··"dynamicRoutes":·{},
+     5    │ - ··"notFoundRoutes":·[],
+     6    │ - ··"preview":·{
+     7    │ - ····"previewModeId":·"2bf1ae41e71cab26a0bc1a2dc0ca265f",
+     8    │ - ····"previewModeSigningKey":·"008f7d4bfe6751469e86c7ca95a8a977ca8c6959563d1d933aa6cd94f6a0b049",
+     9    │ - ····"previewModeEncryptionKey":·"7ef55a40fac0141440839aba2fadc59233754602dd25af03c96b06d6f183399b"
+    10    │ - ··}
+    11    │ - }
+        2 │ + → "version":·4,
+        3 │ + → "routes":·{},
+        4 │ + → "dynamicRoutes":·{},
+        5 │ + → "notFoundRoutes":·[],
+        6 │ + → "preview":·{
+        7 │ + → → "previewModeId":·"2bf1ae41e71cab26a0bc1a2dc0ca265f",
+        8 │ + → → "previewModeSigningKey":·"008f7d4bfe6751469e86c7ca95a8a977ca8c6959563d1d933aa6cd94f6a0b049",
+        9 │ + → → "previewModeEncryptionKey":·"7ef55a40fac0141440839aba2fadc59233754602dd25af03c96b06d6f183399b"
+       10 │ + → }
+       11 │ + }
+       12 │ +
+
+
+.next/routes-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1     │ - {"version":3,"caseSensitive":false,"basePath":"","rewrites":{"beforeFiles":[],"afterFiles":[{"source":"/ingest/:path*","destination":"https://app.posthog.com/:path*","regex":"^\\/ingest(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))?(?:\\/)?$","check":true},{"source":"/vendor/lemon/affiliate.js","destination":"https://lmsqueezy.com/affiliate.js","regex":"^\\/vendor\\/lemon\\/affiliate\\.js(?:\\/)?$","check":true},{"source":"/_proxy/dub/track/:path","destination":"https://api.dub.co/track/:path","regex":"^\\/_proxy\\/dub\\/track(?:\\/([^\\/]+?))(?:\\/)?$","check":true},{"source":"/_proxy/dub/script.js","destination":"https://www.dubcdn.com/analytics/script.js","regex":"^\\/_proxy\\/dub\\/script\\.js(?:\\/)?$","check":true},{"source":"/_axiom/web-vitals","destination":"https://api.axiom.co/v1/datasets/undefined/ingest","basePath":false,"regex":"^\\/_axiom\\/web-vitals(?:\\/)?$","check":true},{"source":"/_axiom/logs","destination":"https://api.axiom.co/v1/datasets/undefined/ingest","basePath":false,"regex":"^\\/_axiom\\/logs(?:\\/)?$","check":true}],"fallback":[]},"redirects":[{"source":"/:path+/","destination":"/:path+","permanent":true,"internal":true,"regex":"^(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))\\/$"},{"source":"/","destination":"/automation","has":[{"type":"cookie","key":"__Secure-better-auth.session_token"}],"permanent":false,"regex":"^(?!\\/_next)\\/(?:\\/)?$"},{"source":"/","destination":"/setup","has":[{"type":"cookie","key":"__Secure-better-auth.session-token.1"}],"permanent":false,"regex":"^(?!\\/_next)\\/(?:\\/)?$"},{"source":"/feature-requests","destination":"https://go.getinboxzero.com/feature-requests","permanent":true,"regex":"^(?!\\/_next)\\/feature-requests(?:\\/)?$"},{"source":"/feedback","destination":"https://go.getinboxzero.com/feedback","permanent":true,"regex":"^(?!\\/_next)\\/feedback(?:\\/)?$"},{"source":"/changelog","destination":"https://go.getinboxzero.com/changelog","permanent":true,"regex":"^(?!\\/_next)\\/changelog(?:\\/)?$"},{"source":"/twitter","destination":"https://go.getinboxzero.com/x","permanent":true,"regex":"^(?!\\/_next)\\/twitter(?:\\/)?$"},{"source":"/github","destination":"https://go.getinboxzero.com/github","permanent":true,"regex":"^(?!\\/_next)\\/github(?:\\/)?$"},{"source":"/discord","destination":"https://go.getinboxzero.com/discord","permanent":true,"regex":"^(?!\\/_next)\\/discord(?:\\/)?$"},{"source":"/linkedin","destination":"https://go.getinboxzero.com/linkedin","permanent":true,"regex":"^(?!\\/_next)\\/linkedin(?:\\/)?$"},{"source":"/waitlist","destination":"https://go.getinboxzero.com/waitlist","permanent":true,"regex":"^(?!\\/_next)\\/waitlist(?:\\/)?$"},{"source":"/waitlist-other","destination":"https://go.getinboxzero.com/waitlist-other","permanent":false,"regex":"^(?!\\/_next)\\/waitlist-other(?:\\/)?$"},{"source":"/affiliates","destination":"https://go.getinboxzero.com/affiliate","permanent":true,"regex":"^(?!\\/_next)\\/affiliates(?:\\/)?$"},{"source":"/newsletters","destination":"/bulk-unsubscribe","permanent":false,"regex":"^(?!\\/_next)\\/newsletters(?:\\/)?$"},{"source":"/request-access","destination":"/early-access","permanent":true,"regex":"^(?!\\/_next)\\/request-access(?:\\/)?$"},{"source":"/reply-tracker","destination":"/reply-zero","permanent":false,"regex":"^(?!\\/_next)\\/reply-tracker(?:\\/)?$"},{"source":"/game","destination":"https://go.getinboxzero.com/game","permanent":false,"regex":"^(?!\\/_next)\\/game(?:\\/)?$"},{"source":"/soc2","destination":"https://go.getinboxzero.com/soc2","permanent":true,"regex":"^(?!\\/_next)\\/soc2(?:\\/)?$"},{"source":"/sales","destination":"https://go.getinboxzero.com/sales","permanent":false,"regex":"^(?!\\/_next)\\/sales(?:\\/)?$"}],"headers":[{"source":"/(.*)","headers":[{"key":"X-Frame-Options","value":"DENY"},{"key":"X-XSS-Protection","value":"1;·mode=block"},{"key":"X-Content-Type-Options","value":"nosniff"},{"key":"Referrer-Policy","value":"strict-origin-when-cross-origin"},{"key":"Content-Security-Policy","value":"default-src·'self';·script-src·'self'·'unsafe-inline'·'unsafe-eval'·https:;·style-src·'self'·'unsafe-inline'·https:;·font-src·'self'·data:·https:;·img-src·'self'·data:·https:·blob:·https://image.mux.com·https://*.litix.io;·media-src·'self'·blob:·https://*.mux.com;·worker-src·'self'·blob:;·connect-src·'self'·https:·wss:·https://*.mux.com·https://*.litix.io;·frame-src·'self'·https:;·frame-ancestors·'none'"},{"key":"Strict-Transport-Security","value":"max-age=31536000"},{"key":"Access-Control-Allow-Origin","value":"http://localhost:3001"},{"key":"Access-Control-Allow-Methods","value":"GET,·POST,·PUT,·DELETE,·OPTIONS"}],"regex":"^(?:\\/(.*))(?:\\/)?$"},{"source":"/sw.js","headers":[{"key":"Content-Type","value":"application/javascript;·charset=utf-8"},{"key":"Cache-Control","value":"no-cache,·no-store,·must-revalidate"},{"key":"Content-Security-Policy","value":"default-src·'self';·script-src·'self'·'unsafe-eval'"}],"regex":"^\\/sw\\.js(?:\\/)?$"}]}
+        1 │ + {
+        2 │ + → "version":·3,
+        3 │ + → "caseSensitive":·false,
+        4 │ + → "basePath":·"",
+        5 │ + → "rewrites":·{
+        6 │ + → → "beforeFiles":·[],
+        7 │ + → → "afterFiles":·[
+        8 │ + → → → {
+        9 │ + → → → → "source":·"/ingest/:path*",
+       10 │ + → → → → "destination":·"https://app.posthog.com/:path*",
+       11 │ + → → → → "regex":·"^\\/ingest(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))?(?:\\/)?$",
+       12 │ + → → → → "check":·true
+       13 │ + → → → },
+       14 │ + → → → {
+       15 │ + → → → → "source":·"/vendor/lemon/affiliate.js",
+       16 │ + → → → → "destination":·"https://lmsqueezy.com/affiliate.js",
+       17 │ + → → → → "regex":·"^\\/vendor\\/lemon\\/affiliate\\.js(?:\\/)?$",
+       18 │ + → → → → "check":·true
+       19 │ + → → → },
+       20 │ + → → → {
+       21 │ + → → → → "source":·"/_proxy/dub/track/:path",
+       22 │ + → → → → "destination":·"https://api.dub.co/track/:path",
+       23 │ + → → → → "regex":·"^\\/_proxy\\/dub\\/track(?:\\/([^\\/]+?))(?:\\/)?$",
+       24 │ + → → → → "check":·true
+       25 │ + → → → },
+       26 │ + → → → {
+       27 │ + → → → → "source":·"/_proxy/dub/script.js",
+       28 │ + → → → → "destination":·"https://www.dubcdn.com/analytics/script.js",
+       29 │ + → → → → "regex":·"^\\/_proxy\\/dub\\/script\\.js(?:\\/)?$",
+       30 │ + → → → → "check":·true
+       31 │ + → → → },
+       32 │ + → → → {
+       33 │ + → → → → "source":·"/_axiom/web-vitals",
+       34 │ + → → → → "destination":·"https://api.axiom.co/v1/datasets/undefined/ingest",
+       35 │ + → → → → "basePath":·false,
+       36 │ + → → → → "regex":·"^\\/_axiom\\/web-vitals(?:\\/)?$",
+       37 │ + → → → → "check":·true
+       38 │ + → → → },
+       39 │ + → → → {
+       40 │ + → → → → "source":·"/_axiom/logs",
+       41 │ + → → → → "destination":·"https://api.axiom.co/v1/datasets/undefined/ingest",
+       42 │ + → → → → "basePath":·false,
+       43 │ + → → → → "regex":·"^\\/_axiom\\/logs(?:\\/)?$",
+       44 │ + → → → → "check":·true
+       45 │ + → → → }
+       46 │ + → → ],
+       47 │ + → → "fallback":·[]
+       48 │ + → },
+       49 │ + → "redirects":·[
+       50 │ + → → {
+       51 │ + → → → "source":·"/:path+/",
+       52 │ + → → → "destination":·"/:path+",
+       53 │ + → → → "permanent":·true,
+       54 │ + → → → "internal":·true,
+       55 │ + → → → "regex":·"^(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))\\/$"
+       56 │ + → → },
+       57 │ + → → {
+       58 │ + → → → "source":·"/",
+       59 │ + → → → "destination":·"/automation",
+       60 │ + → → → "has":·[
+       61 │ + → → → → {·"type":·"cookie",·"key":·"__Secure-better-auth.session_token"·}
+       62 │ + → → → ],
+       63 │ + → → → "permanent":·false,
+       64 │ + → → → "regex":·"^(?!\\/_next)\\/(?:\\/)?$"
+       65 │ + → → },
+       66 │ + → → {
+       67 │ + → → → "source":·"/",
+       68 │ + → → → "destination":·"/setup",
+       69 │ + → → → "has":·[
+       70 │ + → → → → {·"type":·"cookie",·"key":·"__Secure-better-auth.session-token.1"·}
+       71 │ + → → → ],
+       72 │ + → → → "permanent":·false,
+       73 │ + → → → "regex":·"^(?!\\/_next)\\/(?:\\/)?$"
+       74 │ + → → },
+       75 │ + → → {
+       76 │ + → → → "source":·"/feature-requests",
+       77 │ + → → → "destination":·"https://go.getinboxzero.com/feature-requests",
+       78 │ + → → → "permanent":·true,
+       79 │ + → → → "regex":·"^(?!\\/_next)\\/feature-requests(?:\\/)?$"
+       80 │ + → → },
+       81 │ + → → {
+       82 │ + → → → "source":·"/feedback",
+       83 │ + → → → "destination":·"https://go.getinboxzero.com/feedback",
+       84 │ + → → → "permanent":·true,
+       85 │ + → → → "regex":·"^(?!\\/_next)\\/feedback(?:\\/)?$"
+       86 │ + → → },
+       87 │ + → → {
+       88 │ + → → → "source":·"/changelog",
+       89 │ + → → → "destination":·"https://go.getinboxzero.com/changelog",
+       90 │ + → → → "permanent":·true,
+       91 │ + → → → "regex":·"^(?!\\/_next)\\/changelog(?:\\/)?$"
+       92 │ + → → },
+       93 │ + → → {
+       94 │ + → → → "source":·"/twitter",
+       95 │ + → → → "destination":·"https://go.getinboxzero.com/x",
+       96 │ + → → → "permanent":·true,
+       97 │ + → → → "regex":·"^(?!\\/_next)\\/twitter(?:\\/)?$"
+       98 │ + → → },
+       99 │ + → → {
+      100 │ + → → → "source":·"/github",
+      101 │ + → → → "destination":·"https://go.getinboxzero.com/github",
+      102 │ + → → → "permanent":·true,
+      103 │ + → → → "regex":·"^(?!\\/_next)\\/github(?:\\/)?$"
+      104 │ + → → },
+      105 │ + → → {
+      106 │ + → → → "source":·"/discord",
+      107 │ + → → → "destination":·"https://go.getinboxzero.com/discord",
+      108 │ + → → → "permanent":·true,
+      109 │ + → → → "regex":·"^(?!\\/_next)\\/discord(?:\\/)?$"
+      110 │ + → → },
+      111 │ + → → {
+      112 │ + → → → "source":·"/linkedin",
+      113 │ + → → → "destination":·"https://go.getinboxzero.com/linkedin",
+      114 │ + → → → "permanent":·true,
+      115 │ + → → → "regex":·"^(?!\\/_next)\\/linkedin(?:\\/)?$"
+      116 │ + → → },
+      117 │ + → → {
+      118 │ + → → → "source":·"/waitlist",
+      119 │ + → → → "destination":·"https://go.getinboxzero.com/waitlist",
+      120 │ + → → → "permanent":·true,
+      121 │ + → → → "regex":·"^(?!\\/_next)\\/waitlist(?:\\/)?$"
+      122 │ + → → },
+      123 │ + → → {
+      124 │ + → → → "source":·"/waitlist-other",
+      125 │ + → → → "destination":·"https://go.getinboxzero.com/waitlist-other",
+      126 │ + → → → "permanent":·false,
+      127 │ + → → → "regex":·"^(?!\\/_next)\\/waitlist-other(?:\\/)?$"
+      128 │ + → → },
+      129 │ + → → {
+      130 │ + → → → "source":·"/affiliates",
+      131 │ + → → → "destination":·"https://go.getinboxzero.com/affiliate",
+      132 │ + → → → "permanent":·true,
+      133 │ + → → → "regex":·"^(?!\\/_next)\\/affiliates(?:\\/)?$"
+      134 │ + → → },
+      135 │ + → → {
+      136 │ + → → → "source":·"/newsletters",
+      137 │ + → → → "destination":·"/bulk-unsubscribe",
+      138 │ + → → → "permanent":·false,
+      139 │ + → → → "regex":·"^(?!\\/_next)\\/newsletters(?:\\/)?$"
+      140 │ + → → },
+      141 │ + → → {
+      142 │ + → → → "source":·"/request-access",
+      143 │ + → → → "destination":·"/early-access",
+      144 │ + → → → "permanent":·true,
+      145 │ + → → → "regex":·"^(?!\\/_next)\\/request-access(?:\\/)?$"
+      146 │ + → → },
+      147 │ + → → {
+      148 │ + → → → "source":·"/reply-tracker",
+      149 │ + → → → "destination":·"/reply-zero",
+  70 more lines truncated
+
+
+.next/server/app/(app)/(redirects)/assistant/page.js.nft.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1    │ - {"version":1,"files":["../../../../webpack-runtime.js","../../../../chunks/7491.js","../../../../chunks/7666.js","../../../../chunks/37.js","../../../../chunks/4941.js","../../../../chunks/8584.js","../../../../chunks/1406.js","../../../../chunks/8438.js","page_client-reference-manifest.js"]}
+       1 │ + {
+       2 │ + → "version":·1,
+       3 │ + → "files":·[
+       4 │ + → → "../../../../webpack-runtime.js",
+       5 │ + → → "../../../../chunks/7491.js",
+       6 │ + → → "../../../../chunks/7666.js",
+       7 │ + → → "../../../../chunks/37.js",
+       8 │ + → → "../../../../chunks/4941.js",
+       9 │ + → → "../../../../chunks/8584.js",
+      10 │ + → → "../../../../chunks/1406.js",
+      11 │ + → → "../../../../chunks/8438.js",
+      12 │ + → → "page_client-reference-manifest.js"
+      13 │ + → ]
+      14 │ + }
+      15 │ +
+
+
+.next/server/app/(app)/(redirects)/automation/page.js.nft.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1    │ - {"version":1,"files":["../../../../webpack-runtime.js","../../../../chunks/7491.js","../../../../chunks/7666.js","../../../../chunks/37.js","../../../../chunks/4941.js","../../../../chunks/8584.js","../../../../chunks/1406.js","../../../../chunks/8438.js","page_client-reference-manifest.js"]}
+       1 │ + {
+       2 │ + → "version":·1,
+       3 │ + → "files":·[
+       4 │ + → → "../../../../webpack-runtime.js",
+       5 │ + → → "../../../../chunks/7491.js",
+       6 │ + → → "../../../../chunks/7666.js",
+       7 │ + → → "../../../../chunks/37.js",
+       8 │ + → → "../../../../chunks/4941.js",
+       9 │ + → → "../../../../chunks/8584.js",
+      10 │ + → → "../../../../chunks/1406.js",
+      11 │ + → → "../../../../chunks/8438.js",
+      12 │ + → → "page_client-reference-manifest.js"
+      13 │ + → ]
+      14 │ + }
+      15 │ +
+
+
+.next/types/package.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1   │ - {"type":·"module"}
+      1 │ + {
+      2 │ + → "type":·"module"
+      3 │ + }
+      4 │ +
+
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 84882.
+Checked 1846 files in 352s. No fixes applied.
+Found 25873 errors.
+Found 56169 warnings.
+check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Some errors were emitted while running checks.
+
+
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ Startup Error ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from /Users/lorenzo/Projects/inbox-zero-google-migration/apps/web/node_modules/.vite-temp/vitest.config.mts.timestamp-1764432184381-72b23f496d783.mjs
+Did you mean to import "@vitejs/plugin-react/dist/index.cjs"?
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:316:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:858:18)
+    at defaultResolve (node:internal/modules/esm/resolve:990:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:737:20)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:714:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:293:38)
+    at #link (node:internal/modules/esm/module_job:208:49) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+
+
+
+💻 ZSH v4.1 loaded (standard) | 17:07:57
+💡 Tools: ✓ ripgrep | ✓ fzf | ✓ eza | ✓ bat | ✓ delta | ✓ btop | ✓ dust | ✓ procs
+emoji=💻
+💻 ZSH v4.1 loaded (standard) | 17:07:57
+
+> inbox-zero-ai@1.0.0 lint
+> npx @biomejs/biome check .
+
+vitest.config.mts:2:18 lint/style/useNodejsImportProtocol  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ℹ A Node.js builtin module should be imported with the node: protocol.
+
+    1 │ import react from '@vitejs/plugin-react';
+  > 2 │ import path from 'path';
+      │                  ^^^^^^
+    3 │ import { defineConfig } from 'vitest/config';
+    4 │
+
+  ℹ Using the node: protocol is more explicit and signals that the imported module belongs to Node.js.
+
+  ℹ Unsafe fix: Add the node: protocol.
+
+     1  1 │   import react from '@vitejs/plugin-react';
+     2    │ - import·path·from·'path';
+        2 │ + import·path·from·'node:path';
+     3  3 │   import { defineConfig } from 'vitest/config';
+     4  4 │
+
+
+utils/user/orphaned-account.test.ts:30:13 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    28 │         userId: 'user-id',
+    29 │         emailAccount: { id: 'email-id' },
+  > 30 │       }) as any
+       │             ^^^
+    31 │     );
+    32 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/user/orphaned-account.test.ts:44:13 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    42 │         userId: 'user-id',
+    43 │         emailAccount: null,
+  > 44 │       }) as any
+       │             ^^^
+    45 │     );
+    46 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/user/orphaned-account.test.ts:48:51 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    47 │     prisma.emailAccount.count.mockResolvedValue(0);
+  > 48 │     prisma.account.delete.mockResolvedValue({} as any);
+       │                                                   ^^^
+    49 │     prisma.user.delete.mockResolvedValue({} as any);
+    50 │     prisma.$transaction.mockImplementation((ops) => Promise.resolve(ops));
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/user/orphaned-account.test.ts:49:48 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    47 │     prisma.emailAccount.count.mockResolvedValue(0);
+    48 │     prisma.account.delete.mockResolvedValue({} as any);
+  > 49 │     prisma.user.delete.mockResolvedValue({} as any);
+       │                                                ^^^
+    50 │     prisma.$transaction.mockImplementation((ops) => Promise.resolve(ops));
+    51 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/user/orphaned-account.test.ts:69:13 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    67 │         userId: 'user-id',
+    68 │         emailAccount: null,
+  > 69 │       }) as any
+       │             ^^^
+    70 │     );
+    71 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/webhook/process-history-item.ts:27:23 lint/complexity/noExcessiveCognitiveComplexity ━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Excessive complexity of 32 detected (max: 15).
+
+    25 │ };
+    26 │
+  > 27 │ export async function processHistoryItem(
+       │                       ^^^^^^^^^^^^^^^^^^
+    28 │   {
+    29 │     messageId,
+
+  ℹ Please refactor this function to reduce its complexity score from 32 to the max allowed complexity 15.
+
+
+utils/webhook/validate-webhook-account.test.ts:26:75 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    24 │   beforeEach(() => {
+    25 │     vi.clearAllMocks();
+  > 26 │     vi.mocked(createEmailProvider).mockResolvedValue(mockEmailProvider as any);
+       │                                                                           ^^^
+    27 │   });
+    28 │
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+utils/webhook/validate-webhook-account.test.ts:218:12 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Unexpected any. Specify a different type.
+
+    216 │         ...createMockEmailAccount(),
+    217 │         account: null,
+  > 218 │       } as any as ValidatedWebhookAccountData;
+        │            ^^^
+    219 │
+    220 │       vi.mocked(isPremium).mockReturnValue(true);
+
+  ℹ any disables many type checking rules. Its use should be avoided.
+
+
+.next/app-build-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1 1 │   {
+    2   │ - ··"pages":·{}
+    3   │ - }
+      2 │ + → "pages":·{}
+      3 │ + }
+      4 │ +
+
+
+.next/build-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+     1  1 │   {
+     2    │ - ··"pages":·{
+     3    │ - ····"/_app":·[]
+     4    │ - ··},
+     5    │ - ··"devFiles":·[],
+     6    │ - ··"ampDevFiles":·[],
+     7    │ - ··"polyfillFiles":·[],
+     8    │ - ··"lowPriorityFiles":·[
+     9    │ - ····"static/development/_ssgManifest.js",
+    10    │ - ····"static/development/_buildManifest.js"
+    11    │ - ··],
+    12    │ - ··"rootMainFiles":·[],
+    13    │ - ··"ampFirstPages":·[]
+    14    │ - }
+        2 │ + → "pages":·{
+        3 │ + → → "/_app":·[]
+        4 │ + → },
+        5 │ + → "devFiles":·[],
+        6 │ + → "ampDevFiles":·[],
+        7 │ + → "polyfillFiles":·[],
+        8 │ + → "lowPriorityFiles":·[
+        9 │ + → → "static/development/_ssgManifest.js",
+       10 │ + → → "static/development/_buildManifest.js"
+       11 │ + → ],
+       12 │ + → "rootMainFiles":·[],
+       13 │ + → "ampFirstPages":·[]
+       14 │ + }
+       15 │ +
+
+
+.next/diagnostics/build-diagnostics.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1 1 │   {
+    2   │ - ··"buildStage":·"compile",
+    3   │ - ··"buildOptions":·{
+    4   │ - ····"useBuildWorker":·"false"
+    5   │ - ··}
+    6   │ - }
+      2 │ + → "buildStage":·"compile",
+      3 │ + → "buildOptions":·{
+      4 │ + → → "useBuildWorker":·"false"
+      5 │ + → }
+      6 │ + }
+      7 │ +
+
+
+.next/diagnostics/framework.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1   │ - {"name":"Next.js","version":"15.5.6"}
+      1 │ + {·"name":·"Next.js",·"version":·"15.5.6"·}
+      2 │ +
+
+
+.next/fallback-build-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+     1  1 │   {
+     2    │ - ··"pages":·{
+     3    │ - ····"/_app":·[]
+     4    │ - ··},
+     5    │ - ··"devFiles":·[],
+     6    │ - ··"ampDevFiles":·[],
+     7    │ - ··"polyfillFiles":·[],
+     8    │ - ··"lowPriorityFiles":·[
+     9    │ - ····"static/development/_ssgManifest.js",
+    10    │ - ····"static/development/_buildManifest.js"
+    11    │ - ··],
+    12    │ - ··"rootMainFiles":·[],
+    13    │ - ··"ampFirstPages":·[]
+    14    │ - }
+        2 │ + → "pages":·{
+        3 │ + → → "/_app":·[]
+        4 │ + → },
+        5 │ + → "devFiles":·[],
+        6 │ + → "ampDevFiles":·[],
+        7 │ + → "polyfillFiles":·[],
+        8 │ + → "lowPriorityFiles":·[
+        9 │ + → → "static/development/_ssgManifest.js",
+       10 │ + → → "static/development/_buildManifest.js"
+       11 │ + → ],
+       12 │ + → "rootMainFiles":·[],
+       13 │ + → "ampFirstPages":·[]
+       14 │ + }
+       15 │ +
+
+
+.next/package.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1 1 │   {
+    2   │ - ··"type":·"commonjs"
+    3   │ - }
+      2 │ + → "type":·"commonjs"
+      3 │ + }
+      4 │ +
+
+
+.next/prerender-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+     1  1 │   {
+     2    │ - ··"version":·4,
+     3    │ - ··"routes":·{},
+     4    │ - ··"dynamicRoutes":·{},
+     5    │ - ··"notFoundRoutes":·[],
+     6    │ - ··"preview":·{
+     7    │ - ····"previewModeId":·"2bf1ae41e71cab26a0bc1a2dc0ca265f",
+     8    │ - ····"previewModeSigningKey":·"008f7d4bfe6751469e86c7ca95a8a977ca8c6959563d1d933aa6cd94f6a0b049",
+     9    │ - ····"previewModeEncryptionKey":·"7ef55a40fac0141440839aba2fadc59233754602dd25af03c96b06d6f183399b"
+    10    │ - ··}
+    11    │ - }
+        2 │ + → "version":·4,
+        3 │ + → "routes":·{},
+        4 │ + → "dynamicRoutes":·{},
+        5 │ + → "notFoundRoutes":·[],
+        6 │ + → "preview":·{
+        7 │ + → → "previewModeId":·"2bf1ae41e71cab26a0bc1a2dc0ca265f",
+        8 │ + → → "previewModeSigningKey":·"008f7d4bfe6751469e86c7ca95a8a977ca8c6959563d1d933aa6cd94f6a0b049",
+        9 │ + → → "previewModeEncryptionKey":·"7ef55a40fac0141440839aba2fadc59233754602dd25af03c96b06d6f183399b"
+       10 │ + → }
+       11 │ + }
+       12 │ +
+
+
+.next/routes-manifest.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1     │ - {"version":3,"caseSensitive":false,"basePath":"","rewrites":{"beforeFiles":[],"afterFiles":[{"source":"/ingest/:path*","destination":"https://app.posthog.com/:path*","regex":"^\\/ingest(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))?(?:\\/)?$","check":true},{"source":"/vendor/lemon/affiliate.js","destination":"https://lmsqueezy.com/affiliate.js","regex":"^\\/vendor\\/lemon\\/affiliate\\.js(?:\\/)?$","check":true},{"source":"/_proxy/dub/track/:path","destination":"https://api.dub.co/track/:path","regex":"^\\/_proxy\\/dub\\/track(?:\\/([^\\/]+?))(?:\\/)?$","check":true},{"source":"/_proxy/dub/script.js","destination":"https://www.dubcdn.com/analytics/script.js","regex":"^\\/_proxy\\/dub\\/script\\.js(?:\\/)?$","check":true},{"source":"/_axiom/web-vitals","destination":"https://api.axiom.co/v1/datasets/undefined/ingest","basePath":false,"regex":"^\\/_axiom\\/web-vitals(?:\\/)?$","check":true},{"source":"/_axiom/logs","destination":"https://api.axiom.co/v1/datasets/undefined/ingest","basePath":false,"regex":"^\\/_axiom\\/logs(?:\\/)?$","check":true}],"fallback":[]},"redirects":[{"source":"/:path+/","destination":"/:path+","permanent":true,"internal":true,"regex":"^(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))\\/$"},{"source":"/","destination":"/automation","has":[{"type":"cookie","key":"__Secure-better-auth.session_token"}],"permanent":false,"regex":"^(?!\\/_next)\\/(?:\\/)?$"},{"source":"/","destination":"/setup","has":[{"type":"cookie","key":"__Secure-better-auth.session-token.1"}],"permanent":false,"regex":"^(?!\\/_next)\\/(?:\\/)?$"},{"source":"/feature-requests","destination":"https://go.getinboxzero.com/feature-requests","permanent":true,"regex":"^(?!\\/_next)\\/feature-requests(?:\\/)?$"},{"source":"/feedback","destination":"https://go.getinboxzero.com/feedback","permanent":true,"regex":"^(?!\\/_next)\\/feedback(?:\\/)?$"},{"source":"/changelog","destination":"https://go.getinboxzero.com/changelog","permanent":true,"regex":"^(?!\\/_next)\\/changelog(?:\\/)?$"},{"source":"/twitter","destination":"https://go.getinboxzero.com/x","permanent":true,"regex":"^(?!\\/_next)\\/twitter(?:\\/)?$"},{"source":"/github","destination":"https://go.getinboxzero.com/github","permanent":true,"regex":"^(?!\\/_next)\\/github(?:\\/)?$"},{"source":"/discord","destination":"https://go.getinboxzero.com/discord","permanent":true,"regex":"^(?!\\/_next)\\/discord(?:\\/)?$"},{"source":"/linkedin","destination":"https://go.getinboxzero.com/linkedin","permanent":true,"regex":"^(?!\\/_next)\\/linkedin(?:\\/)?$"},{"source":"/waitlist","destination":"https://go.getinboxzero.com/waitlist","permanent":true,"regex":"^(?!\\/_next)\\/waitlist(?:\\/)?$"},{"source":"/waitlist-other","destination":"https://go.getinboxzero.com/waitlist-other","permanent":false,"regex":"^(?!\\/_next)\\/waitlist-other(?:\\/)?$"},{"source":"/affiliates","destination":"https://go.getinboxzero.com/affiliate","permanent":true,"regex":"^(?!\\/_next)\\/affiliates(?:\\/)?$"},{"source":"/newsletters","destination":"/bulk-unsubscribe","permanent":false,"regex":"^(?!\\/_next)\\/newsletters(?:\\/)?$"},{"source":"/request-access","destination":"/early-access","permanent":true,"regex":"^(?!\\/_next)\\/request-access(?:\\/)?$"},{"source":"/reply-tracker","destination":"/reply-zero","permanent":false,"regex":"^(?!\\/_next)\\/reply-tracker(?:\\/)?$"},{"source":"/game","destination":"https://go.getinboxzero.com/game","permanent":false,"regex":"^(?!\\/_next)\\/game(?:\\/)?$"},{"source":"/soc2","destination":"https://go.getinboxzero.com/soc2","permanent":true,"regex":"^(?!\\/_next)\\/soc2(?:\\/)?$"},{"source":"/sales","destination":"https://go.getinboxzero.com/sales","permanent":false,"regex":"^(?!\\/_next)\\/sales(?:\\/)?$"}],"headers":[{"source":"/(.*)","headers":[{"key":"X-Frame-Options","value":"DENY"},{"key":"X-XSS-Protection","value":"1;·mode=block"},{"key":"X-Content-Type-Options","value":"nosniff"},{"key":"Referrer-Policy","value":"strict-origin-when-cross-origin"},{"key":"Content-Security-Policy","value":"default-src·'self';·script-src·'self'·'unsafe-inline'·'unsafe-eval'·https:;·style-src·'self'·'unsafe-inline'·https:;·font-src·'self'·data:·https:;·img-src·'self'·data:·https:·blob:·https://image.mux.com·https://*.litix.io;·media-src·'self'·blob:·https://*.mux.com;·worker-src·'self'·blob:;·connect-src·'self'·https:·wss:·https://*.mux.com·https://*.litix.io;·frame-src·'self'·https:;·frame-ancestors·'none'"},{"key":"Strict-Transport-Security","value":"max-age=31536000"},{"key":"Access-Control-Allow-Origin","value":"http://localhost:3001"},{"key":"Access-Control-Allow-Methods","value":"GET,·POST,·PUT,·DELETE,·OPTIONS"}],"regex":"^(?:\\/(.*))(?:\\/)?$"},{"source":"/sw.js","headers":[{"key":"Content-Type","value":"application/javascript;·charset=utf-8"},{"key":"Cache-Control","value":"no-cache,·no-store,·must-revalidate"},{"key":"Content-Security-Policy","value":"default-src·'self';·script-src·'self'·'unsafe-eval'"}],"regex":"^\\/sw\\.js(?:\\/)?$"}]}
+        1 │ + {
+        2 │ + → "version":·3,
+        3 │ + → "caseSensitive":·false,
+        4 │ + → "basePath":·"",
+        5 │ + → "rewrites":·{
+        6 │ + → → "beforeFiles":·[],
+        7 │ + → → "afterFiles":·[
+        8 │ + → → → {
+        9 │ + → → → → "source":·"/ingest/:path*",
+       10 │ + → → → → "destination":·"https://app.posthog.com/:path*",
+       11 │ + → → → → "regex":·"^\\/ingest(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))?(?:\\/)?$",
+       12 │ + → → → → "check":·true
+       13 │ + → → → },
+       14 │ + → → → {
+       15 │ + → → → → "source":·"/vendor/lemon/affiliate.js",
+       16 │ + → → → → "destination":·"https://lmsqueezy.com/affiliate.js",
+       17 │ + → → → → "regex":·"^\\/vendor\\/lemon\\/affiliate\\.js(?:\\/)?$",
+       18 │ + → → → → "check":·true
+       19 │ + → → → },
+       20 │ + → → → {
+       21 │ + → → → → "source":·"/_proxy/dub/track/:path",
+       22 │ + → → → → "destination":·"https://api.dub.co/track/:path",
+       23 │ + → → → → "regex":·"^\\/_proxy\\/dub\\/track(?:\\/([^\\/]+?))(?:\\/)?$",
+       24 │ + → → → → "check":·true
+       25 │ + → → → },
+       26 │ + → → → {
+       27 │ + → → → → "source":·"/_proxy/dub/script.js",
+       28 │ + → → → → "destination":·"https://www.dubcdn.com/analytics/script.js",
+       29 │ + → → → → "regex":·"^\\/_proxy\\/dub\\/script\\.js(?:\\/)?$",
+       30 │ + → → → → "check":·true
+       31 │ + → → → },
+       32 │ + → → → {
+       33 │ + → → → → "source":·"/_axiom/web-vitals",
+       34 │ + → → → → "destination":·"https://api.axiom.co/v1/datasets/undefined/ingest",
+       35 │ + → → → → "basePath":·false,
+       36 │ + → → → → "regex":·"^\\/_axiom\\/web-vitals(?:\\/)?$",
+       37 │ + → → → → "check":·true
+       38 │ + → → → },
+       39 │ + → → → {
+       40 │ + → → → → "source":·"/_axiom/logs",
+       41 │ + → → → → "destination":·"https://api.axiom.co/v1/datasets/undefined/ingest",
+       42 │ + → → → → "basePath":·false,
+       43 │ + → → → → "regex":·"^\\/_axiom\\/logs(?:\\/)?$",
+       44 │ + → → → → "check":·true
+       45 │ + → → → }
+       46 │ + → → ],
+       47 │ + → → "fallback":·[]
+       48 │ + → },
+       49 │ + → "redirects":·[
+       50 │ + → → {
+       51 │ + → → → "source":·"/:path+/",
+       52 │ + → → → "destination":·"/:path+",
+       53 │ + → → → "permanent":·true,
+       54 │ + → → → "internal":·true,
+       55 │ + → → → "regex":·"^(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))\\/$"
+       56 │ + → → },
+       57 │ + → → {
+       58 │ + → → → "source":·"/",
+       59 │ + → → → "destination":·"/automation",
+       60 │ + → → → "has":·[
+       61 │ + → → → → {·"type":·"cookie",·"key":·"__Secure-better-auth.session_token"·}
+       62 │ + → → → ],
+       63 │ + → → → "permanent":·false,
+       64 │ + → → → "regex":·"^(?!\\/_next)\\/(?:\\/)?$"
+       65 │ + → → },
+       66 │ + → → {
+       67 │ + → → → "source":·"/",
+       68 │ + → → → "destination":·"/setup",
+       69 │ + → → → "has":·[
+       70 │ + → → → → {·"type":·"cookie",·"key":·"__Secure-better-auth.session-token.1"·}
+       71 │ + → → → ],
+       72 │ + → → → "permanent":·false,
+       73 │ + → → → "regex":·"^(?!\\/_next)\\/(?:\\/)?$"
+       74 │ + → → },
+       75 │ + → → {
+       76 │ + → → → "source":·"/feature-requests",
+       77 │ + → → → "destination":·"https://go.getinboxzero.com/feature-requests",
+       78 │ + → → → "permanent":·true,
+       79 │ + → → → "regex":·"^(?!\\/_next)\\/feature-requests(?:\\/)?$"
+       80 │ + → → },
+       81 │ + → → {
+       82 │ + → → → "source":·"/feedback",
+       83 │ + → → → "destination":·"https://go.getinboxzero.com/feedback",
+       84 │ + → → → "permanent":·true,
+       85 │ + → → → "regex":·"^(?!\\/_next)\\/feedback(?:\\/)?$"
+       86 │ + → → },
+       87 │ + → → {
+       88 │ + → → → "source":·"/changelog",
+       89 │ + → → → "destination":·"https://go.getinboxzero.com/changelog",
+       90 │ + → → → "permanent":·true,
+       91 │ + → → → "regex":·"^(?!\\/_next)\\/changelog(?:\\/)?$"
+       92 │ + → → },
+       93 │ + → → {
+       94 │ + → → → "source":·"/twitter",
+       95 │ + → → → "destination":·"https://go.getinboxzero.com/x",
+       96 │ + → → → "permanent":·true,
+       97 │ + → → → "regex":·"^(?!\\/_next)\\/twitter(?:\\/)?$"
+       98 │ + → → },
+       99 │ + → → {
+      100 │ + → → → "source":·"/github",
+      101 │ + → → → "destination":·"https://go.getinboxzero.com/github",
+      102 │ + → → → "permanent":·true,
+      103 │ + → → → "regex":·"^(?!\\/_next)\\/github(?:\\/)?$"
+      104 │ + → → },
+      105 │ + → → {
+      106 │ + → → → "source":·"/discord",
+      107 │ + → → → "destination":·"https://go.getinboxzero.com/discord",
+      108 │ + → → → "permanent":·true,
+      109 │ + → → → "regex":·"^(?!\\/_next)\\/discord(?:\\/)?$"
+      110 │ + → → },
+      111 │ + → → {
+      112 │ + → → → "source":·"/linkedin",
+      113 │ + → → → "destination":·"https://go.getinboxzero.com/linkedin",
+      114 │ + → → → "permanent":·true,
+      115 │ + → → → "regex":·"^(?!\\/_next)\\/linkedin(?:\\/)?$"
+      116 │ + → → },
+      117 │ + → → {
+      118 │ + → → → "source":·"/waitlist",
+      119 │ + → → → "destination":·"https://go.getinboxzero.com/waitlist",
+      120 │ + → → → "permanent":·true,
+      121 │ + → → → "regex":·"^(?!\\/_next)\\/waitlist(?:\\/)?$"
+      122 │ + → → },
+      123 │ + → → {
+      124 │ + → → → "source":·"/waitlist-other",
+      125 │ + → → → "destination":·"https://go.getinboxzero.com/waitlist-other",
+      126 │ + → → → "permanent":·false,
+      127 │ + → → → "regex":·"^(?!\\/_next)\\/waitlist-other(?:\\/)?$"
+      128 │ + → → },
+      129 │ + → → {
+      130 │ + → → → "source":·"/affiliates",
+      131 │ + → → → "destination":·"https://go.getinboxzero.com/affiliate",
+      132 │ + → → → "permanent":·true,
+      133 │ + → → → "regex":·"^(?!\\/_next)\\/affiliates(?:\\/)?$"
+      134 │ + → → },
+      135 │ + → → {
+      136 │ + → → → "source":·"/newsletters",
+      137 │ + → → → "destination":·"/bulk-unsubscribe",
+      138 │ + → → → "permanent":·false,
+      139 │ + → → → "regex":·"^(?!\\/_next)\\/newsletters(?:\\/)?$"
+      140 │ + → → },
+      141 │ + → → {
+      142 │ + → → → "source":·"/request-access",
+      143 │ + → → → "destination":·"/early-access",
+      144 │ + → → → "permanent":·true,
+      145 │ + → → → "regex":·"^(?!\\/_next)\\/request-access(?:\\/)?$"
+      146 │ + → → },
+      147 │ + → → {
+      148 │ + → → → "source":·"/reply-tracker",
+      149 │ + → → → "destination":·"/reply-zero",
+  70 more lines truncated
+
+
+.next/server/app/(app)/(redirects)/assistant/page.js.nft.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1    │ - {"version":1,"files":["../../../../webpack-runtime.js","../../../../chunks/7491.js","../../../../chunks/7666.js","../../../../chunks/37.js","../../../../chunks/4941.js","../../../../chunks/8584.js","../../../../chunks/1406.js","../../../../chunks/8438.js","page_client-reference-manifest.js"]}
+       1 │ + {
+       2 │ + → "version":·1,
+       3 │ + → "files":·[
+       4 │ + → → "../../../../webpack-runtime.js",
+       5 │ + → → "../../../../chunks/7491.js",
+       6 │ + → → "../../../../chunks/7666.js",
+       7 │ + → → "../../../../chunks/37.js",
+       8 │ + → → "../../../../chunks/4941.js",
+       9 │ + → → "../../../../chunks/8584.js",
+      10 │ + → → "../../../../chunks/1406.js",
+      11 │ + → → "../../../../chunks/8438.js",
+      12 │ + → → "page_client-reference-manifest.js"
+      13 │ + → ]
+      14 │ + }
+      15 │ +
+
+
+.next/server/app/(app)/(redirects)/automation/page.js.nft.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1    │ - {"version":1,"files":["../../../../webpack-runtime.js","../../../../chunks/7491.js","../../../../chunks/7666.js","../../../../chunks/37.js","../../../../chunks/4941.js","../../../../chunks/8584.js","../../../../chunks/1406.js","../../../../chunks/8438.js","page_client-reference-manifest.js"]}
+       1 │ + {
+       2 │ + → "version":·1,
+       3 │ + → "files":·[
+       4 │ + → → "../../../../webpack-runtime.js",
+       5 │ + → → "../../../../chunks/7491.js",
+       6 │ + → → "../../../../chunks/7666.js",
+       7 │ + → → "../../../../chunks/37.js",
+       8 │ + → → "../../../../chunks/4941.js",
+       9 │ + → → "../../../../chunks/8584.js",
+      10 │ + → → "../../../../chunks/1406.js",
+      11 │ + → → "../../../../chunks/8438.js",
+      12 │ + → → "page_client-reference-manifest.js"
+      13 │ + → ]
+      14 │ + }
+      15 │ +
+
+
+.next/types/package.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Formatter would have printed the following content:
+
+    1   │ - {"type":·"module"}
+      1 │ + {
+      2 │ + → "type":·"module"
+      3 │ + }
+      4 │ +
+
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 84882.
+Checked 1846 files in 352s. No fixes applied.
+Found 25873 errors.
+Found 56169 warnings.
+check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✖ Some errors were emitted while running checks.
+
+
+serwist) Bundling the service worker script with the URL '/sw.js' and the scope '/'...
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOSPC: no space left on device, write
+Failed to compile.
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/example-list'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/components/LoadingContent'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/components/TopSection'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/rule/[ruleId]/error.tsx
+Module not found: Can't resolve '@/components/ErrorDisplay'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/page.tsx
+Module not found: Can't resolve '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/example-list'
+
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOSPC: no space left on device, write
+Failed to compile.
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/example-list'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/components/LoadingContent'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/group/[groupId]/examples/page.tsx
+Module not found: Can't resolve '@/components/TopSection'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/rule/[ruleId]/error.tsx
+Module not found: Can't resolve '@/components/ErrorDisplay'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/page.tsx
+Module not found: Can't resolve '@/app/(app)/[emailAccountId]/assistant/rule/[ruleId]/examples/example-list'
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors
+ ELIFECYCLE  Command failed with exit code 1.
+
+💻 ZSH v4.1 loaded (standard) | 16:30:23
+💡 Tools: ✓ ripgrep | ✓ fzf | ✓ eza | ✓ bat | ✓ delta | ✓ btop | ✓ dust | ✓ procs
+emoji=💻
+💻 ZSH v4.1 loaded (standard) | 16:30:23
+node:internal/modules/esm/get_format:185
+  throw new ERR_UNKNOWN_FILE_EXTENSION(ext, filepath);
+        ^
+
+TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension ".tsx" for /Users/lorenzo/Projects/inbox-zero-google-migration/apps/web/providers/EmailProvider.tsx
+    at Object.getFileProtocolModuleFormat [as file:] (node:internal/modules/esm/get_format:185:9)
+    at defaultGetFormat (node:internal/modules/esm/get_format:211:36)
+    at defaultLoadSync (node:internal/modules/esm/load:158:16)
+    at ModuleLoader.load (node:internal/modules/esm/loader:821:12)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:591:31)
+    at #createModuleJob (node:internal/modules/esm/loader:623:36)
+    at #getJobFromResolveResult (node:internal/modules/esm/loader:329:34)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:294:41)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:25) {
+  code: 'ERR_UNKNOWN_FILE_EXTENSION'
+}
+
+Node.js v25.1.0
+✖ /Users/lorenzo/Projects/inbox-zero-google-migration/apps/web/providers/EmailProvider.tsx (838.022403ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 873.131152
+
+✖ failing tests:
+
+test at providers/EmailProvider.tsx:1:1
+✖ /Users/lorenzo/Projects/inbox-zero-google-migration/apps/web/providers/EmailProvider.tsx (838.022403ms)
+  'test failed'
+
+> inbox-zero-ai@1.0.0 check-enums
+> node scripts/check-enum-imports.js
+
+🔍 Checking for problematic Prisma enum imports...
+
+✅ No imports from @/generated/prisma/client found!
+
+> inbox-zero-ai@1.0.0 postinstall
+> prisma generate
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma config detected, skipping environment variable loading.
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (6.16.3) to ./generated/prisma in 1.22s
+
+
+
+
+> inbox-zero-ai@1.0.0 dev
+> cross-env NODE_OPTIONS=--max_old_space_size=2048 next dev --turbopack
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/lorenzo/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles:
+   * /Users/lorenzo/Projects/inbox-zero-google-migration/pnpm-lock.yaml
+
+   ▲ Next.js 15.5.6 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.28:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ○ Compiling instrumentation Node.js ...
+ ✓ Compiled instrumentation Node.js in 988ms
+ ○ Compiling instrumentation Edge ...
+ ✓ Compiled instrumentation Edge in 5.8s
+ ✓ Ready in 40s
+
+
+
+
+> inbox-zero-ai@1.0.0 type-check
+> npx tsc --noEmit --pretty
+
+app/api/admin/api-keys/route.ts:232:93 - error TS1005: ',' expected.
+
+232     prisma.apiKey.count({ where: { userId, isActive: false, expiresAt: { lte: new Date() } }),
+                                                                                                ~
+
+app/api/admin/api-keys/route.ts:270:1 - error TS1128: Declaration or statement expected.
+
+270 }
+    ~
+
+app/api/admin/api-keys/route.ts:312:1 - error TS1128: Declaration or statement expected.
+
+312 }
+    ~
+
+utils/api-keys/types.ts:387:5 - error TS1131: Property or signature expected.
+
+387     const now = Date.now();
+        ~~~~~
+
+utils/api-keys/types.ts:396:5 - error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+
+396     return {
+        ~~~~~~
+
+utils/api-keys/types.ts:401:3 - error TS1128: Declaration or statement expected.
+
+401   }
+      ~
+
+utils/api-keys/types.ts:403:3 - error TS1128: Declaration or statement expected.
+
+403   static calculateSecurityScore(events: ApiKeySecurityEvent[]): number {
+      ~~~~~~
