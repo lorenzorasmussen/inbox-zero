@@ -1,13 +1,20 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { PermissionsCheck } from '@/app/(app)/[emailAccountId]/PermissionsCheck';
-import { Chat } from '@/components/assistant-chat/chat';
+import { LoadingContent } from '@/components/LoadingContent';
 import { EmailProvider } from '@/providers/EmailProvider';
 import { ASSISTANT_ONBOARDING_COOKIE } from '@/utils/cookies';
 import { checkUserOwnsEmailAccount } from '@/utils/email-account';
 import { prefixPath } from '@/utils/path';
 import prisma from '@/utils/prisma';
+
+// Lazy load the heavy Chat component to reduce initial bundle size
+const Chat = lazy(() =>
+  import('@/components/assistant-chat/chat').then((module) => ({
+    default: module.Chat,
+  }))
+);
 
 export const maxDuration = 300; // Applies to the actions
 
@@ -39,11 +46,19 @@ export default async function AssistantPage({
     <EmailProvider>
       <Suspense>
         <PermissionsCheck />
-
-        <div className="flex h-[calc(100vh-theme(spacing.16))] flex-col">
-          <Chat />
-        </div>
       </Suspense>
+
+      <div className="flex h-[calc(100vh-theme(spacing.16))] flex-col">
+        <Suspense
+          fallback={
+            <LoadingContent loading={true}>
+              <div className="h-96" />
+            </LoadingContent>
+          }
+        >
+          <Chat />
+        </Suspense>
+      </div>
     </EmailProvider>
   );
 }

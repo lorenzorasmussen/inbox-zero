@@ -4,10 +4,17 @@ export const SCOPES = [
   'https://www.googleapis.com/auth/userinfo.profile',
   'https://www.googleapis.com/auth/userinfo.email',
 
-  'https://www.googleapis.com/auth/gmail.modify',
+  // Gmail API scopes
+  'https://www.googleapis.com/auth/gmail.readonly',
+  'https://www.googleapis.com/auth/gmail.send',
   'https://www.googleapis.com/auth/gmail.settings.basic',
+
+  // Calendar API scope
+  'https://www.googleapis.com/auth/calendar.readonly',
+
+  // People API scope
   ...(env.NEXT_PUBLIC_CONTACTS_ENABLED
-    ? ['https://www.googleapis.com/auth/contacts']
+    ? ['https://www.googleapis.com/auth/contacts.readonly']
     : []),
 ];
 
