@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  cancelledPremium,
+  completedTrial,
   createContact,
   deleteContact,
   startedTrial,
-  completedTrial,
   switchedPremiumPlan,
-  cancelledPremium,
-  updateContactRole,
   updateContactCompanySize,
+  updateContactRole,
 } from './loops';
 
 // Mock the loops module
