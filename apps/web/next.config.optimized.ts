@@ -12,8 +12,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: false, // Disabled for minimal memory usage
   eslint: { ignoreDuringBuilds: true },
 
-  // HTTPS configuration handled in custom server or dev script
-
   // Optimized experimental features
   experimental: {
     optimizePackageImports: [

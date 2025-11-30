@@ -1,0 +1,97 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	"lsp": {
+		"typescript": {
+			"command": ["typescript-language-server", "--stdio"],
+			"env": { "TSS_LOG": "-level verbose" }
+		}
+	},
+	"mcp": {
+		"bitwarden": {
+			"type": "local",
+			"command": ["npx", "-y", "@bitwarden/mcp-server"],
+			"env": {
+				"BW_SESSION": "${BW_SESSION}"
+			},
+			"enabled": true
+		},
+		"context7": {
+			"type": "local",
+			"command": [
+				"npx",
+				"-y",
+				"@upstash/context7-mcp",
+				"--api-key",
+				"ctx7sk-4a4494d8-2e8b-4048-b3cf-4d8363db1e44"
+			],
+			"enabled": true
+		},
+		"filesystem": {
+			"type": "local",
+			"command": [
+				"npx",
+				"-y",
+				"@modelcontextprotocol/server-filesystem",
+				"/Users/lorenzo"
+			],
+			"enabled": true
+		},
+		"memory": {
+			"type": "local",
+			"command": ["npx", "-y", "@modelcontextprotocol/server-memory"],
+			"enabled": true
+		},
+		"sequential-thinking": {
+			"type": "local",
+			"command": [
+				"npx",
+				"-y",
+				"@modelcontextprotocol/server-sequential-thinking"
+			],
+			"enabled": true
+		},
+		"everything": {
+			"type": "local",
+			"command": ["npx", "-y", "@modelcontextprotocol/server-everything"],
+			"enabled": true
+		},
+		"playwright": {
+			"type": "local",
+			"command": ["npx", "-y", "mcp-playwright-network", "--headless"],
+			"enabled": true
+		},
+		"desktop": {
+			"type": "local",
+			"command": ["npx", "-y", "mcp-desktop-notification", "--server"],
+			"enabled": true
+		},
+		"desktop-commander": {
+			"type": "local",
+			"command": ["npx", "-y", "@wonderwhy-er/desktop-commander"],
+			"enabled": true
+		},
+		"github": {
+			"type": "local",
+			"command": ["npx", "-y", "@robinson_ai_systems/github-mcp"],
+			"env": {
+				"GITHUB_TOKEN": "${GITHUB_TOKEN}"
+			},
+			"enabled": true
+		},
+		"chrome-devtools": {
+			"type": "local",
+			"command": ["chrome-devtools-mcp"],
+			"args": [],
+			"cwd": "${WORKSPACE_ROOT}",
+			"env": { "NODE_ENV": "development" },
+			"trust": true,
+			"enabled": true
+		},
+		"prettier": {
+			"type": "local",
+			"command": ["npx", "-y", "prettier", "--stdin-filepath", "{{file}}"],
+			"args": [],
+			"enabled": true
+		}
+	}
+}
